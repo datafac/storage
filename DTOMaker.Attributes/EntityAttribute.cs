@@ -2,7 +2,7 @@
 
 namespace DTOMaker.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Interface, AllowMultiple = false)]
     public class EntityAttribute : Attribute
     {
         public readonly int BlockSize;
