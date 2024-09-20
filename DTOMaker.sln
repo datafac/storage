@@ -3,14 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOMaker.Generator", "DTOMaker.Generator\DTOMaker.Generator.csproj", "{5141FE35-13CD-4F27-8F2F-6655B4151278}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTOMaker.Generator", "DTOMaker.Generator\DTOMaker.Generator.csproj", "{5141FE35-13CD-4F27-8F2F-6655B4151278}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOMaker.Generator.Tests", "DTOMaker.Generator.Tests\DTOMaker.Generator.Tests.csproj", "{CBCF1AB2-4302-4B07-9986-FBDAB7741C91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTOMaker.Generator.Tests", "DTOMaker.Generator.Tests\DTOMaker.Generator.Tests.csproj", "{CBCF1AB2-4302-4B07-9986-FBDAB7741C91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOMaker.Attributes", "DTOMaker.Attributes\DTOMaker.Attributes.csproj", "{49DD04D3-FE26-4059-8D9A-D39607B0E356}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTOMaker.Attributes", "DTOMaker.Attributes\DTOMaker.Attributes.csproj", "{49DD04D3-FE26-4059-8D9A-D39607B0E356}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6F72D2FC-3AC9-451F-B6B9-907E32B23B5C}"
 	ProjectSection(SolutionItems) = preProject
+		projscan.json = projscan.json
 		README.md = README.md
 		version.json = version.json
 	EndProjectSection
