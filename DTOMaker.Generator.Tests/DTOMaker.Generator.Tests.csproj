@@ -26,8 +26,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\DTOMaker.Core\DTOMaker.Core.csproj" />
-		<ProjectReference Include="..\DTOMaker.Generator\DTOMaker.Generator.csproj" />
+	  <ProjectReference Include="..\DTOMaker.Core\DTOMaker.Core.csproj" />
+	  <ProjectReference Include="..\DTOMaker.Generator\DTOMaker.Generator.csproj" />
 	</ItemGroup>
 
 </Project>

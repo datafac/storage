@@ -18,7 +18,7 @@ namespace MyOrg.Models
         //  ----  ----  --------    ------  --------
         //     0     8  Double      Little  Field1
         // </field-map>
-        public partial Double Field1
+        public Double Field1
         {
             get => DTOMaker.Runtime.Codec_Double_LE.Instance.ReadFrom(_block.Slice(0, 8).Span);
             set => DTOMaker.Runtime.Codec_Double_LE.Instance.WriteTo(_block.Slice(0, 8).Span, value);

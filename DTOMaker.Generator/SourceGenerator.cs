@@ -126,7 +126,7 @@ namespace DTOMaker.Generator
                             {
                                 string memberSource =
                                     $$"""
-                                            public partial {{member.MemberType}} {{member.Name}}
+                                            public {{member.MemberType}} {{member.Name}}
                                             {
                                                 get => {{member.CodecTypeName}}.Instance.ReadFrom(_block.Slice({{member.FieldOffset}}, {{member.FieldLength}}).Span);
                                                 set => {{member.CodecTypeName}}.Instance.WriteTo(_block.Slice({{member.FieldOffset}}, {{member.FieldLength}}).Span, value);
