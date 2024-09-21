@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using DTOMaker.Core;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace DTOMaker.Generator.Tests
                             MetadataReference.CreateFromFile(typeof(Attribute).GetTypeInfo().Assembly.Location),
                             MetadataReference.CreateFromFile(typeof(Memory<>).GetTypeInfo().Assembly.Location),
                             // types for local tests
-                            MetadataReference.CreateFromFile(typeof(DTOMaker.Attributes.EntityAttribute).GetTypeInfo().Assembly.Location),
+                            MetadataReference.CreateFromFile(typeof(EntityAttribute).GetTypeInfo().Assembly.Location),
                         };
 
             PortableExecutableReference[] metadataReferences = commonReferences.Concat(additionalReferences).ToArray();

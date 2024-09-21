@@ -1,4 +1,4 @@
-﻿using DTOMaker.Attributes;
+﻿using DTOMaker.Core;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;

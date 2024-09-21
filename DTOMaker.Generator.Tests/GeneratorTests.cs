@@ -16,7 +16,7 @@ namespace DTOMaker.Generator.Tests
         {
             var inputSource =
                 """
-                using DTOMaker.Attributes;
+                using DTOMaker.Core;
                 namespace MyOrg.Models
                 {
                     [Entity(64)]
@@ -45,7 +45,7 @@ namespace DTOMaker.Generator.Tests
         {
             var inputSource =
                 """
-                using DTOMaker.Attributes;
+                using DTOMaker.Core;
                 namespace MyOrg.Models
                 {
                     [Entity(64)]
@@ -75,7 +75,7 @@ namespace DTOMaker.Generator.Tests
         {
             var inputSource =
                 """
-                using DTOMaker.Attributes;
+                using DTOMaker.Core;
                 namespace MyOrg.Models
                 {
                     [Entity(64)]
@@ -106,7 +106,7 @@ namespace DTOMaker.Generator.Tests
         {
             var inputSource =
                 """
-                using DTOMaker.Attributes;
+                using DTOMaker.Core;
                 namespace MyOrg.Models
                 {
                     [Entity(64)]
@@ -148,7 +148,7 @@ namespace DTOMaker.Generator.Tests
         {
             var inputSource =
                 """
-                using DTOMaker.Attributes;
+                using DTOMaker.Core;
                 namespace MyOrg.Models
                 {
                     [Entity(63)]
@@ -174,7 +174,7 @@ namespace DTOMaker.Generator.Tests
             // note: [Entity] attribute is missing
             var inputSource =
                 """
-                using DTOMaker.Attributes;
+                using DTOMaker.Core;
                 namespace MyOrg.Models
                 {
                     public interface IMyDTO

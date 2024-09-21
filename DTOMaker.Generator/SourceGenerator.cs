@@ -49,12 +49,12 @@ namespace DTOMaker.Generator
             if (context.SyntaxContextReceiver is not SyntaxReceiver syntaxReceiver) return;
 
             // check that the users compilation references the expected libraries
-            if (!context.Compilation.ReferencedAssemblyNames.Any(ai => ai.Name.Equals("DTOMaker.Attributes", StringComparison.OrdinalIgnoreCase)))
+            if (!context.Compilation.ReferencedAssemblyNames.Any(ai => ai.Name.Equals("DTOMaker.Core", StringComparison.OrdinalIgnoreCase)))
             {
                 context.ReportDiagnostic(Diagnostic.Create(
                         new DiagnosticDescriptor(
                             "MFNSSG001", "DiagnosticTitle",
-                            "The generated code requires a reference to DTOMaker.Attributes",
+                            "The generated code requires a reference to DTOMaker.Core",
                             "DiagnosticCategory",
                             DiagnosticSeverity.Warning,
                             true),

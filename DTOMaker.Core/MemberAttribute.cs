@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DTOMaker.Attributes
+namespace DTOMaker.Core
 {
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]

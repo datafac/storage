@@ -54,7 +54,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\DTOMaker.Attributes\DTOMaker.Attributes.csproj" />
+	  <ProjectReference Include="..\DTOMaker.Core\DTOMaker.Core.csproj" />
 	</ItemGroup>
 
 </Project>
