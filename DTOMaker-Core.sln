@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTOMaker.Generator", "DTOMaker.Generator\DTOMaker.Generator.csproj", "{5141FE35-13CD-4F27-8F2F-6655B4151278}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTOMaker.Generator.Tests", "DTOMaker.Generator.Tests\DTOMaker.Generator.Tests.csproj", "{CBCF1AB2-4302-4B07-9986-FBDAB7741C91}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6F72D2FC-3AC9-451F-B6B9-907E32B23B5C}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
@@ -23,14 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5141FE35-13CD-4F27-8F2F-6655B4151278}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5141FE35-13CD-4F27-8F2F-6655B4151278}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5141FE35-13CD-4F27-8F2F-6655B4151278}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5141FE35-13CD-4F27-8F2F-6655B4151278}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CBCF1AB2-4302-4B07-9986-FBDAB7741C91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CBCF1AB2-4302-4B07-9986-FBDAB7741C91}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CBCF1AB2-4302-4B07-9986-FBDAB7741C91}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CBCF1AB2-4302-4B07-9986-FBDAB7741C91}.Release|Any CPU.Build.0 = Release|Any CPU
 		{69809F37-28A0-41EF-AB68-B33176CF28D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{69809F37-28A0-41EF-AB68-B33176CF28D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69809F37-28A0-41EF-AB68-B33176CF28D4}.Release|Any CPU.ActiveCfg = Release|Any CPU

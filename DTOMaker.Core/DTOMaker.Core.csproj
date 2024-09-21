@@ -7,8 +7,8 @@
 		<WarningsAsErrors>nullable</WarningsAsErrors>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageProjectUrl>https://github.com/Psiman62/DTOMaker</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/Psiman62/DTOMaker</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/Psiman62/DTOMaker-Core</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Psiman62/DTOMaker-Core</RepositoryUrl>
 		<Company>Psiman62</Company>
 		<Product>DTOMaker</Product>
 		<Authors>Psiman62 Contributors</Authors>

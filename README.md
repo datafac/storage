@@ -1,16 +1,13 @@
-# DTOMaker
-Model-driven DTO generator and tools
+# DTOMaker.Core
 
 *Warning: This is pre-release software under active development. Not for production use. Do not use if you can't tolerate breaking changes occasionally.*
 
-## Core
-Attributes for defining simple data models as interfaces. These are consumed by DTOMaker.Generator to emit classes implementing the interface.
+DTOMaker.Core contains attributes for defining simple data models as interfaces.
 
-### [Entity]
-
-### [Member]
+These are consumed by DTOMaker.Generator to emit classes implementing the interface: https://github.com/Psiman62/DTOMaker-SrcGen
 
 Also includes types used by generated code at runtime.
 
-## Generator
-Model-driven source generator for data transport objects (DTOs).
+## [Entity]
+
+## [Member]
