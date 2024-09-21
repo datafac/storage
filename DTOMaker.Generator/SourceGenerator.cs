@@ -16,6 +16,7 @@ namespace DTOMaker.Generator
 
         private void EmitDiagnostics(GeneratorExecutionContext context, TargetBase target)
         {
+            // todo fix msg ids
             foreach (var message in target.SyntaxErrors)
             {
                 // report diagnostic
@@ -46,6 +47,19 @@ namespace DTOMaker.Generator
         public void Execute(GeneratorExecutionContext context)
         {
             if (context.SyntaxContextReceiver is not SyntaxReceiver syntaxReceiver) return;
+
+            // check that the users compilation references the expected libraries
+            if (!context.Compilation.ReferencedAssemblyNames.Any(ai => ai.Name.Equals("DTOMaker.Attributes", StringComparison.OrdinalIgnoreCase)))
+            {
+                context.ReportDiagnostic(Diagnostic.Create(
+                        new DiagnosticDescriptor(
+                            "MFNSSG001", "DiagnosticTitle",
+                            "The generated code requires a reference to DTOMaker.Attributes",
+                            "DiagnosticCategory",
+                            DiagnosticSeverity.Warning,
+                            true),
+                            Location.None));
+            }
 
             foreach (var domain in syntaxReceiver.Domains.Values)
             {
