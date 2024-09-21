@@ -12,15 +12,13 @@
 		<Company>Psiman62</Company>
 		<Product>DTOMaker</Product>
 		<Authors>Psiman62 Contributors</Authors>
-		<Description>Source generator for various DTO classes, including...</Description>
+		<Title>DTOMaker Generator</Title>
+		<Description>Model-driven source generator for data transport objects (DTOs).</Description>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<IncludeSymbols>True</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<EnableNETAnalyzers>True</EnableNETAnalyzers>
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>..\SigningKey.snk</AssemblyOriginatorKeyFile>
-		<Title>DTOMaker</Title>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageTags>generator; roslyn</PackageTags>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>

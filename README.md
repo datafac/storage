@@ -3,8 +3,14 @@ Model-driven DTO generator and tools
 
 *Warning: This is pre-release software under active development. Not for production use. Do not use if you can't tolerate breaking changes occasionally.*
 
-## Attributes
-Attributes for defining models in C#.
+## Core
+Attributes for defining simple data models as interfaces. These are consumed by DTOMaker.Generator to emit classes implementing the interface.
+
+### [Entity]
+
+### [Member]
+
+Also includes types used by generated code at runtime.
 
 ## Generator
-Source generator to build DTOs from models.
+Model-driven source generator for data transport objects (DTOs).
