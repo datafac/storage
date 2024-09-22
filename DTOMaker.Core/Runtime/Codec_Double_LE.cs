@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Buffers.Binary;
 
-namespace DTOMaker.Core.Codecs
+namespace DTOMaker.Runtime
 {
     public sealed class Codec_Double_LE : Codec_Base<double>
     {

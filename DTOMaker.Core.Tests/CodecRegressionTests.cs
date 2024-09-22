@@ -13,7 +13,7 @@ namespace DTOMaker.Core.Tests
         public void Roundtrip_Int64_BE(in long value, string expectedBytes)
         {
             Span<byte> buffer = stackalloc byte[8];
-            Codecs.Codec_Int64_BE.Instance.WriteTo(buffer, value);
+            Runtime.Codec_Int64_BE.Instance.WriteTo(buffer, value);
             string.Join('-', buffer.ToArray().Select(b => b.ToString("X2"))).Should().Be(expectedBytes);
         }
 
@@ -26,7 +26,7 @@ namespace DTOMaker.Core.Tests
         public void Roundtrip_Int64_LE(in long value, string expectedBytes)
         {
             Span<byte> buffer = stackalloc byte[8];
-            Codecs.Codec_Int64_LE.Instance.WriteTo(buffer, value);
+            Runtime.Codec_Int64_LE.Instance.WriteTo(buffer, value);
             string.Join('-', buffer.ToArray().Select(b => b.ToString("X2"))).Should().Be(expectedBytes);
         }
 
@@ -48,7 +48,7 @@ namespace DTOMaker.Core.Tests
         public void Roundtrip_Double_BE(in double value, string expectedBytes)
         {
             Span<byte> buffer = stackalloc byte[8];
-            Codecs.Codec_Double_BE.Instance.WriteTo(buffer, value);
+            Runtime.Codec_Double_BE.Instance.WriteTo(buffer, value);
             string.Join('-', buffer.ToArray().Select(b => b.ToString("X2"))).Should().Be(expectedBytes);
         }
 
@@ -70,7 +70,7 @@ namespace DTOMaker.Core.Tests
         public void Roundtrip_Double_LE(in double value, string expectedBytes)
         {
             Span<byte> buffer = stackalloc byte[8];
-            Codecs.Codec_Double_LE.Instance.WriteTo(buffer, value);
+            Runtime.Codec_Double_LE.Instance.WriteTo(buffer, value);
             string.Join('-', buffer.ToArray().Select(b => b.ToString("X2"))).Should().Be(expectedBytes);
         }
 

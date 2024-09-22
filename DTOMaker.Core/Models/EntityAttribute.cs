@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DTOMaker.Core
+namespace DTOMaker.Models
 {
     [AttributeUsage(AttributeTargets.Interface, AllowMultiple = false)]
     public class EntityAttribute : Attribute

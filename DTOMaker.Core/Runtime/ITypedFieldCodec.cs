@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DTOMaker.Core.Codecs
+namespace DTOMaker.Runtime
 {
     public interface ITypedFieldCodec<TField> : IFieldCodec
     {

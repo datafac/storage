@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DTOMaker.Core.Codecs
+namespace DTOMaker.Runtime
 {
     public abstract class Codec_Base<TField> : ITypedFieldCodec<TField>
         where TField : struct
