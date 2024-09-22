@@ -1,4 +1,7 @@
 {
   "CompanyName":  "Psiman62",
-  "ProductName": "DTOMaker"
+  "ProductName": "DTOMaker",
+  "ExemptionCodes": [
+    "targetframeworks_notcontains_net7"
+  ]
 }

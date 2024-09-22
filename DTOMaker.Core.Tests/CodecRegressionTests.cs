@@ -1,4 +1,6 @@
 using FluentAssertions;
+using System;
+using System.Linq;
 
 namespace DTOMaker.Core.Tests
 {
