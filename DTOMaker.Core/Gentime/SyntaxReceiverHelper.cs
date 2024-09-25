@@ -74,6 +74,7 @@ namespace DTOMaker.Gentime
                             var attributeArguments = memberAttr.ConstructorArguments;
                             if (attributeArguments.Length == 1)
                             {
+                                member.MemberType = pdsSymbol.Type.Name;
                                 member.Sequence = TryGetValue<int>(attributeArguments[0].Value, 0);
                             }
                             else
@@ -87,7 +88,6 @@ namespace DTOMaker.Gentime
                             var attributeArguments = memberLayoutAttr.ConstructorArguments;
                             if (attributeArguments.Length == 3)
                             {
-                                member.MemberType = pdsSymbol.Type.Name;
                                 member.FieldOffset = TryGetValue<int>(attributeArguments[0].Value, 0);
                                 member.FieldLength = TryGetValue<int>(attributeArguments[1].Value, 0);
                                 member.IsBigEndian = TryGetValue<bool>(attributeArguments[2].Value, false);
