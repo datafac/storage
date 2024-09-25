@@ -2,24 +2,14 @@
 
 namespace DTOMaker.Models
 {
-
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class MemberAttribute : Attribute
     {
-        public readonly int BlockOffset;
-        public readonly int FieldLength;
-        public readonly bool IsBigEndian;
+        public readonly int Sequence;
 
-        public MemberAttribute(int blockOffset, int fieldLength, bool isBigEndian)
+        public MemberAttribute(int sequence)
         {
-            BlockOffset = blockOffset;
-            FieldLength = fieldLength;
-            IsBigEndian = isBigEndian;
-        }
-
-        public MemberAttribute(int blockOffset, int fieldLength)
-            : this(blockOffset, fieldLength, false)
-        {
+            Sequence = sequence;
         }
 
     }
