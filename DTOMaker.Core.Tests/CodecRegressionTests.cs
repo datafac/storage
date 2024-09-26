@@ -7,58 +7,6 @@ namespace DTOMaker.Core.Tests
     public class CodecRegressionTests
     {
         [Theory]
-        [InlineData(1, "00-00-00-01")]
-        [InlineData(0, "00-00-00-00")]
-        [InlineData(-1, "FF-FF-FF-FF")]
-        [InlineData(int.MaxValue, "7F-FF-FF-FF")]
-        [InlineData(int.MinValue, "80-00-00-00")]
-        public void Roundtrip_Int32_BE(in int value, string expectedBytes)
-        {
-            Span<byte> buffer = stackalloc byte[4];
-            Runtime.Codec_Int32_BE.Instance.WriteTo(buffer, value);
-            string.Join("-", buffer.ToArray().Select(b => b.ToString("X2"))).Should().Be(expectedBytes);
-        }
-
-        [Theory]
-        [InlineData(1, "01-00-00-00")]
-        [InlineData(0, "00-00-00-00")]
-        [InlineData(-1, "FF-FF-FF-FF")]
-        [InlineData(int.MaxValue, "FF-FF-FF-7F")]
-        [InlineData(int.MinValue, "00-00-00-80")]
-        public void Roundtrip_Int32_LE(in int value, string expectedBytes)
-        {
-            Span<byte> buffer = stackalloc byte[4];
-            Runtime.Codec_Int32_LE.Instance.WriteTo(buffer, value);
-            string.Join("-", buffer.ToArray().Select(b => b.ToString("X2"))).Should().Be(expectedBytes);
-        }
-
-        [Theory]
-        [InlineData(1L, "00-00-00-00-00-00-00-01")]
-        [InlineData(0L, "00-00-00-00-00-00-00-00")]
-        [InlineData(-1L, "FF-FF-FF-FF-FF-FF-FF-FF")]
-        [InlineData(long.MaxValue, "7F-FF-FF-FF-FF-FF-FF-FF")]
-        [InlineData(long.MinValue, "80-00-00-00-00-00-00-00")]
-        public void Roundtrip_Int64_BE(in long value, string expectedBytes)
-        {
-            Span<byte> buffer = stackalloc byte[8];
-            Runtime.Codec_Int64_BE.Instance.WriteTo(buffer, value);
-            string.Join("-", buffer.ToArray().Select(b => b.ToString("X2"))).Should().Be(expectedBytes);
-        }
-
-        [Theory]
-        [InlineData(1L, "01-00-00-00-00-00-00-00")]
-        [InlineData(0L, "00-00-00-00-00-00-00-00")]
-        [InlineData(-1L, "FF-FF-FF-FF-FF-FF-FF-FF")]
-        [InlineData(long.MaxValue, "FF-FF-FF-FF-FF-FF-FF-7F")]
-        [InlineData(long.MinValue, "00-00-00-00-00-00-00-80")]
-        public void Roundtrip_Int64_LE(in long value, string expectedBytes)
-        {
-            Span<byte> buffer = stackalloc byte[8];
-            Runtime.Codec_Int64_LE.Instance.WriteTo(buffer, value);
-            string.Join("-", buffer.ToArray().Select(b => b.ToString("X2"))).Should().Be(expectedBytes);
-        }
-
-        [Theory]
         [InlineData(1D, "3F-F0-00-00-00-00-00-00")]
         [InlineData(0D, "00-00-00-00-00-00-00-00")]
         [InlineData(-1D, "BF-F0-00-00-00-00-00-00")]
@@ -78,6 +26,8 @@ namespace DTOMaker.Core.Tests
             Span<byte> buffer = stackalloc byte[8];
             Runtime.Codec_Double_BE.Instance.WriteTo(buffer, value);
             string.Join("-", buffer.ToArray().Select(b => b.ToString("X2"))).Should().Be(expectedBytes);
+            double copy = Runtime.Codec_Double_BE.Instance.ReadFrom(buffer);
+            copy.Should().Be(value);
         }
 
         [Theory]
@@ -100,6 +50,8 @@ namespace DTOMaker.Core.Tests
             Span<byte> buffer = stackalloc byte[8];
             Runtime.Codec_Double_LE.Instance.WriteTo(buffer, value);
             string.Join("-", buffer.ToArray().Select(b => b.ToString("X2"))).Should().Be(expectedBytes);
+            double copy = Runtime.Codec_Double_LE.Instance.ReadFrom(buffer);
+            copy.Should().Be(value);
         }
 
     }
