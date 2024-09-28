@@ -11,30 +11,6 @@ namespace DTOMaker.Gentime
         public int? FieldOffset { get; set; }
         public int? FieldLength { get; set; }
         public bool IsBigEndian { get; set; } = false;
-        // todo move to derived
-        public string CodecTypeName => $"DTOMaker.Runtime.Codec_{MemberType}_{(IsBigEndian ? "BE" : "LE")}";
-
-        // todo move to derived
-        private SyntaxDiagnostic? CheckFieldOffset()
-        {
-            return FieldOffset switch
-            {
-                null => null, // todo not allowed when required
-                >= 0 => null,
-                _ => new SyntaxDiagnostic(Location, DiagnosticSeverity.Error, $"FieldOffset ({FieldOffset}) must be >= 0")
-            };
-        }
-
-        // todo move to derived
-        private SyntaxDiagnostic? CheckFieldLength()
-        {
-            return FieldLength switch
-            {
-                null => null, // todo not allowed when required
-                > 0 => null,
-                _ => new SyntaxDiagnostic(Location, DiagnosticSeverity.Error, $"FieldLength ({FieldLength}) must be > 0")
-            };
-        }
 
         private SyntaxDiagnostic? CheckMemberType()
         {
@@ -55,9 +31,6 @@ namespace DTOMaker.Gentime
             SyntaxDiagnostic? diagnostic;
             if ((diagnostic = CheckMemberType()) is not null) yield return diagnostic;
             if ((diagnostic = CheckMemberSequence()) is not null) yield return diagnostic;
-            // todo move to derived
-            if ((diagnostic = CheckFieldOffset()) is not null) yield return diagnostic;
-            if ((diagnostic = CheckFieldLength()) is not null) yield return diagnostic;
         }
     }
 }

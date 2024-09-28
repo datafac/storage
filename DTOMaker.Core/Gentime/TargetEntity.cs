@@ -11,28 +11,6 @@ namespace DTOMaker.Gentime
         public TargetEntity(string name, Location location) : base(name, location) { }
         public int? BlockSize { get; set; }
 
-        // todo move to derived
-        private SyntaxDiagnostic? CheckBlockSizeIsValid()
-        {
-            return BlockSize switch
-            {
-                null => null,
-                1 => null,
-                2 => null,
-                4 => null,
-                8 => null,
-                16 => null,
-                32 => null,
-                64 => null,
-                128 => null,
-                256 => null,
-                512 => null,
-                1024 => null,
-                _ => new SyntaxDiagnostic(Location, DiagnosticSeverity.Error,
-                    $"BlockSize ({BlockSize}) is invalid. BlockSize must be a power of 2, and between 1 and 1024")
-            };
-        }
-
         private SyntaxDiagnostic? CheckMemberSequenceIsValid()
         {
             int expectedSequence = 1;
@@ -50,7 +28,6 @@ namespace DTOMaker.Gentime
         {
             SyntaxDiagnostic? diagnostic;
             if ((diagnostic = CheckMemberSequenceIsValid()) is not null) yield return diagnostic;
-            if ((diagnostic = CheckBlockSizeIsValid()) is not null) yield return diagnostic;
         }
     }
 }
