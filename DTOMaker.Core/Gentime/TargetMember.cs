@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DTOMaker.Gentime
 {
-    public sealed class TargetMember : TargetBase
+    public abstract class TargetMember : TargetBase
     {
         public TargetMember(string name, Location location) : base(name, location) { }
         public int Sequence { get; set; }
@@ -11,54 +11,53 @@ namespace DTOMaker.Gentime
         public int? FieldOffset { get; set; }
         public int? FieldLength { get; set; }
         public bool IsBigEndian { get; set; } = false;
+        // todo move to derived
         public string CodecTypeName => $"DTOMaker.Runtime.Codec_{MemberType}_{(IsBigEndian ? "BE" : "LE")}";
 
-        private bool FieldOffsetIsValid()
+        // todo move to derived
+        private SyntaxDiagnostic? CheckFieldOffset()
         {
             return FieldOffset switch
             {
-                null => true,
-                _ => FieldOffset >= 0
+                null => null, // todo not allowed when required
+                >= 0 => null,
+                _ => new SyntaxDiagnostic(Location, DiagnosticSeverity.Error, $"FieldOffset ({FieldOffset}) must be >= 0")
             };
         }
 
-        private bool FieldLengthIsValid()
+        // todo move to derived
+        private SyntaxDiagnostic? CheckFieldLength()
         {
             return FieldLength switch
             {
-                null => true,
-                _ => FieldLength > 0
+                null => null, // todo not allowed when required
+                > 0 => null,
+                _ => new SyntaxDiagnostic(Location, DiagnosticSeverity.Error, $"FieldLength ({FieldLength}) must be > 0")
             };
         }
 
-        public bool CanEmit()
+        private SyntaxDiagnostic? CheckMemberType()
         {
-            return !string.IsNullOrWhiteSpace(Name)
-                && !string.IsNullOrWhiteSpace(MemberType)
-                && Sequence > 0
-                && FieldOffsetIsValid()
-                && FieldLengthIsValid();
+            return string.IsNullOrWhiteSpace(MemberType)
+                ? new SyntaxDiagnostic(Location, DiagnosticSeverity.Error, $"MemberType'{MemberType}' must be defined")
+                : null;
+        }
+
+        private SyntaxDiagnostic? CheckMemberSequence()
+        {
+            return Sequence <= 0
+                ? new SyntaxDiagnostic(Location, DiagnosticSeverity.Error, $"Sequence ({Sequence}) must be > 0")
+                : null;
         }
 
         protected override IEnumerable<SyntaxDiagnostic> OnGetValidationDiagnostics()
         {
-            if (string.IsNullOrWhiteSpace(MemberType))
-            {
-                yield return new SyntaxDiagnostic(_location, DiagnosticSeverity.Error, $"MemberType'{MemberType}' must be defined");
-            }
-            if (Sequence <= 0)
-            {
-                yield return new SyntaxDiagnostic(_location, DiagnosticSeverity.Error, $"Sequence ({Sequence}) must be > 0");
-            }
-            if (!FieldOffsetIsValid())
-            {
-                yield return new SyntaxDiagnostic(_location, DiagnosticSeverity.Error, $"FieldOffset ({FieldOffset}) must be >= 0");
-            }
-            if (!FieldLengthIsValid())
-            {
-                yield return new SyntaxDiagnostic(_location, DiagnosticSeverity.Error, $"FieldLength ({FieldLength}) must be > 0");
-            }
-            yield break; // todo
+            SyntaxDiagnostic? diagnostic;
+            if ((diagnostic = CheckMemberType()) is not null) yield return diagnostic;
+            if ((diagnostic = CheckMemberSequence()) is not null) yield return diagnostic;
+            // todo move to derived
+            if ((diagnostic = CheckFieldOffset()) is not null) yield return diagnostic;
+            if ((diagnostic = CheckFieldLength()) is not null) yield return diagnostic;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace DTOMaker.Core.Tests
         [Theory]
         [InlineData(false, "00")]
         [InlineData(true, "01")]
-        public void Roundtrip_Int16_BE(in Boolean value, string expectedBytes)
+        public void Roundtrip_Boolean_BE(in Boolean value, string expectedBytes)
         {
             Span<byte> buffer = stackalloc byte[1];
             Runtime.Codec_Boolean_BE.Instance.WriteTo(buffer, value);
@@ -21,7 +21,7 @@ namespace DTOMaker.Core.Tests
         [Theory]
         [InlineData(false, "00")]
         [InlineData(true, "01")]
-        public void Roundtrip_Int16_LE(in Boolean value, string expectedBytes)
+        public void Roundtrip_Boolean_LE(in Boolean value, string expectedBytes)
         {
             Span<byte> buffer = stackalloc byte[1];
             Runtime.Codec_Boolean_LE.Instance.WriteTo(buffer, value);

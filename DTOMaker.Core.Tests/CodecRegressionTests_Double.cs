@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace DTOMaker.Core.Tests
 {
-    public class CodecRegressionTests
+    public class CodecRegressionTests_Double
     {
         [Theory]
         [InlineData(1D, "3F-F0-00-00-00-00-00-00")]

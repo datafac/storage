@@ -6,13 +6,13 @@ namespace DTOMaker.Gentime
 {
     public abstract class TargetBase
     {
-        protected Location _location;
+        public Location Location { get; }
         public string Name { get; }
         public ConcurrentBag<SyntaxDiagnostic> SyntaxErrors { get; } = new ConcurrentBag<SyntaxDiagnostic>();
         protected TargetBase(string name, Location location)
         {
             Name = name;
-            _location = location;
+            Location = location;
         }
 
         protected abstract IEnumerable<SyntaxDiagnostic> OnGetValidationDiagnostics();

@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
 
@@ -11,7 +12,10 @@ namespace DTOMaker.Gentime
     {
         private static T TryGetValue<T>(object? input, T defaultValue) => input is T value ? value : defaultValue;
 
-        public static void ProcessNode(GeneratorSyntaxContext context, ConcurrentDictionary<string, TargetDomain> domains)
+        public static void ProcessNode(GeneratorSyntaxContext context, ConcurrentDictionary<string, TargetDomain> domains,
+            Func<string, Location, TargetDomain> domainFactory,
+            Func<string, Location, TargetEntity> entityFactory,
+            Func<string, Location, TargetMember> memberFactory)
         {
             if (context.Node is InterfaceDeclarationSyntax ids
                 && ids.Modifiers.Any(SyntaxKind.PublicKeyword)
@@ -21,7 +25,7 @@ namespace DTOMaker.Gentime
                 {
                     Location ndsLocation = Location.Create(nds.SyntaxTree, nds.Span);
                     Location idsLocation = Location.Create(ids.SyntaxTree, ids.Span);
-                    var domain = domains.GetOrAdd(nds.Name.ToString(), (n) => new TargetDomain(n, ndsLocation));
+                    var domain = domains.GetOrAdd(nds.Name.ToString(), (n) => domainFactory(n, ndsLocation));
                     string interfaceName = ids.Identifier.Text;
                     if (interfaceName.Length <= 1 || !interfaceName.StartsWith("I"))
                     {
@@ -30,7 +34,7 @@ namespace DTOMaker.Gentime
                                 $"Expected interface named '{interfaceName}' to start with 'I'."));
                     }
                     string entityName = interfaceName.Substring(1);
-                    var entity = domain.Entities.GetOrAdd(entityName, (n) => new TargetEntity(n, idsLocation));
+                    var entity = domain.Entities.GetOrAdd(entityName, (n) => entityFactory(n, idsLocation));
                     if (idsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(EntityAttribute)) is AttributeData entityAttr)
                     {
                         // found opt-in entity
@@ -68,7 +72,7 @@ namespace DTOMaker.Gentime
                         && domain.Entities.TryGetValue(entityName, out var entity))
                     {
                         Location pdsLocation = Location.Create(pds.SyntaxTree, pds.Span);
-                        var member = entity.Members.GetOrAdd(pds.Identifier.Text, (n) => new TargetMember(n, pdsLocation));
+                        var member = entity.Members.GetOrAdd(pds.Identifier.Text, (n) => memberFactory(n, pdsLocation));
                         if (pdsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberAttribute)) is AttributeData memberAttr)
                         {
                             var attributeArguments = memberAttr.ConstructorArguments;
