@@ -4,9 +4,12 @@
 
 DTOMaker.Core contains attributes for defining simple data models as interfaces.
 
-These are consumed by DTOMaker.Generator to emit classes implementing the interface: https://github.com/Psiman62/DTOMaker-SrcGen
-
 Also includes types used by generated code at runtime.
+
+These models are consumed by the following source generators to emit DTO classes 
+implementing the interfaces:
+- https://github.com/Psiman62/DTOMaker-SrcGen
+- https://github.com/Psiman62/DTOMaker.MessagePack
 
 ## [Entity]
 
