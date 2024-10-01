@@ -1,0 +1,9 @@
+﻿namespace DTOMaker.Gentime
+{
+    public static class DiagnosticCategory
+    {
+        public const string Design = "DTOMaker.Design";
+        public const string Naming = "DTOMaker.Naming";
+        public const string Syntax = "DTOMaker.Syntax";
+    }
+}

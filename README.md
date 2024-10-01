@@ -30,7 +30,7 @@ Yet to be implemented:
 ## DTOMaker.MemBlocks
 Generates DTOs whose internal data is a single memory block (Memory\<byte\>). Property getters and setters decode and encode
 values directly to the block with explicit byte ordering (little-endian or big-endian). This source generator can be found 
-at: https://github.com/Psiman62/DTOMaker-SrcGen
+at: https://github.com/Psiman62/DTOMaker-MemBlocks
 
 ## DTOMaker.MessagePack
 Generates DTOs decorated with MessagePack attributes (https://github.com/MessagePack-CSharp/MessagePack-CSharp).
