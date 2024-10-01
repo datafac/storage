@@ -8,6 +8,19 @@ using System.Linq;
 
 namespace DTOMaker.Gentime
 {
+    internal static class DiagnosticId
+    {
+        public const string DTOM0001 = nameof(DTOM0001); // Invalid interface name
+        public const string DTOM0002 = nameof(DTOM0002); // Invalid argument count
+        public const string DTOM0003 = nameof(DTOM0003); // Invalid member sequence
+        public const string DTOM0004 = nameof(DTOM0004); // Invalid member datatype
+    }
+    internal static class DiagnosticCategory
+    {
+        public const string Design = "DTOMaker.Design";
+        public const string Naming = "DTOMaker.Naming";
+        public const string Syntax = "DTOMaker.Syntax";
+    }
     public static class SyntaxReceiverHelper
     {
         private static T TryGetValue<T>(object? input, T defaultValue) => input is T value ? value : defaultValue;
@@ -30,7 +43,8 @@ namespace DTOMaker.Gentime
                     if (interfaceName.Length <= 1 || !interfaceName.StartsWith("I"))
                     {
                         domain.SyntaxErrors.Add(
-                            new SyntaxDiagnostic(idsLocation, DiagnosticSeverity.Error,
+                            new SyntaxDiagnostic(
+                                DiagnosticId.DTOM0001, "Invalid interface name", DiagnosticCategory.Naming, idsLocation, DiagnosticSeverity.Error,
                                 $"Expected interface named '{interfaceName}' to start with 'I'."));
                     }
                     string entityName = interfaceName.Substring(1);
@@ -51,7 +65,8 @@ namespace DTOMaker.Gentime
                         else
                         {
                             entity.SyntaxErrors.Add(
-                                new SyntaxDiagnostic(idsLocation, DiagnosticSeverity.Error,
+                                new SyntaxDiagnostic(
+                                    DiagnosticId.DTOM0002, "Invalid argument count", DiagnosticCategory.Syntax, idsLocation, DiagnosticSeverity.Error,
                                     $"Expected {nameof(EntityLayoutAttribute)} attribute to have 1 argument, but it has {attributeArguments.Length}."));
                         }
                     }
@@ -83,8 +98,10 @@ namespace DTOMaker.Gentime
                             }
                             else
                             {
-                                member.SyntaxErrors.Add(new SyntaxDiagnostic(pdsLocation, DiagnosticSeverity.Error,
-                                    $"Expected {nameof(MemberAttribute)} attribute to have 1 argument, but it has {attributeArguments.Length}"));
+                                member.SyntaxErrors.Add(
+                                    new SyntaxDiagnostic(
+                                        DiagnosticId.DTOM0002, "Invalid argument count", DiagnosticCategory.Syntax, pdsLocation, DiagnosticSeverity.Error,
+                                        $"Expected {nameof(MemberAttribute)} attribute to have 1 argument, but it has {attributeArguments.Length}"));
                             }
                         }
                         if (pdsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberLayoutAttribute)) is AttributeData memberLayoutAttr)
@@ -98,8 +115,10 @@ namespace DTOMaker.Gentime
                             }
                             else
                             {
-                                member.SyntaxErrors.Add(new SyntaxDiagnostic(pdsLocation, DiagnosticSeverity.Error,
-                                    $"Expected {nameof(MemberLayoutAttribute)} attribute to have 3 arguments, but it has {attributeArguments.Length}"));
+                                member.SyntaxErrors.Add(
+                                    new SyntaxDiagnostic(
+                                        DiagnosticId.DTOM0002, "Invalid argument count", DiagnosticCategory.Syntax, pdsLocation, DiagnosticSeverity.Error,
+                                        $"Expected {nameof(MemberLayoutAttribute)} attribute to have 3 arguments, but it has {attributeArguments.Length}"));
                             }
                         }
                     }

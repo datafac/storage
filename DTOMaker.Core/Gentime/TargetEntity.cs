@@ -17,7 +17,8 @@ namespace DTOMaker.Gentime
             foreach (var member in Members.Values.OrderBy(m => m.Sequence))
             {
                 if (member.Sequence != expectedSequence)
-                    return new SyntaxDiagnostic(member.Location, DiagnosticSeverity.Error,
+                    return new SyntaxDiagnostic(
+                        DiagnosticId.DTOM0003, "Invalid member sequence", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
                         $"Expected member '{member.Name}' sequence to be {expectedSequence}, but found {member.Sequence}.");
                 expectedSequence++;
             }

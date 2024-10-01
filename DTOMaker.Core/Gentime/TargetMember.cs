@@ -15,14 +15,18 @@ namespace DTOMaker.Gentime
         private SyntaxDiagnostic? CheckMemberType()
         {
             return string.IsNullOrWhiteSpace(MemberType)
-                ? new SyntaxDiagnostic(Location, DiagnosticSeverity.Error, $"MemberType'{MemberType}' must be defined")
+                ? new SyntaxDiagnostic(
+                    DiagnosticId.DTOM0004, "Invalid member datatype", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+                    $"MemberType'{MemberType}' must be defined")
                 : null;
         }
 
         private SyntaxDiagnostic? CheckMemberSequence()
         {
             return Sequence <= 0
-                ? new SyntaxDiagnostic(Location, DiagnosticSeverity.Error, $"Sequence ({Sequence}) must be > 0")
+                ? new SyntaxDiagnostic(
+                    DiagnosticId.DTOM0003, "Invalid member sequence", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+                    $"Sequence ({Sequence}) must be > 0")
                 : null;
         }
 
