@@ -10,7 +10,16 @@ namespace DTOMaker.Gentime
 {
     public static class SyntaxReceiverHelper
     {
-        private static T TryGetValue<T>(object? input, T defaultValue) => input is T value ? value : defaultValue;
+        // todo refactor and cleanup
+        private static (string? error, T result) TryGetValue<T>(object? input, T defaultValue) where T : struct
+        {
+            if (input is null)
+                return ($"Could not parse (null) as <{typeof(T).Name}>", defaultValue);
+            else if (input is T value)
+                return (null, value);
+            else
+                return ($"Could not parse '{input}' <{input.GetType().Name}> as <{typeof(T).Name}>", defaultValue);
+        }
 
         public static void ProcessNode(GeneratorSyntaxContext context, ConcurrentDictionary<string, TargetDomain> domains,
             Func<string, Location, TargetDomain> domainFactory,
@@ -47,8 +56,30 @@ namespace DTOMaker.Gentime
                         var attributeArguments = entityLayoutAttr.ConstructorArguments;
                         if (attributeArguments.Length == 2)
                         {
-                            entity.LayoutMethod = TryGetValue<MemberLayoutMethod>(attributeArguments[0].Value, MemberLayoutMethod.Undefined);
-                            entity.BlockSize = TryGetValue<int?>(attributeArguments[1].Value, null);
+                            (string? errorMessage, LayoutMethod method) = TryGetValue<LayoutMethod>(attributeArguments[0].Value, LayoutMethod.Undefined);
+                            if (errorMessage is null)
+                            {
+                                entity.LayoutMethod = method;
+                            }
+                            else
+                            {
+                                entity.SyntaxErrors.Add(
+                                    new SyntaxDiagnostic(
+                                        DiagnosticId.DTOM0005, "Invalid argument value", DiagnosticCategory.Syntax, idsLocation, DiagnosticSeverity.Error,
+                                        errorMessage));
+                            }
+                            (errorMessage, int blockLength) = TryGetValue<int>(attributeArguments[1].Value, 0);
+                            if (errorMessage is null)
+                            {
+                                entity.BlockSize = blockLength;
+                            }
+                            else
+                            {
+                                entity.SyntaxErrors.Add(
+                                    new SyntaxDiagnostic(
+                                        DiagnosticId.DTOM0005, "Invalid argument value", DiagnosticCategory.Syntax, idsLocation, DiagnosticSeverity.Error,
+                                        errorMessage));
+                            }
                         }
                         else
                         {
@@ -82,7 +113,18 @@ namespace DTOMaker.Gentime
                             if (attributeArguments.Length == 1)
                             {
                                 member.MemberType = pdsSymbol.Type.Name;
-                                member.Sequence = TryGetValue<int>(attributeArguments[0].Value, 0);
+                                (string? errorMessage, int sequence) = TryGetValue<int>(attributeArguments[0].Value, 0);
+                                if (errorMessage is null)
+                                {
+                                    member.Sequence = sequence;
+                                }
+                                else
+                                {
+                                    entity.SyntaxErrors.Add(
+                                        new SyntaxDiagnostic(
+                                            DiagnosticId.DTOM0005, "Invalid argument value", DiagnosticCategory.Syntax, pdsLocation, DiagnosticSeverity.Error,
+                                            errorMessage));
+                                }
                             }
                             else
                             {
@@ -97,9 +139,42 @@ namespace DTOMaker.Gentime
                             var attributeArguments = memberLayoutAttr.ConstructorArguments;
                             if (attributeArguments.Length == 3)
                             {
-                                member.FieldOffset = TryGetValue<int>(attributeArguments[0].Value, 0);
-                                member.FieldLength = TryGetValue<int>(attributeArguments[1].Value, 0);
-                                member.IsBigEndian = TryGetValue<bool>(attributeArguments[2].Value, false);
+                                (string? errorMessage, int fieldOffset) = TryGetValue<int>(attributeArguments[0].Value, 0);
+                                if (errorMessage is null)
+                                {
+                                    member.FieldOffset = fieldOffset;
+                                }
+                                else
+                                {
+                                    entity.SyntaxErrors.Add(
+                                        new SyntaxDiagnostic(
+                                            DiagnosticId.DTOM0005, "Invalid argument value", DiagnosticCategory.Syntax, pdsLocation, DiagnosticSeverity.Error,
+                                            errorMessage));
+                                }
+                                (errorMessage, int fieldLength) = TryGetValue<int>(attributeArguments[1].Value, 0);
+                                if (errorMessage is null)
+                                {
+                                    member.FieldLength = fieldLength;
+                                }
+                                else
+                                {
+                                    entity.SyntaxErrors.Add(
+                                        new SyntaxDiagnostic(
+                                            DiagnosticId.DTOM0005, "Invalid argument value", DiagnosticCategory.Syntax, pdsLocation, DiagnosticSeverity.Error,
+                                            errorMessage));
+                                }
+                                (errorMessage, bool isBigEndian) = TryGetValue<bool>(attributeArguments[2].Value, false);
+                                if (errorMessage is null)
+                                {
+                                    member.IsBigEndian = isBigEndian;
+                                }
+                                else
+                                {
+                                    entity.SyntaxErrors.Add(
+                                        new SyntaxDiagnostic(
+                                            DiagnosticId.DTOM0005, "Invalid argument value", DiagnosticCategory.Syntax, pdsLocation, DiagnosticSeverity.Error,
+                                            errorMessage));
+                                }
                             }
                             else
                             {

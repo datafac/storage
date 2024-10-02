@@ -10,7 +10,7 @@ namespace DTOMaker.Gentime
     {
         public ConcurrentDictionary<string, TargetMember> Members { get; } = new ConcurrentDictionary<string, TargetMember>();
         public TargetEntity(string name, Location location) : base(name, location) { }
-        public MemberLayoutMethod LayoutMethod { get; set; }
+        public LayoutMethod LayoutMethod { get; set; }
         public int? BlockSize { get; set; }
 
         private SyntaxDiagnostic? CheckMemberSequenceIsValid()
