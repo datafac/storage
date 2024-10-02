@@ -13,7 +13,7 @@
 		<Product>DTOMaker</Product>
 		<Authors>Psiman62 Contributors</Authors>
 		<Title>DTOMaker Core</Title>
-		<Description>Attributes for defining simple data models as interfaces. These are consumed by DTOMaker.Generator to emit classes implementing the interface.</Description>
+		<Description>Attributes for defining simple data models as interfaces. These are consumed by source generators to emit DTO classes.</Description>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<IncludeSymbols>True</IncludeSymbols>

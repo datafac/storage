@@ -4,13 +4,13 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace DTOMaker.Gentime
 {
     public static class SyntaxReceiverHelper
     {
-        // todo refactor and cleanup
         private static (string? error, T result) TryGetValue<T>(object? input, T defaultValue) where T : struct
         {
             if (input is null)
@@ -19,6 +19,23 @@ namespace DTOMaker.Gentime
                 return (null, value);
             else
                 return ($"Could not parse '{input}' <{input.GetType().Name}> as <{typeof(T).Name}>", defaultValue);
+        }
+
+        private static void TryGetAttributeArgumentValue<T>(TargetBase target, Location location, ImmutableArray<TypedConstant> attributeArguments, int index, Action<T> action)
+            where T : struct
+        {
+            (string? errorMessage, T value) = TryGetValue<T>(attributeArguments[0].Value, default);
+            if (errorMessage is null)
+            {
+                action(value);
+            }
+            else
+            {
+                target.SyntaxErrors.Add(
+                    new SyntaxDiagnostic(
+                        DiagnosticId.DTOM0005, "Invalid argument value", DiagnosticCategory.Syntax, location, DiagnosticSeverity.Error,
+                        errorMessage));
+            }
         }
 
         public static void ProcessNode(GeneratorSyntaxContext context, ConcurrentDictionary<string, TargetDomain> domains,
@@ -58,30 +75,8 @@ namespace DTOMaker.Gentime
                         var attributeArguments = entityLayoutAttr.ConstructorArguments;
                         if (attributeArguments.Length == 2)
                         {
-                            (string? errorMessage, int method) = TryGetValue<int>(attributeArguments[0].Value, 0);
-                            if (errorMessage is null)
-                            {
-                                entity.LayoutMethod = (LayoutMethod)method;
-                            }
-                            else
-                            {
-                                entity.SyntaxErrors.Add(
-                                    new SyntaxDiagnostic(
-                                        DiagnosticId.DTOM0005, "Invalid argument value", DiagnosticCategory.Syntax, idsLocation, DiagnosticSeverity.Error,
-                                        errorMessage));
-                            }
-                            (errorMessage, int blockLength) = TryGetValue<int>(attributeArguments[1].Value, 0);
-                            if (errorMessage is null)
-                            {
-                                entity.BlockLength = blockLength;
-                            }
-                            else
-                            {
-                                entity.SyntaxErrors.Add(
-                                    new SyntaxDiagnostic(
-                                        DiagnosticId.DTOM0005, "Invalid argument value", DiagnosticCategory.Syntax, idsLocation, DiagnosticSeverity.Error,
-                                        errorMessage));
-                            }
+                            TryGetAttributeArgumentValue<int>(entity, idsLocation, attributeArguments, 0, (value) => { entity.LayoutMethod = (LayoutMethod)value; });
+                            TryGetAttributeArgumentValue<int>(entity, idsLocation, attributeArguments, 1, (value) => { entity.BlockLength = value; });
                         }
                         else
                         {
@@ -112,22 +107,11 @@ namespace DTOMaker.Gentime
                         if (pdsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberAttribute)) is AttributeData memberAttr)
                         {
                             member.HasMemberAttribute = true;
+                            member.MemberType = pdsSymbol.Type.Name;
                             var attributeArguments = memberAttr.ConstructorArguments;
                             if (attributeArguments.Length == 1)
                             {
-                                member.MemberType = pdsSymbol.Type.Name;
-                                (string? errorMessage, int sequence) = TryGetValue<int>(attributeArguments[0].Value, 0);
-                                if (errorMessage is null)
-                                {
-                                    member.Sequence = sequence;
-                                }
-                                else
-                                {
-                                    entity.SyntaxErrors.Add(
-                                        new SyntaxDiagnostic(
-                                            DiagnosticId.DTOM0005, "Invalid argument value", DiagnosticCategory.Syntax, pdsLocation, DiagnosticSeverity.Error,
-                                            errorMessage));
-                                }
+                                TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 0, (value) => { member.Sequence = value; });
                             }
                             else
                             {
@@ -140,45 +124,13 @@ namespace DTOMaker.Gentime
                         if (pdsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberLayoutAttribute)) is AttributeData memberLayoutAttr)
                         {
                             member.HasMemberLayoutAttribute = true;
+                            member.MemberType = pdsSymbol.Type.Name;
                             var attributeArguments = memberLayoutAttr.ConstructorArguments;
                             if (attributeArguments.Length == 3)
                             {
-                                (string? errorMessage, int fieldOffset) = TryGetValue<int>(attributeArguments[0].Value, 0);
-                                if (errorMessage is null)
-                                {
-                                    member.FieldOffset = fieldOffset;
-                                }
-                                else
-                                {
-                                    entity.SyntaxErrors.Add(
-                                        new SyntaxDiagnostic(
-                                            DiagnosticId.DTOM0005, "Invalid argument value", DiagnosticCategory.Syntax, pdsLocation, DiagnosticSeverity.Error,
-                                            errorMessage));
-                                }
-                                (errorMessage, int fieldLength) = TryGetValue<int>(attributeArguments[1].Value, 0);
-                                if (errorMessage is null)
-                                {
-                                    member.FieldLength = fieldLength;
-                                }
-                                else
-                                {
-                                    entity.SyntaxErrors.Add(
-                                        new SyntaxDiagnostic(
-                                            DiagnosticId.DTOM0005, "Invalid argument value", DiagnosticCategory.Syntax, pdsLocation, DiagnosticSeverity.Error,
-                                            errorMessage));
-                                }
-                                (errorMessage, bool isBigEndian) = TryGetValue<bool>(attributeArguments[2].Value, false);
-                                if (errorMessage is null)
-                                {
-                                    member.IsBigEndian = isBigEndian;
-                                }
-                                else
-                                {
-                                    entity.SyntaxErrors.Add(
-                                        new SyntaxDiagnostic(
-                                            DiagnosticId.DTOM0005, "Invalid argument value", DiagnosticCategory.Syntax, pdsLocation, DiagnosticSeverity.Error,
-                                            errorMessage));
-                                }
+                                TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 0, (value) => { member.FieldOffset = value; });
+                                TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 1, (value) => { member.FieldLength = value; });
+                                TryGetAttributeArgumentValue<bool>(member, pdsLocation, attributeArguments, 2, (value) => { member.IsBigEndian = value; });
                             }
                             else
                             {
