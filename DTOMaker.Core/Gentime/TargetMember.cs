@@ -10,18 +10,9 @@ namespace DTOMaker.Gentime
         public bool HasMemberLayoutAttribute { get; set; }
         public int Sequence { get; set; }
         public string MemberType { get; set; } = "";
-        public int? FieldOffset { get; set; }
-        public int? FieldLength { get; set; }
+        public int FieldOffset { get; set; }
+        public int FieldLength { get; set; }
         public bool IsBigEndian { get; set; } = false;
-
-        private SyntaxDiagnostic? CheckMemberType()
-        {
-            return string.IsNullOrWhiteSpace(MemberType)
-                ? new SyntaxDiagnostic(
-                    DiagnosticId.DTOM0004, "Invalid member datatype", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                    $"MemberType'{MemberType}' must be defined")
-                : null;
-        }
 
         private SyntaxDiagnostic? CheckHasMemberAttribute()
         {
@@ -31,8 +22,19 @@ namespace DTOMaker.Gentime
                         $"[Member] attribute is missing.");
         }
 
+        private SyntaxDiagnostic? CheckMemberType()
+        {
+            if (!HasMemberAttribute) return null;
+            return string.IsNullOrWhiteSpace(MemberType)
+                ? new SyntaxDiagnostic(
+                    DiagnosticId.DTOM0004, "Invalid member datatype", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+                    $"MemberType'{MemberType}' must be defined")
+                : null;
+        }
+
         private SyntaxDiagnostic? CheckMemberSequence()
         {
+            if (!HasMemberAttribute) return null;
             return Sequence <= 0
                 ? new SyntaxDiagnostic(
                     DiagnosticId.DTOM0003, "Invalid member sequence", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
@@ -43,8 +45,8 @@ namespace DTOMaker.Gentime
         protected override IEnumerable<SyntaxDiagnostic> OnGetValidationDiagnostics()
         {
             SyntaxDiagnostic? diagnostic;
-            if ((diagnostic = CheckMemberType()) is not null) yield return diagnostic;
             if ((diagnostic = CheckHasMemberAttribute()) is not null) yield return diagnostic;
+            if ((diagnostic = CheckMemberType()) is not null) yield return diagnostic;
             if ((diagnostic = CheckMemberSequence()) is not null) yield return diagnostic;
         }
     }

@@ -73,7 +73,7 @@ namespace DTOMaker.Gentime
                             (errorMessage, int blockLength) = TryGetValue<int>(attributeArguments[1].Value, 0);
                             if (errorMessage is null)
                             {
-                                entity.BlockSize = blockLength;
+                                entity.BlockLength = blockLength;
                             }
                             else
                             {
