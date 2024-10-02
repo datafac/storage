@@ -45,16 +45,17 @@ namespace DTOMaker.Gentime
                     {
                         // found entity layout details
                         var attributeArguments = entityLayoutAttr.ConstructorArguments;
-                        if (attributeArguments.Length == 1)
+                        if (attributeArguments.Length == 2)
                         {
-                            entity.BlockSize = TryGetValue<int>(attributeArguments[0].Value, 0);
+                            entity.LayoutMethod = TryGetValue<MemberLayoutMethod>(attributeArguments[0].Value, MemberLayoutMethod.Undefined);
+                            entity.BlockSize = TryGetValue<int?>(attributeArguments[1].Value, null);
                         }
                         else
                         {
                             entity.SyntaxErrors.Add(
                                 new SyntaxDiagnostic(
                                     DiagnosticId.DTOM0002, "Invalid argument count", DiagnosticCategory.Syntax, idsLocation, DiagnosticSeverity.Error,
-                                    $"Expected {nameof(EntityLayoutAttribute)} attribute to have 1 argument, but it has {attributeArguments.Length}."));
+                                    $"Expected {nameof(EntityLayoutAttribute)} attribute to have 2 arguments, but it has {attributeArguments.Length}."));
                         }
                     }
                 }

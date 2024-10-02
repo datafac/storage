@@ -2,13 +2,16 @@
 
 namespace DTOMaker.Models
 {
+
     [AttributeUsage(AttributeTargets.Interface, AllowMultiple = false)]
     public class EntityLayoutAttribute : Attribute
     {
-        public readonly int BlockSize;
-        public EntityLayoutAttribute(int blockSize)
+        public readonly MemberLayoutMethod LayoutMethod;
+        public readonly int? BlockLength;
+        public EntityLayoutAttribute(MemberLayoutMethod layoutMethod, int? blockLength = null)
         {
-            BlockSize = blockSize;
+            BlockLength = blockLength;
+            LayoutMethod = layoutMethod;
         }
     }
 }
