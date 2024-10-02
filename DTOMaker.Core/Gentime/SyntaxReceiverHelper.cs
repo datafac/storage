@@ -104,6 +104,7 @@ namespace DTOMaker.Gentime
                     {
                         Location pdsLocation = Location.Create(pds.SyntaxTree, pds.Span);
                         var member = entity.Members.GetOrAdd(pds.Identifier.Text, (n) => memberFactory(n, pdsLocation));
+                        member.Parent = entity;
                         if (pdsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberAttribute)) is AttributeData memberAttr)
                         {
                             member.HasMemberAttribute = true;

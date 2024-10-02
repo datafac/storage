@@ -8,6 +8,7 @@ namespace DTOMaker.Gentime
         public TargetMember(string name, Location location) : base(name, location) { }
         public bool HasMemberAttribute { get; set; }
         public bool HasMemberLayoutAttribute { get; set; }
+        public TargetEntity? Parent { get; set; }
         public int Sequence { get; set; }
         public string MemberType { get; set; } = "";
         public int FieldOffset { get; set; }
