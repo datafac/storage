@@ -4,7 +4,7 @@
 /// The entity's member memory layout method. This need only be defined when using
 /// DTO source generators that require or support memory layout, such as MemBlocks.
 /// </summary>
-public enum LayoutMethod
+public enum LayoutMethod : int
 {
     /// <summary>
     /// No member memory layout is defined.

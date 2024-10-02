@@ -56,10 +56,10 @@ namespace DTOMaker.Gentime
                         var attributeArguments = entityLayoutAttr.ConstructorArguments;
                         if (attributeArguments.Length == 2)
                         {
-                            (string? errorMessage, LayoutMethod method) = TryGetValue<LayoutMethod>(attributeArguments[0].Value, LayoutMethod.Undefined);
+                            (string? errorMessage, int method) = TryGetValue<int>(attributeArguments[0].Value, 0);
                             if (errorMessage is null)
                             {
-                                entity.LayoutMethod = method;
+                                entity.LayoutMethod = (LayoutMethod)method;
                             }
                             else
                             {
