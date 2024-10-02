@@ -10,8 +10,18 @@ namespace DTOMaker.Gentime
     {
         public ConcurrentDictionary<string, TargetMember> Members { get; } = new ConcurrentDictionary<string, TargetMember>();
         public TargetEntity(string name, Location location) : base(name, location) { }
+        public bool HasEntityAttribute { get; set; }
+        public bool HasEntityLayoutAttribute { get; set; }
         public LayoutMethod LayoutMethod { get; set; }
         public int? BlockSize { get; set; }
+
+        private SyntaxDiagnostic? CheckHasEntityAttribute()
+        {
+            if (HasEntityAttribute) return null;
+            return new SyntaxDiagnostic(
+                        DiagnosticId.DTOM0006, "Missing [Entity] attribute", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+                        $"[Entity] attribute is missing.");
+        }
 
         private SyntaxDiagnostic? CheckMemberSequenceIsValid()
         {
@@ -30,6 +40,7 @@ namespace DTOMaker.Gentime
         protected override IEnumerable<SyntaxDiagnostic> OnGetValidationDiagnostics()
         {
             SyntaxDiagnostic? diagnostic;
+            if ((diagnostic = CheckHasEntityAttribute()) is not null) yield return diagnostic;
             if ((diagnostic = CheckMemberSequenceIsValid()) is not null) yield return diagnostic;
         }
     }

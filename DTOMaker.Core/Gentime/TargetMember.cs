@@ -6,6 +6,8 @@ namespace DTOMaker.Gentime
     public abstract class TargetMember : TargetBase
     {
         public TargetMember(string name, Location location) : base(name, location) { }
+        public bool HasMemberAttribute { get; set; }
+        public bool HasMemberLayoutAttribute { get; set; }
         public int Sequence { get; set; }
         public string MemberType { get; set; } = "";
         public int? FieldOffset { get; set; }
@@ -21,6 +23,14 @@ namespace DTOMaker.Gentime
                 : null;
         }
 
+        private SyntaxDiagnostic? CheckHasMemberAttribute()
+        {
+            if (HasMemberAttribute) return null;
+            return new SyntaxDiagnostic(
+                        DiagnosticId.DTOM0007, "Missing [Member] attribute", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+                        $"[Member] attribute is missing.");
+        }
+
         private SyntaxDiagnostic? CheckMemberSequence()
         {
             return Sequence <= 0
@@ -34,6 +44,7 @@ namespace DTOMaker.Gentime
         {
             SyntaxDiagnostic? diagnostic;
             if ((diagnostic = CheckMemberType()) is not null) yield return diagnostic;
+            if ((diagnostic = CheckHasMemberAttribute()) is not null) yield return diagnostic;
             if ((diagnostic = CheckMemberSequence()) is not null) yield return diagnostic;
         }
     }

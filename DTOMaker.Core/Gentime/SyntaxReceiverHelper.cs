@@ -48,11 +48,13 @@ namespace DTOMaker.Gentime
                     if (idsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(EntityAttribute)) is AttributeData entityAttr)
                     {
                         // found opt-in entity
+                        entity.HasEntityAttribute = true;
                         // todo other entity details such as uniqueid
                     }
                     if (idsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(EntityLayoutAttribute)) is AttributeData entityLayoutAttr)
                     {
                         // found entity layout details
+                        entity.HasEntityLayoutAttribute = true;
                         var attributeArguments = entityLayoutAttr.ConstructorArguments;
                         if (attributeArguments.Length == 2)
                         {
@@ -109,6 +111,7 @@ namespace DTOMaker.Gentime
                         var member = entity.Members.GetOrAdd(pds.Identifier.Text, (n) => memberFactory(n, pdsLocation));
                         if (pdsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberAttribute)) is AttributeData memberAttr)
                         {
+                            member.HasMemberAttribute = true;
                             var attributeArguments = memberAttr.ConstructorArguments;
                             if (attributeArguments.Length == 1)
                             {
@@ -136,6 +139,7 @@ namespace DTOMaker.Gentime
                         }
                         if (pdsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberLayoutAttribute)) is AttributeData memberLayoutAttr)
                         {
+                            member.HasMemberLayoutAttribute = true;
                             var attributeArguments = memberLayoutAttr.ConstructorArguments;
                             if (attributeArguments.Length == 3)
                             {
