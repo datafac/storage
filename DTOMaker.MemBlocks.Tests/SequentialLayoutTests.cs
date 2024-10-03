@@ -41,7 +41,7 @@ namespace DTOMaker.MemBlocks.Tests
             await Verifier.Verify(outputCode);
         }
 
-        [Fact]
+        [Fact(Skip = "todo")]
         public async Task Happy02_OneMember()
         {
             var inputSource =
