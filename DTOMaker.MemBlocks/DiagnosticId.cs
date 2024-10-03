@@ -8,5 +8,6 @@
         public const string DMMB0004 = nameof(DMMB0004); // Invalid layout method
         public const string DMMB0005 = nameof(DMMB0005); // Missing [EntityLayout] attribute
         public const string DMMB0006 = nameof(DMMB0006); // Missing [MemberLayout] attribute
+        public const string DMMB0007 = nameof(DMMB0007); // Unsupported member type
     }
 }

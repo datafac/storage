@@ -50,6 +50,51 @@ namespace DTOMaker.MemBlocks
                             Location.None));
             }
         }
+        private static int GetFieldLength(TargetMember member)
+        {
+            switch (member.MemberType)
+            {
+                case "Boolean":
+                    return 1;
+                case "Int64":
+                case "UInt64":
+                case "Double": 
+                    return 8;
+                default:
+                    member.SyntaxErrors.Add(
+                        new SyntaxDiagnostic(
+                            DiagnosticId.DMMB0007, "Unsupported member type", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
+                            $"Unsupported member type: '{member.MemberType}'"));
+                    return 0;
+            }
+        }
+        private static void AutoLayoutMembers(TargetEntity entity)
+        {
+            if (entity.LayoutMethod != Models.LayoutMethod.SequentialV1) return;
+
+            int minBlockLength = 0;
+            int fieldOffset = 0;
+            foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence))
+            {
+                int fieldLength = GetFieldLength(member);
+                // calculate this offset
+                while (fieldLength > 0 && fieldOffset % fieldLength != 0)
+                {
+                    fieldOffset++;
+                }
+                member.FieldLength = fieldLength;
+                member.FieldOffset = fieldOffset;
+                // calc next offset
+                fieldOffset = fieldOffset + fieldLength;
+                while (fieldOffset > minBlockLength)
+                {
+                    minBlockLength = minBlockLength == 0 ? 1 : minBlockLength * 2;
+                }
+                // todo allocate Flags byte
+            }
+            entity.BlockLength = minBlockLength;
+        }
+
         public void Execute(GeneratorExecutionContext context)
         {
             if (context.SyntaxContextReceiver is not SyntaxReceiver syntaxReceiver) return;
@@ -62,6 +107,10 @@ namespace DTOMaker.MemBlocks
                 EmitDiagnostics(context, domain);
                 foreach (var entity in domain.Entities.Values.OrderBy(e => e.Name))
                 {
+                    // do auto-layout if required
+                    AutoLayoutMembers(entity);
+
+                    // run checks
                     EmitDiagnostics(context, entity);
                     Version fv = new Version(ThisAssembly.AssemblyFileVersion);
                     string shortVersion = $"{fv.Major}.{fv.Minor}";
