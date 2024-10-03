@@ -11,10 +11,10 @@ These models are consumed by the following source generators to emit DTO classes
 model interfaces.
 
 Features implemented:
-- Simple property data types: U/Int16/32/64, Double, Boolean
+- Simple property data types: U/Int16/32/64, Double, Boolean, S/Byte
 
 Yet to be implemented:
-- other property types: S/Byte, Single, Half, Decimal, Guid, fixed length byte/char arrays
+- other property types: Single, Half, Decimal, Guid, fixed length byte/char arrays
 - model interface support
 - mutable/immutable/freezable support
 - enumerations
