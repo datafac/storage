@@ -13,7 +13,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTOMaker.Core", "DTOMaker.Core\DTOMaker.Core.csproj", "{69809F37-28A0-41EF-AB68-B33176CF28D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOMaker.Core.Tests", "DTOMaker.Core.Tests\DTOMaker.Core.Tests.csproj", "{137FC234-FB54-4410-904B-26581F95E075}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTOMaker.Core.Tests", "DTOMaker.Core.Tests\DTOMaker.Core.Tests.csproj", "{137FC234-FB54-4410-904B-26581F95E075}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTOMaker.MemBlocks", "DTOMaker.MemBlocks\DTOMaker.MemBlocks.csproj", "{2B9832B1-EC5B-4262-8D96-B799DB42478A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DTOMaker.MemBlocks.Tests", "DTOMaker.MemBlocks.Tests\DTOMaker.MemBlocks.Tests.csproj", "{58E1A5EC-E517-45B9-BAED-1C32D01613B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +33,14 @@ Global
 		{137FC234-FB54-4410-904B-26581F95E075}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{137FC234-FB54-4410-904B-26581F95E075}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{137FC234-FB54-4410-904B-26581F95E075}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B9832B1-EC5B-4262-8D96-B799DB42478A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B9832B1-EC5B-4262-8D96-B799DB42478A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B9832B1-EC5B-4262-8D96-B799DB42478A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B9832B1-EC5B-4262-8D96-B799DB42478A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58E1A5EC-E517-45B9-BAED-1C32D01613B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58E1A5EC-E517-45B9-BAED-1C32D01613B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58E1A5EC-E517-45B9-BAED-1C32D01613B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58E1A5EC-E517-45B9-BAED-1C32D01613B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

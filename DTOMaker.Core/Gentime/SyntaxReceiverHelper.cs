@@ -11,31 +11,23 @@ namespace DTOMaker.Gentime
 {
     public static class SyntaxReceiverHelper
     {
-        private static (string? error, T result) TryGetValue<T>(object? input, T defaultValue) where T : struct
-        {
-            if (input is null)
-                return ($"Could not parse (null) as <{typeof(T).Name}>", defaultValue);
-            else if (input is T value)
-                return (null, value);
-            else
-                return ($"Could not parse '{input}' <{input.GetType().Name}> as <{typeof(T).Name}>", defaultValue);
-        }
-
         private static void TryGetAttributeArgumentValue<T>(TargetBase target, Location location, ImmutableArray<TypedConstant> attributeArguments, int index, Action<T> action)
-            where T : struct
         {
-            (string? errorMessage, T value) = TryGetValue<T>(attributeArguments[0].Value, default);
-            if (errorMessage is null)
+            object? input = attributeArguments[index].Value;
+            if (input is T value)
             {
                 action(value);
+                return;
             }
-            else
-            {
-                target.SyntaxErrors.Add(
-                    new SyntaxDiagnostic(
-                        DiagnosticId.DTOM0005, "Invalid argument value", DiagnosticCategory.Syntax, location, DiagnosticSeverity.Error,
-                        errorMessage));
-            }
+
+            string? errorMessage = input is null
+                ? $"Could not parse arg[{index}] (null) as <{typeof(T).Name}>"
+                : $"Could not parse arg[{index}] '{input}' <{input.GetType().Name}> as <{typeof(T).Name}>";
+
+            target.SyntaxErrors.Add(
+                new SyntaxDiagnostic(
+                    DiagnosticId.DTOM0005, "Invalid argument value", DiagnosticCategory.Syntax, location, DiagnosticSeverity.Error,
+                    errorMessage));
         }
 
         public static void ProcessNode(GeneratorSyntaxContext context, ConcurrentDictionary<string, TargetDomain> domains,
