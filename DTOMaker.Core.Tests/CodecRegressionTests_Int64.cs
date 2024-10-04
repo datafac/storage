@@ -15,9 +15,17 @@ namespace DTOMaker.Core.Tests
         public void Roundtrip_Int64_BE(in Int64 value, string expectedBytes)
         {
             Span<byte> buffer = stackalloc byte[8];
+#if NET7_0_OR_GREATER
+            Runtime.Codec_Int64_BE.WriteToSpan(buffer, value);
+#else
             Runtime.Codec_Int64_BE.Instance.WriteTo(buffer, value);
+#endif
             string.Join("-", buffer.ToArray().Select(b => b.ToString("X2"))).Should().Be(expectedBytes);
+#if NET7_0_OR_GREATER
+            Int64 copy = Runtime.Codec_Int64_BE.ReadFromSpan(buffer);
+#else
             Int64 copy = Runtime.Codec_Int64_BE.Instance.ReadFrom(buffer);
+#endif
             copy.Should().Be(value);
         }
 
@@ -30,9 +38,17 @@ namespace DTOMaker.Core.Tests
         public void Roundtrip_Int64_LE(in Int64 value, string expectedBytes)
         {
             Span<byte> buffer = stackalloc byte[8];
+#if NET7_0_OR_GREATER
+            Runtime.Codec_Int64_LE.WriteToSpan(buffer, value);
+#else
             Runtime.Codec_Int64_LE.Instance.WriteTo(buffer, value);
+#endif
             string.Join("-", buffer.ToArray().Select(b => b.ToString("X2"))).Should().Be(expectedBytes);
+#if NET7_0_OR_GREATER
+            Int64 copy = Runtime.Codec_Int64_LE.ReadFromSpan(buffer);
+#else
             Int64 copy = Runtime.Codec_Int64_LE.Instance.ReadFrom(buffer);
+#endif
             copy.Should().Be(value);
         }
 
@@ -43,9 +59,17 @@ namespace DTOMaker.Core.Tests
         public void Roundtrip_UInt64_BE(in UInt64 value, string expectedBytes)
         {
             Span<byte> buffer = stackalloc byte[8];
+#if NET7_0_OR_GREATER
+            Runtime.Codec_UInt64_BE.WriteToSpan(buffer, value);
+#else
             Runtime.Codec_UInt64_BE.Instance.WriteTo(buffer, value);
+#endif
             string.Join("-", buffer.ToArray().Select(b => b.ToString("X2"))).Should().Be(expectedBytes);
+#if NET7_0_OR_GREATER
+            UInt64 copy = Runtime.Codec_UInt64_BE.ReadFromSpan(buffer);
+#else
             UInt64 copy = Runtime.Codec_UInt64_BE.Instance.ReadFrom(buffer);
+#endif
             copy.Should().Be(value);
         }
 
@@ -56,11 +80,18 @@ namespace DTOMaker.Core.Tests
         public void Roundtrip_UInt64_LE(in UInt64 value, string expectedBytes)
         {
             Span<byte> buffer = stackalloc byte[8];
+#if NET7_0_OR_GREATER
+            Runtime.Codec_UInt64_LE.WriteToSpan(buffer, value);
+#else
             Runtime.Codec_UInt64_LE.Instance.WriteTo(buffer, value);
+#endif
             string.Join("-", buffer.ToArray().Select(b => b.ToString("X2"))).Should().Be(expectedBytes);
+#if NET7_0_OR_GREATER
+            UInt64 copy = Runtime.Codec_UInt64_LE.ReadFromSpan(buffer);
+#else
             UInt64 copy = Runtime.Codec_UInt64_LE.Instance.ReadFrom(buffer);
+#endif
             copy.Should().Be(value);
         }
-
     }
 }
