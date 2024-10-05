@@ -1,7 +1,10 @@
 ﻿using DTOMaker.Gentime;
 using DTOMaker.Models;
 using Microsoft.CodeAnalysis;
+using System;
 using System.Collections.Generic;
+using System.IO.MemoryMappedFiles;
+using System.Linq;
 
 namespace DTOMaker.MemBlocks
 {
@@ -63,6 +66,51 @@ namespace DTOMaker.MemBlocks
             };
         }
 
+        private SyntaxDiagnostic? CheckMemberLayoutHasNoOverlaps()
+        {
+            if (!HasEntityLayoutAttribute)
+                return null;
+
+            // memory map of every byte in the entity block
+            int[] memberMap = new int[BlockLength];
+
+            foreach (var member in Members.Values.OrderBy(m => m.Sequence))
+            {
+                if (member.FieldOffset < 0)
+                {
+                    return new SyntaxDiagnostic(
+                        DiagnosticId.DMMB0008, "Member layout issue", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
+                        $"This member extends before the start of the block.");
+                }
+
+                if (member.FieldOffset + member.FieldLength > BlockLength)
+                {
+                    return new SyntaxDiagnostic(
+                        DiagnosticId.DMMB0008, "Member layout issue", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
+                        $"This member extends beyond the end of the block.");
+                }
+
+                for (var i = 0; i < member.FieldLength; i++)
+                {
+                    int offset = member.FieldOffset + i;
+                    if (memberMap[offset] != 0)
+                    {
+                        int conflictSequence = memberMap[offset];
+                        return new SyntaxDiagnostic(
+                            DiagnosticId.DMMB0008, "Member layout issue", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
+                            $"This member overlaps memory assigned to another member (sequence {conflictSequence}).");
+                    }
+                    else
+                    {
+                        // not assigned
+                        memberMap[offset] = member.Sequence;
+                    }
+                }
+            }
+
+            return null;
+        }
+
         protected override IEnumerable<SyntaxDiagnostic> OnGetValidationDiagnostics()
         {
             foreach (var diagnostic1 in base.OnGetValidationDiagnostics())
@@ -74,7 +122,7 @@ namespace DTOMaker.MemBlocks
             if ((diagnostic2 = CheckHasEntityLayoutAttribute()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckLayoutMethodIsSupported()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckBlockSizeIsValid()) is not null) yield return diagnostic2;
-            // todo check for member layout overlaps
+            if ((diagnostic2 = CheckMemberLayoutHasNoOverlaps()) is not null) yield return diagnostic2;
         }
     }
 }

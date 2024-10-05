@@ -60,6 +60,7 @@ namespace DTOMaker.MemBlocks
                     return 1;
                 case "Int16":
                 case "UInt16":
+                case "Char":
                     return 2;
                 case "Int32":
                 case "UInt32":
@@ -77,6 +78,7 @@ namespace DTOMaker.MemBlocks
                     return 0;
             }
         }
+
         private static void AutoLayoutMembers(TargetEntity entity)
         {
             if (entity.LayoutMethod != Models.LayoutMethod.SequentialV1) return;
@@ -154,15 +156,15 @@ namespace DTOMaker.MemBlocks
                     string memberMapHead =
                         """
                                 // <field-map>
-                                //  Pos.  Len.  Type        Endian  Name
-                                //  ----  ----  --------    ------  --------
+                                //  Seq.  Off.  Len.  Type        Endian  Name
+                                //  ----  ----  ----  --------    ------  --------
                         """;
                     builder.AppendLine(memberMapHead);
                     foreach (var member in entity.Members.Values.OrderBy(m => m.FieldOffset))
                     {
                         string memberMapBody =
                             $$"""
-                                    //  {{member.FieldOffset,4:N0}}  {{member.FieldLength,4:N0}}  {{member.MemberType,-8}}    {{(member.IsBigEndian ? "Big   " : "Little")}}  {{member.Name}}
+                                    //  {{member.Sequence,4:N0}}  {{member.FieldOffset,4:N0}}  {{member.FieldLength,4:N0}}  {{member.MemberType,-8}}    {{(member.IsBigEndian ? "Big   " : "Little")}}  {{member.Name}}
                             """;
                         builder.AppendLine(memberMapBody);
                     }

@@ -378,8 +378,38 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+            errors.Length.Should().Be(2);
+            errors[0].GetMessage().Should().Be("This member extends before the start of the block.");
+            errors[1].GetMessage().Should().Be("FieldOffset (-1) must be >= 0");
+        }
+
+        [Fact]
+        public void Fault09_InvalidMemberOffset_Hi()
+        {
+            var inputSource =
+                """
+                using DTOMaker.Models;
+                namespace MyOrg.Models
+                {
+                    [Entity]
+                    [EntityLayout(LayoutMethod.Explicit, 8)]
+                    public interface IMyDTO
+                    {
+                        [Member(1)] 
+                        [MemberLayout(4, 8)]
+                        double Field1 { get; set; }
+                    }
+                }
+                """;
+
+            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
+            generatorResult.Exception.Should().BeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+
+            var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
             errors.Length.Should().Be(1);
-            errors[0].GetMessage().Should().Be("FieldOffset (-1) must be >= 0");
+            errors[0].GetMessage().Should().Be("This member extends beyond the end of the block.");
         }
 
         // todo field offset too hi

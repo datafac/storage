@@ -116,14 +116,15 @@ namespace DTOMaker.MemBlocks.Tests
                     [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
-                        [Member(1)] bool Field1 { get; set; }
-                        [Member(2)] sbyte Field2 { get; set; }
-                        [Member(3)] byte Field3 { get; set; }
-                        [Member(4)] short Field4 { get; set; }
+                        [Member(1)] bool   Field1 { get; set; }
+                        [Member(2)] sbyte  Field2 { get; set; }
+                        [Member(3)] byte   Field3 { get; set; }
+                        [Member(4)] short  Field4 { get; set; }
                         [Member(5)] ushort Field5 { get; set; }
-                        [Member(6)] int Field6 { get; set; }
-                        [Member(7)] uint Field7 { get; set; }
-                        [Member(8)] float Field8 { get; set; }
+                        [Member(6)] char   Field6 { get; set; }
+                        [Member(7)] int    Field7 { get; set; }
+                        [Member(8)] uint   Field8 { get; set; }
+                        [Member(9)] float  Field9 { get; set; }
                     }
                 }
                 """;

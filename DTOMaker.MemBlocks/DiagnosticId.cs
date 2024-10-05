@@ -9,5 +9,6 @@
         public const string DMMB0005 = nameof(DMMB0005); // Missing [EntityLayout] attribute
         public const string DMMB0006 = nameof(DMMB0006); // Missing [MemberLayout] attribute
         public const string DMMB0007 = nameof(DMMB0007); // Unsupported member type
+        public const string DMMB0008 = nameof(DMMB0008); // Member layout issue
     }
 }
