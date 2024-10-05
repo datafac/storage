@@ -7,6 +7,25 @@ namespace DTOMaker.Core.Tests
 #if NET6_0_OR_GREATER
     public class CodecRegressionTests_Half
     {
+        private static Half GetTestValue(string input)
+        {
+            return input switch
+            {
+                "max" => Half.MaxValue,
+                "min" => Half.MinValue,
+                "nan" => Half.NaN,
+                "eps" => Half.Epsilon,
+                "+inf" => Half.PositiveInfinity,
+                "-inf" => Half.PositiveInfinity,
+#if NET7_0_OR_GREATER
+                "e" => Half.E,
+                "pi" => Half.Pi,
+                "tau" => Half.Tau,
+#endif
+                _ => Half.Parse(input),
+            };
+        }
+
         [Theory]
         [InlineData("1", "3C-00")]
         [InlineData("0", "00-00")]
@@ -24,21 +43,7 @@ namespace DTOMaker.Core.Tests
 #endif
         public void Roundtrip_Half_BE(string valueText, string expectedBytes)
         {
-            Half value = valueText switch
-            {
-                "max" => Half.MaxValue,
-                "min" => Half.MinValue,
-                "nan" => Half.NaN,
-                "eps" => Half.Epsilon,
-                "+inf" => Half.PositiveInfinity,
-                "-inf" => Half.PositiveInfinity,
-#if NET7_0_OR_GREATER
-                "e" => Half.E,
-                "pi" => Half.Pi,
-                "tau" => Half.Tau,
-#endif
-                _ => Half.Parse(valueText),
-            };
+            Half value = GetTestValue(valueText);
             Span<byte> buffer = stackalloc byte[2];
 #if NET7_0_OR_GREATER
             Runtime.Codec_Half_BE.WriteToSpan(buffer, value);
@@ -71,21 +76,7 @@ namespace DTOMaker.Core.Tests
 #endif
         public void Roundtrip_Half_LE(string valueText, string expectedBytes)
         {
-            Half value = valueText switch
-            {
-                "max" => Half.MaxValue,
-                "min" => Half.MinValue,
-                "nan" => Half.NaN,
-                "eps" => Half.Epsilon,
-                "+inf" => Half.PositiveInfinity,
-                "-inf" => Half.PositiveInfinity,
-#if NET7_0_OR_GREATER
-                "e" => Half.E,
-                "pi" => Half.Pi,
-                "tau" => Half.Tau,
-#endif
-                _ => Half.Parse(valueText),
-            };
+            Half value = GetTestValue(valueText);
             Span<byte> buffer = stackalloc byte[2];
 #if NET7_0_OR_GREATER
             Runtime.Codec_Half_LE.WriteToSpan(buffer, value);

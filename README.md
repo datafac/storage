@@ -8,10 +8,10 @@ This package contains attributes for defining simple data models as interfaces, 
 at compile-time, and by generated code at runtime.
 
 Features implemented:
-- Member data types: Boolean, S/Byte, U/Int16/32/64, Double, Single, Char
+- Member data types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid
 
 Yet to be implemented:
-- other member types: Half, Decimal, Guid, fixed length byte/char arrays
+- other member types: Decimal, fixed length byte/char arrays
 - model interface support
 - mutable/immutable/freezable support
 - enumerations
