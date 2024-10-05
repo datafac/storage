@@ -28,9 +28,6 @@ namespace DTOMaker.MemBlocks
         }
         private SyntaxDiagnostic? CheckFieldOffsetIsValid()
         {
-            if (!HasMemberLayoutAttribute)
-                return null;
-
             return FieldOffset switch
             {
                 >= 0 => null,
@@ -42,10 +39,6 @@ namespace DTOMaker.MemBlocks
 
         private SyntaxDiagnostic? CheckFieldLengthIsValid()
         {
-            if (!HasMemberLayoutAttribute)
-                return null;
-
-            // todo? field length should match datatype and cardinality
             return FieldLength switch
             {
                 > 0 => null,

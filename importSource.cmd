@@ -1,4 +1,13 @@
+
 @echo off
+
+::
+:: Imports some generators source for test purposes
+::
+
+call :import MessagePack MessagePack
+call :import MessagePack MessagePack.Tests
+
 call :import MemBlocks MemBlocks
 call :import MemBlocks MemBlocks.Tests
 goto :eof
