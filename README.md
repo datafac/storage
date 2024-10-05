@@ -7,14 +7,11 @@ todo badges go here
 This package contains attributes for defining simple data models as interfaces, and also includes types used 
 at compile-time, and by generated code at runtime.
 
-These models are consumed by the following source generators to emit DTO classes that implement the 
-model interfaces.
-
 Features implemented:
-- Simple property data types: U/Int16/32/64, Double, Boolean, S/Byte
+- Member data types: Boolean, S/Byte, U/Int16/32/64, Double, Single, Char
 
 Yet to be implemented:
-- other property types: Single, Half, Decimal, Guid, fixed length byte/char arrays
+- other member types: Half, Decimal, Guid, fixed length byte/char arrays
 - model interface support
 - mutable/immutable/freezable support
 - enumerations
@@ -27,6 +24,9 @@ Yet to be implemented:
 - generic patterns: lists, trees, unions, etc.
 - variable length arrays
 
+These models are consumed by the following source generators to emit DTO classes that implement the 
+model interfaces.
+
 ## DTOMaker.MemBlocks
 Generates DTOs whose internal data is a single memory block (Memory\<byte\>). Property getters and setters decode and encode
 values directly to the block with explicit byte ordering (little-endian or big-endian). This source generator can be found 
@@ -38,8 +38,3 @@ This source generator can be found at: https://github.com/Psiman62/DTOMaker.Mess
 
 ## DTOMaker.JsonNewtonSoft (soon)
 
-## [Entity] Attribute
-Declares an entity to be included in the generated output.
-
-## [Member] Attribute
-Declares a property to be included in the generated output.
