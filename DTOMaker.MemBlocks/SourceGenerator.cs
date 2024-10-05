@@ -63,6 +63,7 @@ namespace DTOMaker.MemBlocks
                     return 2;
                 case "Int32":
                 case "UInt32":
+                case "Single":
                     return 4;
                 case "Int64":
                 case "UInt64":
