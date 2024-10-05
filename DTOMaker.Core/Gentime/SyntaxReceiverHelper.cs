@@ -30,6 +30,18 @@ namespace DTOMaker.Gentime
                     errorMessage));
         }
 
+        private static bool CheckAttributeArguments(string attributeName, ImmutableArray<TypedConstant> arguments, int expectedCount, TargetBase target, Location location)
+        {
+            if (arguments.Length == expectedCount)
+                return true;
+
+            target.SyntaxErrors.Add(
+                new SyntaxDiagnostic(
+                    DiagnosticId.DTOM0002, "Invalid argument count", DiagnosticCategory.Syntax, location, DiagnosticSeverity.Error,
+                    $"Expected {attributeName} attribute to have {expectedCount} arguments, but it has {arguments.Length}."));
+            return false;
+        }
+
         public static void ProcessNode(GeneratorSyntaxContext context, ConcurrentDictionary<string, TargetDomain> domains,
             Func<string, Location, TargetDomain> domainFactory,
             Func<string, Location, TargetEntity> entityFactory,
@@ -65,17 +77,10 @@ namespace DTOMaker.Gentime
                         // found entity layout details
                         entity.HasEntityLayoutAttribute = true;
                         var attributeArguments = entityLayoutAttr.ConstructorArguments;
-                        if (attributeArguments.Length == 2)
+                        if (CheckAttributeArguments(nameof(EntityLayoutAttribute), attributeArguments, 2, entity, idsLocation))
                         {
                             TryGetAttributeArgumentValue<int>(entity, idsLocation, attributeArguments, 0, (value) => { entity.LayoutMethod = (LayoutMethod)value; });
                             TryGetAttributeArgumentValue<int>(entity, idsLocation, attributeArguments, 1, (value) => { entity.BlockLength = value; });
-                        }
-                        else
-                        {
-                            entity.SyntaxErrors.Add(
-                                new SyntaxDiagnostic(
-                                    DiagnosticId.DTOM0002, "Invalid argument count", DiagnosticCategory.Syntax, idsLocation, DiagnosticSeverity.Error,
-                                    $"Expected {nameof(EntityLayoutAttribute)} attribute to have 2 arguments, but it has {attributeArguments.Length}."));
                         }
                     }
                 }
@@ -102,16 +107,9 @@ namespace DTOMaker.Gentime
                             member.HasMemberAttribute = true;
                             member.MemberType = pdsSymbol.Type.Name;
                             var attributeArguments = memberAttr.ConstructorArguments;
-                            if (attributeArguments.Length == 1)
+                            if (CheckAttributeArguments(nameof(MemberAttribute), attributeArguments, 1, member, pdsLocation))
                             {
                                 TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 0, (value) => { member.Sequence = value; });
-                            }
-                            else
-                            {
-                                member.SyntaxErrors.Add(
-                                    new SyntaxDiagnostic(
-                                        DiagnosticId.DTOM0002, "Invalid argument count", DiagnosticCategory.Syntax, pdsLocation, DiagnosticSeverity.Error,
-                                        $"Expected {nameof(MemberAttribute)} attribute to have 1 argument, but it has {attributeArguments.Length}"));
                             }
                         }
                         if (pdsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberLayoutAttribute)) is AttributeData memberLayoutAttr)
@@ -119,18 +117,10 @@ namespace DTOMaker.Gentime
                             member.HasMemberLayoutAttribute = true;
                             member.MemberType = pdsSymbol.Type.Name;
                             var attributeArguments = memberLayoutAttr.ConstructorArguments;
-                            if (attributeArguments.Length == 3)
+                            if (CheckAttributeArguments(nameof(MemberLayoutAttribute), attributeArguments, 2, member, pdsLocation))
                             {
                                 TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 0, (value) => { member.FieldOffset = value; });
-                                TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 1, (value) => { member.FieldLength = value; });
-                                TryGetAttributeArgumentValue<bool>(member, pdsLocation, attributeArguments, 2, (value) => { member.IsBigEndian = value; });
-                            }
-                            else
-                            {
-                                member.SyntaxErrors.Add(
-                                    new SyntaxDiagnostic(
-                                        DiagnosticId.DTOM0002, "Invalid argument count", DiagnosticCategory.Syntax, pdsLocation, DiagnosticSeverity.Error,
-                                        $"Expected {nameof(MemberLayoutAttribute)} attribute to have 3 arguments, but it has {attributeArguments.Length}"));
+                                TryGetAttributeArgumentValue<bool>(member, pdsLocation, attributeArguments, 1, (value) => { member.IsBigEndian = value; });
                             }
                         }
                     }

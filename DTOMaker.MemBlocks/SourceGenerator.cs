@@ -50,6 +50,7 @@ namespace DTOMaker.MemBlocks
                             Location.None));
             }
         }
+
         private static int GetFieldLength(TargetMember member)
         {
             switch (member.MemberType)
@@ -61,6 +62,7 @@ namespace DTOMaker.MemBlocks
                 case "Int16":
                 case "UInt16":
                 case "Char":
+                case "Half":
                     return 2;
                 case "Int32":
                 case "UInt32":
@@ -81,8 +83,36 @@ namespace DTOMaker.MemBlocks
 
         private static void AutoLayoutMembers(TargetEntity entity)
         {
-            if (entity.LayoutMethod != Models.LayoutMethod.SequentialV1) return;
+            switch (entity.LayoutMethod)
+            {
+                case Models.LayoutMethod.Explicit:
+                    ExplicitLayoutMembers(entity);
+                    break;
+                case Models.LayoutMethod.SequentialV1:
+                    SequentialLayoutMembers(entity);
+                    break;
+            }
+        }
 
+        /// <summary>
+        /// Calculates length for explicitly positioned members
+        /// </summary>
+        /// <param name="entity"></param>
+        private static void ExplicitLayoutMembers(TargetEntity entity)
+        {
+            foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence))
+            {
+                member.FieldLength = GetFieldLength(member);
+                // todo allocate Flags byte
+            }
+        }
+
+        /// <summary>
+        /// Calculates offset and length for all members in sequential order
+        /// </summary>
+        /// <param name="entity"></param>
+        private static void SequentialLayoutMembers(TargetEntity entity)
+        {
             int minBlockLength = 0;
             int fieldOffset = 0;
             foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence))
@@ -118,11 +148,12 @@ namespace DTOMaker.MemBlocks
                 EmitDiagnostics(context, domain);
                 foreach (var entity in domain.Entities.Values.OrderBy(e => e.Name))
                 {
-                    // do auto-layout if required
+                    // do any auto-layout if required
                     AutoLayoutMembers(entity);
 
                     // run checks
                     EmitDiagnostics(context, entity);
+
                     Version fv = new Version(ThisAssembly.AssemblyFileVersion);
                     string shortVersion = $"{fv.Major}.{fv.Minor}";
                     string hintName = $"{domain.Name}.{entity.Name}.MemBlocks.g.cs";

@@ -33,7 +33,7 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(1);
+            generatorResult.GeneratedSources.Should().HaveCount(1);
             GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
@@ -55,7 +55,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)] 
-                        [MemberLayout(0, 8)]
+                        [MemberLayout(0)]
                         double Field1 { get; set; }
                     }
                 }
@@ -66,7 +66,7 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(1);
+            generatorResult.GeneratedSources.Should().HaveCount(1);
             GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
@@ -87,11 +87,11 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)]
-                        [MemberLayout(0, 8)] 
+                        [MemberLayout(0)] 
                         double Field1 { get; set; }
 
                         [Member(2)]
-                        [MemberLayout(8, 8)] 
+                        [MemberLayout(8)] 
                         long Field2 { get; set; }
                     }
                 }
@@ -102,7 +102,7 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(1);
+            generatorResult.GeneratedSources.Should().HaveCount(1);
             GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
@@ -123,7 +123,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyFirstDTO
                     {
                         [Member(1)]
-                        [MemberLayout(0, 8)] 
+                        [MemberLayout(0)] 
                         double Field1 { get; set; }
                     }
 
@@ -132,7 +132,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyOtherDTO
                     {
                         [Member(1)]
-                        [MemberLayout(0, 8)]
+                        [MemberLayout(0)]
                         long Field1 { get; set; }
                     }
                 }
@@ -180,7 +180,7 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Length.Should().Be(1);
+            errors.Should().HaveCount(1);
             errors[0].GetMessage().Should().StartWith("LayoutMethod is not defined.");
         }
 
@@ -206,7 +206,7 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Length.Should().Be(1);
+            errors.Should().HaveCount(1);
             errors[0].GetMessage().Should().StartWith("BlockLength (63) is invalid.");
         }
 
@@ -222,7 +222,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)]
-                        [MemberLayout(0, 8)] 
+                        [MemberLayout(0)] 
                         double Field1 { get; set; }
                     }
                 }
@@ -251,7 +251,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)]
-                        [MemberLayout(0, 8)] 
+                        [MemberLayout(0)] 
                         double Field1 { get; set; }
                     }
                 }
@@ -263,7 +263,7 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Length.Should().Be(1);
+            errors.Should().HaveCount(1);
             errors[0].GetMessage().Should().Be("[Entity] attribute is missing.");
         }
 
@@ -280,7 +280,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)]
-                        [MemberLayout(0, 8)] 
+                        [MemberLayout(0)] 
                         double Field1 { get; set; }
                     }
                 }
@@ -292,8 +292,9 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Length.Should().Be(1);
+            errors.Should().HaveCount(2);
             errors[0].GetMessage().Should().Be("[EntityLayout] attribute is missing.");
+            errors[1].GetMessage().Should().Be("FieldLength (0) must be > 0");
         }
 
         [Fact]
@@ -308,7 +309,7 @@ namespace DTOMaker.MemBlocks.Tests
                     [EntityLayout(LayoutMethod.Explicit, 64)]
                     public interface IMyDTO
                     {
-                        [MemberLayout(0, 8)]
+                        [MemberLayout(0)]
                         double Field1 { get; set; }
                     }
                 }
@@ -349,7 +350,7 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Length.Should().Be(1);
+            errors.Should().HaveCount(1);
             errors[0].GetMessage().Should().Be("[MemberLayout] attribute is missing.");
         }
 
@@ -366,7 +367,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)] 
-                        [MemberLayout(-1, 8)]
+                        [MemberLayout(-1)]
                         double Field1 { get; set; }
                     }
                 }
@@ -396,7 +397,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)] 
-                        [MemberLayout(4, 8)]
+                        [MemberLayout(4)]
                         double Field1 { get; set; }
                     }
                 }
@@ -408,11 +409,9 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Length.Should().Be(1);
+            errors.Should().HaveCount(1);
             errors[0].GetMessage().Should().Be("This member extends beyond the end of the block.");
         }
-
-        // todo field offset too hi
 
     }
 }

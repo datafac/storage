@@ -68,9 +68,6 @@ namespace DTOMaker.MemBlocks
 
         private SyntaxDiagnostic? CheckMemberLayoutHasNoOverlaps()
         {
-            if (!HasEntityLayoutAttribute)
-                return null;
-
             // memory map of every byte in the entity block
             int[] memberMap = new int[BlockLength];
 

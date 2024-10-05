@@ -32,7 +32,7 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(1);
+            generatorResult.GeneratedSources.Should().HaveCount(1);
             GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
@@ -64,7 +64,7 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(1);
+            generatorResult.GeneratedSources.Should().HaveCount(1);
             GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
@@ -96,7 +96,7 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(1);
+            generatorResult.GeneratedSources.Should().HaveCount(1);
             GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
@@ -116,15 +116,16 @@ namespace DTOMaker.MemBlocks.Tests
                     [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
-                        [Member(1)] bool   Field1 { get; set; }
-                        [Member(2)] sbyte  Field2 { get; set; }
-                        [Member(3)] byte   Field3 { get; set; }
-                        [Member(4)] short  Field4 { get; set; }
-                        [Member(5)] ushort Field5 { get; set; }
-                        [Member(6)] char   Field6 { get; set; }
-                        [Member(7)] int    Field7 { get; set; }
-                        [Member(8)] uint   Field8 { get; set; }
-                        [Member(9)] float  Field9 { get; set; }
+                        [Member(1)]  bool   Field1  { get; set; }
+                        [Member(2)]  sbyte  Field2  { get; set; }
+                        [Member(3)]  byte   Field3  { get; set; }
+                        [Member(4)]  short  Field4  { get; set; }
+                        [Member(5)]  ushort Field5  { get; set; }
+                        [Member(6)]  char   Field6  { get; set; }
+                        [Member(7)]  Half   Field7  { get; set; }
+                        [Member(8)]  int    Field8  { get; set; }
+                        [Member(9)]  uint   Field9  { get; set; }
+                        [Member(10)] float  Field10 { get; set; }
                     }
                 }
                 """;
@@ -134,7 +135,7 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(1);
+            generatorResult.GeneratedSources.Should().HaveCount(1);
             GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
