@@ -71,10 +71,10 @@ namespace DTOMaker.Gentime
                         // found opt-in entity
                         entity.HasEntityAttribute = true;
                         var attributeArguments = entityAttr.ConstructorArguments;
-                        if (CheckAttributeArguments(nameof(EntityAttribute), attributeArguments, 1, entity, idsLocation))
-                        {
-                            TryGetAttributeArgumentValue<bool>(entity, idsLocation, attributeArguments, 0, (value) => { entity.ImplementModelInterface = value; });
-                        }
+                        //if (CheckAttributeArguments(nameof(EntityAttribute), attributeArguments, 1, entity, idsLocation))
+                        //{
+                        //    //TryGetAttributeArgumentValue<bool>(entity, idsLocation, attributeArguments, 0, (value) => { entity.ImplementModelInterface = value; });
+                        //}
                     }
                     if (idsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(EntityLayoutAttribute)) is AttributeData entityLayoutAttr)
                     {
