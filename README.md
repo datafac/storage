@@ -11,8 +11,6 @@ Features implemented:
 - Member data types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
 
 Coming soon:
-- benchmarks
-- model interface support
 - enumerations
 - nullable types
 - fixed length arrays
@@ -41,5 +39,9 @@ at: https://github.com/Psiman62/DTOMaker-MemBlocks
 Generates DTOs decorated with MessagePack attributes (https://github.com/MessagePack-CSharp/MessagePack-CSharp).
 This source generator can be found at: https://github.com/Psiman62/DTOMaker.MessagePack
 
-## DTOMaker.JsonNewtonSoft (soon)
+## DTOMaker.JsonNewtonSoft (coming soon)
 
+## Benchmarks
+
+Some benchmarking comparing the serialization and deserialization performance of various generated DTOs can
+be found at: https://github.com/Psiman62/DTOMaker-Samples
