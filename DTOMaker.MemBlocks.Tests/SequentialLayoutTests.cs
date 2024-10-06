@@ -116,16 +116,23 @@ namespace DTOMaker.MemBlocks.Tests
                     [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
-                        [Member(1)]  bool   Field1  { get; set; }
-                        [Member(2)]  sbyte  Field2  { get; set; }
-                        [Member(3)]  byte   Field3  { get; set; }
-                        [Member(4)]  short  Field4  { get; set; }
-                        [Member(5)]  ushort Field5  { get; set; }
-                        [Member(6)]  char   Field6  { get; set; }
-                        [Member(7)]  Half   Field7  { get; set; }
-                        [Member(8)]  int    Field8  { get; set; }
-                        [Member(9)]  uint   Field9  { get; set; }
-                        [Member(10)] float  Field10 { get; set; }
+                        [Member(1)]  bool    Field1  { get; set; }
+                        [Member(2)]  sbyte   Field2  { get; set; }
+                        [Member(3)]  byte    Field3  { get; set; }
+                        [Member(4)]  short   Field4  { get; set; }
+                        [Member(5)]  ushort  Field5  { get; set; }
+                        [Member(6)]  char    Field6  { get; set; }
+                        [Member(7)]  Half    Field7  { get; set; }
+                        [Member(8)]  int     Field8  { get; set; }
+                        [Member(9)]  uint    Field9  { get; set; }
+                        [Member(10)] float   Field10 { get; set; }
+                        [Member(11)] long    Field11 { get; set; }
+                        [Member(12)] ulong   Field12 { get; set; }
+                        [Member(13)] double  Field13 { get; set; }
+                        [Member(14)] Guid    Field14 { get; set; }
+                        [Member(15)] Int128  Field15 { get; set; }
+                        [Member(16)] UInt128 Field16 { get; set; }
+                        [Member(17)] Decimal Field17 { get; set; }
                     }
                 }
                 """;

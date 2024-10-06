@@ -87,6 +87,13 @@ namespace DTOMaker.MemBlocks
                         $"This member extends beyond the end of the block.");
                 }
 
+                if (member.FieldLength > 0 && (member.FieldOffset % member.FieldLength != 0))
+                {
+                    return new SyntaxDiagnostic(
+                        DiagnosticId.DMMB0008, "Member layout issue", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
+                        $"This member is incorrectly aligned. FieldOffset ({member.FieldOffset}) modulo FieldLength ({member.FieldLength}) must be 0.");
+                }
+
                 for (var i = 0; i < member.FieldLength; i++)
                 {
                     int offset = member.FieldOffset + i;

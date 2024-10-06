@@ -50,7 +50,7 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity]
+                    [Entity(implementModelInterface: true)]
                     [EntityLayout(LayoutMethod.Explicit, 64)]
                     public interface IMyDTO
                     {
@@ -411,6 +411,35 @@ namespace DTOMaker.MemBlocks.Tests
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
             errors.Should().HaveCount(1);
             errors[0].GetMessage().Should().Be("This member extends beyond the end of the block.");
+        }
+
+        [Fact]
+        public void Fault10_InvalidMemberAlignment()
+        {
+            var inputSource =
+                """
+                using DTOMaker.Models;
+                namespace MyOrg.Models
+                {
+                    [Entity]
+                    [EntityLayout(LayoutMethod.Explicit, 16)]
+                    public interface IMyDTO
+                    {
+                        [Member(1)] 
+                        [MemberLayout(4)]
+                        double Field1 { get; set; }
+                    }
+                }
+                """;
+
+            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
+            generatorResult.Exception.Should().BeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+
+            var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+            errors.Should().HaveCount(1);
+            errors[0].GetMessage().Should().Be("This member is incorrectly aligned. FieldOffset (4) modulo FieldLength (8) must be 0.");
         }
 
     }

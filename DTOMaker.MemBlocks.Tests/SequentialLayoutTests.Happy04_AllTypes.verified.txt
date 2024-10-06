@@ -9,7 +9,7 @@ namespace MyOrg.Models.MemBlocks
 {
     public partial class MyDTO
     {
-        private const int BlockSize = 32;
+        private const int BlockSize = 128;
         private readonly Memory<byte> _block;
         public ReadOnlyMemory<byte> Block => _block;
         public MyDTO() => _block = new byte[BlockSize];
@@ -27,6 +27,13 @@ namespace MyOrg.Models.MemBlocks
         //     8    12     4  Int32       Little  Field8
         //     9    16     4  UInt32      Little  Field9
         //    10    20     4  Single      Little  Field10
+        //    11    24     8  Int64       Little  Field11
+        //    12    32     8  UInt64      Little  Field12
+        //    13    40     8  Double      Little  Field13
+        //    14    48    16  Guid        Little  Field14
+        //    15    64    16  Int128      Little  Field15
+        //    16    80    16  UInt128     Little  Field16
+        //    17    96    16  Decimal     Little  Field17
         // </field-map>
         public Boolean Field1
         {
@@ -77,6 +84,41 @@ namespace MyOrg.Models.MemBlocks
         {
             get => DTOMaker.Runtime.Codec_Single_LE.ReadFromSpan(_block.Slice(20, 4).Span);
             set => DTOMaker.Runtime.Codec_Single_LE.WriteToSpan(_block.Slice(20, 4).Span, value);
+        }
+        public Int64 Field11
+        {
+            get => DTOMaker.Runtime.Codec_Int64_LE.ReadFromSpan(_block.Slice(24, 8).Span);
+            set => DTOMaker.Runtime.Codec_Int64_LE.WriteToSpan(_block.Slice(24, 8).Span, value);
+        }
+        public UInt64 Field12
+        {
+            get => DTOMaker.Runtime.Codec_UInt64_LE.ReadFromSpan(_block.Slice(32, 8).Span);
+            set => DTOMaker.Runtime.Codec_UInt64_LE.WriteToSpan(_block.Slice(32, 8).Span, value);
+        }
+        public Double Field13
+        {
+            get => DTOMaker.Runtime.Codec_Double_LE.ReadFromSpan(_block.Slice(40, 8).Span);
+            set => DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_block.Slice(40, 8).Span, value);
+        }
+        public Guid Field14
+        {
+            get => DTOMaker.Runtime.Codec_Guid_LE.ReadFromSpan(_block.Slice(48, 16).Span);
+            set => DTOMaker.Runtime.Codec_Guid_LE.WriteToSpan(_block.Slice(48, 16).Span, value);
+        }
+        public Int128 Field15
+        {
+            get => DTOMaker.Runtime.Codec_Int128_LE.ReadFromSpan(_block.Slice(64, 16).Span);
+            set => DTOMaker.Runtime.Codec_Int128_LE.WriteToSpan(_block.Slice(64, 16).Span, value);
+        }
+        public UInt128 Field16
+        {
+            get => DTOMaker.Runtime.Codec_UInt128_LE.ReadFromSpan(_block.Slice(80, 16).Span);
+            set => DTOMaker.Runtime.Codec_UInt128_LE.WriteToSpan(_block.Slice(80, 16).Span, value);
+        }
+        public Decimal Field17
+        {
+            get => DTOMaker.Runtime.Codec_Decimal_LE.ReadFromSpan(_block.Slice(96, 16).Span);
+            set => DTOMaker.Runtime.Codec_Decimal_LE.WriteToSpan(_block.Slice(96, 16).Span, value);
         }
     }
 }
