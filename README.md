@@ -8,21 +8,26 @@ This package contains attributes for defining simple data models as interfaces, 
 at compile-time, and by generated code at runtime.
 
 Features implemented:
-- Member data types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid
+- Member data types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
 
-Yet to be implemented:
-- other member types: Decimal, fixed length byte/char arrays
+Coming soon:
+- benchmarks
 - model interface support
-- mutable/immutable/freezable support
 - enumerations
-- records
 - nullable types
-- other model types
+- fixed length arrays
+- other model entities
+- member wire names and tags
+- member deprecation
+
+Coming later:
+- mutable/immutable/freezable support
+- records
 - Google Protobuf .proto generation
 - polymorphic types
-- fixed length arrays
 - generic patterns: lists, trees, unions, etc.
 - variable length arrays
+- logical value equality
 
 These models are consumed by the following source generators to emit DTO classes that implement the 
 model interfaces.
