@@ -50,7 +50,7 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity(implementModelInterface: true)]
+                    [Entity]
                     [EntityLayout(LayoutMethod.Explicit, 64)]
                     public interface IMyDTO
                     {
