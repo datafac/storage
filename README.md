@@ -10,7 +10,8 @@ at compile-time, and by generated code at runtime.
 Features implemented:
 - Member data types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
 
-Coming soon:
+Coming next:
+- mutable/immutable/freezable support
 - enumerations
 - nullable types
 - fixed length arrays
@@ -19,7 +20,6 @@ Coming soon:
 - member deprecation
 
 Coming later:
-- mutable/immutable/freezable support
 - records
 - Google Protobuf .proto generation
 - polymorphic types
