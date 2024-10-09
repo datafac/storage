@@ -11,7 +11,7 @@ namespace DTOMaker.Runtime
         /// <summary>
         /// Freezes this graph including all freezable children.
         /// </summary>
-        ValueTask FreezeAsync(IBlobStore store, CancellationToken cancellation);
+        void Freeze();
 
         /// <summary>
         /// Returns a clone of the graph, copying the mutable parts.

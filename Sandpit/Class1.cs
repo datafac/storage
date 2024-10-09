@@ -5,14 +5,37 @@
 // </auto-generated>
 #pragma warning disable CS0414
 #nullable enable
+using DTOMaker.Models;
 using DTOMaker.Runtime;
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-namespace MyOrg.Models.MemBlocks
+namespace Sandpit
 {
-    public partial class MyDTO : IMyDTO, IFreezable
+    [Entity]
+    [EntityLayout(LayoutMethod.SequentialV1)]
+    public interface IMyDTO
+    {
+        [Member(1)] bool Field1 { get; set; }
+        [Member(2)] sbyte Field2 { get; set; }
+        [Member(3)] byte Field3 { get; set; }
+        [Member(4)] short Field4 { get; set; }
+        [Member(5)] ushort Field5 { get; set; }
+        [Member(6)] char Field6 { get; set; }
+        [Member(7)] Half Field7 { get; set; }
+        [Member(8)] int Field8 { get; set; }
+        [Member(9)] uint Field9 { get; set; }
+        [Member(10)] float Field10 { get; set; }
+        [Member(11)] long Field11 { get; set; }
+        [Member(12)] ulong Field12 { get; set; }
+        [Member(13)] double Field13 { get; set; }
+        [Member(14)] Guid Field14 { get; set; }
+        [Member(15)] Int128 Field15 { get; set; }
+        [Member(16)] UInt128 Field16 { get; set; }
+        [Member(17)] Decimal Field17 { get; set; }
+    }
+    public sealed partial class MyDTO : IMyDTO, IFreezable
     {
         private const int BlockLength = 128;
         private readonly Memory<byte> _writableBlock;
@@ -29,6 +52,7 @@ namespace MyOrg.Models.MemBlocks
             _writableBlock = memory;
             _frozen = frozen;
         }
+
         public MyDTO(ReadOnlyMemory<byte> source)
         {
             if (source.Length >= BlockLength)
@@ -60,13 +84,21 @@ namespace MyOrg.Models.MemBlocks
             return ref value;
         }
 
-        public ValueTask FreezeAsync(IBlobStore store, CancellationToken cancellation)
+        public void Freeze()
         {
-            if (_frozen) return default;
+            if (_frozen) return;
             _frozen = true;
             // todo freeze base
             // todo freeze model type refs
-            return default;
+        }
+
+        public MyDTO(MyDTO source)
+        {
+            // todo base ctor
+            // todo freezable members
+            _writableBlock = source._writableBlock.ToArray();
+            _readonlyBlock = _writableBlock;
+            _frozen = false;
         }
 
         public MyDTO(IMyDTO source) : this(ReadOnlySpan<byte>.Empty, false)

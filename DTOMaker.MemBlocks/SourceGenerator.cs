@@ -173,23 +173,92 @@ namespace DTOMaker.MemBlocks
                         // </auto-generated>
                         #pragma warning disable CS0414
                         #nullable enable
+                        using DTOMaker.Runtime;
                         using System;
+                        using System.Runtime.CompilerServices;
+                        using System.Threading;
+                        using System.Threading.Tasks;
                         namespace {{domain.Name}}.MemBlocks
                         {
-                            public partial class {{entity.Name}} : I{{entity.Name}}
+                            public partial class {{entity.Name}} : I{{entity.Name}}, IFreezable
                             {
-                                private const int BlockSize = {{entity.BlockLength}};
-                                private readonly Memory<byte> _block;
-                                public ReadOnlyMemory<byte> Block => _block;
-                                public {{entity.Name}}() => _block = new byte[BlockSize];
-                                public {{entity.Name}}(ReadOnlySpan<byte> source) => _block = source.Slice(0, BlockSize).ToArray();
-                        """;
-                    string entityTail =
-                        """
-                            }
-                        }
+                                private const int BlockLength = {{entity.BlockLength}};
+                                private readonly Memory<byte> _writableBlock;
+                                private readonly ReadOnlyMemory<byte> _readonlyBlock;
+                                public ReadOnlyMemory<byte> Block => _frozen ? _readonlyBlock : _writableBlock.ToArray();
+
+                                public {{entity.Name}}() => _readonlyBlock = _writableBlock = new byte[BlockLength];
+                       
+                                public {{entity.Name}}(ReadOnlySpan<byte> source, bool frozen)
+                                {
+                                    Memory<byte> memory = new byte[BlockLength];
+                                    source.Slice(0, BlockLength).CopyTo(memory.Span);
+                                    _readonlyBlock = memory;
+                                    _writableBlock = memory;
+                                    _frozen = frozen;
+                                }
+                                public {{entity.Name}}(ReadOnlyMemory<byte> source)
+                                {
+                                    if (source.Length >= BlockLength)
+                                    {
+                                        _readonlyBlock = source.Slice(0, BlockLength);
+                                    }
+                                    else
+                                    {
+                                        // forced copy as source is too short
+                                        Memory<byte> memory = new byte[BlockLength];
+                                        source.Slice(0, BlockLength).Span.CopyTo(memory.Span);
+                                        _readonlyBlock = memory;
+                                    }
+                                    _writableBlock = Memory<byte>.Empty;
+                                    _frozen = true;
+                                }
+                                // todo move to base
+                                private volatile bool _frozen = false;
+                                public bool IsFrozen() => _frozen;
+                                public IFreezable PartCopy() => new {{entity.Name}}(this);
+
+                                [MethodImpl(MethodImplOptions.NoInlining)]
+                                private void ThrowIsFrozenException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} when frozen.");
+
+                                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                                private ref T IfNotFrozen<T>(ref T value, [CallerMemberName] string? methodName = null)
+                                {
+                                    if (_frozen) ThrowIsFrozenException(methodName);
+                                    return ref value;
+                                }
+
+                                public ValueTask FreezeAsync(IBlobStore store, CancellationToken cancellation)
+                                {
+                                    if (_frozen) return default;
+                                    _frozen = true;
+                                    // todo freeze base
+                                    // todo freeze model type refs
+                                    return default;
+                                }
+                        
+                                public {{entity.Name}}(I{{entity.Name}} source) : this(ReadOnlySpan<byte>.Empty, false)
+                                {
+                                    // todo base ctor
+                                    // todo freezable members
                         """;
                     builder.AppendLine(entityHead);
+                    foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence))
+                    {
+                        string memberPart1 =
+                            // 12sp
+                            $$"""
+                                        this.{{member.Name}} = source.{{member.Name}};
+                            """;
+                        builder.AppendLine(memberPart1);
+                    }
+                    string entityPart1 =
+                        // 8sp
+                        """
+                                }
+
+                        """;
+                    builder.AppendLine(entityPart1);
                     // begin member map
                     string memberMapHead =
                         """
@@ -212,19 +281,27 @@ namespace DTOMaker.MemBlocks
                         """;
                     builder.AppendLine(memberMapTail);
                     // end member map
+                    // begin member def
                     foreach (var member in entity.Members.Values.OfType<MemBlockMember>().OrderBy(m => m.FieldOffset))
                     {
                         EmitDiagnostics(context, member);
-                        string memberSource =
+                        string memberDefBody =
                             $$"""
                                     public {{member.MemberType}} {{member.Name}}
                                     {
-                                        get => {{member.CodecTypeName}}.ReadFromSpan(_block.Slice({{member.FieldOffset}}, {{member.FieldLength}}).Span);
-                                        set => {{member.CodecTypeName}}.WriteToSpan(_block.Slice({{member.FieldOffset}}, {{member.FieldLength}}).Span, value);
+                                        get => {{member.CodecTypeName}}.ReadFromSpan(_readonlyBlock.Slice({{member.FieldOffset}}, {{member.FieldLength}}).Span);
+                                        set => {{member.CodecTypeName}}.WriteToSpan(_writableBlock.Slice({{member.FieldOffset}}, {{member.FieldLength}}).Span, IfNotFrozen(ref value));
                                     }
+
                             """;
-                        builder.AppendLine(memberSource);
+                        builder.AppendLine(memberDefBody);
                     }
+                    // end member def
+                    string entityTail =
+                        """
+                            }
+                        }
+                        """;
                     builder.AppendLine(entityTail);
                     context.AddSource(hintName, builder.ToString());
                 }
