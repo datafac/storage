@@ -9,6 +9,8 @@ at compile-time, and by generated code at runtime.
 
 Features implemented:
 - Member data types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
+
+In progress:
 - mutable/immutable/freezable support
 
 Coming next:
