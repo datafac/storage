@@ -228,13 +228,12 @@ namespace DTOMaker.MemBlocks
                                     return ref value;
                                 }
 
-                                public ValueTask FreezeAsync(IBlobStore store, CancellationToken cancellation)
+                                public void Freeze()
                                 {
-                                    if (_frozen) return default;
+                                    if (_frozen) return;
                                     _frozen = true;
                                     // todo freeze base
                                     // todo freeze model type refs
-                                    return default;
                                 }
                         
                                 public {{entity.Name}}(I{{entity.Name}} source) : this(ReadOnlySpan<byte>.Empty, false)
