@@ -147,7 +147,7 @@ namespace DTOMaker.Gentime
                                 int newLineNumber = lineNumber;
                                 foreach (var innerModelScope in innerModelScopes)
                                 {
-                                    var innerScope = new NestedScope(scope, innerModelScope, scope.Replacer.Clone(innerModelScope.TokenValues));
+                                    var innerScope = new NestedScope(scope, innerModelScope, scope.Replacer.Clone(innerModelScope.Tokens));
                                     innerScope.Kind = ScopeKind.InForEach;
                                     innerScope.LocalIsActive = hasIterations.Value;
                                     var innerOutput = ProcessTemplateScope(template, lineNumber + 1, innerScope, options);
@@ -202,7 +202,7 @@ namespace DTOMaker.Gentime
         public string[] ProcessTemplate(ReadOnlySpan<string> source, ILanguage language, IModelScope outerScope)
         {
             ReadOnlyMemory<SourceLine> template = EnumerateSource(source);
-            var scope = new NestedScope(null, outerScope, new TokenReplacer(language, outerScope.TokenValues));
+            var scope = new NestedScope(null, outerScope, new TokenReplacer(language, outerScope.Tokens));
             var output = ProcessTemplateScope(template.Span, 0, scope, language);
             return output;
         }

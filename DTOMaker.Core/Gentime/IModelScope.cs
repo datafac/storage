@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 
 namespace DTOMaker.Gentime
 {
     public interface IModelScope
     {
-        ImmutableDictionary<string, TokenValue?> Tokens { get; }
-        IEnumerable<KeyValuePair<string, object?>> TokenValues { get; }
+        ImmutableDictionary<string, object?> Tokens { get; }
         (bool?, IModelScope[]) GetInnerScopes(string iteratorName);
     }
 }

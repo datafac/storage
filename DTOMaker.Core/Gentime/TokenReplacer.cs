@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace DTOMaker.Gentime
@@ -6,36 +7,17 @@ namespace DTOMaker.Gentime
     internal class TokenReplacer
     {
         private readonly ILanguage _options;
-        public Dictionary<string, object?> Tokens;
+        public ImmutableDictionary<string, object?> Tokens;
 
-        public TokenReplacer(ILanguage options, IEnumerable<KeyValuePair<string, object?>> tokens)
+        public TokenReplacer(ILanguage options, ImmutableDictionary<string, object?> tokens)
         {
             _options = options;
-            Tokens = new Dictionary<string, object?>();
-            foreach (var token in tokens)
-            {
-                Tokens[token.Key] = token.Value;
-            }
+            Tokens = tokens;
         }
 
-        public TokenReplacer Clone(IEnumerable<KeyValuePair<string, object?>> extraTokens)
+        public TokenReplacer Clone(ImmutableDictionary<string, object?> extraTokens)
         {
-            return new TokenReplacer(_options, Tokens.Concat(extraTokens));
-        }
-
-        public bool TryGetToken(string name, out object? value)
-        {
-            return Tokens.TryGetValue(name, out value);
-        }
-
-        public void SetToken(string name, object? value)
-        {
-            Tokens[name] = value;
-        }
-
-        public void RemoveToken(string name)
-        {
-            Tokens.Remove(name);
+            return new TokenReplacer(_options, Tokens.AddRange(extraTokens));
         }
 
         public string ReplaceTokens(string input)

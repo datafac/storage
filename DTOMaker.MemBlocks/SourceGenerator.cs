@@ -171,8 +171,8 @@ namespace DTOMaker.MemBlocks
             foreach (var domain in syntaxReceiver.Domains.Values)
             {
                 EmitDiagnostics(context, domain);
-                var domainTokens = ImmutableDictionary<string, TokenValue?>.Empty
-                    .Add("DomainName", new TokenValue(domain.Name));
+                var domainTokens = ImmutableDictionary<string, object?>.Empty
+                    .Add("DomainName", domain.Name);
                 foreach (var entity in domain.Entities.Values.OrderBy(e => e.Name))
                 {
                     // do any auto-layout if required

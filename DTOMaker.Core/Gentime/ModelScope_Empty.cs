@@ -8,10 +8,7 @@ namespace DTOMaker.Gentime
 {
     public sealed class ModelScope_Empty : IModelScope
     {
-        public ImmutableDictionary<string, TokenValue?> Tokens => ImmutableDictionary<string, TokenValue?>.Empty;
-
-        public IEnumerable<KeyValuePair<string, object?>> TokenValues => ImmutableDictionary<string, TokenValue?>.Empty
-                    .Select(t => new KeyValuePair<string, object?>(t.Key, t.Value?.Value));
+        public ImmutableDictionary<string, object?> Tokens => ImmutableDictionary<string, object?>.Empty;
 
         public (bool?, IModelScope[]) GetInnerScopes(string iteratorName) => (null, Array.Empty<IModelScope>());
     }

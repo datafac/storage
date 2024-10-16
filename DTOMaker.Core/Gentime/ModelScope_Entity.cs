@@ -11,17 +11,15 @@ namespace DTOMaker.Gentime
         private readonly ILanguage _language;
         private readonly TargetEntity _entity;
 
-        public ImmutableDictionary<string, TokenValue?> Tokens { get; }
+        public ImmutableDictionary<string, object?> Tokens { get; }
 
-        public IEnumerable<KeyValuePair<string, object?>> TokenValues => Tokens.Select(t => new KeyValuePair<string, object?>(t.Key, t.Value?.Value));
-
-        public ModelScope_Entity(ILanguage language, TargetEntity entity, ImmutableDictionary<string, TokenValue?> parentTokens)
+        public ModelScope_Entity(ILanguage language, TargetEntity entity, ImmutableDictionary<string, object?> parentTokens)
         {
             _language = language;
             _entity = entity;
             Tokens = parentTokens
-                .Add("EntityName", new TokenValue(entity.Name))
-                .Add("BlockLength", new TokenValue(entity.BlockLength))
+                .Add("EntityName", entity.Name)
+                .Add("BlockLength", entity.BlockLength)
                 ;
         }
 

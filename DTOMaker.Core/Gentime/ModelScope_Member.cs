@@ -11,25 +11,23 @@ namespace DTOMaker.Gentime
         private readonly ILanguage _language;
         private readonly TargetMember _member;
 
-        public ImmutableDictionary<string, TokenValue?> Tokens { get; }
+        public ImmutableDictionary<string, object?> Tokens { get; }
 
-        public IEnumerable<KeyValuePair<string, object?>> TokenValues => Tokens.Select(t => new KeyValuePair<string, object?>(t.Key, t.Value?.Value));
-
-        public ModelScope_Member(ILanguage language, TargetMember member, ImmutableDictionary<string, TokenValue?> parentTokens)
+        public ModelScope_Member(ILanguage language, TargetMember member, ImmutableDictionary<string, object?> parentTokens)
         {
             _language = language;
             _member = member;
             //bool nullable = false; // member.DataType?.Nullable ?? true;
             var builder = parentTokens.ToBuilder();
-            builder.Add("MemberType", new TokenValue(_language.GetDataTypeToken(member.MemberType)));
-            //builder.Add("IsNullable", new TokenValue(nullable));
-            builder.Add("MemberSequence", new TokenValue(member.Sequence));
-            builder.Add("MemberName", new TokenValue(member.Name));
-            builder.Add("MemberJsonName", new TokenValue(member.Name.ToCamelCase()));
-            builder.Add("MemberDefaultValue", new TokenValue(_language.GetDefaultValue(member.MemberType)));
-            builder.Add("MemberBELE", new TokenValue(member.IsBigEndian ? "BE" : "LE"));
-            builder.Add("FieldOffset", new TokenValue(member.FieldOffset));
-            builder.Add("FieldLength", new TokenValue(member.FieldLength));
+            builder.Add("MemberType", _language.GetDataTypeToken(member.MemberType));
+            //builder.Add("IsNullable", nullable));
+            builder.Add("MemberSequence", member.Sequence);
+            builder.Add("MemberName", member.Name);
+            builder.Add("MemberJsonName", member.Name.ToCamelCase());
+            builder.Add("MemberDefaultValue", _language.GetDefaultValue(member.MemberType));
+            builder.Add("MemberBELE", member.IsBigEndian ? "BE" : "LE");
+            builder.Add("FieldOffset", member.FieldOffset);
+            builder.Add("FieldLength", member.FieldLength);
             Tokens = builder.ToImmutable();
         }
 
