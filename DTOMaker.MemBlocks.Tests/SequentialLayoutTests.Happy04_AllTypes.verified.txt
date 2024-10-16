@@ -5,14 +5,12 @@
 // </auto-generated>
 #pragma warning disable CS0414
 #nullable enable
-using DTOMaker.Runtime;
 using System;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
+using DTOMaker.Runtime;
 namespace MyOrg.Models.MemBlocks
 {
-    public partial class MyDTO : IMyDTO, IFreezable
+    public sealed partial class MyDTO : IMyDTO, IFreezable
     {
         private const int BlockLength = 128;
         private readonly Memory<byte> _writableBlock;
@@ -29,6 +27,7 @@ namespace MyOrg.Models.MemBlocks
             _writableBlock = memory;
             _frozen = frozen;
         }
+
         public MyDTO(ReadOnlyMemory<byte> source)
         {
             if (source.Length >= BlockLength)
@@ -68,6 +67,15 @@ namespace MyOrg.Models.MemBlocks
             // todo freeze model type refs
         }
 
+        public MyDTO(MyDTO source)
+        {
+            // todo base ctor
+            // todo freezable members
+            _writableBlock = source._writableBlock.ToArray();
+            _readonlyBlock = _writableBlock;
+            _frozen = false;
+        }
+
         public MyDTO(IMyDTO source) : this(ReadOnlySpan<byte>.Empty, false)
         {
             // todo base ctor
@@ -91,27 +99,6 @@ namespace MyOrg.Models.MemBlocks
             this.Field17 = source.Field17;
         }
 
-        // <field-map>
-        //  Seq.  Off.  Len.  Type        Endian  Name
-        //  ----  ----  ----  --------    ------  --------
-        //     1     0     1  Boolean     Little  Field1
-        //     2     1     1  SByte       Little  Field2
-        //     3     2     1  Byte        Little  Field3
-        //     4     4     2  Int16       Little  Field4
-        //     5     6     2  UInt16      Little  Field5
-        //     6     8     2  Char        Little  Field6
-        //     7    10     2  Half        Little  Field7
-        //     8    12     4  Int32       Little  Field8
-        //     9    16     4  UInt32      Little  Field9
-        //    10    20     4  Single      Little  Field10
-        //    11    24     8  Int64       Little  Field11
-        //    12    32     8  UInt64      Little  Field12
-        //    13    40     8  Double      Little  Field13
-        //    14    48    16  Guid        Little  Field14
-        //    15    64    16  Int128      Little  Field15
-        //    16    80    16  UInt128     Little  Field16
-        //    17    96    16  Decimal     Little  Field17
-        // </field-map>
         public Boolean Field1
         {
             get => DTOMaker.Runtime.Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(0, 1).Span);

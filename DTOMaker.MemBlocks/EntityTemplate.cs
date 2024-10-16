@@ -8,18 +8,38 @@
 using System;
 using System.Runtime.CompilerServices;
 using DTOMaker.Runtime;
-namespace MyOrg.Models.MemBlocks
+//##if false
+using T_MemberType_ = double;
+namespace DTOMaker.Runtime
 {
-    public sealed partial class MyDTO : IMyDTO, IFreezable
+    public static class Codec_T_MemberType__T_MemberBELE_
     {
-        private const int BlockLength = 8;
+        public static T_MemberType_ ReadFromSpan(ReadOnlySpan<byte> source) => throw new NotImplementedException();
+        public static void WriteToSpan(ReadOnlySpan<byte> source, T_MemberType_ value) => throw new NotImplementedException();
+    }
+}
+//##endif
+namespace T_DomainName_.MemBlocks
+{
+    //##if false
+    public interface IT_EntityName_
+    {
+        T_MemberType_ T_MemberName_ { get; set; }
+    }
+    //##endif
+    public sealed partial class T_EntityName_ : IT_EntityName_, IFreezable
+    {
+        //##if false
+        private const int T_BlockLength_ = 128;
+        //##endif
+        private const int BlockLength = T_BlockLength_;
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
         public ReadOnlyMemory<byte> Block => _frozen ? _readonlyBlock : _writableBlock.ToArray();
 
-        public MyDTO() => _readonlyBlock = _writableBlock = new byte[BlockLength];
+        public T_EntityName_() => _readonlyBlock = _writableBlock = new byte[BlockLength];
 
-        public MyDTO(ReadOnlySpan<byte> source, bool frozen)
+        public T_EntityName_(ReadOnlySpan<byte> source, bool frozen)
         {
             Memory<byte> memory = new byte[BlockLength];
             source.Slice(0, BlockLength).CopyTo(memory.Span);
@@ -28,7 +48,7 @@ namespace MyOrg.Models.MemBlocks
             _frozen = frozen;
         }
 
-        public MyDTO(ReadOnlyMemory<byte> source)
+        public T_EntityName_(ReadOnlyMemory<byte> source)
         {
             if (source.Length >= BlockLength)
             {
@@ -47,7 +67,7 @@ namespace MyOrg.Models.MemBlocks
         // todo move to base
         private volatile bool _frozen = false;
         public bool IsFrozen() => _frozen;
-        public IFreezable PartCopy() => new MyDTO(this);
+        public IFreezable PartCopy() => new T_EntityName_(this);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void ThrowIsFrozenException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} when frozen.");
@@ -67,7 +87,7 @@ namespace MyOrg.Models.MemBlocks
             // todo freeze model type refs
         }
 
-        public MyDTO(MyDTO source)
+        public T_EntityName_(T_EntityName_ source)
         {
             // todo base ctor
             // todo freezable members
@@ -76,18 +96,26 @@ namespace MyOrg.Models.MemBlocks
             _frozen = false;
         }
 
-        public MyDTO(IMyDTO source) : this(ReadOnlySpan<byte>.Empty, false)
+        public T_EntityName_(IT_EntityName_ source) : this(ReadOnlySpan<byte>.Empty, false)
         {
             // todo base ctor
             // todo freezable members
-            this.Field1 = source.Field1;
+            //##foreach Members
+            this.T_MemberName_ = source.T_MemberName_;
+            //##endfor
         }
 
-        public Double Field1
+        //##if false
+        private const int T_FieldOffset_ = 40;
+        private const int T_FieldLength_ = 8;
+        //##endif
+        //##foreach Members
+        public T_MemberType_ T_MemberName_
         {
-            get => DTOMaker.Runtime.Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
-            set => DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, IfNotFrozen(ref value));
+            get => DTOMaker.Runtime.Codec_T_MemberType__T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_).Span);
+            set => DTOMaker.Runtime.Codec_T_MemberType__T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, T_FieldLength_).Span, IfNotFrozen(ref value));
         }
 
+        //##endfor
     }
 }
