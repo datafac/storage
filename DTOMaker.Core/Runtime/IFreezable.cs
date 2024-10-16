@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using System.Threading;
-
-namespace DTOMaker.Runtime
+﻿namespace DTOMaker.Runtime
 {
     /// <summary>
     /// Represents a freezable type, which is modifiable until frozen.
