@@ -72,7 +72,7 @@ namespace DTOMaker.MemBlocks
                     return 4;
                 case "Int64":
                 case "UInt64":
-                case "Double": 
+                case "Double":
                     return 8;
                 case "Int128":
                 case "UInt128":

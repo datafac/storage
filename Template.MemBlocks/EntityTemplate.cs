@@ -14,8 +14,8 @@ namespace DTOMaker.Runtime
 {
     public static class Codec_T_MemberType__T_MemberBELE_
     {
-        public static T_MemberType_ ReadFromSpan(ReadOnlySpan<byte> source) => throw new NotImplementedException();
-        public static void WriteToSpan(ReadOnlySpan<byte> source, T_MemberType_ value) => throw new NotImplementedException();
+        public static T_MemberType_ ReadFromSpan(ReadOnlySpan<byte> source) => Codec_Double_LE.ReadFromSpan(source);
+        public static void WriteToSpan(Span<byte> source, T_MemberType_ value) => Codec_Double_LE.WriteToSpan(source, value);
     }
 }
 //##endif
