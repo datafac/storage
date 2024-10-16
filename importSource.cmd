@@ -5,16 +5,21 @@
 :: Imports some generators source for test purposes
 ::
 
-:: call :import MessagePack MessagePack
-:: call :import MessagePack MessagePack.Tests
-
-call :import MemBlocks MemBlocks
-call :import MemBlocks MemBlocks.Tests
+call :group MemBlocks
+call :group MessagePack
 
 goto :eof
 
+:group
+call :import %1 DTOMaker.%1
+call :import %1 DTOMaker.%1.Tests
+call :import %1 Template.%1
+call :import %1 Template.%1.Tests
+goto :eof
+
+
 :import
-robocopy ..\DTOMaker-%1\DTOMaker.%2\ .\DTOMaker.%2\ *.cs /mir /z
+robocopy ..\DTOMaker-%1\%2\ .\%2\ *.cs /mir /z
 set _rc=%errorlevel%
 echo Robocopy returned: %_rc%
 if %_rc% EQU 0 goto :eof
