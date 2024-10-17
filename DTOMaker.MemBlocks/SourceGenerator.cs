@@ -143,10 +143,9 @@ namespace DTOMaker.MemBlocks
             entity.BlockLength = minBlockLength;
         }
 
-        private static string[] GetTemplate(string templateName)
+        private static string[] GetTemplate(Assembly assembly, string templateName)
         {
-            //string[] templateNames = Assembly.GetExecutingAssembly().GetManifestResourceNames();
-            using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(templateName);
+            using var stream = assembly.GetManifestResourceStream(templateName);
             if (stream is null) throw new ArgumentException($"Template '{templateName}' not found", nameof(templateName));
             var result = new List<string>();
             using var reader = new StreamReader(stream);
@@ -187,7 +186,7 @@ namespace DTOMaker.MemBlocks
 
                     string hintName = $"{domain.Name}.{entity.Name}.MemBlocks.g.cs";
                     var builder = new StringBuilder();
-                    var template = GetTemplate("DTOMaker.MemBlocks.EntityTemplate.cs");
+                    var template = GetTemplate(Assembly.GetExecutingAssembly(), "DTOMaker.MemBlocks.EntityTemplate.cs");
                     var processor = new TemplateProcessor();
                     var language = Language_CSharp.Instance;
                     var outerScope = new ModelScope_Entity(language, entity, domainTokens);

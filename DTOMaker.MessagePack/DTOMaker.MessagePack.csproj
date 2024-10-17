@@ -10,6 +10,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="EntityTemplate.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="EntityTemplate.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Include="..\README.md">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>

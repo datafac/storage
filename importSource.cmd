@@ -6,7 +6,7 @@
 ::
 
 call :group MemBlocks
-:: call :group MessagePack
+call :group MessagePack
 
 goto :eof
 

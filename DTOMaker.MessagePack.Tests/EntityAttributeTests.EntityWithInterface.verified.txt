@@ -9,8 +9,7 @@ using DTOMaker.Runtime;
 using MessagePack;
 using System;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
+
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
@@ -45,12 +44,8 @@ namespace MyOrg.Models.MessagePack
         {
             _frozen = frozen;
             // todo base ctor
-            // todo freezable members
         }
 
-        // <field-map>
-        //  Key   Type        Name
-        //  ----  --------    --------
-        // </field-map>
+
     }
 }

@@ -9,8 +9,7 @@ using DTOMaker.Runtime;
 using MessagePack;
 using System;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
+
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
@@ -47,28 +46,28 @@ namespace MyOrg.Models.MessagePack
             // todo base ctor
             // todo freezable members
             _Field1 = source.Field1;
+            // todo freezable members
             _Field2 = source.Field2;
         }
 
-        // <field-map>
-        //  Key   Type        Name
-        //  ----  --------    --------
-        //     1  Double      Field1
-        //     2  Int64       Field2
-        // </field-map>
-        [IgnoreMember] private Double _Field1;
-        [Key(1)] public Double Field1
+        [IgnoreMember]
+        private Double _Field1;
+        [Key(1)]
+        public Double Field1
         {
             get => _Field1;
             set => _Field1 = IfNotFrozen(ref value);
         }
 
-        [IgnoreMember] private Int64 _Field2;
-        [Key(2)] public Int64 Field2
+        [IgnoreMember]
+        private Int64 _Field2;
+        [Key(2)]
+        public Int64 Field2
         {
             get => _Field2;
             set => _Field2 = IfNotFrozen(ref value);
         }
+
 
     }
 }

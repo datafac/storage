@@ -9,8 +9,7 @@ using DTOMaker.Runtime;
 using MessagePack;
 using System;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
+
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
@@ -49,17 +48,15 @@ namespace MyOrg.Models.MessagePack
             _Field1 = source.Field1;
         }
 
-        // <field-map>
-        //  Key   Type        Name
-        //  ----  --------    --------
-        //     1  Double      Field1
-        // </field-map>
-        [IgnoreMember] private Double _Field1;
-        [Key(1)] public Double Field1
+        [IgnoreMember]
+        private Double _Field1;
+        [Key(1)]
+        public Double Field1
         {
             get => _Field1;
             set => _Field1 = IfNotFrozen(ref value);
         }
+
 
     }
 }
