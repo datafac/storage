@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net481;net6.0;net7.0;net8.0</TargetFrameworks>
@@ -24,7 +24,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Template.MemBlocks\Template.MemBlocks.csproj" />
+	  <ProjectReference Include="..\Template.MessagePack\Template.MessagePack.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
