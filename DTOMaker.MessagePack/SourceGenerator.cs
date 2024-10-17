@@ -57,20 +57,6 @@ namespace DTOMaker.MessagePack
             }
         }
 
-        private static string[] GetTemplate(Assembly assembly, string templateName)
-        {
-            using var stream = assembly.GetManifestResourceStream(templateName);
-            if (stream is null) throw new ArgumentException($"Template '{templateName}' not found", nameof(templateName));
-            var result = new List<string>();
-            using var reader = new StreamReader(stream);
-            string? line;
-            while ((line = reader.ReadLine()) is not null)
-            {
-                result.Add(line);
-            }
-            return result.ToArray();
-        }
-
         public void Execute(GeneratorExecutionContext context)
         {
             if (context.SyntaxContextReceiver is not SyntaxReceiver syntaxReceiver) return;
@@ -97,7 +83,7 @@ namespace DTOMaker.MessagePack
 
                     string hintName = $"{domain.Name}.{entity.Name}.MessagePack.g.cs";
                     var builder = new StringBuilder();
-                    var template = GetTemplate(Assembly.GetExecutingAssembly(), "DTOMaker.MessagePack.EntityTemplate.cs");
+                    var template = Assembly.GetExecutingAssembly().GetTemplate("DTOMaker.MessagePack.EntityTemplate.cs");
                     var processor = new TemplateProcessor();
                     var language = Language_CSharp.Instance;
                     var outerScope = new ModelScope_Entity(language, entity, domainTokens);

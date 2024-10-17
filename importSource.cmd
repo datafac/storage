@@ -22,6 +22,7 @@ goto :eof
 robocopy ..\DTOMaker-%1\%2\ .\%2\ *.cs /mir /z
 set _rc=%errorlevel%
 echo Robocopy returned: %_rc%
+if %_rc% EQU 2 goto :eof
 if %_rc% EQU 0 goto :eof
 pause
 goto :eof
