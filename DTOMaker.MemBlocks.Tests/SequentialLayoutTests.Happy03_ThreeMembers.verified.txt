@@ -87,20 +87,41 @@ namespace MyOrg.Models.MemBlocks
 
         public Double Field1
         {
-            get => DTOMaker.Runtime.Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
-            set => DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, IfNotFrozen(ref value));
+            get
+            {
+                return DTOMaker.Runtime.Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
+            }
+
+            set
+            {
+                DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, IfNotFrozen(ref value));
+            }
         }
 
         public Boolean Field2
         {
-            get => DTOMaker.Runtime.Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(8, 1).Span);
-            set => DTOMaker.Runtime.Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(8, 1).Span, IfNotFrozen(ref value));
+            get
+            {
+                return DTOMaker.Runtime.Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(8, 1).Span);
+            }
+
+            set
+            {
+                DTOMaker.Runtime.Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(8, 1).Span, IfNotFrozen(ref value));
+            }
         }
 
         public Int64 Field3
         {
-            get => DTOMaker.Runtime.Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(16, 8).Span);
-            set => DTOMaker.Runtime.Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(16, 8).Span, IfNotFrozen(ref value));
+            get
+            {
+                return DTOMaker.Runtime.Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(16, 8).Span);
+            }
+
+            set
+            {
+                DTOMaker.Runtime.Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(16, 8).Span, IfNotFrozen(ref value));
+            }
         }
 
     }

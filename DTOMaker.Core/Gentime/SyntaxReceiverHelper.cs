@@ -106,10 +106,18 @@ namespace DTOMaker.Gentime
                         Location pdsLocation = Location.Create(pds.SyntaxTree, pds.Span);
                         var member = entity.Members.GetOrAdd(pds.Identifier.Text, (n) => memberFactory(n, pdsLocation));
                         member.Parent = entity;
+                        member.MemberTypeName = pdsSymbol.Type.Name;
+                        member.MemberWireTypeName = pdsSymbol.Type.Name;
+                        if (pdsSymbol.Type.TypeKind == TypeKind.Enum
+                            && pdsSymbol.Type is INamedTypeSymbol pdsSymbolType
+                            && pdsSymbolType.EnumUnderlyingType is not null)
+                        {
+                            member.MemberIsEnum = true;
+                            member.MemberWireTypeName = pdsSymbolType.EnumUnderlyingType.Name;
+                        }
                         if (pdsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberAttribute)) is AttributeData memberAttr)
                         {
                             member.HasMemberAttribute = true;
-                            member.MemberType = pdsSymbol.Type.Name;
                             var attributeArguments = memberAttr.ConstructorArguments;
                             if (CheckAttributeArguments(nameof(MemberAttribute), attributeArguments, 1, member, pdsLocation))
                             {
@@ -119,7 +127,6 @@ namespace DTOMaker.Gentime
                         if (pdsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberLayoutAttribute)) is AttributeData memberLayoutAttr)
                         {
                             member.HasMemberLayoutAttribute = true;
-                            member.MemberType = pdsSymbol.Type.Name;
                             var attributeArguments = memberLayoutAttr.ConstructorArguments;
                             if (CheckAttributeArguments(nameof(MemberLayoutAttribute), attributeArguments, 2, member, pdsLocation))
                             {

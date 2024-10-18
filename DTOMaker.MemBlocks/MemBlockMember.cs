@@ -13,7 +13,7 @@ namespace DTOMaker.MemBlocks
 
         public LayoutMethod LayoutMethod => Parent?.LayoutMethod ?? LayoutMethod.Undefined;
 
-        public string CodecTypeName => $"DTOMaker.Runtime.Codec_{MemberType}_{(IsBigEndian ? "BE" : "LE")}";
+        //public string CodecTypeName => $"DTOMaker.Runtime.Codec_{MemberTypeName}_{(IsBigEndian ? "BE" : "LE")}";
 
         private SyntaxDiagnostic? CheckHasMemberLayoutAttribute()
         {

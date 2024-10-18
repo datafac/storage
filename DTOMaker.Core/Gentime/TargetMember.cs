@@ -10,7 +10,9 @@ namespace DTOMaker.Gentime
         public bool HasMemberLayoutAttribute { get; set; }
         public TargetEntity? Parent { get; set; }
         public int Sequence { get; set; }
-        public string MemberType { get; set; } = "";
+        public string MemberTypeName { get; set; } = "";
+        public bool MemberIsEnum { get; set; }
+        public string MemberWireTypeName { get; set; } = "";
         public int FieldOffset { get; set; }
         public int FieldLength { get; set; }
         public bool IsBigEndian { get; set; } = false;
@@ -26,10 +28,10 @@ namespace DTOMaker.Gentime
         private SyntaxDiagnostic? CheckMemberType()
         {
             if (!HasMemberAttribute) return null;
-            return string.IsNullOrWhiteSpace(MemberType)
+            return string.IsNullOrWhiteSpace(MemberTypeName)
                 ? new SyntaxDiagnostic(
                     DiagnosticId.DTOM0004, "Invalid member datatype", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                    $"MemberType'{MemberType}' must be defined")
+                    $"MemberType'{MemberTypeName}' must be defined")
                 : null;
         }
 

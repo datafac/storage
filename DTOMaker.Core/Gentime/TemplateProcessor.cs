@@ -122,8 +122,7 @@ namespace DTOMaker.Gentime
                                 if (parsed is null) throw new TemplateException("Unknown error", line);
                                 if (parsed is ErrorNode error) throw new TemplateException(error.Message ?? "", line);
                                 var result = parsed.Evaluate(innerScope.Replacer.Tokens);
-                                if (result is not bool condition) throw new TemplateException("Expression does not evaluate to boolean", line);
-                                innerScope.LocalIsActive = condition;
+                                innerScope.LocalIsActive = result is bool boolResult ? boolResult : false;
                                 innerScope.Kind = ScopeKind.InIfBlock;
                                 var innerOutput = ProcessTemplateScope(template, lineNumber + 1, innerScope, options);
                                 output.AddRange(innerOutput);

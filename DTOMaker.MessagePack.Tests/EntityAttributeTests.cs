@@ -1,5 +1,4 @@
-﻿using DTOMaker.MessagePack.Tests;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 using VerifyXunit;
 using Xunit;
 
-namespace DTOMaker.Generator.Tests
+namespace DTOMaker.MessagePack.Tests
 {
     public class EntityAttributeTests
     {

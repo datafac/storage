@@ -10,9 +10,10 @@ using System.Runtime.CompilerServices;
 using DTOMaker.Runtime;
 //##if false
 using T_MemberType_ = double;
+using T_MemberWireType_ = double;
 namespace DTOMaker.Runtime
 {
-    public static class Codec_T_MemberType__T_MemberBELE_
+    public static class Codec_T_MemberWireType__T_MemberBELE_
     {
         public static T_MemberType_ ReadFromSpan(ReadOnlySpan<byte> source) => Codec_Double_LE.ReadFromSpan(source);
         public static void WriteToSpan(Span<byte> source, T_MemberType_ value) => Codec_Double_LE.WriteToSpan(source, value);
@@ -112,8 +113,24 @@ namespace T_DomainName_.MemBlocks
         //##foreach Members
         public T_MemberType_ T_MemberName_
         {
-            get => DTOMaker.Runtime.Codec_T_MemberType__T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_).Span);
-            set => DTOMaker.Runtime.Codec_T_MemberType__T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, T_FieldLength_).Span, IfNotFrozen(ref value));
+            get
+            {
+                //##if MemberIsEnum
+                return (T_MemberType_)DTOMaker.Runtime.Codec_T_MemberWireType__T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_).Span);
+                //##else
+                return DTOMaker.Runtime.Codec_T_MemberWireType__T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_).Span);
+                //##endif
+            }
+
+            set
+            {
+                //##if MemberIsEnum
+                T_MemberWireType_ wireValue = (T_MemberWireType_)value;
+                DTOMaker.Runtime.Codec_T_MemberWireType__T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, T_FieldLength_).Span, IfNotFrozen(ref wireValue));
+                //##else
+                DTOMaker.Runtime.Codec_T_MemberWireType__T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, T_FieldLength_).Span, IfNotFrozen(ref value));
+                //##endif
+            }
         }
 
         //##endfor
