@@ -11,9 +11,9 @@ Features implemented:
 - Data types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
 - IFreezable support
 - templates as code, template processing
+- enumeration data types
 
 In progress:
-- enumerations
 - member deprecation/reservation
 
 Coming next:
