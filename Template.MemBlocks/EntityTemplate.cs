@@ -111,6 +111,9 @@ namespace T_DomainName_.MemBlocks
         private const int T_FieldLength_ = 8;
         //##endif
         //##foreach Members
+        //##if MemberIsObsolete
+        [Obsolete]
+        //##endif
         public T_MemberType_ T_MemberName_
         {
             get

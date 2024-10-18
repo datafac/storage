@@ -83,6 +83,7 @@ namespace MyOrg.Models.MemBlocks
             this.Field1 = source.Field1;
         }
 
+        [Obsolete]
         public Double Field1
         {
             get
