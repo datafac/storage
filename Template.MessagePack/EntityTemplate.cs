@@ -63,6 +63,9 @@ namespace T_DomainName_.MessagePack
         //##foreach Members
         [IgnoreMember]
         private T_MemberType_ _T_MemberName_;
+        //##if MemberIsObsolete
+        [Obsolete]
+        //##endif
         [Key(T_MemberSequence_)]
         public T_MemberType_ T_MemberName_
         {

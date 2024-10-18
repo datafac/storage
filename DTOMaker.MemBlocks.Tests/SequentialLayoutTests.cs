@@ -105,7 +105,7 @@ namespace DTOMaker.MemBlocks.Tests
         }
 
         [Fact]
-        public async Task Happy04_Enum32Member()
+        public async Task Happy05_Enum32Member()
         {
             var inputSource =
                 """
@@ -142,7 +142,7 @@ namespace DTOMaker.MemBlocks.Tests
         }
 
         [Fact]
-        public async Task Happy05_ObsoleteMember()
+        public async Task Happy06_ObsoleteMember()
         {
             var inputSource =
                 """
