@@ -19,7 +19,7 @@ namespace DTOMaker.Gentime
             builder.Add("MemberIsObsolete", member.IsObsolete);
             builder.Add("MemberObsoleteMessage", member.ObsoleteMessage);
             builder.Add("MemberObsoleteIsError", member.ObsoleteIsError);
-            builder.Add("MemberTypeIsEnum", member.IsqqqEnumType);
+            builder.Add("MemberTypeIsEnum", member.IsEnumType);
             //builder.Add("IsNullable", nullable));
             builder.Add("MemberType", _language.GetDataTypeToken(member.MemberTypeName));
             builder.Add("MemberWireType", _language.GetDataTypeToken(member.MemberWireTypeName));

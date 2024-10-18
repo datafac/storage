@@ -112,7 +112,7 @@ namespace DTOMaker.Gentime
                             && pdsSymbol.Type is INamedTypeSymbol pdsSymbolType
                             && pdsSymbolType.EnumUnderlyingType is not null)
                         {
-                            member.IsqqqEnumType = true;
+                            member.IsEnumType = true;
                             member.MemberWireTypeName = pdsSymbolType.EnumUnderlyingType.Name;
                         }
                         ImmutableArray<AttributeData> allAttributes = pdsSymbol.GetAttributes();

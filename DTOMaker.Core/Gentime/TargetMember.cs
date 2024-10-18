@@ -14,7 +14,7 @@ namespace DTOMaker.Gentime
         public bool ObsoleteIsError { get; set; }
         public int Sequence { get; set; }
         public string MemberTypeName { get; set; } = "";
-        public bool IsqqqEnumType { get; set; }
+        public bool IsEnumType { get; set; }
         public string MemberWireTypeName { get; set; } = "";
         public int FieldOffset { get; set; }
         public int FieldLength { get; set; }
