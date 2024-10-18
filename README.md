@@ -10,15 +10,15 @@ at compile-time, and by generated code at runtime.
 Features implemented:
 - Member data types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
 - IFreezable support
+- templates as code, template processing
 
 In progress:
-- testable templates
-- template processing
 
 Coming next:
 - enumerations
 - nullable types
 - fixed length arrays
+- UTF8 and UTF16 string support
 - other model entities
 - member wire names and tags
 - member deprecation
