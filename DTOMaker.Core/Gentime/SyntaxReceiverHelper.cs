@@ -112,10 +112,25 @@ namespace DTOMaker.Gentime
                             && pdsSymbol.Type is INamedTypeSymbol pdsSymbolType
                             && pdsSymbolType.EnumUnderlyingType is not null)
                         {
-                            member.MemberIsEnum = true;
+                            member.IsqqqEnumType = true;
                             member.MemberWireTypeName = pdsSymbolType.EnumUnderlyingType.Name;
                         }
-                        if (pdsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberAttribute)) is AttributeData memberAttr)
+                        ImmutableArray<AttributeData> allAttributes = pdsSymbol.GetAttributes();
+                        if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(ObsoleteAttribute)) is AttributeData obsoleteAttr)
+                        {
+                            member.IsObsolete = true;
+                            var attributeArguments = obsoleteAttr.ConstructorArguments;
+                            if (attributeArguments.Length == 1)
+                            {
+                                TryGetAttributeArgumentValue<string>(member, pdsLocation, attributeArguments, 0, (value) => { member.ObsoleteMessage = value; });
+                            }
+                            if (attributeArguments.Length == 2)
+                            {
+                                TryGetAttributeArgumentValue<string>(member, pdsLocation, attributeArguments, 0, (value) => { member.ObsoleteMessage = value; });
+                                TryGetAttributeArgumentValue<bool>(member, pdsLocation, attributeArguments, 1, (value) => { member.ObsoleteIsError = value; });
+                            }
+                        }
+                        if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberAttribute)) is AttributeData memberAttr)
                         {
                             member.HasMemberAttribute = true;
                             var attributeArguments = memberAttr.ConstructorArguments;
@@ -124,7 +139,7 @@ namespace DTOMaker.Gentime
                                 TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 0, (value) => { member.Sequence = value; });
                             }
                         }
-                        if (pdsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberLayoutAttribute)) is AttributeData memberLayoutAttr)
+                        if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberLayoutAttribute)) is AttributeData memberLayoutAttr)
                         {
                             member.HasMemberLayoutAttribute = true;
                             var attributeArguments = memberLayoutAttr.ConstructorArguments;

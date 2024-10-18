@@ -17,6 +17,7 @@ namespace MyOrg.Models
     [EntityLayout(LayoutMethod.SequentialV1)]
     public interface IMyDTO
     {
+        [Obsolete]
         [Member(1)]
         Kind32 Field1 { get; set; }
     }

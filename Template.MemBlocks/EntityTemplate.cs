@@ -115,7 +115,7 @@ namespace T_DomainName_.MemBlocks
         {
             get
             {
-                //##if MemberIsEnum
+                //##if MemberTypeIsEnum
                 return (T_MemberType_)DTOMaker.Runtime.Codec_T_MemberWireType__T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_).Span);
                 //##else
                 return DTOMaker.Runtime.Codec_T_MemberWireType__T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_).Span);
@@ -124,7 +124,7 @@ namespace T_DomainName_.MemBlocks
 
             set
             {
-                //##if MemberIsEnum
+                //##if MemberTypeIsEnum
                 T_MemberWireType_ wireValue = (T_MemberWireType_)value;
                 DTOMaker.Runtime.Codec_T_MemberWireType__T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, T_FieldLength_).Span, IfNotFrozen(ref wireValue));
                 //##else

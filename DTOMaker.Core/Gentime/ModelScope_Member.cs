@@ -16,10 +16,13 @@ namespace DTOMaker.Gentime
             _member = member;
             //bool nullable = false; // member.DataType?.Nullable ?? true;
             var builder = parentTokens.ToBuilder();
-            builder.Add("MemberType", _language.GetDataTypeToken(member.MemberTypeName));
-            builder.Add("MemberIsEnum", member.MemberIsEnum);
-            builder.Add("MemberWireType", _language.GetDataTypeToken(member.MemberWireTypeName));
+            builder.Add("MemberIsObsolete", member.IsObsolete);
+            builder.Add("MemberObsoleteMessage", member.ObsoleteMessage);
+            builder.Add("MemberObsoleteIsError", member.ObsoleteIsError);
+            builder.Add("MemberTypeIsEnum", member.IsqqqEnumType);
             //builder.Add("IsNullable", nullable));
+            builder.Add("MemberType", _language.GetDataTypeToken(member.MemberTypeName));
+            builder.Add("MemberWireType", _language.GetDataTypeToken(member.MemberWireTypeName));
             builder.Add("MemberSequence", member.Sequence);
             builder.Add("MemberName", member.Name);
             builder.Add("MemberJsonName", member.Name.ToCamelCase());
