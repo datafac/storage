@@ -9,30 +9,6 @@ using Xunit;
 
 namespace DTOMaker.MemBlocks.Tests
 {
-    public enum Kind08 : byte
-    {
-        Default,
-        Kind1 = 1,
-        MaxKind = byte.MaxValue,
-    }
-    public enum Kind16 : short
-    {
-        Default,
-        Kind1 = 1,
-        MaxKind = short.MaxValue,
-    }
-    public enum Kind32 : int
-    {
-        Default,
-        Kind1 = 1,
-        MaxKind = int.MaxValue,
-    }
-    public enum Kind64 : long
-    {
-        Default,
-        Kind1 = 1,
-        MaxKind = long.MaxValue,
-    }
     public class SequentialLayoutTests
     {
         [Fact]
