@@ -85,8 +85,15 @@ namespace MyOrg.Models.MemBlocks
 
         public Double Field1
         {
-            get => DTOMaker.Runtime.Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
-            set => DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, IfNotFrozen(ref value));
+            get
+            {
+                return DTOMaker.Runtime.Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
+            }
+
+            set
+            {
+                DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, IfNotFrozen(ref value));
+            }
         }
 
     }

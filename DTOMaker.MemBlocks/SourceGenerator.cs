@@ -55,7 +55,8 @@ namespace DTOMaker.MemBlocks
 
         private static int GetFieldLength(TargetMember member)
         {
-            switch (member.MemberType)
+            string typeName = member.MemberWireTypeName;
+            switch (typeName)
             {
                 case "Boolean":
                 case "Byte":
@@ -83,7 +84,7 @@ namespace DTOMaker.MemBlocks
                     member.SyntaxErrors.Add(
                         new SyntaxDiagnostic(
                             DiagnosticId.DMMB0007, "Unsupported member type", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
-                            $"Unsupported member type: '{member.MemberType}'"));
+                            $"Unsupported member type: '{typeName}'"));
                     return 0;
             }
         }

@@ -1,5 +1,3 @@
-using DTOMaker.MessagePack.Tests;
-using DTOMaker.Models;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -9,7 +7,7 @@ using System.Threading.Tasks;
 using VerifyXunit;
 using Xunit;
 
-namespace DTOMaker.Generator.Tests
+namespace DTOMaker.MessagePack.Tests
 {
     public class GeneratorTests
     {
@@ -143,6 +141,42 @@ namespace DTOMaker.Generator.Tests
                 string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
                 await Verifier.Verify(outputCode);
             }
+        }
+
+        [Fact]
+        public async Task Happy05_Enum32Member()
+        {
+            var inputSource =
+                """
+                using DTOMaker.Models;
+                namespace MyOrg.Models
+                {
+                    public enum Kind32 : int
+                    {
+                        Default,
+                        Kind1 = 1,
+                        MaxKind = int.MaxValue,
+                    }
+                    [Entity]
+                    public interface IMyDTO
+                    {
+                        [Member(1)] Kind32 Field1 { get; set; }
+                    }
+                }
+                """;
+
+            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
+            generatorResult.Exception.Should().BeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
+            generatorResult.GeneratedSources.Length.Should().Be(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
+
+            // custom generation checks
+            outputSource.HintName.Should().Be("MyOrg.Models.MyDTO.MessagePack.g.cs");
+            string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
+            await Verifier.Verify(outputCode);
         }
 
         [Fact]

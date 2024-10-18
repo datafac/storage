@@ -8,20 +8,20 @@ This package contains attributes for defining simple data models as interfaces, 
 at compile-time, and by generated code at runtime.
 
 Features implemented:
-- Member data types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
+- Data types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
 - IFreezable support
 - templates as code, template processing
 
 In progress:
+- enumerations
+- member deprecation/reservation
 
 Coming next:
-- enumerations
 - nullable types
 - fixed length arrays
 - UTF8 and UTF16 string support
 - other model entities
 - member wire names and tags
-- member deprecation
 
 Coming later:
 - records
