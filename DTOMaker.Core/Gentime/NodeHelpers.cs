@@ -113,8 +113,8 @@ namespace DTOMaker.Gentime
                 string a => right switch
                 {
                     null => StringBinaryOp(op, a, null),
-                    string b => StringBinaryOp(op, a, b),
-                    _ => throw new ArgumentOutOfRangeException(nameof(right), right, null)
+                    string s => StringBinaryOp(op, a, s),
+                    _ => StringBinaryOp(op, a, right.ToString())
                 },
                 bool a => right switch
                 {
@@ -125,12 +125,14 @@ namespace DTOMaker.Gentime
                 {
                     long b => Int64BinaryOp(op, a, b),
                     double b => DoubleBinaryOp(op, a, b),
+                    string s => StringBinaryOp(op, a.ToString(), s),
                     _ => throw new ArgumentOutOfRangeException(nameof(right), right, null)
                 },
                 double a => right switch
                 {
                     long b => DoubleBinaryOp(op, a, b),
                     double b => DoubleBinaryOp(op, a, b),
+                    string s => StringBinaryOp(op, a.ToString(), s),
                     _ => throw new ArgumentOutOfRangeException(nameof(right), right, null)
                 },
                 _ => throw new ArgumentOutOfRangeException(nameof(left), left, null)
@@ -209,6 +211,7 @@ namespace DTOMaker.Gentime
                 BinaryExpressionNode bn => bn.Evaluate(variables),
                 TertiaryExpressionNode tn => tn.Evaluate(variables),
                 VariableNode vn => vn.Evaluate(variables),
+                ErrorNode en => en,
                 _ => throw new ArgumentOutOfRangeException(nameof(node), node, null)
             };
         }

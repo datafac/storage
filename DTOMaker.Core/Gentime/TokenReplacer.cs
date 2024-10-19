@@ -4,18 +4,18 @@ namespace DTOMaker.Gentime
 {
     internal class TokenReplacer
     {
-        private readonly ILanguage _options;
+        private readonly ILanguage _language;
         public ImmutableDictionary<string, object?> Tokens;
 
         public TokenReplacer(ILanguage options, ImmutableDictionary<string, object?> tokens)
         {
-            _options = options;
+            _language = options;
             Tokens = tokens;
         }
 
         public TokenReplacer Clone(ImmutableDictionary<string, object?> extraTokens)
         {
-            return new TokenReplacer(_options, Tokens.AddRange(extraTokens));
+            return new TokenReplacer(_language, Tokens.AddRange(extraTokens));
         }
 
         public string ReplaceTokens(string input)
@@ -27,8 +27,8 @@ namespace DTOMaker.Gentime
                 lastResult = result;
                 foreach (var item in Tokens)
                 {
-                    string search = _options.TokenPrefix + item.Key + _options.TokenSuffix;
-                    string replace = item.Value is null ? "" : (item.Value?.ToString() ?? "");
+                    string search = _language.TokenPrefix + item.Key + _language.TokenSuffix;
+                    string replace = _language.GetValueAsCode(item.Value);
                     result = result.Replace(search, replace);
                 }
             } while (result != lastResult);

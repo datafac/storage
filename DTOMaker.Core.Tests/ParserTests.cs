@@ -101,7 +101,47 @@ namespace DTOMaker.Core.Tests
         [InlineData("x := 3", typeof(long), 3)]
         [InlineData("false || true", typeof(bool), true)]
         [InlineData("false && true", typeof(bool), false)]
-        public void Parse03_Expressions(string source, Type et, object ev)
+        [InlineData("null == null", typeof(bool), true)]
+        [InlineData("null != null", typeof(bool), false)]
+        [InlineData("null >= null", typeof(bool), true)]
+        [InlineData("null > null", typeof(bool), false)]
+        [InlineData("null + null", typeof(string), "")]
+        [InlineData("null", null, null)]
+        [InlineData("\"abc\" + \"def\"", typeof(string), "abcdef")]
+        [InlineData("\"a\" < \"b\"", typeof(bool), true)]
+        [InlineData("\"a\" > \"b\"", typeof(bool), false)]
+        [InlineData("\"abc\" + 123", typeof(string), "abc123")]
+        [InlineData("123 + \"abc\"", typeof(string), "123abc")]
+        [InlineData("123.0 + \" abc\"", typeof(string), "123 abc")]
+        public void Parse03_Expressions(string source, Type? et, object? ev)
+        {
+            // act
+            var parser = new ExprParser();
+            var node = parser.Parse(source.AsMemory());
+
+            // assert
+            node.Should().NotBeNull();
+
+            // evaluate
+            var vars = new Dictionary<string, object?>();
+            var result = node.Evaluate(vars);
+
+            // assert
+            if (et is not null)
+            {
+                result.Should().NotBeNull();
+                result.Should().BeOfType(et);
+                result.Should().Be(ev);
+            }
+            else
+            {
+                result.Should().BeNull();
+            }
+        }
+
+        [Theory]
+        [InlineData("null is null", "Not all source matched. Only 1 of 3 tokens consumed.")]
+        public void Parse04_Expression_Errors(string source, string expectedMessage)
         {
             // act
             var parser = new ExprParser();
@@ -116,8 +156,10 @@ namespace DTOMaker.Core.Tests
 
             // assert
             result.Should().NotBeNull();
-            result.Should().BeOfType(et);
-            result.Should().Be(ev);
+            result.Should().BeOfType<ErrorNode>();
+            ErrorNode? error = result as ErrorNode;
+            error.Should().NotBeNull();
+            error!.Message.Should().Be(expectedMessage);
         }
 
         [Theory]
@@ -133,7 +175,7 @@ namespace DTOMaker.Core.Tests
         [InlineData("((1 + 4) * 3) ** 2", typeof(double), 225)]
         [InlineData("1 + 2 < 3 + 4", typeof(bool), true)]
         [InlineData("1 + 4 == 3 + 2", typeof(bool), true)]
-        public void Parse04_OperatorPrecedence(string source, Type et, object ev)
+        public void Parse05_OperatorPrecedence(string source, Type et, object ev)
         {
             // act
             var parser = new ExprParser();
@@ -155,7 +197,7 @@ namespace DTOMaker.Core.Tests
         [Theory]
         [InlineData(true, 5, 6)]
         [InlineData(false, 5, 4)]
-        public void Parse05_VariableReference(bool valueA, long valueB, int expectedOutput)
+        public void Parse06_VariableReference(bool valueA, long valueB, long expectedOutput)
         {
             string source = "Calculated := ValueA ? ValueB + 1 : ValueB - 1";
 

@@ -18,6 +18,25 @@
         public string CommentPrefix { get; } = "";
         public string CommandPrefix { get; } = "";
 
+        public string GetValueAsCode(object? value)
+        {
+            return value switch { 
+                null => "null",
+                string s => s,
+                bool b => b ? "true" : "false",
+                float f => $"{f}F",
+                double d => $"{d}D",
+                short s => $"{s}S",
+                ushort us => $"{us}US",
+                int i => $"{i}",
+                uint u => $"{u}U",
+                long l => $"{l}L",
+                ulong ul => $"{ul}UL",
+                decimal m => $"{m}M",
+                // todo? more types?
+                _ => $"{value}"
+            };
+        }
         //private string NativeTypeRefToToken(NativeTypeRef ntr)
         //{
         //    return ntr.InnerType switch
@@ -128,5 +147,6 @@
             //    _ => throw new NotSupportedException($"DataTypeRef: {dataTypeRef}")
             //};
         }
+
     }
 }

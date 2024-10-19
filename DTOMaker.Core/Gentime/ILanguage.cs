@@ -8,5 +8,6 @@
         string TokenSuffix { get; }
         string GetDataTypeToken(string dataTypeName);
         string GetDefaultValue(string dataTypeName);
+        string GetValueAsCode(object? value);
     }
 }
