@@ -12,11 +12,12 @@ Features implemented:
 - IFreezable support
 - templates as code, template processing
 - enumeration data types
+- support [Obsolete] members
 
 In progress:
-- member deprecation/reservation
 
 Coming next:
+- reservation (hidden members)
 - nullable types
 - fixed length arrays
 - UTF8 and UTF16 string support
