@@ -8,7 +8,7 @@ namespace Template.MemBlocks.Tests
         public void Test1()
         {
             var orig = new T_DomainName_.MemBlocks.T_EntityName_();
-            orig.T_MemberName_ = 123.456D;
+            orig.T_MemberName_ = System.DayOfWeek.Wednesday;
             orig.Freeze();
 
             var buffer = orig.Block;

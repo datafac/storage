@@ -4,13 +4,15 @@
 ::
 :: Imports some generators source for test purposes
 ::
+echo Import source?
+pause
 
-call :group MemBlocks
-call :group MessagePack
+call :importgroup MemBlocks
+call :importgroup MessagePack
 
 goto :eof
 
-:group
+:importgroup
 call :import %1 DTOMaker.%1
 call :import %1 DTOMaker.%1.Tests
 call :import %1 Template.%1
@@ -19,7 +21,7 @@ goto :eof
 
 
 :import
-robocopy ..\DTOMaker-%1\%2\ .\%2\ *.cs /mir /z
+robocopy ..\DTOMaker-%1\%2\ .\%2\ *.cs /mir /xd bin obj /z
 set _rc=%errorlevel%
 echo Robocopy returned: %_rc%
 if %_rc% EQU 2 goto :eof

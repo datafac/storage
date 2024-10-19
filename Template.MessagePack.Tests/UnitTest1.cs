@@ -9,18 +9,13 @@ namespace Template_MessagePack.Tests
 {
     public class UnitTest1
     {
-        [Theory]
-        [InlineData(123L, "92-C0-7B")]
-        public void Test1(long value, string expectedBytes)
+        [Fact]
+        public void Test1()
         {
             var orig = new T_EntityName_();
-            orig.T_MemberName_ = value;
+            orig.T_MemberName_ = DayOfWeek.Wednesday;
             ReadOnlyMemory<byte> buffer = MessagePackSerializer.Serialize<T_EntityName_>(orig);
-
-            string.Join("-", buffer.ToArray().Select(b => b.ToString("X2"))).Should().Be(expectedBytes);
-
             var copy = MessagePackSerializer.Deserialize<T_EntityName_>(buffer, out int bytesRead);
-
             bytesRead.Should().Be(buffer.Length);
             copy.T_MemberName_.Should().Be(orig.T_MemberName_);
         }

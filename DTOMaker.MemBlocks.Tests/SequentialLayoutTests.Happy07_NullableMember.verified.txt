@@ -12,7 +12,7 @@ namespace MyOrg.Models.MemBlocks
 {
     public sealed partial class MyDTO : IMyDTO, IFreezable
     {
-        private const int BlockLength = 4;
+        private const int BlockLength = 8;
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
         public ReadOnlyMemory<byte> Block => _frozen ? _readonlyBlock : _writableBlock.ToArray();
@@ -76,18 +76,22 @@ namespace MyOrg.Models.MemBlocks
             this.Field1 = source.Field1;
         }
 
-        public Kind32 Field1
+        public Double? Field1
         {
             get
             {
-                return (Kind32)DTOMaker.Runtime.Codec_Int32_LE.ReadFromSpan(_readonlyBlock.Slice(0, 4).Span);
+                byte flags = DTOMaker.Runtime.Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(T_FlagsOffset_, 1).Span);
+                if (flags == 0) return null;
+                return (Double)DTOMaker.Runtime.Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field1));
-                Int32 wireValue = (Int32)value;
-                DTOMaker.Runtime.Codec_Int32_LE.WriteToSpan(_writableBlock.Slice(0, 4).Span, wireValue);
+                byte flags = value.HasValue ? (byte)1 : (byte)0;
+                DTOMaker.Runtime.Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(T_FlagsOffset_, 1).Span, flags);
+                Double wireValue = value.HasValue ? (Double)value.Value : default;
+                DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, wireValue);
             }
         }
 

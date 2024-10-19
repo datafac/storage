@@ -6,6 +6,7 @@
 #pragma warning disable CS0414
 #nullable enable
 using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using DTOMaker.Runtime;
 namespace MyOrg.Models.MemBlocks
@@ -83,17 +84,37 @@ namespace MyOrg.Models.MemBlocks
             this.Field1 = source.Field1;
         }
 
-        public Kind32 Field1
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static (T, byte) GetValueAndFlags<T>(T? input) where T : struct
+        {
+            if (input.HasValue)
+                return (input.Value, 1);
+            else
+                return (default, 0);
+        }
+
+        public double? Field1
         {
             get
             {
-                return (Kind32)DTOMaker.Runtime.Codec_Int32_LE.ReadFromSpan(_readonlyBlock.Slice(0, 4).Span);
+                const int _flags_Offset = 0;
+                const int _value_Offset = 8;
+                const int _value_Length = 8;
+                byte flags = DTOMaker.Runtime.Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(_flags_Offset, 1).Span);
+                if (flags == 0) return null;
+                return DTOMaker.Runtime.Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(_value_Offset, _value_Length).Span);
             }
 
             set
             {
-                Int32 wireValue = (Int32)value;
-                DTOMaker.Runtime.Codec_Int32_LE.WriteToSpan(_writableBlock.Slice(0, 4).Span, IfNotFrozen(ref wireValue));
+                const int _flags_Offset = 0;
+                const int _value_Offset = 8;
+                const int _value_Length = 8;
+                if (_frozen) ThrowIsFrozenException(nameof(Field1));
+                byte flags = value.HasValue ? (byte)1 : (byte)0;
+                Double wireValue = value.HasValue ? value.Value : default;
+                DTOMaker.Runtime.Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(_flags_Offset, 1).Span, flags);
+                DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(_value_Offset, _value_Length).Span, wireValue);
             }
         }
 

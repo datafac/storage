@@ -52,13 +52,6 @@ namespace MyOrg.Models.MemBlocks
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void ThrowIsFrozenException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} when frozen.");
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ref T IfNotFrozen<T>(ref T value, [CallerMemberName] string? methodName = null)
-        {
-            if (_frozen) ThrowIsFrozenException(methodName);
-            return ref value;
-        }
-
         public void Freeze()
         {
             if (_frozen) return;

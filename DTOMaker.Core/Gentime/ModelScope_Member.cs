@@ -14,17 +14,18 @@ namespace DTOMaker.Gentime
         {
             _language = language;
             _member = member;
-            //bool nullable = false; // member.DataType?.Nullable ?? true;
             var builder = parentTokens.ToBuilder();
+            builder.Add("MemberIsNullable", member.IsNullable);
             builder.Add("MemberIsObsolete", member.IsObsolete);
             builder.Add("MemberObsoleteMessage", member.ObsoleteMessage);
             builder.Add("MemberObsoleteIsError", member.ObsoleteIsError);
             builder.Add("MemberTypeIsEnum", member.IsEnumType);
-            //builder.Add("IsNullable", nullable));
             builder.Add("MemberType", _language.GetDataTypeToken(member.MemberTypeName));
             builder.Add("MemberWireType", _language.GetDataTypeToken(member.MemberWireTypeName));
             builder.Add("MemberSequence", member.Sequence);
+            builder.Add("NullableMemberSequence", member.Sequence);
             builder.Add("MemberName", member.Name);
+            builder.Add("NullableMemberName", member.Name);
             builder.Add("MemberJsonName", member.Name.ToCamelCase());
             builder.Add("MemberDefaultValue", _language.GetDefaultValue(member.MemberTypeName));
             builder.Add("MemberBELE", member.IsBigEndian ? "BE" : "LE");

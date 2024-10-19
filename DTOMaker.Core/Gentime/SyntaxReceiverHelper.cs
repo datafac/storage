@@ -68,7 +68,7 @@ namespace DTOMaker.Gentime
                     var entity = domain.Entities.GetOrAdd(entityName, (n) => entityFactory(n, idsLocation));
                     if (idsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(EntityAttribute)) is AttributeData entityAttr)
                     {
-                        // found opt-in entity
+                        // found entity attribute
                         entity.HasEntityAttribute = true;
                         var attributeArguments = entityAttr.ConstructorArguments;
                         //if (CheckAttributeArguments(nameof(EntityAttribute), attributeArguments, 1, entity, idsLocation))
@@ -78,7 +78,7 @@ namespace DTOMaker.Gentime
                     }
                     if (idsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(EntityLayoutAttribute)) is AttributeData entityLayoutAttr)
                     {
-                        // found entity layout details
+                        // found entity layout attribute
                         entity.HasEntityLayoutAttribute = true;
                         var attributeArguments = entityLayoutAttr.ConstructorArguments;
                         if (CheckAttributeArguments(nameof(EntityLayoutAttribute), attributeArguments, 2, entity, idsLocation))
@@ -106,14 +106,23 @@ namespace DTOMaker.Gentime
                         Location pdsLocation = Location.Create(pds.SyntaxTree, pds.Span);
                         var member = entity.Members.GetOrAdd(pds.Identifier.Text, (n) => memberFactory(n, pdsLocation));
                         member.Parent = entity;
-                        member.MemberTypeName = pdsSymbol.Type.Name;
-                        member.MemberWireTypeName = pdsSymbol.Type.Name;
-                        if (pdsSymbol.Type.TypeKind == TypeKind.Enum
-                            && pdsSymbol.Type is INamedTypeSymbol pdsSymbolType
-                            && pdsSymbolType.EnumUnderlyingType is not null)
+                        if (pdsSymbol.Type is INamedTypeSymbol pdsSymbolType)
                         {
-                            member.IsEnumType = true;
-                            member.MemberWireTypeName = pdsSymbolType.EnumUnderlyingType.Name;
+                            member.MemberTypeName = pdsSymbolType.Name;
+                            member.MemberWireTypeName = pdsSymbolType.Name;
+                            if (pdsSymbol.Type.TypeKind == TypeKind.Enum
+                                && pdsSymbolType.EnumUnderlyingType is not null)
+                            {
+                                member.IsEnumType = true;
+                                member.MemberWireTypeName = pdsSymbolType.EnumUnderlyingType.Name;
+                            }
+                            else if (pdsSymbolType.IsGenericType && pdsSymbolType.TypeArguments.Length == 1 && pdsSymbolType.Name == "Nullable")
+                            {
+                                member.IsNullable = true;
+                                var typeArg0 = pdsSymbolType.TypeArguments[0];
+                                member.MemberTypeName = typeArg0.Name;
+                                member.MemberWireTypeName = typeArg0.Name;
+                            }
                         }
                         ImmutableArray<AttributeData> allAttributes = pdsSymbol.GetAttributes();
                         if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(ObsoleteAttribute)) is AttributeData obsoleteAttr)
