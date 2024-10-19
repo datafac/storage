@@ -15,10 +15,10 @@ Features implemented:
 - support [Obsolete] members
 
 In progress:
+- nullable types
 
 Coming next:
 - reservation (hidden members)
-- nullable types
 - fixed length arrays
 - UTF8 and UTF16 string support
 - other model entities
