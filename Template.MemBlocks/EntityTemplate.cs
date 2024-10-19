@@ -32,6 +32,7 @@ namespace T_DomainName_.MemBlocks
     {
         //##if false
         private const int T_BlockLength_ = 128;
+        private const bool T_MemberObsoleteIsError_ = false;
         //##endif
         private const int BlockLength = T_BlockLength_;
         private readonly Memory<byte> _writableBlock;
@@ -112,7 +113,7 @@ namespace T_DomainName_.MemBlocks
         //##endif
         //##foreach Members
         //##if MemberIsObsolete
-        [Obsolete]
+        [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##endif
         public T_MemberType_ T_MemberName_
         {

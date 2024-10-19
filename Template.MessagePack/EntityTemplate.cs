@@ -24,6 +24,7 @@ namespace T_DomainName_.MessagePack
     {
         //##if false
         private const int T_MemberSequence_ = 1;
+        private const string T_MemberObsoleteMessage_ = null;
         private const bool T_MemberObsoleteIsError_ = false;
         //##endif
         // todo move to base
