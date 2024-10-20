@@ -7,11 +7,17 @@ using System.Threading.Tasks;
 using DTOMaker.Models;
 namespace MyOrg.Models
 {
+    public enum Kind16 : ushort
+    {
+        Undefined,
+        Kind1,
+        MaxKind = ushort.MaxValue,
+    }
     [Entity]
     [EntityLayout(LayoutMethod.SequentialV1)]
     public interface IMyDTO
     {
         [Member(1)]
-        double? Field1 { get; set; }
+        IReadOnlyList<Int16>? Field1 { get; set; }
     }
 }

@@ -6,8 +6,10 @@
 #pragma warning disable CS0414
 #nullable enable
 using System;
+using System.Collections;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using DTOMaker.Runtime;
 namespace MyOrg.Models.MemBlocks
 {
@@ -93,7 +95,7 @@ namespace MyOrg.Models.MemBlocks
                 return (default, 0);
         }
 
-        public double? Field1
+        public double? Fieldqqq
         {
             get
             {
@@ -110,7 +112,7 @@ namespace MyOrg.Models.MemBlocks
                 const int _flags_Offset = 0;
                 const int _value_Offset = 8;
                 const int _value_Length = 8;
-                if (_frozen) ThrowIsFrozenException(nameof(Field1));
+                if (_frozen) ThrowIsFrozenException(nameof(Fieldqqq));
                 byte flags = value.HasValue ? (byte)1 : (byte)0;
                 Double wireValue = value.HasValue ? value.Value : default;
                 DTOMaker.Runtime.Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(_flags_Offset, 1).Span, flags);
@@ -118,5 +120,95 @@ namespace MyOrg.Models.MemBlocks
             }
         }
 
+        private IReadOnlyList<Int16>? _facade_Field1;
+        public IReadOnlyList<Int16>? Field1
+        {
+            get
+            {
+                const int _flags_Offset = 0;
+                const int _countOffset = 2;
+                //const int _value_Offset = 8;
+                const int _fieldLength = 2;
+                const int _arrayOffset = 16;
+                const int _maxCapacity = 8;
+                byte flags = DTOMaker.Runtime.Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(_flags_Offset, 1).Span);
+                if (flags == 0) return null;
+                if (_facade_Field1 is null)
+                {
+                    _facade_Field1 = new ArrayFacade<Int16>(nameof(Field1), DTOMaker.Runtime.Codec_Int16_LE.Instance, () => _frozen,
+                        _readonlyBlock, _writableBlock, _countOffset, _fieldLength, _arrayOffset, _maxCapacity);
+                }
+                return _facade_Field1;
+            }
+
+            set
+            {
+                if (_frozen) ThrowIsFrozenException(nameof(Field1));
+                // todo
+                throw new NotImplementedException();
+            }
+        }
+    }
+
+    internal sealed class ArrayFacade<TWireType> : IReadOnlyList<TWireType>
+    {
+        private readonly string _fieldName;
+        private readonly ITypedFieldCodec<TWireType> _codec;
+        private readonly Func<bool> _isFrozenFn;
+        private readonly int _countOffset;
+        private readonly int _fieldLength;
+        private readonly int _arrayOffset;
+        private readonly int _maxCapacity;
+        private readonly ReadOnlyMemory<byte> _readonlyBlock;
+        private readonly Memory<byte> _writableBlock;
+
+        public ArrayFacade(string fieldName, ITypedFieldCodec<TWireType> codec, Func<bool> isFrozenFn,
+            ReadOnlyMemory<byte> readonlyBlock, Memory<byte> writableBlock,
+            int countOffset, int fieldLength, int arrayOffset, int maxCapacity)
+        {
+            _fieldName = fieldName;
+            _codec = codec;
+            _countOffset = countOffset;
+            _arrayOffset = arrayOffset;
+            _fieldLength = fieldLength;
+            _maxCapacity = maxCapacity;
+            _readonlyBlock = readonlyBlock;
+            _writableBlock = writableBlock;
+            _isFrozenFn = isFrozenFn;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ThrowIsFrozenException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} when frozen.");
+
+        public TWireType this[int index]
+        {
+            get
+            {
+                ushort count = DTOMaker.Runtime.Codec_UInt16_LE.ReadFromSpan(_readonlyBlock.Slice(_countOffset, 2).Span);
+                if (index < 0 || index >= count) throw new ArgumentOutOfRangeException(nameof(index), index, $"0 <= {nameof(index)} < {count}");
+                // todo flagsBlock
+                var valueBlock = _readonlyBlock.Slice(_arrayOffset, _fieldLength * _maxCapacity);
+                return _codec.ReadFrom(valueBlock.Slice(_fieldLength * index, _fieldLength).Span);
+            }
+            set
+            {
+                if (_isFrozenFn()) ThrowIsFrozenException(_fieldName);
+                ushort count = DTOMaker.Runtime.Codec_UInt16_LE.ReadFromSpan(_readonlyBlock.Slice(_countOffset, 2).Span);
+                if (index < 0 || index >= count) throw new ArgumentOutOfRangeException(nameof(index), index, $"0 <= {nameof(index)} < {count}");
+                throw new NotImplementedException();
+            }
+        }
+
+        public int Count => DTOMaker.Runtime.Codec_UInt16_LE.ReadFromSpan(_readonlyBlock.Slice(_countOffset, 2).Span);
+
+        public IEnumerator<TWireType> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
