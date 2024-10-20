@@ -16,13 +16,14 @@ Features implemented:
 - support [Obsolete] members
 
 In progress:
+- fixed length arrays
 
 Coming next:
-- reservation (hidden members)
-- fixed length arrays
 - UTF8 and UTF16 string support
 - other model entities
 - member wire names and tags
+- reservation (hidden members)
+- compact layout method
 
 Coming later:
 - records
