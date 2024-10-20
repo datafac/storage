@@ -9,13 +9,13 @@ at compile-time, and by generated code at runtime.
 
 Features implemented:
 - Data types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
+- nullable value types
 - IFreezable support
 - templates as code, template processing
 - enumeration data types
 - support [Obsolete] members
 
 In progress:
-- nullable types
 
 Coming next:
 - reservation (hidden members)
