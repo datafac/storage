@@ -55,7 +55,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)] 
-                        [MemberLayout(0)]
+                        [MemberLayout(0, 8)]
                         double Field1 { get; set; }
                     }
                 }
@@ -87,11 +87,11 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)]
-                        [MemberLayout(0)] 
+                        [MemberLayout(8, 0)] 
                         double Field1 { get; set; }
 
                         [Member(2)]
-                        [MemberLayout(8)] 
+                        [MemberLayout(16, 1)] 
                         long Field2 { get; set; }
                     }
                 }
@@ -123,7 +123,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyFirstDTO
                     {
                         [Member(1)]
-                        [MemberLayout(0)] 
+                        [MemberLayout(0, 8)] 
                         double Field1 { get; set; }
                     }
 
@@ -132,7 +132,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyOtherDTO
                     {
                         [Member(1)]
-                        [MemberLayout(0)]
+                        [MemberLayout(0, 8)]
                         long Field1 { get; set; }
                     }
                 }
@@ -251,7 +251,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)]
-                        [MemberLayout(0)] 
+                        [MemberLayout(0, 8)] 
                         double Field1 { get; set; }
                     }
                 }
@@ -280,7 +280,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)]
-                        [MemberLayout(0)] 
+                        [MemberLayout(0, 8)] 
                         double Field1 { get; set; }
                     }
                 }
@@ -309,7 +309,7 @@ namespace DTOMaker.MemBlocks.Tests
                     [EntityLayout(LayoutMethod.Explicit, 64)]
                     public interface IMyDTO
                     {
-                        [MemberLayout(0)]
+                        [MemberLayout(0, 8)]
                         double Field1 { get; set; }
                     }
                 }
@@ -350,8 +350,10 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Should().HaveCount(1);
-            errors[0].GetMessage().Should().Be("[MemberLayout] attribute is missing.");
+            errors.Should().HaveCount(2);
+            errors[0].GetMessage().Should().Be("This member (flags byte) overlaps memory assigned to another member (sequence 1).");
+            errors[1].GetMessage().Should().Be("[MemberLayout] attribute is missing.");
+            // 
         }
 
         [Fact]
@@ -367,7 +369,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)] 
-                        [MemberLayout(-1)]
+                        [MemberLayout(-1, 8)]
                         double Field1 { get; set; }
                     }
                 }
@@ -397,7 +399,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)] 
-                        [MemberLayout(4)]
+                        [MemberLayout(4, 12)]
                         double Field1 { get; set; }
                     }
                 }
@@ -426,7 +428,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)] 
-                        [MemberLayout(4)]
+                        [MemberLayout(4, 12)]
                         double Field1 { get; set; }
                     }
                 }

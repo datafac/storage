@@ -123,30 +123,45 @@ namespace DTOMaker.MemBlocks
         {
             int minBlockLength = 0;
             int fieldOffset = 0;
-            foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence))
+
+            int Allocate(int fieldLength)
             {
-                int fieldLength = GetFieldLength(member);
                 // calculate this offset
                 while (fieldLength > 0 && fieldOffset % fieldLength != 0)
                 {
                     fieldOffset++;
                 }
-                member.FieldLength = fieldLength;
-                member.FieldOffset = fieldOffset;
+                int result = fieldOffset;
+
                 // calc next offset
                 fieldOffset = fieldOffset + fieldLength;
                 while (fieldOffset > minBlockLength)
                 {
                     minBlockLength = minBlockLength == 0 ? 1 : minBlockLength * 2;
                 }
-                // todo allocate Flags byte
+
+                return result;
+            }
+
+            foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence))
+            {
+                // allocate value bytes
+                int fieldLength = GetFieldLength(member);
+                member.FieldLength = fieldLength;
+                member.FieldOffset = Allocate(fieldLength);
+
+                // allocate flags byte
+                member.FlagsOffset = Allocate(1);
+
+                // todo allocate count bytes
+                // member.CountOffset = Allocate(2); // ushort
+
             }
             entity.BlockLength = minBlockLength;
         }
 
         private static string[] GetTemplate(string templateName)
         {
-            //string[] templateNames = Assembly.GetExecutingAssembly().GetManifestResourceNames();
             using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(templateName);
             if (stream is null) throw new ArgumentException($"Template '{templateName}' not found", nameof(templateName));
             var result = new List<string>();

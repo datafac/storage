@@ -148,6 +148,15 @@ namespace DTOMaker.Gentime
                                 TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 0, (value) => { member.Sequence = value; });
                             }
                         }
+                        if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberEndianAttribute)) is AttributeData endianAttr)
+                        {
+                            member.HasMemberAttribute = true;
+                            var attributeArguments = endianAttr.ConstructorArguments;
+                            if (CheckAttributeArguments(nameof(MemberEndianAttribute), attributeArguments, 1, member, pdsLocation))
+                            {
+                                TryGetAttributeArgumentValue<bool>(member, pdsLocation, attributeArguments, 0, (value) => { member.IsBigEndian = value; });
+                            }
+                        }
                         if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberLayoutAttribute)) is AttributeData memberLayoutAttr)
                         {
                             member.HasMemberLayoutAttribute = true;
@@ -155,7 +164,7 @@ namespace DTOMaker.Gentime
                             if (CheckAttributeArguments(nameof(MemberLayoutAttribute), attributeArguments, 2, member, pdsLocation))
                             {
                                 TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 0, (value) => { member.FieldOffset = value; });
-                                TryGetAttributeArgumentValue<bool>(member, pdsLocation, attributeArguments, 1, (value) => { member.IsBigEndian = value; });
+                                TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 1, (value) => { member.FlagsOffset = value; });
                             }
                         }
                     }

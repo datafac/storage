@@ -19,6 +19,7 @@ namespace DTOMaker.Gentime
         public bool IsEnumType { get; set; }
         public int FieldOffset { get; set; }
         public int FieldLength { get; set; }
+        public int FlagsOffset { get; set; }
         public bool IsBigEndian { get; set; } = false;
 
         private SyntaxDiagnostic? CheckHasMemberAttribute()

@@ -12,7 +12,7 @@ namespace MyOrg.Models.MemBlocks
 {
     public sealed partial class MyDTO : IMyDTO, IFreezable
     {
-        private const int BlockLength = 128;
+        private const int BlockLength = 256;
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
         public ReadOnlyMemory<byte> Block => _frozen ? _readonlyBlock : _writableBlock.ToArray();
@@ -111,14 +111,14 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (SByte)DTOMaker.Runtime.Codec_SByte_LE.ReadFromSpan(_readonlyBlock.Slice(1, 1).Span);
+                return (SByte)DTOMaker.Runtime.Codec_SByte_LE.ReadFromSpan(_readonlyBlock.Slice(2, 1).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field2));
                 SByte wireValue = (SByte)value;
-                DTOMaker.Runtime.Codec_SByte_LE.WriteToSpan(_writableBlock.Slice(1, 1).Span, wireValue);
+                DTOMaker.Runtime.Codec_SByte_LE.WriteToSpan(_writableBlock.Slice(2, 1).Span, wireValue);
             }
         }
 
@@ -126,14 +126,14 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Byte)DTOMaker.Runtime.Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(2, 1).Span);
+                return (Byte)DTOMaker.Runtime.Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(4, 1).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field3));
                 Byte wireValue = (Byte)value;
-                DTOMaker.Runtime.Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(2, 1).Span, wireValue);
+                DTOMaker.Runtime.Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(4, 1).Span, wireValue);
             }
         }
 
@@ -141,14 +141,14 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Int16)DTOMaker.Runtime.Codec_Int16_LE.ReadFromSpan(_readonlyBlock.Slice(4, 2).Span);
+                return (Int16)DTOMaker.Runtime.Codec_Int16_LE.ReadFromSpan(_readonlyBlock.Slice(6, 2).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field4));
                 Int16 wireValue = (Int16)value;
-                DTOMaker.Runtime.Codec_Int16_LE.WriteToSpan(_writableBlock.Slice(4, 2).Span, wireValue);
+                DTOMaker.Runtime.Codec_Int16_LE.WriteToSpan(_writableBlock.Slice(6, 2).Span, wireValue);
             }
         }
 
@@ -156,14 +156,14 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (UInt16)DTOMaker.Runtime.Codec_UInt16_LE.ReadFromSpan(_readonlyBlock.Slice(6, 2).Span);
+                return (UInt16)DTOMaker.Runtime.Codec_UInt16_LE.ReadFromSpan(_readonlyBlock.Slice(10, 2).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field5));
                 UInt16 wireValue = (UInt16)value;
-                DTOMaker.Runtime.Codec_UInt16_LE.WriteToSpan(_writableBlock.Slice(6, 2).Span, wireValue);
+                DTOMaker.Runtime.Codec_UInt16_LE.WriteToSpan(_writableBlock.Slice(10, 2).Span, wireValue);
             }
         }
 
@@ -171,14 +171,14 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Char)DTOMaker.Runtime.Codec_Char_LE.ReadFromSpan(_readonlyBlock.Slice(8, 2).Span);
+                return (Char)DTOMaker.Runtime.Codec_Char_LE.ReadFromSpan(_readonlyBlock.Slice(14, 2).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field6));
                 Char wireValue = (Char)value;
-                DTOMaker.Runtime.Codec_Char_LE.WriteToSpan(_writableBlock.Slice(8, 2).Span, wireValue);
+                DTOMaker.Runtime.Codec_Char_LE.WriteToSpan(_writableBlock.Slice(14, 2).Span, wireValue);
             }
         }
 
@@ -186,14 +186,14 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Half)DTOMaker.Runtime.Codec_Half_LE.ReadFromSpan(_readonlyBlock.Slice(10, 2).Span);
+                return (Half)DTOMaker.Runtime.Codec_Half_LE.ReadFromSpan(_readonlyBlock.Slice(18, 2).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field7));
                 Half wireValue = (Half)value;
-                DTOMaker.Runtime.Codec_Half_LE.WriteToSpan(_writableBlock.Slice(10, 2).Span, wireValue);
+                DTOMaker.Runtime.Codec_Half_LE.WriteToSpan(_writableBlock.Slice(18, 2).Span, wireValue);
             }
         }
 
@@ -201,14 +201,14 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Int32)DTOMaker.Runtime.Codec_Int32_LE.ReadFromSpan(_readonlyBlock.Slice(12, 4).Span);
+                return (Int32)DTOMaker.Runtime.Codec_Int32_LE.ReadFromSpan(_readonlyBlock.Slice(24, 4).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field8));
                 Int32 wireValue = (Int32)value;
-                DTOMaker.Runtime.Codec_Int32_LE.WriteToSpan(_writableBlock.Slice(12, 4).Span, wireValue);
+                DTOMaker.Runtime.Codec_Int32_LE.WriteToSpan(_writableBlock.Slice(24, 4).Span, wireValue);
             }
         }
 
@@ -216,14 +216,14 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (UInt32)DTOMaker.Runtime.Codec_UInt32_LE.ReadFromSpan(_readonlyBlock.Slice(16, 4).Span);
+                return (UInt32)DTOMaker.Runtime.Codec_UInt32_LE.ReadFromSpan(_readonlyBlock.Slice(32, 4).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field9));
                 UInt32 wireValue = (UInt32)value;
-                DTOMaker.Runtime.Codec_UInt32_LE.WriteToSpan(_writableBlock.Slice(16, 4).Span, wireValue);
+                DTOMaker.Runtime.Codec_UInt32_LE.WriteToSpan(_writableBlock.Slice(32, 4).Span, wireValue);
             }
         }
 
@@ -231,14 +231,14 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Single)DTOMaker.Runtime.Codec_Single_LE.ReadFromSpan(_readonlyBlock.Slice(20, 4).Span);
+                return (Single)DTOMaker.Runtime.Codec_Single_LE.ReadFromSpan(_readonlyBlock.Slice(40, 4).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field10));
                 Single wireValue = (Single)value;
-                DTOMaker.Runtime.Codec_Single_LE.WriteToSpan(_writableBlock.Slice(20, 4).Span, wireValue);
+                DTOMaker.Runtime.Codec_Single_LE.WriteToSpan(_writableBlock.Slice(40, 4).Span, wireValue);
             }
         }
 
@@ -246,14 +246,14 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Int64)DTOMaker.Runtime.Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(24, 8).Span);
+                return (Int64)DTOMaker.Runtime.Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(48, 8).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field11));
                 Int64 wireValue = (Int64)value;
-                DTOMaker.Runtime.Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(24, 8).Span, wireValue);
+                DTOMaker.Runtime.Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(48, 8).Span, wireValue);
             }
         }
 
@@ -261,14 +261,14 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (UInt64)DTOMaker.Runtime.Codec_UInt64_LE.ReadFromSpan(_readonlyBlock.Slice(32, 8).Span);
+                return (UInt64)DTOMaker.Runtime.Codec_UInt64_LE.ReadFromSpan(_readonlyBlock.Slice(64, 8).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field12));
                 UInt64 wireValue = (UInt64)value;
-                DTOMaker.Runtime.Codec_UInt64_LE.WriteToSpan(_writableBlock.Slice(32, 8).Span, wireValue);
+                DTOMaker.Runtime.Codec_UInt64_LE.WriteToSpan(_writableBlock.Slice(64, 8).Span, wireValue);
             }
         }
 
@@ -276,14 +276,14 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Double)DTOMaker.Runtime.Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(40, 8).Span);
+                return (Double)DTOMaker.Runtime.Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(80, 8).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field13));
                 Double wireValue = (Double)value;
-                DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(40, 8).Span, wireValue);
+                DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(80, 8).Span, wireValue);
             }
         }
 
@@ -291,14 +291,14 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Guid)DTOMaker.Runtime.Codec_Guid_LE.ReadFromSpan(_readonlyBlock.Slice(48, 16).Span);
+                return (Guid)DTOMaker.Runtime.Codec_Guid_LE.ReadFromSpan(_readonlyBlock.Slice(96, 16).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field14));
                 Guid wireValue = (Guid)value;
-                DTOMaker.Runtime.Codec_Guid_LE.WriteToSpan(_writableBlock.Slice(48, 16).Span, wireValue);
+                DTOMaker.Runtime.Codec_Guid_LE.WriteToSpan(_writableBlock.Slice(96, 16).Span, wireValue);
             }
         }
 
@@ -306,14 +306,14 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Int128)DTOMaker.Runtime.Codec_Int128_LE.ReadFromSpan(_readonlyBlock.Slice(64, 16).Span);
+                return (Int128)DTOMaker.Runtime.Codec_Int128_LE.ReadFromSpan(_readonlyBlock.Slice(128, 16).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field15));
                 Int128 wireValue = (Int128)value;
-                DTOMaker.Runtime.Codec_Int128_LE.WriteToSpan(_writableBlock.Slice(64, 16).Span, wireValue);
+                DTOMaker.Runtime.Codec_Int128_LE.WriteToSpan(_writableBlock.Slice(128, 16).Span, wireValue);
             }
         }
 
@@ -321,14 +321,14 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (UInt128)DTOMaker.Runtime.Codec_UInt128_LE.ReadFromSpan(_readonlyBlock.Slice(80, 16).Span);
+                return (UInt128)DTOMaker.Runtime.Codec_UInt128_LE.ReadFromSpan(_readonlyBlock.Slice(160, 16).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field16));
                 UInt128 wireValue = (UInt128)value;
-                DTOMaker.Runtime.Codec_UInt128_LE.WriteToSpan(_writableBlock.Slice(80, 16).Span, wireValue);
+                DTOMaker.Runtime.Codec_UInt128_LE.WriteToSpan(_writableBlock.Slice(160, 16).Span, wireValue);
             }
         }
 
@@ -336,14 +336,14 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Decimal)DTOMaker.Runtime.Codec_Decimal_LE.ReadFromSpan(_readonlyBlock.Slice(96, 16).Span);
+                return (Decimal)DTOMaker.Runtime.Codec_Decimal_LE.ReadFromSpan(_readonlyBlock.Slice(192, 16).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field17));
                 Decimal wireValue = (Decimal)value;
-                DTOMaker.Runtime.Codec_Decimal_LE.WriteToSpan(_writableBlock.Slice(96, 16).Span, wireValue);
+                DTOMaker.Runtime.Codec_Decimal_LE.WriteToSpan(_writableBlock.Slice(192, 16).Span, wireValue);
             }
         }
 

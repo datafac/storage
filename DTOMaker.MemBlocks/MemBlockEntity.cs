@@ -1,9 +1,7 @@
 ﻿using DTOMaker.Gentime;
 using DTOMaker.Models;
 using Microsoft.CodeAnalysis;
-using System;
 using System.Collections.Generic;
-using System.IO.MemoryMappedFiles;
 using System.Linq;
 
 namespace DTOMaker.MemBlocks
@@ -26,7 +24,7 @@ namespace DTOMaker.MemBlocks
             if (!HasEntityLayoutAttribute)
                 return null;
 
-            if (LayoutMethod != LayoutMethod.Explicit) 
+            if (LayoutMethod != LayoutMethod.Explicit)
                 return null;
 
             return BlockLength switch
@@ -71,6 +69,8 @@ namespace DTOMaker.MemBlocks
             // memory map of every byte in the entity block
             int[] memberMap = new int[BlockLength];
 
+            if (LayoutMethod == LayoutMethod.Undefined) return null;
+
             foreach (var member in Members.Values.OrderBy(m => m.Sequence))
             {
                 if (member.FieldOffset < 0)
@@ -80,11 +80,25 @@ namespace DTOMaker.MemBlocks
                         $"This member extends before the start of the block.");
                 }
 
+                if (member.FlagsOffset < 0)
+                {
+                    return new SyntaxDiagnostic(
+                        DiagnosticId.DMMB0008, "Member layout issue", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
+                        $"This member (flags byte) is before the start of the block.");
+                }
+
                 if (member.FieldOffset + member.FieldLength > BlockLength)
                 {
                     return new SyntaxDiagnostic(
                         DiagnosticId.DMMB0008, "Member layout issue", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
                         $"This member extends beyond the end of the block.");
+                }
+
+                if (member.FlagsOffset + 1 > BlockLength)
+                {
+                    return new SyntaxDiagnostic(
+                        DiagnosticId.DMMB0008, "Member layout issue", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
+                        $"This member (flags byte) is beyond the end of the block.");
                 }
 
                 if (member.FieldLength > 0 && (member.FieldOffset % member.FieldLength != 0))
@@ -94,6 +108,7 @@ namespace DTOMaker.MemBlocks
                         $"This member is incorrectly aligned. FieldOffset ({member.FieldOffset}) modulo FieldLength ({member.FieldLength}) must be 0.");
                 }
 
+                // check value bytes layout
                 for (var i = 0; i < member.FieldLength; i++)
                 {
                     int offset = member.FieldOffset + i;
@@ -103,6 +118,23 @@ namespace DTOMaker.MemBlocks
                         return new SyntaxDiagnostic(
                             DiagnosticId.DMMB0008, "Member layout issue", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
                             $"This member overlaps memory assigned to another member (sequence {conflictSequence}).");
+                    }
+                    else
+                    {
+                        // not assigned
+                        memberMap[offset] = member.Sequence;
+                    }
+                }
+
+                // check flags byte layout
+                {
+                    int offset = member.FlagsOffset;
+                    if (memberMap[offset] != 0)
+                    {
+                        int conflictSequence = memberMap[offset];
+                        return new SyntaxDiagnostic(
+                            DiagnosticId.DMMB0008, "Member layout issue", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
+                            $"This member (flags byte) overlaps memory assigned to another member (sequence {conflictSequence}).");
                     }
                     else
                     {

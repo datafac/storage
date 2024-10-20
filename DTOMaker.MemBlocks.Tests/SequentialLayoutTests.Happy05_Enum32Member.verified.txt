@@ -12,7 +12,7 @@ namespace MyOrg.Models.MemBlocks
 {
     public sealed partial class MyDTO : IMyDTO, IFreezable
     {
-        private const int BlockLength = 4;
+        private const int BlockLength = 8;
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
         public ReadOnlyMemory<byte> Block => _frozen ? _readonlyBlock : _writableBlock.ToArray();

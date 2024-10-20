@@ -81,14 +81,14 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Double)DTOMaker.Runtime.Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
+                return (Double)DTOMaker.Runtime.Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(8, 8).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field1));
                 Double wireValue = (Double)value;
-                DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, wireValue);
+                DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(8, 8).Span, wireValue);
             }
         }
 
@@ -96,14 +96,14 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Int64)DTOMaker.Runtime.Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(8, 8).Span);
+                return (Int64)DTOMaker.Runtime.Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(16, 8).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field2));
                 Int64 wireValue = (Int64)value;
-                DTOMaker.Runtime.Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(8, 8).Span, wireValue);
+                DTOMaker.Runtime.Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(16, 8).Span, wireValue);
             }
         }
 

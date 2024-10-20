@@ -29,6 +29,8 @@ namespace DTOMaker.Gentime
             builder.Add("MemberJsonName", member.Name.ToCamelCase());
             builder.Add("MemberDefaultValue", _language.GetDefaultValue(member.MemberTypeName));
             builder.Add("MemberBELE", member.IsBigEndian ? "BE" : "LE");
+            builder.Add("FlagsOffset", member.FlagsOffset);
+            // todo builder.Add("MemberCountOffset", member.CountOffset); // array length
             builder.Add("FieldOffset", member.FieldOffset);
             builder.Add("FieldLength", member.FieldLength);
             Tokens = builder.ToImmutable();
