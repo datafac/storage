@@ -18,6 +18,6 @@ namespace MyOrg.Models
     public interface IMyDTO
     {
         [Member(1)]
-        IReadOnlyList<Int16>? Field1 { get; set; }
+        IList<Int16?>? Field1 { get; set; }
     }
 }
