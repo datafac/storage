@@ -13,7 +13,7 @@ using System.Runtime.CompilerServices;
 namespace T_DomainName_.MessagePack
 {
     //##if false
-    using T_MemberType_ = System.DayOfWeek;
+    using T_MemberType_ = System.Int32;
     public interface IT_EntityName_
     {
         T_MemberType_ T_MemberName_ { get; set; }
