@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace DTOMaker.Gentime
 {
@@ -7,10 +8,10 @@ namespace DTOMaker.Gentime
         private readonly ILanguage _language;
         public ImmutableDictionary<string, object?> Tokens;
 
-        public TokenReplacer(ILanguage options, ImmutableDictionary<string, object?> tokens)
+        public TokenReplacer(ILanguage options, IEnumerable<KeyValuePair<string, object?>> tokens)
         {
             _language = options;
-            Tokens = tokens;
+            Tokens = ImmutableDictionary<string, object?>.Empty.AddRange(tokens);
         }
 
         public TokenReplacer Clone(ImmutableDictionary<string, object?> extraTokens)

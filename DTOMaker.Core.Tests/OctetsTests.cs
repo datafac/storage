@@ -1,5 +1,4 @@
-﻿using DTOMaker.Runtime;
-using FluentAssertions;
+﻿using FluentAssertions;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 
-namespace DTOMaker.Core.Tests
+namespace DTOMaker.Runtime.Tests
 {
     public class OctetsTests
     {

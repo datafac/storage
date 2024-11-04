@@ -7,9 +7,11 @@
 #nullable enable
 using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using DTOMaker.Runtime;
 namespace MyOrg.Models.MemBlocks
 {
@@ -153,6 +155,167 @@ namespace MyOrg.Models.MemBlocks
                 }
             }
         }
+
+        public bool Field2_HasValue
+        {
+            get
+            {
+                const int _valueOffset = 16;
+                return DTOMaker.Runtime.Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(_valueOffset, 1).Span);
+            }
+
+            set
+            {
+                const int _valueOffset = 16;
+                DTOMaker.Runtime.Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(_valueOffset, 1).Span, value);
+            }
+        }
+        public double Field2_Value
+        {
+            get
+            {
+                const int _valueOffset = 16;
+                return DTOMaker.Runtime.Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(_valueOffset, 8).Span);
+            }
+
+            set
+            {
+                const int _valueOffset = 16;
+                DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(_valueOffset, 8).Span, value);
+            }
+        }
+
+        public ReadOnlyMemory<byte> Field4
+        {
+            get
+            {
+                const int _countOffset = 2;
+                const int _maxCapacity = 8;
+                const int _valueOffset = 16;
+                ushort count = DTOMaker.Runtime.Codec_UInt16_LE.ReadFromSpan(_readonlyBlock.Slice(_countOffset, 2).Span);
+                if (count == 0) return ReadOnlyMemory<byte>.Empty;
+                var fullSlice = _readonlyBlock.Slice(_valueOffset, _maxCapacity);
+                return fullSlice.Slice(0, count);
+            }
+
+            set
+            {
+                const int _countOffset = 2;
+                const int _maxCapacity = 8;
+                const int _valueOffset = 16;
+                if (_frozen) ThrowIsFrozenException(nameof(Field4));
+                if (value.Length > _maxCapacity)
+                {
+                    ThrowOutOfRangeException(value.Length, _maxCapacity);
+                    return;
+                }
+                ushort count = (ushort)value.Length;
+                DTOMaker.Runtime.Codec_UInt16_LE.WriteToSpan(_writableBlock.Slice(_countOffset, 2).Span, count);
+                if (count > 0)
+                {
+                    var fullSlice = _writableBlock.Slice(_valueOffset, _maxCapacity).Slice(0, count);
+                    value.CopyTo(fullSlice);
+                }
+            }
+        }
+
+        // Octets
+        public ReadOnlyMemory<byte>? Field5
+        {
+            get
+            {
+                const int _flagsOffset = 0;
+                const int _countOffset = 2;
+                const int _maxCapacity = 8;
+                const int _valueOffset = 16;
+                Flags flags = DTOMaker.Runtime.Codec_Flags.ReadFromSpan(_readonlyBlock.Slice(_flagsOffset, 1).Span);
+                if (flags.IsNull) return null;
+                ushort count = DTOMaker.Runtime.Codec_UInt16_LE.ReadFromSpan(_readonlyBlock.Slice(_countOffset, 2).Span);
+                if (count == 0) return ReadOnlyMemory<byte>.Empty;
+                var fullSlice = _readonlyBlock.Slice(_valueOffset, _maxCapacity);
+                return fullSlice.Slice(0, count);
+            }
+
+            set
+            {
+                const int _flagsOffset = 0;
+                const int _countOffset = 2;
+                const int _maxCapacity = 8;
+                const int _valueOffset = 16;
+                if (_frozen) ThrowIsFrozenException(nameof(Field5));
+                if (value is null)
+                {
+                    DTOMaker.Runtime.Codec_Flags.WriteToSpan(_writableBlock.Slice(_flagsOffset, 1).Span, Flags.Null);
+                    return;
+                }
+                DTOMaker.Runtime.Codec_Flags.WriteToSpan(_writableBlock.Slice(_flagsOffset, 1).Span, Flags.NonNull);
+                if (value.Value.Length > _maxCapacity)
+                {
+                    ThrowOutOfRangeException(value.Value.Length, _maxCapacity);
+                    return;
+                }
+                ushort count = (ushort)value.Value.Length;
+                DTOMaker.Runtime.Codec_UInt16_LE.WriteToSpan(_writableBlock.Slice(_countOffset, 2).Span, count);
+                if (count > 0)
+                {
+                    var fullSlice = _writableBlock.Slice(_valueOffset, _maxCapacity).Slice(0, count);
+                    value.Value.CopyTo(fullSlice);
+                }
+            }
+        }
+
+        // UTF8-encoded string
+        public string? Field6
+        {
+            get
+            {
+                const int _flagsOffset = 0;
+                const int _countOffset = 2;
+                const int _maxCapacity = 8;
+                const int _valueOffset = 16;
+                Flags flags = DTOMaker.Runtime.Codec_Flags.ReadFromSpan(_readonlyBlock.Slice(_flagsOffset, 1).Span);
+                if (flags.IsNull) return null;
+                ushort count = DTOMaker.Runtime.Codec_UInt16_LE.ReadFromSpan(_readonlyBlock.Slice(_countOffset, 2).Span);
+                if (count == 0) return string.Empty;
+                var fullSlice = _readonlyBlock.Slice(_valueOffset, _maxCapacity);
+#if NET6_0_OR_GREATER
+                return UTF8Encoding.UTF8.GetString(fullSlice.Span.Slice(0, count));
+#else
+                return Encoding.UTF8.GetString(fullSlice.ToArray(), 0, count);
+#endif
+            }
+
+            set
+            {
+                const int _flagsOffset = 0;
+                const int _countOffset = 2;
+                const int _maxCapacity = 8;
+                const int _valueOffset = 16;
+                if (_frozen) ThrowIsFrozenException(nameof(Field4));
+                if (value is null)
+                {
+                    DTOMaker.Runtime.Codec_Flags.WriteToSpan(_writableBlock.Slice(_flagsOffset, 1).Span, Flags.Null);
+                    return;
+                }
+                DTOMaker.Runtime.Codec_Flags.WriteToSpan(_writableBlock.Slice(_flagsOffset, 1).Span, Flags.NonNull);
+                var fullSpan = _writableBlock.Slice(_valueOffset, _maxCapacity).Span;
+                fullSpan.Clear();
+#if NET6_0_OR_GREATER
+                int bytesWritten = UTF8Encoding.UTF8.GetBytes(value.AsSpan(), fullSpan);
+                ushort count = (ushort)bytesWritten;
+                DTOMaker.Runtime.Codec_UInt16_LE.WriteToSpan(_writableBlock.Slice(_countOffset, 2).Span, count);
+#else
+                var encoded = Encoding.UTF8.GetBytes(value);
+                ushort count = (ushort)encoded.Length;
+                if (count > 0)
+                {
+                    encoded.CopyTo(fullSpan);
+                }
+                DTOMaker.Runtime.Codec_UInt16_LE.WriteToSpan(_writableBlock.Slice(_countOffset, 2).Span, count);
+#endif
+            }
+        }
+
     }
 
     internal sealed class ArrayFacade<TWireType> : IList<TWireType?> where TWireType : struct

@@ -1,39 +1,42 @@
 ﻿using System;
-using System.Collections.Immutable;
+using System.Collections.Generic;
 
 namespace DTOMaker.Gentime
 {
     internal sealed class ModelScope_Member : IModelScope
     {
-        private readonly ILanguage _language;
         private readonly TargetMember _member;
+        private readonly ILanguage _language;
+        private readonly Dictionary<string, object?> _variables = new Dictionary<string, object?>();
+        public IDictionary<string, object?> Variables => _variables;
 
-        public ImmutableDictionary<string, object?> Tokens { get; }
-
-        public ModelScope_Member(ILanguage language, TargetMember member, ImmutableDictionary<string, object?> parentTokens)
+        public ModelScope_Member(ILanguage language, TargetMember member, IEnumerable<KeyValuePair<string, object?>> tokens)
         {
             _language = language;
             _member = member;
-            var builder = parentTokens.ToBuilder();
-            builder.Add("MemberIsNullable", member.IsNullable);
-            builder.Add("MemberIsObsolete", member.IsObsolete);
-            builder.Add("MemberObsoleteMessage", member.ObsoleteMessage);
-            builder.Add("MemberObsoleteIsError", member.ObsoleteIsError);
-            builder.Add("MemberTypeIsEnum", member.IsEnumType);
-            builder.Add("MemberType", _language.GetDataTypeToken(member.MemberTypeName));
-            builder.Add("MemberWireType", _language.GetDataTypeToken(member.MemberWireTypeName));
-            builder.Add("MemberSequence", member.Sequence);
-            builder.Add("NullableMemberSequence", member.Sequence);
-            builder.Add("MemberName", member.Name);
-            builder.Add("NullableMemberName", member.Name);
-            builder.Add("MemberJsonName", member.Name.ToCamelCase());
-            builder.Add("MemberDefaultValue", _language.GetDefaultValue(member.MemberTypeName));
-            builder.Add("MemberBELE", member.IsBigEndian ? "BE" : "LE");
-            builder.Add("FlagsOffset", member.FlagsOffset);
-            // todo builder.Add("MemberCountOffset", member.CountOffset); // array length
-            builder.Add("FieldOffset", member.FieldOffset);
-            builder.Add("FieldLength", member.FieldLength);
-            Tokens = builder.ToImmutable();
+
+            foreach (var token in tokens)
+            {
+                _variables[token.Key] = token.Value;
+            }
+            _variables.Add("MemberIsNullable", member.IsNullable);
+            _variables.Add("MemberIsObsolete", member.IsObsolete);
+            _variables.Add("MemberObsoleteMessage", member.ObsoleteMessage);
+            _variables.Add("MemberObsoleteIsError", member.ObsoleteIsError);
+            _variables.Add("MemberTypeIsEnum", member.IsEnumType);
+            _variables.Add("MemberType", _language.GetDataTypeToken(member.MemberTypeName));
+            _variables.Add("MemberWireType", _language.GetDataTypeToken(member.MemberWireTypeName));
+            _variables.Add("MemberSequence", member.Sequence);
+            _variables.Add("NullableMemberSequence", member.Sequence);
+            _variables.Add("MemberName", member.Name);
+            _variables.Add("NullableMemberName", member.Name);
+            _variables.Add("MemberJsonName", member.Name.ToCamelCase());
+            _variables.Add("MemberDefaultValue", _language.GetDefaultValue(member.MemberTypeName));
+            _variables.Add("MemberBELE", member.IsBigEndian ? "BE" : "LE");
+            _variables.Add("FlagsOffset", member.FlagsOffset);
+            // todo _variables.Add("MemberCountOffset", member.CountOffset); // array length
+            _variables.Add("FieldOffset", member.FieldOffset);
+            _variables.Add("FieldLength", member.FieldLength);
         }
 
         public (bool?, IModelScope[]) GetInnerScopes(string iteratorName)

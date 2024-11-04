@@ -5,6 +5,7 @@
         None,
         Eval,
         If,
+        Elif,
         Else,
         EndIf,
         ForEach,

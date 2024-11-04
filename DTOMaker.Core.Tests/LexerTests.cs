@@ -1,9 +1,8 @@
-﻿using DTOMaker.Gentime;
-using FluentAssertions;
+﻿using FluentAssertions;
 using System;
 using System.Collections.Generic;
 
-namespace DTOMaker.Core.Tests
+namespace DTOMaker.Gentime.Tests
 {
     public class LexerTests
     {

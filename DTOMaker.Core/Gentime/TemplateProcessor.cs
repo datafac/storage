@@ -27,6 +27,7 @@ namespace DTOMaker.Gentime
             firstToken.ToLowerInvariant(command);
             if (command.SequenceEqual("eval")) return (TemplateCommand.Eval, remaining);
             if (command.SequenceEqual("if")) return (TemplateCommand.If, remaining);
+            if (command.SequenceEqual("elif")) return (TemplateCommand.Elif, remaining);
             if (command.SequenceEqual("else")) return (TemplateCommand.Else, remaining);
             if (command.SequenceEqual("endif")) return (TemplateCommand.EndIf, remaining);
             if (command.SequenceEqual("foreach")) return (TemplateCommand.ForEach, remaining);
@@ -110,18 +111,18 @@ namespace DTOMaker.Gentime
                                 var parsed = parser.Parse(remaining);
                                 if (parsed is null) throw new TemplateException("Unknown error", line);
                                 if (parsed is ErrorNode error) throw new TemplateException(error.Message ?? "", line);
-                                parsed.Evaluate(scope.Replacer.Tokens);
+                                parsed.Evaluate(scope.ModelScope.Variables);
                                 // todo check for eval error
                             }
                             break;
                         case TemplateCommand.If:
                             {
-                                var innerScope = new NestedScope(scope, scope.ModelScope, scope.Replacer);
+                                var innerScope = new NestedScope(scope, scope.ModelScope, scope.Language);
                                 // parse and evaluate expression as boolean
                                 var parsed = parser.Parse(remaining);
                                 if (parsed is null) throw new TemplateException("Unknown error", line);
                                 if (parsed is ErrorNode error) throw new TemplateException(error.Message ?? "", line);
-                                var result = parsed.Evaluate(innerScope.Replacer.Tokens);
+                                var result = parsed.Evaluate(innerScope.ModelScope.Variables);
                                 innerScope.LocalIsActive = result is bool boolResult ? boolResult : false;
                                 innerScope.Kind = ScopeKind.InIfBlock;
                                 var innerOutput = ProcessTemplateScope(template, lineNumber + 1, innerScope, options);
@@ -129,7 +130,20 @@ namespace DTOMaker.Gentime
                                 lineNumber = innerScope.LastLineNumber;
                             }
                             break;
+                        case TemplateCommand.Elif:
+                            // skip if already handled
+                            if (!scope.LocalIsActive)
+                            {
+                                // not already handled - parse and evaluate expression as boolean
+                                var parsed = parser.Parse(remaining);
+                                if (parsed is null) throw new TemplateException("Unknown error", line);
+                                if (parsed is ErrorNode error) throw new TemplateException(error.Message ?? "", line);
+                                var result = parsed.Evaluate(scope.ModelScope.Variables);
+                                scope.LocalIsActive = result is bool boolResult ? boolResult : false;
+                            }
+                            break;
                         case TemplateCommand.Else:
+                            // skip if already handled
                             scope.LocalIsActive = !scope.LocalIsActive;
                             break;
                         case TemplateCommand.EndIf:
@@ -146,7 +160,7 @@ namespace DTOMaker.Gentime
                                 int newLineNumber = lineNumber;
                                 foreach (var innerModelScope in innerModelScopes)
                                 {
-                                    var innerScope = new NestedScope(scope, innerModelScope, scope.Replacer.Clone(innerModelScope.Tokens));
+                                    var innerScope = new NestedScope(scope, innerModelScope, scope.Language);
                                     innerScope.Kind = ScopeKind.InForEach;
                                     innerScope.LocalIsActive = hasIterations.Value;
                                     var innerOutput = ProcessTemplateScope(template, lineNumber + 1, innerScope, options);
@@ -174,7 +188,7 @@ namespace DTOMaker.Gentime
                             = (string.IsNullOrWhiteSpace(line.Text)
                             || line.Text.IndexOf(options.TokenPrefix) < 0)
                             ? line.Text
-                            : scope.Replacer.ReplaceTokens(line.Text);
+                            : scope.GetReplacer().ReplaceTokens(line.Text);
                         output.Add(outputLine);
                     }
                 }
@@ -201,7 +215,7 @@ namespace DTOMaker.Gentime
         public string[] ProcessTemplate(ReadOnlySpan<string> source, ILanguage language, IModelScope outerScope)
         {
             ReadOnlyMemory<SourceLine> template = EnumerateSource(source);
-            var scope = new NestedScope(null, outerScope, new TokenReplacer(language, outerScope.Tokens));
+            var scope = new NestedScope(null, outerScope, language);
             var output = ProcessTemplateScope(template.Span, 0, scope, language);
             return output;
         }

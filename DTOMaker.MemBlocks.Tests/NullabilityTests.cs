@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using VerifyXunit;
 using Xunit;
 
-namespace DTOMaker.MessagePack.Tests
+namespace DTOMaker.MemBlocks.Tests
 {
     public class NullabilityTests
     {
@@ -21,6 +21,7 @@ namespace DTOMaker.MessagePack.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
                         [Member(1)] 
@@ -58,10 +59,11 @@ namespace DTOMaker.MessagePack.Tests
                         MaxKind = ushort.MaxValue,
                     }
                     [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
                         [Member(1)] 
-                        Kind16? Field1 { get; set; }
+                        Kind16 Field1 { get; set; }
                     }
                 }
                 """;
