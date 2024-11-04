@@ -30,11 +30,29 @@ namespace DTOMaker.Gentime
         private SyntaxDiagnostic? CheckMemberType()
         {
             if (!HasMemberAttribute) return null;
-            return string.IsNullOrWhiteSpace(MemberTypeName)
-                ? new SyntaxDiagnostic(
+            return MemberTypeName switch
+            {
+                "Boolean" => null,
+                "SByte" => null,
+                "Byte" => null,
+                "Int16" => null,
+                "UInt16" => null,
+                "Char" => null,
+                "Int32" => null,
+                "UInt32" => null,
+                "Int64" => null,
+                "UInt64" => null,
+                "Half" => null,
+                "Single" => null,
+                "Double" => null,
+                "Int128" => null,
+                "UInt128" => null,
+                "Decimal" => null,
+                "Guid" => null,
+                _ => new SyntaxDiagnostic(
                     DiagnosticId.DTOM0004, "Invalid member datatype", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                    $"MemberType'{MemberTypeName}' must be defined")
-                : null;
+                    $"MemberType '{MemberTypeName}' not supported")
+            };
         }
 
         private SyntaxDiagnostic? CheckMemberSequence()
