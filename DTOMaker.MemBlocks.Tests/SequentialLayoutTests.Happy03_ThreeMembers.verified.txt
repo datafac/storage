@@ -88,8 +88,7 @@ namespace MyOrg.Models.MemBlocks
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field1));
-                Double wireValue = (Double)value;
-                DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, wireValue);
+                DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, value);
             }
         }
 
@@ -97,14 +96,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Boolean)DTOMaker.Runtime.Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(9, 1).Span);
+                return (Boolean)DTOMaker.Runtime.Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(8, 1).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field2));
-                Boolean wireValue = (Boolean)value;
-                DTOMaker.Runtime.Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(9, 1).Span, wireValue);
+                DTOMaker.Runtime.Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(8, 1).Span, value);
             }
         }
 
@@ -118,8 +116,7 @@ namespace MyOrg.Models.MemBlocks
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field3));
-                Int64 wireValue = (Int64)value;
-                DTOMaker.Runtime.Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(16, 8).Span, wireValue);
+                DTOMaker.Runtime.Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(16, 8).Span, value);
             }
         }
 

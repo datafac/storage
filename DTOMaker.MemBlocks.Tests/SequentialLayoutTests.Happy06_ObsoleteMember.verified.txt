@@ -12,7 +12,7 @@ namespace MyOrg.Models.MemBlocks
 {
     public sealed partial class MyDTO : IMyDTO, IFreezable
     {
-        private const int BlockLength = 16;
+        private const int BlockLength = 8;
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
         public ReadOnlyMemory<byte> Block => _frozen ? _readonlyBlock : _writableBlock.ToArray();
@@ -87,8 +87,7 @@ namespace MyOrg.Models.MemBlocks
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field1));
-                Double wireValue = (Double)value;
-                DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, wireValue);
+                DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, value);
             }
         }
 

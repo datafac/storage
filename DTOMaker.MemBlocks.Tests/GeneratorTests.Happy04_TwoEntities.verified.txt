@@ -86,8 +86,7 @@ namespace MyOrg.Models.MemBlocks
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field1));
-                Int64 wireValue = (Int64)value;
-                DTOMaker.Runtime.Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, wireValue);
+                DTOMaker.Runtime.Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, value);
             }
         }
 

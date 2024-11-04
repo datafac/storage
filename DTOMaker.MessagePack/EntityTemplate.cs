@@ -24,7 +24,6 @@ namespace T_DomainName_.MessagePack
     {
         //##if false
         private const int T_MemberSequence_ = 1;
-        private const int T_NullableMemberSequence_ = 2;
         private const string T_MemberObsoleteMessage_ = null;
         private const bool T_MemberObsoleteIsError_ = false;
         //##endif
@@ -64,31 +63,17 @@ namespace T_DomainName_.MessagePack
         }
 
         //##foreach Members
-        //##if MemberIsNullable
-        [IgnoreMember]
-        private T_MemberType_? _T_NullableMemberName_;
-        //##else
         [IgnoreMember]
         private T_MemberType_ _T_MemberName_;
-        //##endif
         //##if MemberIsObsolete
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##endif
-        //##if MemberIsNullable
-        [Key(T_NullableMemberSequence_)]
-        public T_MemberType_? T_NullableMemberName_
-        {
-            get => _T_NullableMemberName_;
-            set => _T_NullableMemberName_ = IfNotFrozen(ref value);
-        }
-        //##else
         [Key(T_MemberSequence_)]
         public T_MemberType_ T_MemberName_
         {
             get => _T_MemberName_;
             set => _T_MemberName_ = IfNotFrozen(ref value);
         }
-        //##endif
 
         //##endfor
 

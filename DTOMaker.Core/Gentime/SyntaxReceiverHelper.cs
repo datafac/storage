@@ -109,20 +109,6 @@ namespace DTOMaker.Gentime
                         if (pdsSymbol.Type is INamedTypeSymbol pdsSymbolType)
                         {
                             member.MemberTypeName = pdsSymbolType.Name;
-                            member.MemberWireTypeName = pdsSymbolType.Name;
-                            if (pdsSymbol.Type.TypeKind == TypeKind.Enum
-                                && pdsSymbolType.EnumUnderlyingType is not null)
-                            {
-                                member.IsEnumType = true;
-                                member.MemberWireTypeName = pdsSymbolType.EnumUnderlyingType.Name;
-                            }
-                            else if (pdsSymbolType.IsGenericType && pdsSymbolType.TypeArguments.Length == 1 && pdsSymbolType.Name == "Nullable")
-                            {
-                                member.IsNullable = true;
-                                var typeArg0 = pdsSymbolType.TypeArguments[0];
-                                member.MemberTypeName = typeArg0.Name;
-                                member.MemberWireTypeName = typeArg0.Name;
-                            }
                         }
                         ImmutableArray<AttributeData> allAttributes = pdsSymbol.GetAttributes();
                         if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(ObsoleteAttribute)) is AttributeData obsoleteAttr)
@@ -143,20 +129,20 @@ namespace DTOMaker.Gentime
                         {
                             member.HasMemberAttribute = true;
                             var attributeArguments = memberAttr.ConstructorArguments;
-                            if (CheckAttributeArguments(nameof(MemberAttribute), attributeArguments, 1, member, pdsLocation))
+                            if (CheckAttributeArguments(nameof(MemberAttribute), attributeArguments, 2, member, pdsLocation))
                             {
                                 TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 0, (value) => { member.Sequence = value; });
+                                TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 1, (value) => { member.ArrayLength = value; });
                             }
                         }
                         if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberLayoutAttribute)) is AttributeData memberLayoutAttr)
                         {
                             member.HasMemberLayoutAttribute = true;
                             var attributeArguments = memberLayoutAttr.ConstructorArguments;
-                            if (CheckAttributeArguments(nameof(MemberLayoutAttribute), attributeArguments, 3, member, pdsLocation))
+                            if (CheckAttributeArguments(nameof(MemberLayoutAttribute), attributeArguments, 2, member, pdsLocation))
                             {
                                 TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 0, (value) => { member.FieldOffset = value; });
-                                TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 1, (value) => { member.FlagsOffset = value; });
-                                TryGetAttributeArgumentValue<bool>(member, pdsLocation, attributeArguments, 2, (value) => { member.IsBigEndian = value; });
+                                TryGetAttributeArgumentValue<bool>(member, pdsLocation, attributeArguments, 1, (value) => { member.IsBigEndian = value; });
                             }
                         }
                     }

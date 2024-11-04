@@ -19,22 +19,15 @@ namespace DTOMaker.Gentime
             {
                 _variables[token.Key] = token.Value;
             }
-            _variables.Add("MemberIsNullable", member.IsNullable);
             _variables.Add("MemberIsObsolete", member.IsObsolete);
             _variables.Add("MemberObsoleteMessage", member.ObsoleteMessage);
             _variables.Add("MemberObsoleteIsError", member.ObsoleteIsError);
-            _variables.Add("MemberTypeIsEnum", member.IsEnumType);
             _variables.Add("MemberType", _language.GetDataTypeToken(member.MemberTypeName));
-            _variables.Add("MemberWireType", _language.GetDataTypeToken(member.MemberWireTypeName));
             _variables.Add("MemberSequence", member.Sequence);
-            _variables.Add("NullableMemberSequence", member.Sequence);
             _variables.Add("MemberName", member.Name);
-            _variables.Add("NullableMemberName", member.Name);
             _variables.Add("MemberJsonName", member.Name.ToCamelCase());
             _variables.Add("MemberDefaultValue", _language.GetDefaultValue(member.MemberTypeName));
             _variables.Add("MemberBELE", member.IsBigEndian ? "BE" : "LE");
-            _variables.Add("FlagsOffset", member.FlagsOffset);
-            // todo _variables.Add("MemberCountOffset", member.CountOffset); // array length
             _variables.Add("FieldOffset", member.FieldOffset);
             _variables.Add("FieldLength", member.FieldLength);
         }

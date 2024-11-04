@@ -86,8 +86,7 @@ namespace MyOrg.Models.MemBlocks
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field1));
-                Double wireValue = (Double)value;
-                DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, wireValue);
+                DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, value);
             }
         }
 

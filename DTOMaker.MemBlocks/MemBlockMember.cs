@@ -36,17 +36,6 @@ namespace DTOMaker.MemBlocks
             };
         }
 
-        private SyntaxDiagnostic? CheckFlagsOffsetIsValid()
-        {
-            return FlagsOffset switch
-            {
-                >= 0 => null,
-                _ => new SyntaxDiagnostic(
-                        DiagnosticId.DMMB0002, "Invalid flags offset", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                        $"FlagsOffset ({FlagsOffset}) must be >= 0")
-            };
-        }
-
         private SyntaxDiagnostic? CheckFieldLengthIsValid()
         {
             return FieldLength switch
@@ -69,7 +58,6 @@ namespace DTOMaker.MemBlocks
             if ((diagnostic2 = CheckHasMemberLayoutAttribute()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckFieldOffsetIsValid()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckFieldLengthIsValid()) is not null) yield return diagnostic2;
-            if ((diagnostic2 = CheckFlagsOffsetIsValid()) is not null) yield return diagnostic2;
         }
 
 

@@ -55,7 +55,7 @@ namespace DTOMaker.MemBlocks
 
         private static int GetFieldLength(TargetMember member)
         {
-            string typeName = member.MemberWireTypeName;
+            string typeName = member.MemberTypeName;
             switch (typeName)
             {
                 case "Boolean":
@@ -111,7 +111,6 @@ namespace DTOMaker.MemBlocks
             foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence))
             {
                 member.FieldLength = GetFieldLength(member);
-                // todo allocate Flags byte
             }
         }
 
@@ -149,13 +148,6 @@ namespace DTOMaker.MemBlocks
                 int fieldLength = GetFieldLength(member);
                 member.FieldLength = fieldLength;
                 member.FieldOffset = Allocate(fieldLength);
-
-                // allocate flags byte
-                member.FlagsOffset = Allocate(1);
-
-                // todo allocate count bytes
-                // member.CountOffset = Allocate(2); // ushort
-
             }
             entity.BlockLength = minBlockLength;
         }

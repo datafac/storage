@@ -80,25 +80,11 @@ namespace DTOMaker.MemBlocks
                         $"This member extends before the start of the block.");
                 }
 
-                if (member.FlagsOffset < 0)
-                {
-                    return new SyntaxDiagnostic(
-                        DiagnosticId.DMMB0008, "Member layout issue", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
-                        $"This member (flags byte) is before the start of the block.");
-                }
-
                 if (member.FieldOffset + member.FieldLength > BlockLength)
                 {
                     return new SyntaxDiagnostic(
                         DiagnosticId.DMMB0008, "Member layout issue", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
                         $"This member extends beyond the end of the block.");
-                }
-
-                if (member.FlagsOffset + 1 > BlockLength)
-                {
-                    return new SyntaxDiagnostic(
-                        DiagnosticId.DMMB0008, "Member layout issue", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
-                        $"This member (flags byte) is beyond the end of the block.");
                 }
 
                 if (member.FieldLength > 0 && (member.FieldOffset % member.FieldLength != 0))
@@ -118,23 +104,6 @@ namespace DTOMaker.MemBlocks
                         return new SyntaxDiagnostic(
                             DiagnosticId.DMMB0008, "Member layout issue", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
                             $"This member overlaps memory assigned to another member (sequence {conflictSequence}).");
-                    }
-                    else
-                    {
-                        // not assigned
-                        memberMap[offset] = member.Sequence;
-                    }
-                }
-
-                // check flags byte layout
-                {
-                    int offset = member.FlagsOffset;
-                    if (memberMap[offset] != 0)
-                    {
-                        int conflictSequence = memberMap[offset];
-                        return new SyntaxDiagnostic(
-                            DiagnosticId.DMMB0008, "Member layout issue", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
-                            $"This member (flags byte) overlaps memory assigned to another member (sequence {conflictSequence}).");
                     }
                     else
                     {
