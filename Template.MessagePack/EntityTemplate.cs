@@ -16,14 +16,16 @@ namespace T_DomainName_.MessagePack
     using T_MemberType_ = System.Int32;
     public interface IT_EntityName_
     {
-        T_MemberType_ T_MemberName_ { get; set; }
+        T_MemberType_ T_ScalarMemberName_ { get; set; }
+        ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
     }
     //##endif
     [MessagePackObject]
     public partial class T_EntityName_ : IT_EntityName_, IFreezable
     {
         //##if false
-        private const int T_MemberSequence_ = 1;
+        private const int T_ScalarMemberSequence_ = 1;
+        private const int T_VectorMemberSequence_ = 2;
         private const string T_MemberObsoleteMessage_ = null;
         private const bool T_MemberObsoleteIsError_ = false;
         //##endif
@@ -58,23 +60,42 @@ namespace T_DomainName_.MessagePack
             // todo base ctor
             //##foreach Members
             // todo freezable members
-            _T_MemberName_ = source.T_MemberName_;
+            //##if MemberIsArray
+            _T_VectorMemberName_ = source.T_VectorMemberName_;
+            //##else
+            _T_ScalarMemberName_ = source.T_ScalarMemberName_;
+            //##endif
             //##endfor
         }
 
         //##foreach Members
+        //##if MemberIsArray
         [IgnoreMember]
-        private T_MemberType_ _T_MemberName_;
+        private ReadOnlyMemory<T_MemberType_> _T_VectorMemberName_;
         //##if MemberIsObsolete
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##endif
-        [Key(T_MemberSequence_)]
-        public T_MemberType_ T_MemberName_
+        [Key(T_VectorMemberSequence_)]
+        public ReadOnlyMemory<T_MemberType_> T_VectorMemberName_
         {
-            get => _T_MemberName_;
-            set => _T_MemberName_ = IfNotFrozen(ref value);
+            get => _T_VectorMemberName_;
+            set => _T_VectorMemberName_ = IfNotFrozen(ref value);
         }
 
+        //##else
+        [IgnoreMember]
+        private T_MemberType_ _T_ScalarMemberName_;
+        //##if MemberIsObsolete
+        [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
+        //##endif
+        [Key(T_ScalarMemberSequence_)]
+        public T_MemberType_ T_ScalarMemberName_
+        {
+            get => _T_ScalarMemberName_;
+            set => _T_ScalarMemberName_ = IfNotFrozen(ref value);
+        }
+
+        //##endif
         //##endfor
 
     }

@@ -25,12 +25,18 @@ namespace DTOMaker.Gentime
             _variables.Add("MemberType", _language.GetDataTypeToken(member.MemberTypeName));
             _variables.Add("MemberIsArray", member.MemberIsArray);
             _variables.Add("MemberSequence", member.Sequence);
+            _variables.Add("ScalarMemberSequence", member.Sequence);
+            _variables.Add("VectorMemberSequence", member.Sequence);
             _variables.Add("MemberName", member.Name);
+            _variables.Add("ScalarMemberName", member.Name);
+            _variables.Add("VectorMemberName", member.Name);
             _variables.Add("MemberJsonName", member.Name.ToCamelCase());
             _variables.Add("MemberDefaultValue", _language.GetDefaultValue(member.MemberTypeName));
-            _variables.Add("MemberBELE", member.IsBigEndian ? "BE" : "LE");
             _variables.Add("FieldOffset", member.FieldOffset);
             _variables.Add("FieldLength", member.FieldLength);
+            _variables.Add("ArrayLength", member.ArrayLength);
+            _variables.Add("MemberBELE", member.IsBigEndian ? "BE" : "LE");
+            _variables.Add("IsBigEndian", member.IsBigEndian);
         }
 
         public (bool?, IModelScope[]) GetInnerScopes(string iteratorName)

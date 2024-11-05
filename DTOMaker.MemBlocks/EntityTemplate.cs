@@ -7,6 +7,7 @@
 #nullable enable
 using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using DTOMaker.Runtime;
 //##if false
 using T_MemberType_ = System.Int32;
@@ -24,7 +25,8 @@ namespace T_DomainName_.MemBlocks
     //##if false
     public interface IT_EntityName_
     {
-        T_MemberType_ T_MemberName_ { get; set; }
+        T_MemberType_ T_ScalarMemberName_ { get; set; }
+        ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
     }
     //##endif
     public sealed partial class T_EntityName_ : IT_EntityName_, IFreezable
@@ -95,19 +97,73 @@ namespace T_DomainName_.MemBlocks
             // todo base ctor
             // todo freezable members
             //##foreach Members
-            this.T_MemberName_ = source.T_MemberName_;
+            //##if MemberIsArray
+            this.T_VectorMemberName_ = source.T_VectorMemberName_;
+            //##else
+            this.T_ScalarMemberName_ = source.T_ScalarMemberName_;
+            //##endif
             //##endfor
         }
 
         //##if false
-        private const int T_FieldOffset_ = 40;
+        private const int T_FieldOffset_ = 32;
         private const int T_FieldLength_ = 8;
+        private const bool T_IsBigEndian_ = false;
+        private const int T_ArrayLength_ = 4;
         //##endif
         //##foreach Members
         //##if MemberIsObsolete
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##endif
-        public T_MemberType_ T_MemberName_
+        //##if MemberIsArray
+        public ReadOnlyMemory<T_MemberType_> T_VectorMemberName_
+        {
+            get
+            {
+                var sourceSpan = _readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_ * T_ArrayLength_).Span;
+                if (BitConverter.IsLittleEndian != T_IsBigEndian_)
+                {
+                    // endian match
+                    return MemoryMarshal.Cast<byte, T_MemberType_>(sourceSpan).ToArray(); // todo alloc!
+                }
+                else
+                {
+                    // endian mismatch - decode each element
+                    Span<T_MemberType_> targetSpan = new T_MemberType_[T_ArrayLength_];
+                    for (int i = 0; i < T_ArrayLength_; i++)
+                    {
+                        var elementSpan = sourceSpan.Slice(T_FieldLength_ * i, T_FieldLength_);
+                        targetSpan[i] = DTOMaker.Runtime.Codec_T_MemberType__T_MemberBELE_.ReadFromSpan(elementSpan);
+                    }
+                    return targetSpan.ToArray(); // todo alloc!
+                }
+            }
+
+            set
+            {
+                if (_frozen) ThrowIsFrozenException(nameof(T_VectorMemberName_));
+                var targetSpan = _writableBlock.Slice(T_FieldOffset_, T_FieldLength_ * T_ArrayLength_).Span;
+                targetSpan.Clear();
+                if (BitConverter.IsLittleEndian != T_IsBigEndian_)
+                {
+                    // endian match
+                    value.Span.CopyTo(MemoryMarshal.Cast<byte, T_MemberType_>(targetSpan));
+                }
+                else
+                {
+                    // endian mismatch - encode each element
+                    var sourceSpan = value.Span;
+                    for (int i = 0; i < sourceSpan.Length; i++)
+                    {
+                        var elementSpan = targetSpan.Slice(T_FieldLength_ * i, T_FieldLength_);
+                        DTOMaker.Runtime.Codec_T_MemberType__T_MemberBELE_.WriteToSpan(elementSpan, sourceSpan[i]);
+                    }
+                }
+            }
+        }
+
+        //##else
+        public T_MemberType_ T_ScalarMemberName_
         {
             get
             {
@@ -116,11 +172,12 @@ namespace T_DomainName_.MemBlocks
 
             set
             {
-                if (_frozen) ThrowIsFrozenException(nameof(T_MemberName_));
+                if (_frozen) ThrowIsFrozenException(nameof(T_ScalarMemberName_));
                 DTOMaker.Runtime.Codec_T_MemberType__T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, T_FieldLength_).Span, value);
             }
         }
 
+        //##endif
         //##endfor
     }
 }

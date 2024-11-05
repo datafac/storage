@@ -43,7 +43,7 @@ namespace DTOMaker.MemBlocks.Tests
         }
 
         [Fact]
-        public async Task Array02_InvalidLength()
+        public void Array02_InvalidLength()
         {
             var inputSource =
                 """
@@ -72,7 +72,7 @@ namespace DTOMaker.MemBlocks.Tests
         }
 
         [Fact]
-        public async Task Array03_TooLarge()
+        public void Array03_TooLarge()
         {
             var inputSource =
                 """

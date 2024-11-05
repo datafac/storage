@@ -48,7 +48,7 @@ namespace DTOMaker.MessagePack.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity()]
+                    [Entity]
                     public interface IMyDTO
                     {
                         [Member(1)] double Field1 { get; set; }
@@ -78,7 +78,7 @@ namespace DTOMaker.MessagePack.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity()]
+                    [Entity]
                     public interface IMyDTO
                     {
                         [Member(1)] double Field1 { get; set; }
@@ -109,13 +109,13 @@ namespace DTOMaker.MessagePack.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity()]
+                    [Entity]
                     public interface IMyFirstDTO
                     {
                         [Member(1)] double Field1 { get; set; }
                     }
 
-                    [Entity()]
+                    [Entity]
                     public interface IMyOtherDTO
                     {
                         [Member(1)] long Field1 { get; set; }
@@ -141,6 +141,36 @@ namespace DTOMaker.MessagePack.Tests
                 string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
                 await Verifier.Verify(outputCode);
             }
+        }
+
+        [Fact]
+        public async Task Happy05_ArrayMember()
+        {
+            var inputSource =
+                """
+                using DTOMaker.Models;
+                namespace MyOrg.Models
+                {
+                    [Entity]
+                    public interface IMyDTO
+                    {
+                        [Member(1)] ReadOnlyMemory<double> Field1 { get; set; }
+                    }
+                }
+                """;
+
+            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
+            generatorResult.Exception.Should().BeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
+            generatorResult.GeneratedSources.Length.Should().Be(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
+
+            // custom generation checks
+            outputSource.HintName.Should().Be("MyOrg.Models.MyDTO.MessagePack.g.cs");
+            string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
+            await Verifier.Verify(outputCode);
         }
 
         [Fact]

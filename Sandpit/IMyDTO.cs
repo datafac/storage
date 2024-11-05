@@ -78,6 +78,9 @@ namespace MyOrg.Models
         }
 #endif
 
+        [Member(6)]
+        ReadOnlyMemory<Char> Field6 { get; set; }
+
         //string? Field6 { get; set; }
         //#if NET6_0_OR_GREATER
         //                return UTF8Encoding.UTF8.GetString(fullSlice.Span.Slice(0, count));

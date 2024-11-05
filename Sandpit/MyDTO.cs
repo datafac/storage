@@ -6,6 +6,7 @@
 #pragma warning disable CS0414
 #nullable enable
 using System;
+using System.Buffers.Binary;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Reflection;
@@ -180,6 +181,61 @@ namespace MyOrg.Models.MemBlocks
             }
         }
 
+        public ReadOnlyMemory<char> Field6
+        {
+            get
+            {
+                const int _fieldLength = 2;
+                const int _arrayLength = 32;
+                const int _totalLength = _fieldLength * _arrayLength;
+                const int _valueOffset = 16;
+                const bool _isBigEndian = false;
+                var sourceSpan = _readonlyBlock.Slice(_valueOffset, _totalLength).Span;
+                if (BitConverter.IsLittleEndian != _isBigEndian)
+                {
+                    // endian match
+                    return MemoryMarshal.Cast<byte, char>(sourceSpan).ToArray(); // todo alloc!
+                }
+                else
+                {
+                    // endian mismatch - decode each element
+                    var target = new char[_arrayLength]; // todo alloc!
+                    var targetSpan = target.AsSpan();
+                    for (int i = 0; i < _arrayLength; i++)
+                    {
+                        var elementSpan = sourceSpan.Slice(_fieldLength * i, _fieldLength);
+                        targetSpan[i] = DTOMaker.Runtime.Codec_Char_LE.ReadFromSpan(elementSpan);
+                    }
+                    return target;
+                }
+            }
+
+            set
+            {
+                const int _fieldLength = 2;
+                const int _arrayLength = 32;
+                const int _totalLength = _fieldLength * _arrayLength;
+                const int _valueOffset = 16;
+                const bool _isBigEndian = false;
+                var sourceSpan = value.Span;
+                var targetSpan = _writableBlock.Slice(_valueOffset, _totalLength).Span;
+                targetSpan.Clear();
+                if (BitConverter.IsLittleEndian != _isBigEndian)
+                {
+                    // endian match
+                    sourceSpan.CopyTo(MemoryMarshal.Cast<byte, char>(targetSpan));
+                }
+                else
+                {
+                    // endian mismatch - encode each element
+                    for (int i = 0; i < sourceSpan.Length; i++)
+                    {
+                        var elementSpan = targetSpan.Slice(_fieldLength * i, _fieldLength);
+                        DTOMaker.Runtime.Codec_Char_LE.WriteToSpan(elementSpan, sourceSpan[i]);
+                    }
+                }
+            }
+        }
     }
 
 }
