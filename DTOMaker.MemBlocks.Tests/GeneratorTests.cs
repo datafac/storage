@@ -1,4 +1,3 @@
-using DTOMaker.Models;
 using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -294,7 +293,7 @@ namespace DTOMaker.MemBlocks.Tests
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
             errors.Should().HaveCount(2);
             errors[0].GetMessage().Should().Be("[EntityLayout] attribute is missing.");
-            errors[1].GetMessage().Should().Be("FieldLength (0) must be > 0");
+            errors[1].GetMessage().Should().Be("FieldLength (0) is invalid. FieldLength must be a whole power of 2 between 1 and 1024.");
         }
 
         [Fact]

@@ -36,14 +36,69 @@ namespace DTOMaker.MemBlocks
             };
         }
 
+        private SyntaxDiagnostic? CheckArrayLengthIsValid()
+        {
+            if (!MemberIsArray) return null;
+            return ArrayLength switch
+            {
+                1 => null,
+                2 => null,
+                4 => null,
+                8 => null,
+                16 => null,
+                32 => null,
+                64 => null,
+                128 => null,
+                256 => null,
+                512 => null,
+                1024 => null,
+                _ => new SyntaxDiagnostic(
+                        DiagnosticId.DMMB0009, "Invalid array length", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+                        $"ArrayLength ({ArrayLength}) is invalid. ArrayLength must be a whole power of 2 between 1 and 1024.")
+            };
+        }
+
         private SyntaxDiagnostic? CheckFieldLengthIsValid()
         {
             return FieldLength switch
             {
-                > 0 => null,
+                1 => null,
+                2 => null,
+                4 => null,
+                8 => null,
+                16 => null,
+                32 => null,
+                64 => null,
+                128 => null,
+                256 => null,
+                512 => null,
+                1024 => null,
                 _ => new SyntaxDiagnostic(
                         DiagnosticId.DMMB0003, "Invalid field length", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                        $"FieldLength ({FieldLength}) must be > 0")
+                        $"FieldLength ({FieldLength}) is invalid. FieldLength must be a whole power of 2 between 1 and 1024.")
+            };
+        }
+
+        private SyntaxDiagnostic? CheckTotalLengthIsValid()
+        {
+            if (!MemberIsArray) return null;
+            int totalLength = FieldLength * ArrayLength;
+            return totalLength switch
+            {
+                1 => null,
+                2 => null,
+                4 => null,
+                8 => null,
+                16 => null,
+                32 => null,
+                64 => null,
+                128 => null,
+                256 => null,
+                512 => null,
+                1024 => null,
+                _ => new SyntaxDiagnostic(
+                        DiagnosticId.DMMB0009, "Invalid array length", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+                        $"Total length ({totalLength}) is invalid. Total length must be a whole power of 2 between 1 and 1024.")
             };
         }
 
@@ -58,6 +113,8 @@ namespace DTOMaker.MemBlocks
             if ((diagnostic2 = CheckHasMemberLayoutAttribute()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckFieldOffsetIsValid()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckFieldLengthIsValid()) is not null) yield return diagnostic2;
+            if ((diagnostic2 = CheckArrayLengthIsValid()) is not null) yield return diagnostic2;
+            if ((diagnostic2 = CheckTotalLengthIsValid()) is not null) yield return diagnostic2;
         }
 
 

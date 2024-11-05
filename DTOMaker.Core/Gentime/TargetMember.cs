@@ -9,11 +9,13 @@ namespace DTOMaker.Gentime
         public bool HasMemberAttribute { get; set; }
         public bool HasMemberLayoutAttribute { get; set; }
         public TargetEntity? Parent { get; set; }
+        // todo MemberType enum
         public string MemberTypeName { get; set; } = "";
         public bool IsObsolete { get; set; }
         public string ObsoleteMessage { get; set; } = "";
         public bool ObsoleteIsError { get; set; }
         public int Sequence { get; set; }
+        public bool MemberIsArray { get; set; }
         public int ArrayLength { get; set; }
         public int FieldOffset { get; set; }
         public int FieldLength { get; set; }

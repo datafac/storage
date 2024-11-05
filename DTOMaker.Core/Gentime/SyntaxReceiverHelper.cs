@@ -109,6 +109,11 @@ namespace DTOMaker.Gentime
                         if (pdsSymbol.Type is INamedTypeSymbol pdsSymbolType)
                         {
                             member.MemberTypeName = pdsSymbolType.Name;
+                            if (pdsSymbolType.IsGenericType && pdsSymbolType.Name == "ReadOnlyMemory")
+                            {
+                                member.MemberIsArray = true;
+                                member.MemberTypeName = pdsSymbolType.TypeArguments[0].Name;
+                            }
                         }
                         ImmutableArray<AttributeData> allAttributes = pdsSymbol.GetAttributes();
                         if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(ObsoleteAttribute)) is AttributeData obsoleteAttr)

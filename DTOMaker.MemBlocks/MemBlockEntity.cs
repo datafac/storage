@@ -42,7 +42,7 @@ namespace DTOMaker.MemBlocks
                 1024 => null,
                 _ => new SyntaxDiagnostic(
                         DiagnosticId.DMMB0001, "Invalid block length", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                        $"BlockLength ({BlockLength}) is invalid. BlockLength must be a whole power of 2 between 1 and 1024")
+                        $"BlockLength ({BlockLength}) is invalid. BlockLength must be a whole power of 2 between 1 and 1024.")
             };
         }
 

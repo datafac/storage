@@ -23,6 +23,7 @@ namespace DTOMaker.Gentime
             _variables.Add("MemberObsoleteMessage", member.ObsoleteMessage);
             _variables.Add("MemberObsoleteIsError", member.ObsoleteIsError);
             _variables.Add("MemberType", _language.GetDataTypeToken(member.MemberTypeName));
+            _variables.Add("MemberIsArray", member.MemberIsArray);
             _variables.Add("MemberSequence", member.Sequence);
             _variables.Add("MemberName", member.Name);
             _variables.Add("MemberJsonName", member.Name.ToCamelCase());
