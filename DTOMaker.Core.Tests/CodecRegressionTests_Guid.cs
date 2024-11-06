@@ -1,10 +1,13 @@
 ﻿using DTOMaker.Runtime;
 using FluentAssertions;
+using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 
-namespace DTOMaker.Core.Tests
+namespace DTOMaker.Runtime.Tests
 {
+
     public class CodecRegressionTests_Guid
     {
         private static Guid GetTestGuid(string input)

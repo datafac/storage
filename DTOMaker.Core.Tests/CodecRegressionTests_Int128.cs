@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace DTOMaker.Core.Tests
+namespace DTOMaker.Runtime.Tests
 {
 #if NET8_0_OR_GREATER
     public class CodecRegressionTests_Int128

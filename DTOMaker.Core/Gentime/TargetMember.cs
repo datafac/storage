@@ -7,7 +7,8 @@ namespace DTOMaker.Gentime
     {
         public TargetMember(string name, Location location) : base(name, location) { }
         public bool HasMemberAttribute { get; set; }
-        public bool HasMemberLayoutAttribute { get; set; }
+        public bool HasMemberOffsetAttribute { get; set; }
+        public bool HasMemberEndianAttribute { get; set; }
         public TargetEntity? Parent { get; set; }
         // todo MemberType enum
         public string MemberTypeName { get; set; } = "";
@@ -19,6 +20,7 @@ namespace DTOMaker.Gentime
         public int ArrayLength { get; set; }
         public int FieldOffset { get; set; }
         public int FieldLength { get; set; }
+        public int TotalLength => MemberIsArray ? FieldLength * ArrayLength : FieldLength;
         public bool IsBigEndian { get; set; } = false;
 
         private SyntaxDiagnostic? CheckHasMemberAttribute()

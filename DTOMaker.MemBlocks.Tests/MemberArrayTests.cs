@@ -99,5 +99,36 @@ namespace DTOMaker.MemBlocks.Tests
             errors[0].GetMessage().Should().Be("Total length (2048) is invalid. Total length must be a whole power of 2 between 1 and 1024.");
         }
 
+        [Fact]
+        public async Task Array04_BufferOfBytes()
+        {
+            var inputSource =
+                """
+                using DTOMaker.Models;
+                namespace MyOrg.Models
+                {
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
+                    public interface IMyDTO
+                    {
+                        [Member(1, 8)] 
+                        ReadOnlyMemory<byte> Values { get; set; }
+                    }
+                }
+                """;
+
+            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
+            generatorResult.Exception.Should().BeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
+            generatorResult.GeneratedSources.Should().HaveCount(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
+
+            // custom generation checks
+            string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
+            await Verifier.Verify(outputCode);
+        }
+
     }
 }

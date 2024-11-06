@@ -147,7 +147,14 @@ namespace DTOMaker.MemBlocks
                 // allocate value bytes
                 int fieldLength = GetFieldLength(member);
                 member.FieldLength = fieldLength;
-                member.FieldOffset = Allocate(fieldLength);
+                if(member.MemberIsArray)
+                {
+                    member.FieldOffset = Allocate(fieldLength * member.ArrayLength);
+                }
+                else
+                {
+                    member.FieldOffset = Allocate(fieldLength);
+                }
             }
             entity.BlockLength = minBlockLength;
         }

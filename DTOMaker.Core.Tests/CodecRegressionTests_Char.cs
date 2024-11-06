@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace DTOMaker.Core.Tests
+namespace DTOMaker.Runtime.Tests
 {
     public class CodecRegressionTests_Char
     {

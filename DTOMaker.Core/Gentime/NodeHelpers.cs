@@ -42,6 +42,27 @@ namespace DTOMaker.Gentime
             }
         }
 
+        private static object Int32BinaryOp(BinaryOperator op, int a, int b)
+        {
+            switch (op)
+            {
+                case BinaryOperator.Add: return a + b;
+                case BinaryOperator.Sub: return a - b;
+                case BinaryOperator.Mul: return a * b;
+                case BinaryOperator.Div: return a / b;
+                case BinaryOperator.Mod: return a % b;
+                case BinaryOperator.Pow: return Math.Pow(a, b);
+                case BinaryOperator.LSS: return a < b;
+                case BinaryOperator.LEQ: return a <= b;
+                case BinaryOperator.GTR: return a > b;
+                case BinaryOperator.GEQ: return a >= b;
+                case BinaryOperator.EQU: return a == b;
+                case BinaryOperator.NEQ: return a != b;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(op), op, null);
+            }
+        }
+
         private static object Int64BinaryOp(BinaryOperator op, long a, long b)
         {
             switch (op)
@@ -108,7 +129,7 @@ namespace DTOMaker.Gentime
                 {
                     null => StringBinaryOp(op, null, null),
                     string b => StringBinaryOp(op, null, b),
-                    _ => throw new ArgumentOutOfRangeException(nameof(right), right, null)
+                    _ => StringBinaryOp(op, null, $"{right}")
                 },
                 string a => right switch
                 {
@@ -121,8 +142,15 @@ namespace DTOMaker.Gentime
                     bool b => BooleanBinaryOp(op, a, b),
                     _ => throw new ArgumentOutOfRangeException(nameof(right), right, null)
                 },
+                int a => right switch
+                {
+                    int b => Int32BinaryOp(op, a, b),
+                    long b => Int64BinaryOp(op, a, b),
+                    _ => throw new ArgumentOutOfRangeException(nameof(right), right, null)
+                },
                 long a => right switch
                 {
+                    int b => Int64BinaryOp(op, a, b),
                     long b => Int64BinaryOp(op, a, b),
                     double b => DoubleBinaryOp(op, a, b),
                     string s => StringBinaryOp(op, a.ToString(), s),

@@ -121,6 +121,9 @@ namespace T_DomainName_.MemBlocks
             get
             {
                 var sourceSpan = _readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_ * T_ArrayLength_).Span;
+                //##if FieldLength == 1
+                return MemoryMarshal.Cast<byte, T_MemberType_>(sourceSpan).ToArray(); // todo alloc!
+                //##else
                 if (BitConverter.IsLittleEndian != T_IsBigEndian_)
                 {
                     // endian match
@@ -137,6 +140,7 @@ namespace T_DomainName_.MemBlocks
                     }
                     return targetSpan.ToArray(); // todo alloc!
                 }
+                //##endif
             }
 
             set
@@ -144,6 +148,9 @@ namespace T_DomainName_.MemBlocks
                 if (_frozen) ThrowIsFrozenException(nameof(T_VectorMemberName_));
                 var targetSpan = _writableBlock.Slice(T_FieldOffset_, T_FieldLength_ * T_ArrayLength_).Span;
                 targetSpan.Clear();
+                //##if FieldLength == 1
+                value.Span.CopyTo(MemoryMarshal.Cast<byte, T_MemberType_>(targetSpan));
+                //##else
                 if (BitConverter.IsLittleEndian != T_IsBigEndian_)
                 {
                     // endian match
@@ -159,6 +166,7 @@ namespace T_DomainName_.MemBlocks
                         DTOMaker.Runtime.Codec_T_MemberType__T_MemberBELE_.WriteToSpan(elementSpan, sourceSpan[i]);
                     }
                 }
+                //##endif
             }
         }
 

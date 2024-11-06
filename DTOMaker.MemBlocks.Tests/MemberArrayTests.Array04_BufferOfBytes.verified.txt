@@ -13,7 +13,7 @@ namespace MyOrg.Models.MemBlocks
 {
     public sealed partial class MyDTO : IMyDTO, IFreezable
     {
-        private const int BlockLength = 64;
+        private const int BlockLength = 8;
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
         public ReadOnlyMemory<byte> Block => _frozen ? _readonlyBlock : _writableBlock.ToArray();
@@ -77,49 +77,20 @@ namespace MyOrg.Models.MemBlocks
             this.Values = source.Values;
         }
 
-        public ReadOnlyMemory<Double> Values
+        public ReadOnlyMemory<Byte> Values
         {
             get
             {
-                var sourceSpan = _readonlyBlock.Slice(0, 8 * 8).Span;
-                if (BitConverter.IsLittleEndian != false)
-                {
-                    // endian match
-                    return MemoryMarshal.Cast<byte, Double>(sourceSpan).ToArray(); // todo alloc!
-                }
-                else
-                {
-                    // endian mismatch - decode each element
-                    Span<Double> targetSpan = new Double[8];
-                    for (int i = 0; i < 8; i++)
-                    {
-                        var elementSpan = sourceSpan.Slice(8 * i, 8);
-                        targetSpan[i] = DTOMaker.Runtime.Codec_Double_LE.ReadFromSpan(elementSpan);
-                    }
-                    return targetSpan.ToArray(); // todo alloc!
-                }
+                var sourceSpan = _readonlyBlock.Slice(0, 1 * 8).Span;
+                return MemoryMarshal.Cast<byte, Byte>(sourceSpan).ToArray(); // todo alloc!
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Values));
-                var targetSpan = _writableBlock.Slice(0, 8 * 8).Span;
+                var targetSpan = _writableBlock.Slice(0, 1 * 8).Span;
                 targetSpan.Clear();
-                if (BitConverter.IsLittleEndian != false)
-                {
-                    // endian match
-                    value.Span.CopyTo(MemoryMarshal.Cast<byte, Double>(targetSpan));
-                }
-                else
-                {
-                    // endian mismatch - encode each element
-                    var sourceSpan = value.Span;
-                    for (int i = 0; i < sourceSpan.Length; i++)
-                    {
-                        var elementSpan = targetSpan.Slice(8 * i, 8);
-                        DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(elementSpan, sourceSpan[i]);
-                    }
-                }
+                value.Span.CopyTo(MemoryMarshal.Cast<byte, Byte>(targetSpan));
             }
         }
 

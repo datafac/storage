@@ -140,14 +140,22 @@ namespace DTOMaker.Gentime
                                 TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 1, (value) => { member.ArrayLength = value; });
                             }
                         }
-                        if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberLayoutAttribute)) is AttributeData memberLayoutAttr)
+                        if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberOffsetAttribute)) is AttributeData memberOffsetAttr)
                         {
-                            member.HasMemberLayoutAttribute = true;
-                            var attributeArguments = memberLayoutAttr.ConstructorArguments;
-                            if (CheckAttributeArguments(nameof(MemberLayoutAttribute), attributeArguments, 2, member, pdsLocation))
+                            member.HasMemberOffsetAttribute = true;
+                            var attributeArguments = memberOffsetAttr.ConstructorArguments;
+                            if (CheckAttributeArguments(nameof(MemberOffsetAttribute), attributeArguments, 1, member, pdsLocation))
                             {
                                 TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 0, (value) => { member.FieldOffset = value; });
-                                TryGetAttributeArgumentValue<bool>(member, pdsLocation, attributeArguments, 1, (value) => { member.IsBigEndian = value; });
+                            }
+                        }
+                        if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberEndianAttribute)) is AttributeData memberLayoutAttr)
+                        {
+                            member.HasMemberEndianAttribute = true;
+                            var attributeArguments = memberLayoutAttr.ConstructorArguments;
+                            if (CheckAttributeArguments(nameof(MemberEndianAttribute), attributeArguments, 1, member, pdsLocation))
+                            {
+                                TryGetAttributeArgumentValue<bool>(member, pdsLocation, attributeArguments, 0, (value) => { member.IsBigEndian = value; });
                             }
                         }
                     }
