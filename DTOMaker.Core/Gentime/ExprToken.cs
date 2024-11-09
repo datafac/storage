@@ -6,7 +6,6 @@
         Non = 0x00,
         EOL = 0x01,
         Spc = 0x02,
-        // todo? comments
 
         // code tokens
         Null = 0x10,

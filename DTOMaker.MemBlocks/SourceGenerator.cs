@@ -44,9 +44,10 @@ namespace DTOMaker.MemBlocks
                 // todo major version error/minor version warning
                 context.ReportDiagnostic(Diagnostic.Create(
                         new DiagnosticDescriptor(
-                            "MFNSSG001", "DiagnosticTitle",
+                            DiagnosticId.DMMB0010,
+                            "Missing assembly reference",
                             $"The generated code requires a reference to {packageName} (v{packageVersion} or later).",
-                            "DiagnosticCategory",
+                            DiagnosticCategory.Other,
                             DiagnosticSeverity.Warning,
                             true),
                             Location.None));

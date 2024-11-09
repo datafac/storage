@@ -48,9 +48,10 @@ namespace DTOMaker.MessagePack
                 // todo fix diag id, title and categ
                 context.ReportDiagnostic(Diagnostic.Create(
                         new DiagnosticDescriptor(
-                            "MFNSSG001", "DiagnosticTitle",
+                            DiagnosticId.DMMP0001, 
+                            "Missing assembly reference",
                             $"The generated code requires a reference to {packageName} (v{packageVersion} or later).",
-                            "DiagnosticCategory",
+                            DiagnosticCategory.Other,
                             DiagnosticSeverity.Warning,
                             true),
                             Location.None));

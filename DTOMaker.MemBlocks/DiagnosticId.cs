@@ -11,5 +11,6 @@
         public const string DMMB0007 = nameof(DMMB0007); // Unsupported member type
         public const string DMMB0008 = nameof(DMMB0008); // Member layout issue
         public const string DMMB0009 = nameof(DMMB0009); // Invalid array length
+        public const string DMMB0010 = nameof(DMMB0010); // Missing assembly reference
     }
 }
