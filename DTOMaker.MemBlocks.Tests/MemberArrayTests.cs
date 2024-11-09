@@ -23,7 +23,8 @@ namespace DTOMaker.MemBlocks.Tests
                     [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
-                        [Member(1, 8)] 
+                        [Member(1)]
+                        [MemberLayout(arrayLength: 8)]
                         ReadOnlyMemory<double> Values { get; set; }
                     }
                 }
@@ -54,7 +55,8 @@ namespace DTOMaker.MemBlocks.Tests
                     [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
-                        [Member(1, 3)] 
+                        [Member(1)] 
+                        [MemberLayout(arrayLength: 3)]
                         ReadOnlyMemory<double> Values { get; set; }
                     }
                 }
@@ -83,7 +85,8 @@ namespace DTOMaker.MemBlocks.Tests
                     [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
-                        [Member(1, 256)] 
+                        [Member(1)] 
+                        [MemberLayout(arrayLength: 256)]
                         ReadOnlyMemory<double> Values { get; set; }
                     }
                 }
@@ -111,7 +114,8 @@ namespace DTOMaker.MemBlocks.Tests
                     [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
-                        [Member(1, 8)] 
+                        [Member(1)] 
+                        [MemberLayout(arrayLength: 8)]
                         ReadOnlyMemory<byte> Values { get; set; }
                     }
                 }

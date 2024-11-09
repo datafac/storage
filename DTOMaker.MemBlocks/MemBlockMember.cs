@@ -13,15 +13,15 @@ namespace DTOMaker.MemBlocks
 
         public LayoutMethod LayoutMethod => Parent?.LayoutMethod ?? LayoutMethod.Undefined;
 
-        private SyntaxDiagnostic? CheckHasMemberOffsetAttribute()
+        private SyntaxDiagnostic? CheckHasMemberLayoutAttribute()
         {
             if (LayoutMethod == LayoutMethod.SequentialV1)
                 return null;
 
-            return !HasMemberOffsetAttribute
+            return !HasMemberLayoutAttribute
                 ? new SyntaxDiagnostic(
-                        DiagnosticId.DMMB0006, "Missing [MemberOffset] attribute", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                        $"[MemberOffset] attribute is missing.")
+                        DiagnosticId.DMMB0006, "Missing [MemberLayout] attribute", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+                        $"[MemberLayout] attribute is missing.")
                 : null;
         }
 
@@ -110,7 +110,7 @@ namespace DTOMaker.MemBlocks
             }
 
             SyntaxDiagnostic? diagnostic2;
-            if ((diagnostic2 = CheckHasMemberOffsetAttribute()) is not null) yield return diagnostic2;
+            if ((diagnostic2 = CheckHasMemberLayoutAttribute()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckFieldOffsetIsValid()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckFieldLengthIsValid()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckArrayLengthIsValid()) is not null) yield return diagnostic2;

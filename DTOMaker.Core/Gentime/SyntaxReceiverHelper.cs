@@ -134,28 +134,20 @@ namespace DTOMaker.Gentime
                         {
                             member.HasMemberAttribute = true;
                             var attributeArguments = memberAttr.ConstructorArguments;
-                            if (CheckAttributeArguments(nameof(MemberAttribute), attributeArguments, 2, member, pdsLocation))
+                            if (CheckAttributeArguments(nameof(MemberAttribute), attributeArguments, 1, member, pdsLocation))
                             {
                                 TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 0, (value) => { member.Sequence = value; });
-                                TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 1, (value) => { member.ArrayLength = value; });
                             }
                         }
-                        if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberOffsetAttribute)) is AttributeData memberOffsetAttr)
+                        if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberLayoutAttribute)) is AttributeData memberOffsetAttr)
                         {
-                            member.HasMemberOffsetAttribute = true;
+                            member.HasMemberLayoutAttribute = true;
                             var attributeArguments = memberOffsetAttr.ConstructorArguments;
-                            if (CheckAttributeArguments(nameof(MemberOffsetAttribute), attributeArguments, 1, member, pdsLocation))
+                            if (CheckAttributeArguments(nameof(MemberLayoutAttribute), attributeArguments, 3, member, pdsLocation))
                             {
                                 TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 0, (value) => { member.FieldOffset = value; });
-                            }
-                        }
-                        if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberEndianAttribute)) is AttributeData memberLayoutAttr)
-                        {
-                            member.HasMemberEndianAttribute = true;
-                            var attributeArguments = memberLayoutAttr.ConstructorArguments;
-                            if (CheckAttributeArguments(nameof(MemberEndianAttribute), attributeArguments, 1, member, pdsLocation))
-                            {
-                                TryGetAttributeArgumentValue<bool>(member, pdsLocation, attributeArguments, 0, (value) => { member.IsBigEndian = value; });
+                                TryGetAttributeArgumentValue<bool>(member, pdsLocation, attributeArguments, 1, (value) => { member.IsBigEndian = value; });
+                                TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 2, (value) => { member.ArrayLength = value; });
                             }
                         }
                     }

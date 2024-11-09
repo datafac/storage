@@ -7,10 +7,8 @@ namespace DTOMaker.Gentime
     {
         public TargetMember(string name, Location location) : base(name, location) { }
         public bool HasMemberAttribute { get; set; }
-        public bool HasMemberOffsetAttribute { get; set; }
-        public bool HasMemberEndianAttribute { get; set; }
+        public bool HasMemberLayoutAttribute { get; set; }
         public TargetEntity? Parent { get; set; }
-        // todo MemberType enum
         public string MemberTypeName { get; set; } = "";
         public bool IsObsolete { get; set; }
         public string ObsoleteMessage { get; set; } = "";
@@ -53,6 +51,7 @@ namespace DTOMaker.Gentime
                 "UInt128" => null,
                 "Decimal" => null,
                 "Guid" => null,
+                "String" => null,
                 _ => new SyntaxDiagnostic(
                     DiagnosticId.DTOM0004, "Invalid member datatype", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
                     $"MemberType '{MemberTypeName}' not supported")

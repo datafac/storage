@@ -15,7 +15,7 @@ public enum LayoutMethod : int
     /// Member memory layout is explicitly defined by the model designer. This is
     /// only used by DTO source generators that support memory layout, such as 
     /// MemBlocks. When this method is used: a) the entity block length must be
-    /// explicitly set; b) each member must have a [MemberOffset] attribute that
+    /// explicitly set; b) each member must have a [MemberLayout] attribute that
     /// defines its unique and immutable location (offset and length) within the
     /// entity memory block; c) each member data type must be a non-nullable value
     /// type or fixed length array of these.

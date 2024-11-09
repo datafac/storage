@@ -28,7 +28,8 @@ namespace MyOrg.Models
 #endif
 
         // fixed byte arary
-        [Member(3, arrayLength: 64)]
+        [Member(3)]
+        [MemberLayout(arrayLength: 64)]
         ReadOnlyMemory<byte> Field3_Values { get; set; }
 
         [Member(4)]
@@ -79,20 +80,6 @@ namespace MyOrg.Models
         }
 #endif
 
-        [Member(6)]
-        ReadOnlyMemory<Char> Field6 { get; set; }
-
-        //string? Field6 { get; set; }
-        //#if NET6_0_OR_GREATER
-        //                return UTF8Encoding.UTF8.GetString(fullSlice.Span.Slice(0, count));
-        //#else
-        //                return Encoding.UTF8.GetString(fullSlice.ToArray(), 0, count);
-        //#endif
-        //#if NET6_0_OR_GREATER
-        //        int bytesWritten = UTF8Encoding.UTF8.GetBytes(value.AsSpan(), fullSpan);
-        //#else
-        //                var encoded = Encoding.UTF8.GetBytes(value);
-        //#endif
     }
 
     public static class MyDTOExtensions
