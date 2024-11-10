@@ -9,7 +9,7 @@ using Xunit;
 
 namespace DTOMaker.MemBlocks.Tests
 {
-    public class GeneratorTests
+    public class ExplicitLayoutTests
     {
         [Fact]
         public async Task Happy01_NoMembers()

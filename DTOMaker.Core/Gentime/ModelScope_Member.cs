@@ -23,6 +23,9 @@ namespace DTOMaker.Gentime
             _variables.Add("MemberObsoleteMessage", member.ObsoleteMessage);
             _variables.Add("MemberObsoleteIsError", member.ObsoleteIsError);
             _variables.Add("MemberType", _language.GetDataTypeToken(member.MemberTypeName));
+            _variables.Add("MemberIsNullable", member.MemberIsNullable);
+            _variables.Add("MemberIsValueType", member.MemberIsValueType);
+            _variables.Add("MemberIsReferenceType", member.MemberIsReferenceType);
             _variables.Add("MemberIsArray", member.MemberIsArray);
             _variables.Add("MemberSequence", member.Sequence);
             _variables.Add("ScalarMemberSequence", member.Sequence);

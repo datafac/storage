@@ -13,16 +13,52 @@ namespace DTOMaker.MemBlocks
 
         public LayoutMethod LayoutMethod => Parent?.LayoutMethod ?? LayoutMethod.Undefined;
 
+        private SyntaxDiagnostic? CheckMemberType()
+        {
+            return MemberTypeName switch
+            {
+                "Boolean" => null,
+                "SByte" => null,
+                "Byte" => null,
+                "Int16" => null,
+                "UInt16" => null,
+                "Char" => null,
+                "Int32" => null,
+                "UInt32" => null,
+                "Int64" => null,
+                "UInt64" => null,
+                "Half" => null,
+                "Single" => null,
+                "Double" => null,
+                "Int128" => null,
+                "UInt128" => null,
+                "Decimal" => null,
+                "Guid" => null,
+                _ => new SyntaxDiagnostic(
+                    DiagnosticId.DMMB0007, "Unsupported member datatype", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+                    $"MemberType '{MemberTypeName}' not supported")
+            };
+        }
+
+        private SyntaxDiagnostic? CheckMemberIsNotNullable()
+        {
+            if (!MemberIsNullable) return null;
+
+            return new SyntaxDiagnostic(
+                        DiagnosticId.DMMB0007, "Unsupported member type", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+                        $"Nullable type '{MemberTypeName}?' is not supported.");
+        }
+
         private SyntaxDiagnostic? CheckHasMemberLayoutAttribute()
         {
             if (LayoutMethod == LayoutMethod.SequentialV1)
                 return null;
 
-            return !HasMemberLayoutAttribute
-                ? new SyntaxDiagnostic(
-                        DiagnosticId.DMMB0006, "Missing [MemberLayout] attribute", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                        $"[MemberLayout] attribute is missing.")
-                : null;
+            if (HasMemberLayoutAttribute) return null;
+
+            return (SyntaxDiagnostic?)new SyntaxDiagnostic(
+                     DiagnosticId.DMMB0006, "Missing [MemberLayout] attribute", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+                     "[MemberLayout] attribute is missing.");
         }
 
         private SyntaxDiagnostic? CheckFieldOffsetIsValid()
@@ -110,6 +146,8 @@ namespace DTOMaker.MemBlocks
             }
 
             SyntaxDiagnostic? diagnostic2;
+            if ((diagnostic2 = CheckMemberType()) is not null) yield return diagnostic2;
+            if ((diagnostic2 = CheckMemberIsNotNullable()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckHasMemberLayoutAttribute()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckFieldOffsetIsValid()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckFieldLengthIsValid()) is not null) yield return diagnostic2;

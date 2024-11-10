@@ -82,10 +82,6 @@ namespace DTOMaker.MemBlocks
                 case "Decimal":
                     return 16;
                 default:
-                    member.SyntaxErrors.Add(
-                        new SyntaxDiagnostic(
-                            DiagnosticId.DMMB0007, "Unsupported member type", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
-                            $"Unsupported member type: '{typeName}'"));
                     return 0;
             }
         }

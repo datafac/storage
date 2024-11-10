@@ -183,5 +183,121 @@ namespace DTOMaker.MemBlocks.Tests
             await Verifier.Verify(outputCode);
         }
 
+        [Fact]
+        public void Fault01_Unsupported_Enums()
+        {
+            var inputSource =
+                """
+                using DTOMaker.Models;
+                namespace MyOrg.Models
+                {
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
+                    public interface IMyDTO
+                    {
+                        [Member(1)] 
+                        DayOfWeek Field1 { get; set; }
+                    }
+                }
+                """;
+
+            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
+            generatorResult.Exception.Should().BeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+
+            var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+            errors.Should().HaveCount(2);
+            errors[0].GetMessage().Should().Be("MemberType 'DayOfWeek' not supported");
+            errors[1].GetMessage().Should().StartWith("FieldLength (0) is invalid");
+        }
+
+        [Fact]
+        public void Fault02_Unsupported_NullValType()
+        {
+            var inputSource =
+                """
+                using DTOMaker.Models;
+                namespace MyOrg.Models
+                {
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
+                    public interface IMyDTO
+                    {
+                        [Member(1)] 
+                        int? Field1 { get; set; }
+                    }
+                }
+                """;
+
+            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
+            generatorResult.Exception.Should().BeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+
+            var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+            errors.Should().HaveCount(1);
+            errors[0].GetMessage().Should().Be("Nullable type 'Int32?' is not supported.");
+        }
+
+        [Fact]
+        public void Fault03_Unsupported_String()
+        {
+            var inputSource =
+                """
+                using DTOMaker.Models;
+                namespace MyOrg.Models
+                {
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
+                    public interface IMyDTO
+                    {
+                        [Member(1)] 
+                        string Field1 { get; set; }
+                    }
+                }
+                """;
+
+            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
+            generatorResult.Exception.Should().BeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+
+            var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+            errors.Should().HaveCount(2);
+            errors[0].GetMessage().Should().Be("MemberType 'String' not supported");
+            errors[1].GetMessage().Should().StartWith("FieldLength (0) is invalid");
+        }
+
+        [Fact]
+        public void Fault03_Unsupported_NullRefType()
+        {
+            var inputSource =
+                """
+                using DTOMaker.Models;
+                namespace MyOrg.Models
+                {
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
+                    public interface IMyDTO
+                    {
+                        [Member(1)] 
+                        string? Field1 { get; set; }
+                    }
+                }
+                """;
+
+            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
+            generatorResult.Exception.Should().BeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+
+            var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+            errors.Should().HaveCount(3);
+            errors[0].GetMessage().Should().Be("MemberType 'String' not supported");
+            errors[1].GetMessage().Should().Be("Nullable type 'String?' is not supported.");
+            errors[2].GetMessage().Should().StartWith("FieldLength (0) is invalid");
+        }
+
     }
 }

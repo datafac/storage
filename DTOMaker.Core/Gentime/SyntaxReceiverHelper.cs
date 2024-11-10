@@ -109,10 +109,28 @@ namespace DTOMaker.Gentime
                         if (pdsSymbol.Type is INamedTypeSymbol pdsSymbolType)
                         {
                             member.MemberTypeName = pdsSymbolType.Name;
-                            if (pdsSymbolType.IsGenericType && pdsSymbolType.Name == "ReadOnlyMemory")
+                            member.MemberIsValueType = pdsSymbolType.IsValueType;
+                            member.MemberIsReferenceType = pdsSymbolType.IsReferenceType;
+                            if (pdsSymbolType.IsGenericType && pdsSymbolType.Name == "ReadOnlyMemory" && pdsSymbolType.TypeArguments.Length == 1)
                             {
                                 member.MemberIsArray = true;
-                                member.MemberTypeName = pdsSymbolType.TypeArguments[0].Name;
+                                ITypeSymbol typeArg0 = pdsSymbolType.TypeArguments[0];
+                                member.MemberTypeName = typeArg0.Name;
+                                member.MemberIsValueType = typeArg0.IsValueType;
+                                member.MemberIsReferenceType = typeArg0.IsReferenceType;
+                            }
+                            else if (pdsSymbolType.IsGenericType && pdsSymbolType.Name == "Nullable" && pdsSymbolType.TypeArguments.Length == 1)
+                            {
+                                member.MemberIsNullable = true;
+                                ITypeSymbol typeArg0 = pdsSymbolType.TypeArguments[0];
+                                member.MemberTypeName = typeArg0.Name;
+                                member.MemberIsValueType = typeArg0.IsValueType;
+                                member.MemberIsReferenceType = typeArg0.IsReferenceType;
+                            }
+                            else if (pdsSymbolType.IsReferenceType && pdsSymbolType.NullableAnnotation == NullableAnnotation.Annotated)
+                            {
+                                // nullable ref type
+                                member.MemberIsNullable = true;
                             }
                         }
                         ImmutableArray<AttributeData> allAttributes = pdsSymbol.GetAttributes();
