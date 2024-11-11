@@ -49,9 +49,9 @@ namespace MyOrg.Models.MessagePack
         }
 
         [IgnoreMember]
-        private String _Field1;
+        private String? _Field1;
         [Key(1)]
-        public String Field1
+        public String? Field1
         {
             get => _Field1;
             set => _Field1 = IfNotFrozen(ref value);

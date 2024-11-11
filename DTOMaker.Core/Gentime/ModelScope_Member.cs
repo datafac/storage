@@ -29,9 +29,11 @@ namespace DTOMaker.Gentime
             _variables.Add("MemberIsArray", member.MemberIsArray);
             _variables.Add("MemberSequence", member.Sequence);
             _variables.Add("ScalarMemberSequence", member.Sequence);
+            _variables.Add(member.MemberIsNullable ? "ScalarNullableMemberSequence" : "ScalarRequiredMemberSequence", member.Sequence);
             _variables.Add("VectorMemberSequence", member.Sequence);
             _variables.Add("MemberName", member.Name);
             _variables.Add("ScalarMemberName", member.Name);
+            _variables.Add(member.MemberIsNullable ? "ScalarNullableMemberName" : "ScalarRequiredMemberName", member.Name);
             _variables.Add("VectorMemberName", member.Name);
             _variables.Add("MemberJsonName", member.Name.ToCamelCase());
             _variables.Add("MemberDefaultValue", _language.GetDefaultValue(member.MemberTypeName));

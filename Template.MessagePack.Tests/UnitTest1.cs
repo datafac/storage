@@ -6,13 +6,13 @@ using T_DomainName_.MessagePack;
 
 namespace Template_MessagePack.Tests
 {
-    public class UnitTest1
+    public class TemplateRoundtripTests
     {
         [Fact]
-        public void Test1()
+        public void Roundtrip()
         {
             var orig = new T_EntityName_();
-            orig.T_ScalarMemberName_ = 123;
+            orig.T_ScalarRequiredMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
             orig.Freeze();
 
@@ -22,7 +22,7 @@ namespace Template_MessagePack.Tests
 
             copy.Freeze();
             copy.IsFrozen().Should().BeTrue();
-            copy.T_ScalarMemberName_.Should().Be(orig.T_ScalarMemberName_);
+            copy.T_ScalarRequiredMemberName_.Should().Be(orig.T_ScalarRequiredMemberName_);
             copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).Should().BeTrue();
         }
     }

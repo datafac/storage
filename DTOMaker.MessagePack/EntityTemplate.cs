@@ -16,7 +16,11 @@ namespace T_DomainName_.MessagePack
     using T_MemberType_ = System.Int32;
     public interface IT_EntityName_
     {
-        T_MemberType_ T_ScalarMemberName_ { get; set; }
+        //##if MemberIsNullable
+        T_MemberType_? T_ScalarNullableMemberName_ { get; set; }
+        //##else
+        T_MemberType_ T_ScalarRequiredMemberName_ { get; set; }
+        //##endif
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
     }
     //##endif
@@ -24,8 +28,9 @@ namespace T_DomainName_.MessagePack
     public partial class T_EntityName_ : IT_EntityName_, IFreezable
     {
         //##if false
-        private const int T_ScalarMemberSequence_ = 1;
-        private const int T_VectorMemberSequence_ = 2;
+        private const int T_ScalarNullableMemberSequence_ = 1;
+        private const int T_ScalarRequiredMemberSequence_ = 2;
+        private const int T_VectorMemberSequence_ = 3;
         private const string T_MemberObsoleteMessage_ = null;
         private const bool T_MemberObsoleteIsError_ = false;
         //##endif
@@ -63,7 +68,11 @@ namespace T_DomainName_.MessagePack
             //##if MemberIsArray
             _T_VectorMemberName_ = source.T_VectorMemberName_;
             //##else
-            _T_ScalarMemberName_ = source.T_ScalarMemberName_;
+            //##if MemberIsNullable
+            _T_ScalarNullableMemberName_ = source.T_ScalarNullableMemberName_;
+            //##else
+            _T_ScalarRequiredMemberName_ = source.T_ScalarRequiredMemberName_;
+            //##endif
             //##endif
             //##endfor
         }
@@ -83,17 +92,31 @@ namespace T_DomainName_.MessagePack
         }
 
         //##else
+        //##if MemberIsNullable
         [IgnoreMember]
-        private T_MemberType_ _T_ScalarMemberName_;
+        private T_MemberType_? _T_ScalarNullableMemberName_;
+        //##else
+        [IgnoreMember]
+        private T_MemberType_ _T_ScalarRequiredMemberName_;
+        //##endif
         //##if MemberIsObsolete
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##endif
-        [Key(T_ScalarMemberSequence_)]
-        public T_MemberType_ T_ScalarMemberName_
+        //##if MemberIsNullable
+        [Key(T_ScalarNullableMemberSequence_)]
+        public T_MemberType_? T_ScalarNullableMemberName_
         {
-            get => _T_ScalarMemberName_;
-            set => _T_ScalarMemberName_ = IfNotFrozen(ref value);
+            get => _T_ScalarNullableMemberName_;
+            set => _T_ScalarNullableMemberName_ = IfNotFrozen(ref value);
         }
+        //##else
+        [Key(T_ScalarRequiredMemberSequence_)]
+        public T_MemberType_ T_ScalarRequiredMemberName_
+        {
+            get => _T_ScalarRequiredMemberName_;
+            set => _T_ScalarRequiredMemberName_ = IfNotFrozen(ref value);
+        }
+        //##endif
 
         //##endif
         //##endfor
