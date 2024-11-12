@@ -45,7 +45,10 @@ namespace T_DomainName_.MemBlocks
         public T_EntityName_(ReadOnlySpan<byte> source, bool frozen)
         {
             Memory<byte> memory = new byte[BlockLength];
-            source.Slice(0, BlockLength).CopyTo(memory.Span);
+            if (source.Length <= BlockLength)
+                source.CopyTo(memory.Span);
+            else
+                source.Slice(0, BlockLength).CopyTo(memory.Span);
             _readonlyBlock = memory;
             _writableBlock = memory;
             _frozen = frozen;
