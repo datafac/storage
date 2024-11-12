@@ -1,0 +1,72 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<WarningsAsErrors>nullable</WarningsAsErrors>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageProjectUrl>https://github.com/Psiman62/DTOMaker-CSPoco</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Psiman62/DTOMaker-CSPoco</RepositoryUrl>
+		<Company>Psiman62</Company>
+		<Product>DTOMaker</Product>
+		<Authors>Psiman62 Contributors</Authors>
+		<Title>DTOMaker Generator</Title>
+		<Description>Model-driven source generator for C# POCOs.</Description>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<EnableNETAnalyzers>True</EnableNETAnalyzers>
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>..\SigningKey.snk</AssemblyOriginatorKeyFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageTags>generator; roslyn</PackageTags>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<!-- Generates a package at build -->
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<!-- Do not include the generator as a lib dependency -->
+		<IncludeBuildOutput>false</IncludeBuildOutput>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- Package the generator in the analyzer directory of the nuget package -->
+		<None Include="$(OutputPath)$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+		<!-- Private dependencies of this generator that consumers of this generator will not reference. -->
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Package the DTOMaker.Core dependency alongside the generator assembly -->
+		<None Include="$(PkgDTOMaker_Core)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Remove="EntityTemplate.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="EntityTemplate.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.11.0" />
+		<PackageReference Include="Nerdbank.GitVersioning" Version="3.6.146">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\DTOMaker.Core\DTOMaker.Core.csproj" />
+	</ItemGroup>
+
+</Project>

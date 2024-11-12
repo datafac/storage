@@ -9,6 +9,7 @@ pause
 
 call :exportgroup MemBlocks
 call :exportgroup MessagePack
+call :exportgroup CSPoco
 
 goto :eof
 
