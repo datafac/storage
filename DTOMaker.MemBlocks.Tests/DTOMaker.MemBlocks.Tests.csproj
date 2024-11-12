@@ -30,19 +30,4 @@
 	  <ProjectReference Include="..\DTOMaker.MemBlocks\DTOMaker.MemBlocks.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <None Update="ExplicitLayoutTests.Happy01_NoMembers.verified.txt">
-	    <DependentUpon>ExplicitLayoutTests.cs</DependentUpon>
-	  </None>
-	  <None Update="ExplicitLayoutTests.Happy02_OneMember.verified.txt">
-	    <DependentUpon>ExplicitLayoutTests.cs</DependentUpon>
-	  </None>
-	  <None Update="ExplicitLayoutTests.Happy03_TwoMembers.verified.txt">
-	    <DependentUpon>ExplicitLayoutTests.cs</DependentUpon>
-	  </None>
-	  <None Update="ExplicitLayoutTests.Happy04_TwoEntities.verified.txt">
-	    <DependentUpon>ExplicitLayoutTests.cs</DependentUpon>
-	  </None>
-	</ItemGroup>
-
 </Project>
