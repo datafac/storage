@@ -112,8 +112,9 @@ namespace T_DomainName_.CSPoco
         //##endif
         //##endfor
 
-        public bool Equals(T_EntityName_ other)
+        public bool Equals(T_EntityName_? other)
         {
+            if (other is null) return false;
             // todo if (!base.Equals(other)) return false;
             //##foreach Members
             //##if MemberIsArray
@@ -129,7 +130,7 @@ namespace T_DomainName_.CSPoco
             return true;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is T_EntityName_ other && Equals(other);
         }

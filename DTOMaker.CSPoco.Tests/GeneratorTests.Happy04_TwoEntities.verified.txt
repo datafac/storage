@@ -53,14 +53,15 @@ namespace MyOrg.Models.CSPoco
         }
 
 
-        public bool Equals(MyOtherDTO other)
+        public bool Equals(MyOtherDTO? other)
         {
+            if (other is null) return false;
             // todo if (!base.Equals(other)) return false;
             if (!_Field1.Equals(other.Field1)) return false;
             return true;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is MyOtherDTO other && Equals(other);
         }
