@@ -18,6 +18,12 @@ namespace MyOrg.Models.MemBlocks
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
         public ReadOnlyMemory<byte> Block => _frozen ? _readonlyBlock : _writableBlock.ToArray();
 
+        // -------------------- field map -----------------------------
+        //  Seq.  Off.  Len.  N.    Type    End.  Name
+        //  ----  ----  ----  ----  ------- ----  -------
+        //     1     0     8     8  Double  LE    Values
+        // ------------------------------------------------------------
+
         public MyDTO() => _readonlyBlock = _writableBlock = new byte[BlockLength];
 
         public MyDTO(ReadOnlySpan<byte> source, bool frozen)

@@ -19,10 +19,11 @@ namespace DTOMaker.Gentime
             {
                 _variables[token.Key] = token.Value;
             }
+            string memberType = _language.GetDataTypeToken(member.MemberTypeName);
             _variables.Add("MemberIsObsolete", member.IsObsolete);
             _variables.Add("MemberObsoleteMessage", member.ObsoleteMessage);
             _variables.Add("MemberObsoleteIsError", member.ObsoleteIsError);
-            _variables.Add("MemberType", _language.GetDataTypeToken(member.MemberTypeName));
+            _variables.Add("MemberType", memberType);
             _variables.Add("MemberIsNullable", member.MemberIsNullable);
             _variables.Add("MemberIsValueType", member.MemberIsValueType);
             _variables.Add("MemberIsReferenceType", member.MemberIsReferenceType);
@@ -42,6 +43,12 @@ namespace DTOMaker.Gentime
             _variables.Add("ArrayLength", member.ArrayLength);
             _variables.Add("MemberBELE", member.IsBigEndian ? "BE" : "LE");
             _variables.Add("IsBigEndian", member.IsBigEndian);
+            // padded versions of above for docgen
+            _variables.Add("MemberSequenceR4", member.Sequence.ToString().PadLeft(4));
+            _variables.Add("FieldOffsetR4", member.FieldOffset.ToString().PadLeft(4));
+            _variables.Add("FieldLengthR4", member.FieldLength.ToString().PadLeft(4));
+            _variables.Add("ArrayLengthR4", member.ArrayLength == 0 ? "    " : member.ArrayLength.ToString().PadLeft(4));
+            _variables.Add("MemberTypeL7", memberType.PadRight(7));
         }
 
         public (bool?, IModelScope[]) GetInnerScopes(string iteratorName)

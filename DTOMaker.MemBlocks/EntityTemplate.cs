@@ -40,6 +40,14 @@ namespace T_DomainName_.MemBlocks
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
         public ReadOnlyMemory<byte> Block => _frozen ? _readonlyBlock : _writableBlock.ToArray();
 
+        // -------------------- field map -----------------------------
+        //  Seq.  Off.  Len.  N.    Type    End.  Name
+        //  ----  ----  ----  ----  ------- ----  -------
+        //##foreach Members
+        //  T_MemberSequenceR4_  T_FieldOffsetR4_  T_FieldLengthR4_  T_ArrayLengthR4_  T_MemberTypeL7_ T_MemberBELE_    T_MemberName_
+        //##endfor
+        // ------------------------------------------------------------
+
         public T_EntityName_() => _readonlyBlock = _writableBlock = new byte[BlockLength];
 
         public T_EntityName_(ReadOnlySpan<byte> source, bool frozen)
