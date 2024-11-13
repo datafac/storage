@@ -2,10 +2,28 @@
 
 [![Build-Deploy](https://github.com/Psiman62/DTOMaker-Core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Psiman62/DTOMaker-Core/actions/workflows/dotnet.yml)
 
-*Warning: This is pre-release software under active development. Not for production use. Do not use if you can't tolerate breaking changes occasionally.*
+*Warning: This is pre-release software under active development. Not for production use. Breaking changes occur often.*
 
 This package contains attributes for defining simple data models as interfaces, and also includes types used 
-at compile-time, and by generated code at runtime.
+by source genetators at compile-time, and by generated code at runtime.
+
+## Generators
+The following source generators depend on this package:
+
+### DTOMaker.MessagePack
+Generates DTOs decorated with MessagePack attributes (https://github.com/MessagePack-CSharp/MessagePack-CSharp).
+This source generator can be found at: https://github.com/Psiman62/DTOMaker.MessagePack
+
+### DTOMaker.MemBlocks
+Generates DTOs whose internal data is a single memory block (Memory\<byte\>). Property getters and setters decode and encode
+values directly to the block with explicit byte ordering (little-endian or big-endian). This source generator can be found 
+at: https://github.com/Psiman62/DTOMaker-MemBlocks
+
+### DTOMaker.CSPoco
+Generates basic POCOs (Plain Old C# Objects) that implement the data model interfaces. This source generator can be found 
+at: https://github.com/Psiman62/DTOMaker.CSPoco
+
+## Features
 
 Features implemented:
 - Data types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
@@ -13,6 +31,9 @@ Features implemented:
 - Templates as code, template processing
 - [Obsolete] members
 - Fixed length arrays of above types
+- DTOMaker.MessagePack source generator
+- DTOMaker.MemBlocks source generator
+- DTOMaker.CSPoco source generator
 
 Features not implemented:
 - Nullable types. T? can be simulated using a pair of fields (Boolean, T) and a default implementation
@@ -24,7 +45,6 @@ implementation on the interface.
 
 In progress:
 - Json (NewtonSoft) generator
-- POCO generator
 
 Coming next:
 - Json (System.Text) generator
@@ -35,7 +55,7 @@ Coming next:
 - compact layout method
 
 Coming later:
-- records
+- C# records generator
 - Google Protobuf .proto generation
 - polymorphic types
 - generic patterns: lists, trees, unions, etc.
@@ -44,15 +64,6 @@ Coming later:
 
 These models are consumed by the following source generators to emit DTO classes that implement the 
 model interfaces.
-
-## DTOMaker.MemBlocks
-Generates DTOs whose internal data is a single memory block (Memory\<byte\>). Property getters and setters decode and encode
-values directly to the block with explicit byte ordering (little-endian or big-endian). This source generator can be found 
-at: https://github.com/Psiman62/DTOMaker-MemBlocks
-
-## DTOMaker.MessagePack
-Generates DTOs decorated with MessagePack attributes (https://github.com/MessagePack-CSharp/MessagePack-CSharp).
-This source generator can be found at: https://github.com/Psiman62/DTOMaker.MessagePack
 
 ## Benchmarks
 

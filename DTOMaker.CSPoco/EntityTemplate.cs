@@ -23,7 +23,7 @@ namespace T_DomainName_.CSPoco
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
     }
     //##endif
-    public partial class T_EntityName_ : IT_EntityName_, IFreezable
+    public partial class T_EntityName_ : IT_EntityName_, IFreezable, IEquatable<T_EntityName_>
     {
         //##if false
         private const int T_ScalarNullableMemberSequence_ = 1;
@@ -111,6 +111,58 @@ namespace T_DomainName_.CSPoco
 
         //##endif
         //##endfor
+
+        public bool Equals(T_EntityName_ other)
+        {
+            // todo if (!base.Equals(other)) return false;
+            //##foreach Members
+            //##if MemberIsArray
+            if (!_T_VectorMemberName_.Span.SequenceEqual(other.T_VectorMemberName_.Span)) return false;
+            //##else
+            //##if MemberIsNullable
+            if (!_T_ScalarNullableMemberName_.Equals(other.T_ScalarNullableMemberName_)) return false;
+            //##else
+            if (!_T_ScalarRequiredMemberName_.Equals(other.T_ScalarRequiredMemberName_)) return false;
+            //##endif
+            //##endif
+            //##endfor
+            return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is T_EntityName_ other && Equals(other);
+        }
+
+        private int CalcHashCode()
+        {
+            HashCode result = new HashCode();
+            // todo result.Add(base.GetHashCode());
+            //##foreach Members
+            //##if MemberIsArray
+            result.Add(_T_VectorMemberName_.Length);
+            for (int i = 0; i < _T_VectorMemberName_.Length; i++)
+            {
+                result.Add(_T_VectorMemberName_.Span[i]);
+            }
+            //##else
+            //##if MemberIsNullable
+            result.Add(_T_ScalarNullableMemberName_);
+            //##else
+            result.Add(_T_ScalarRequiredMemberName_);
+            //##endif
+            //##endif
+            //##endfor
+            return result.ToHashCode();
+        }
+
+        private int? _hashCode;
+        public override int GetHashCode()
+        {
+            if (!_frozen) return CalcHashCode();
+            if (_hashCode is null) _hashCode = CalcHashCode();
+            return _hashCode.Value;
+        }
 
     }
 }

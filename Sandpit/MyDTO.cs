@@ -127,6 +127,16 @@ namespace MyOrg.Models.MemBlocks
             }
         }
 
+        public double? Field2
+        {
+            get { return Field2_HasValue ? Field2_Value : null; }
+            set
+            {
+                Field2_HasValue = value is not null;
+                Field2_Value = value is null ? default : value.Value;
+            }
+        }
+
         public int Field3_Length
         {
             get
@@ -166,6 +176,37 @@ namespace MyOrg.Models.MemBlocks
             }
         }
 
+        public ReadOnlyMemory<byte>? Field3
+        {
+            get
+            {
+                var length = this.Field3_Length;
+                return length switch
+                {
+                    < 0 => null,
+                    0 => ReadOnlyMemory<byte>.Empty,
+                    _ => this.Field3_Values.Slice(0, length)
+                };
+            }
+            set
+            {
+                if (value is null)
+                {
+                    this.Field3_Length = -1;
+                }
+                else if (value.Value.Length == 0)
+                {
+                    this.Field3_Length = 0;
+                }
+                else
+                {
+                    var length = value.Value.Length;
+                    this.Field3_Values = value.Value.Slice(0, length);
+                    this.Field3_Length = length;
+                }
+            }
+        }
+
         public ushort Enum16_Data
         {
             get
@@ -179,6 +220,12 @@ namespace MyOrg.Models.MemBlocks
                 const int _valueOffset = 16;
                 DTOMaker.Runtime.Codec_UInt16_LE.WriteToSpan(_writableBlock.Slice(_valueOffset, 2).Span, value);
             }
+        }
+
+        public Kind16 Enum16
+        {
+            get => (Kind16)this.Enum16_Data;
+            set => this.Enum16_Data = (ushort)value;
         }
 
         public ReadOnlyMemory<char> Field6
@@ -236,6 +283,7 @@ namespace MyOrg.Models.MemBlocks
                 }
             }
         }
+
     }
 
 }

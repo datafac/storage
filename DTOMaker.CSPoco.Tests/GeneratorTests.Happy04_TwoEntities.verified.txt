@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 
 namespace MyOrg.Models.CSPoco
 {
-    public partial class MyOtherDTO : IMyOtherDTO, IFreezable
+    public partial class MyOtherDTO : IMyOtherDTO, IFreezable, IEquatable<MyOtherDTO>
     {
         // todo move to base
         private volatile bool _frozen;
@@ -52,6 +52,34 @@ namespace MyOrg.Models.CSPoco
             set => _Field1 = IfNotFrozen(ref value);
         }
 
+
+        public bool Equals(MyOtherDTO other)
+        {
+            // todo if (!base.Equals(other)) return false;
+            if (!_Field1.Equals(other.Field1)) return false;
+            return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is MyOtherDTO other && Equals(other);
+        }
+
+        private int CalcHashCode()
+        {
+            HashCode result = new HashCode();
+            // todo result.Add(base.GetHashCode());
+            result.Add(_Field1);
+            return result.ToHashCode();
+        }
+
+        private int? _hashCode;
+        public override int GetHashCode()
+        {
+            if (!_frozen) return CalcHashCode();
+            if (_hashCode is null) _hashCode = CalcHashCode();
+            return _hashCode.Value;
+        }
 
     }
 }
