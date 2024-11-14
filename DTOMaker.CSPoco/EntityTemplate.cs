@@ -114,6 +114,7 @@ namespace T_DomainName_.CSPoco
 
         public bool Equals(T_EntityName_? other)
         {
+            if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
             // todo if (!base.Equals(other)) return false;
             //##foreach Members

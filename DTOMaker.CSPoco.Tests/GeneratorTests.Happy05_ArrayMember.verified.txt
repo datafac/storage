@@ -55,6 +55,7 @@ namespace MyOrg.Models.CSPoco
 
         public bool Equals(MyDTO? other)
         {
+            if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
             // todo if (!base.Equals(other)) return false;
             if (!_Field1.Span.SequenceEqual(other.Field1.Span)) return false;
