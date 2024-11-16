@@ -11,7 +11,7 @@ using System.Text;
 namespace DTOMaker.MemBlocks
 {
     [Generator(LanguageNames.CSharp)]
-    public class SourceGenerator : ISourceGenerator
+    public class MemBlocksSourceGenerator : ISourceGenerator
     {
         public void Initialize(GeneratorInitializationContext context)
         {

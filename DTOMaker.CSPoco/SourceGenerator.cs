@@ -11,7 +11,7 @@ using System.Text;
 namespace DTOMaker.CSPoco
 {
     [Generator(LanguageNames.CSharp)]
-    public class SourceGenerator : ISourceGenerator
+    public class CSPocoSourceGenerator : ISourceGenerator
     {
         public void Initialize(GeneratorInitializationContext context)
         {

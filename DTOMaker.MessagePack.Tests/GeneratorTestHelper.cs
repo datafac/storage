@@ -50,7 +50,7 @@ namespace DTOMaker.MessagePack.Tests
 
             // directly create an instance of the generator
             // (Note: in the compiler this is loaded from an assembly, and created via reflection at runtime)
-            var generator = new SourceGenerator();
+            var generator = new MessagePackSourceGenerator();
 
             // Create the driver that will control the generation, passing in our generator
             GeneratorDriver driver = CSharpGeneratorDriver.Create(new ISourceGenerator[] { generator });

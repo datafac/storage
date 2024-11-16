@@ -11,7 +11,7 @@ using System.Text;
 namespace DTOMaker.MessagePack
 {
     [Generator(LanguageNames.CSharp)]
-    public class SourceGenerator : ISourceGenerator
+    public class MessagePackSourceGenerator : ISourceGenerator
     {
         public void Initialize(GeneratorInitializationContext context)
         {
