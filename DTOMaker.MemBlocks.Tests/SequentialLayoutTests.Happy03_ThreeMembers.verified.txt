@@ -9,6 +9,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DTOMaker.Runtime;
+using DataFac.Memory;
 namespace MyOrg.Models.MemBlocks
 {
     public sealed partial class MyDTO : IMyDTO, IFreezable
@@ -94,13 +95,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Double)DTOMaker.Runtime.Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
+                return (Double)Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field1));
-                DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, value);
+                Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, value);
             }
         }
 
@@ -108,13 +109,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Boolean)DTOMaker.Runtime.Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(8, 1).Span);
+                return (Boolean)Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(8, 1).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field2));
-                DTOMaker.Runtime.Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(8, 1).Span, value);
+                Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(8, 1).Span, value);
             }
         }
 
@@ -122,13 +123,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Int64)DTOMaker.Runtime.Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(16, 8).Span);
+                return (Int64)Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(16, 8).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field3));
-                DTOMaker.Runtime.Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(16, 8).Span, value);
+                Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(16, 8).Span, value);
             }
         }
 

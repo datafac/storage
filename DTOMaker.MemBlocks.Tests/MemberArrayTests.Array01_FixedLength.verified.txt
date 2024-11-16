@@ -9,6 +9,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DTOMaker.Runtime;
+using DataFac.Memory;
 namespace MyOrg.Models.MemBlocks
 {
     public sealed partial class MyDTO : IMyDTO, IFreezable
@@ -103,7 +104,7 @@ namespace MyOrg.Models.MemBlocks
                     for (int i = 0; i < 8; i++)
                     {
                         var elementSpan = sourceSpan.Slice(8 * i, 8);
-                        targetSpan[i] = DTOMaker.Runtime.Codec_Double_LE.ReadFromSpan(elementSpan);
+                        targetSpan[i] = Codec_Double_LE.ReadFromSpan(elementSpan);
                     }
                     return targetSpan.ToArray(); // todo alloc!
                 }
@@ -126,7 +127,7 @@ namespace MyOrg.Models.MemBlocks
                     for (int i = 0; i < sourceSpan.Length; i++)
                     {
                         var elementSpan = targetSpan.Slice(8 * i, 8);
-                        DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(elementSpan, sourceSpan[i]);
+                        Codec_Double_LE.WriteToSpan(elementSpan, sourceSpan[i]);
                     }
                 }
             }

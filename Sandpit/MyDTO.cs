@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using DataFac.Memory;
 using DTOMaker.Runtime;
 namespace MyOrg.Models.MemBlocks
 {
@@ -101,14 +102,14 @@ namespace MyOrg.Models.MemBlocks
             get
             {
                 const int _valueOffset = 16;
-                return DTOMaker.Runtime.Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(_valueOffset, 1).Span);
+                return Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(_valueOffset, 1).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field2_HasValue));
                 const int _valueOffset = 16;
-                DTOMaker.Runtime.Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(_valueOffset, 1).Span, value);
+                Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(_valueOffset, 1).Span, value);
             }
         }
         public double Field2_Value
@@ -116,14 +117,14 @@ namespace MyOrg.Models.MemBlocks
             get
             {
                 const int _valueOffset = 16;
-                return DTOMaker.Runtime.Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(_valueOffset, 8).Span);
+                return Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(_valueOffset, 8).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field2_Value));
                 const int _valueOffset = 16;
-                DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(_valueOffset, 8).Span, value);
+                Codec_Double_LE.WriteToSpan(_writableBlock.Slice(_valueOffset, 8).Span, value);
             }
         }
 
@@ -142,13 +143,13 @@ namespace MyOrg.Models.MemBlocks
             get
             {
                 const int _valueOffset = 16;
-                return DTOMaker.Runtime.Codec_Int32_LE.ReadFromSpan(_readonlyBlock.Slice(_valueOffset, 4).Span);
+                return Codec_Int32_LE.ReadFromSpan(_readonlyBlock.Slice(_valueOffset, 4).Span);
             }
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field3_Length));
                 const int _valueOffset = 16;
-                DTOMaker.Runtime.Codec_Int32_LE.WriteToSpan(_writableBlock.Slice(_valueOffset, 4).Span, value);
+                Codec_Int32_LE.WriteToSpan(_writableBlock.Slice(_valueOffset, 4).Span, value);
             }
         }
 
@@ -212,13 +213,13 @@ namespace MyOrg.Models.MemBlocks
             get
             {
                 const int _valueOffset = 16;
-                return DTOMaker.Runtime.Codec_UInt16_LE.ReadFromSpan(_readonlyBlock.Slice(_valueOffset, 2).Span);
+                return Codec_UInt16_LE.ReadFromSpan(_readonlyBlock.Slice(_valueOffset, 2).Span);
             }
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Enum16_Data));
                 const int _valueOffset = 16;
-                DTOMaker.Runtime.Codec_UInt16_LE.WriteToSpan(_writableBlock.Slice(_valueOffset, 2).Span, value);
+                Codec_UInt16_LE.WriteToSpan(_writableBlock.Slice(_valueOffset, 2).Span, value);
             }
         }
 
@@ -251,7 +252,7 @@ namespace MyOrg.Models.MemBlocks
                     for (int i = 0; i < _arrayLength; i++)
                     {
                         var elementSpan = sourceSpan.Slice(_fieldLength * i, _fieldLength);
-                        targetSpan[i] = DTOMaker.Runtime.Codec_Char_LE.ReadFromSpan(elementSpan);
+                        targetSpan[i] = Codec_Char_LE.ReadFromSpan(elementSpan);
                     }
                     return target;
                 }
@@ -278,7 +279,7 @@ namespace MyOrg.Models.MemBlocks
                     for (int i = 0; i < sourceSpan.Length; i++)
                     {
                         var elementSpan = targetSpan.Slice(_fieldLength * i, _fieldLength);
-                        DTOMaker.Runtime.Codec_Char_LE.WriteToSpan(elementSpan, sourceSpan[i]);
+                        Codec_Char_LE.WriteToSpan(elementSpan, sourceSpan[i]);
                     }
                 }
             }

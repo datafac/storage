@@ -8,6 +8,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="DataFac.Memory" Version="0.2.1" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <ProjectReference Include="..\DTOMaker.Core\DTOMaker.Core.csproj" />
 	</ItemGroup>
 

@@ -9,9 +9,10 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DTOMaker.Runtime;
+using DataFac.Memory;
 //##if false
 using T_MemberType_ = System.Int32;
-namespace DTOMaker.Runtime
+namespace DataFac.Memory
 {
     public static class Codec_T_MemberType__T_MemberBELE_
     {
@@ -147,7 +148,7 @@ namespace T_DomainName_.MemBlocks
                     for (int i = 0; i < T_ArrayLength_; i++)
                     {
                         var elementSpan = sourceSpan.Slice(T_FieldLength_ * i, T_FieldLength_);
-                        targetSpan[i] = DTOMaker.Runtime.Codec_T_MemberType__T_MemberBELE_.ReadFromSpan(elementSpan);
+                        targetSpan[i] = Codec_T_MemberType__T_MemberBELE_.ReadFromSpan(elementSpan);
                     }
                     return targetSpan.ToArray(); // todo alloc!
                 }
@@ -174,7 +175,7 @@ namespace T_DomainName_.MemBlocks
                     for (int i = 0; i < sourceSpan.Length; i++)
                     {
                         var elementSpan = targetSpan.Slice(T_FieldLength_ * i, T_FieldLength_);
-                        DTOMaker.Runtime.Codec_T_MemberType__T_MemberBELE_.WriteToSpan(elementSpan, sourceSpan[i]);
+                        Codec_T_MemberType__T_MemberBELE_.WriteToSpan(elementSpan, sourceSpan[i]);
                     }
                 }
                 //##endif
@@ -186,13 +187,13 @@ namespace T_DomainName_.MemBlocks
         {
             get
             {
-                return (T_MemberType_)DTOMaker.Runtime.Codec_T_MemberType__T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_).Span);
+                return (T_MemberType_)Codec_T_MemberType__T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(T_ScalarMemberName_));
-                DTOMaker.Runtime.Codec_T_MemberType__T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, T_FieldLength_).Span, value);
+                Codec_T_MemberType__T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, T_FieldLength_).Span, value);
             }
         }
 

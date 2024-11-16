@@ -175,7 +175,7 @@ namespace DTOMaker.MemBlocks
             if (context.SyntaxContextReceiver is not SyntaxReceiver syntaxReceiver) return;
 
             // check that the users compilation references the expected libraries
-            CheckReferencedAssemblyNamesInclude(context, typeof(DTOMaker.Runtime.IFieldCodec).Assembly);
+            //CheckReferencedAssemblyNamesInclude(context, typeof(DTOMaker.Runtime.IFieldCodec).Assembly);
 
             Version fv = new Version(ThisAssembly.AssemblyFileVersion);
             string shortVersion = $"{fv.Major}.{fv.Minor}";

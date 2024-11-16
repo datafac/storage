@@ -9,6 +9,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DTOMaker.Runtime;
+using DataFac.Memory;
 namespace MyOrg.Models.MemBlocks
 {
     public sealed partial class MyDTO : IMyDTO, IFreezable
@@ -122,13 +123,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Boolean)DTOMaker.Runtime.Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(0, 1).Span);
+                return (Boolean)Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(0, 1).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field1));
-                DTOMaker.Runtime.Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(0, 1).Span, value);
+                Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(0, 1).Span, value);
             }
         }
 
@@ -136,13 +137,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (SByte)DTOMaker.Runtime.Codec_SByte_LE.ReadFromSpan(_readonlyBlock.Slice(1, 1).Span);
+                return (SByte)Codec_SByte_LE.ReadFromSpan(_readonlyBlock.Slice(1, 1).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field2));
-                DTOMaker.Runtime.Codec_SByte_LE.WriteToSpan(_writableBlock.Slice(1, 1).Span, value);
+                Codec_SByte_LE.WriteToSpan(_writableBlock.Slice(1, 1).Span, value);
             }
         }
 
@@ -150,13 +151,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Byte)DTOMaker.Runtime.Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(2, 1).Span);
+                return (Byte)Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(2, 1).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field3));
-                DTOMaker.Runtime.Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(2, 1).Span, value);
+                Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(2, 1).Span, value);
             }
         }
 
@@ -164,13 +165,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Int16)DTOMaker.Runtime.Codec_Int16_LE.ReadFromSpan(_readonlyBlock.Slice(4, 2).Span);
+                return (Int16)Codec_Int16_LE.ReadFromSpan(_readonlyBlock.Slice(4, 2).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field4));
-                DTOMaker.Runtime.Codec_Int16_LE.WriteToSpan(_writableBlock.Slice(4, 2).Span, value);
+                Codec_Int16_LE.WriteToSpan(_writableBlock.Slice(4, 2).Span, value);
             }
         }
 
@@ -178,13 +179,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (UInt16)DTOMaker.Runtime.Codec_UInt16_LE.ReadFromSpan(_readonlyBlock.Slice(6, 2).Span);
+                return (UInt16)Codec_UInt16_LE.ReadFromSpan(_readonlyBlock.Slice(6, 2).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field5));
-                DTOMaker.Runtime.Codec_UInt16_LE.WriteToSpan(_writableBlock.Slice(6, 2).Span, value);
+                Codec_UInt16_LE.WriteToSpan(_writableBlock.Slice(6, 2).Span, value);
             }
         }
 
@@ -192,13 +193,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Char)DTOMaker.Runtime.Codec_Char_LE.ReadFromSpan(_readonlyBlock.Slice(8, 2).Span);
+                return (Char)Codec_Char_LE.ReadFromSpan(_readonlyBlock.Slice(8, 2).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field6));
-                DTOMaker.Runtime.Codec_Char_LE.WriteToSpan(_writableBlock.Slice(8, 2).Span, value);
+                Codec_Char_LE.WriteToSpan(_writableBlock.Slice(8, 2).Span, value);
             }
         }
 
@@ -206,13 +207,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Half)DTOMaker.Runtime.Codec_Half_LE.ReadFromSpan(_readonlyBlock.Slice(10, 2).Span);
+                return (Half)Codec_Half_LE.ReadFromSpan(_readonlyBlock.Slice(10, 2).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field7));
-                DTOMaker.Runtime.Codec_Half_LE.WriteToSpan(_writableBlock.Slice(10, 2).Span, value);
+                Codec_Half_LE.WriteToSpan(_writableBlock.Slice(10, 2).Span, value);
             }
         }
 
@@ -220,13 +221,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Int32)DTOMaker.Runtime.Codec_Int32_LE.ReadFromSpan(_readonlyBlock.Slice(12, 4).Span);
+                return (Int32)Codec_Int32_LE.ReadFromSpan(_readonlyBlock.Slice(12, 4).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field8));
-                DTOMaker.Runtime.Codec_Int32_LE.WriteToSpan(_writableBlock.Slice(12, 4).Span, value);
+                Codec_Int32_LE.WriteToSpan(_writableBlock.Slice(12, 4).Span, value);
             }
         }
 
@@ -234,13 +235,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (UInt32)DTOMaker.Runtime.Codec_UInt32_LE.ReadFromSpan(_readonlyBlock.Slice(16, 4).Span);
+                return (UInt32)Codec_UInt32_LE.ReadFromSpan(_readonlyBlock.Slice(16, 4).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field9));
-                DTOMaker.Runtime.Codec_UInt32_LE.WriteToSpan(_writableBlock.Slice(16, 4).Span, value);
+                Codec_UInt32_LE.WriteToSpan(_writableBlock.Slice(16, 4).Span, value);
             }
         }
 
@@ -248,13 +249,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Single)DTOMaker.Runtime.Codec_Single_LE.ReadFromSpan(_readonlyBlock.Slice(20, 4).Span);
+                return (Single)Codec_Single_LE.ReadFromSpan(_readonlyBlock.Slice(20, 4).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field10));
-                DTOMaker.Runtime.Codec_Single_LE.WriteToSpan(_writableBlock.Slice(20, 4).Span, value);
+                Codec_Single_LE.WriteToSpan(_writableBlock.Slice(20, 4).Span, value);
             }
         }
 
@@ -262,13 +263,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Int64)DTOMaker.Runtime.Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(24, 8).Span);
+                return (Int64)Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(24, 8).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field11));
-                DTOMaker.Runtime.Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(24, 8).Span, value);
+                Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(24, 8).Span, value);
             }
         }
 
@@ -276,13 +277,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (UInt64)DTOMaker.Runtime.Codec_UInt64_LE.ReadFromSpan(_readonlyBlock.Slice(32, 8).Span);
+                return (UInt64)Codec_UInt64_LE.ReadFromSpan(_readonlyBlock.Slice(32, 8).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field12));
-                DTOMaker.Runtime.Codec_UInt64_LE.WriteToSpan(_writableBlock.Slice(32, 8).Span, value);
+                Codec_UInt64_LE.WriteToSpan(_writableBlock.Slice(32, 8).Span, value);
             }
         }
 
@@ -290,13 +291,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Double)DTOMaker.Runtime.Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(40, 8).Span);
+                return (Double)Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(40, 8).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field13));
-                DTOMaker.Runtime.Codec_Double_LE.WriteToSpan(_writableBlock.Slice(40, 8).Span, value);
+                Codec_Double_LE.WriteToSpan(_writableBlock.Slice(40, 8).Span, value);
             }
         }
 
@@ -304,13 +305,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Guid)DTOMaker.Runtime.Codec_Guid_LE.ReadFromSpan(_readonlyBlock.Slice(48, 16).Span);
+                return (Guid)Codec_Guid_LE.ReadFromSpan(_readonlyBlock.Slice(48, 16).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field14));
-                DTOMaker.Runtime.Codec_Guid_LE.WriteToSpan(_writableBlock.Slice(48, 16).Span, value);
+                Codec_Guid_LE.WriteToSpan(_writableBlock.Slice(48, 16).Span, value);
             }
         }
 
@@ -318,13 +319,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Int128)DTOMaker.Runtime.Codec_Int128_LE.ReadFromSpan(_readonlyBlock.Slice(64, 16).Span);
+                return (Int128)Codec_Int128_LE.ReadFromSpan(_readonlyBlock.Slice(64, 16).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field15));
-                DTOMaker.Runtime.Codec_Int128_LE.WriteToSpan(_writableBlock.Slice(64, 16).Span, value);
+                Codec_Int128_LE.WriteToSpan(_writableBlock.Slice(64, 16).Span, value);
             }
         }
 
@@ -332,13 +333,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (UInt128)DTOMaker.Runtime.Codec_UInt128_LE.ReadFromSpan(_readonlyBlock.Slice(80, 16).Span);
+                return (UInt128)Codec_UInt128_LE.ReadFromSpan(_readonlyBlock.Slice(80, 16).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field16));
-                DTOMaker.Runtime.Codec_UInt128_LE.WriteToSpan(_writableBlock.Slice(80, 16).Span, value);
+                Codec_UInt128_LE.WriteToSpan(_writableBlock.Slice(80, 16).Span, value);
             }
         }
 
@@ -346,13 +347,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Decimal)DTOMaker.Runtime.Codec_Decimal_LE.ReadFromSpan(_readonlyBlock.Slice(96, 16).Span);
+                return (Decimal)Codec_Decimal_LE.ReadFromSpan(_readonlyBlock.Slice(96, 16).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field17));
-                DTOMaker.Runtime.Codec_Decimal_LE.WriteToSpan(_writableBlock.Slice(96, 16).Span, value);
+                Codec_Decimal_LE.WriteToSpan(_writableBlock.Slice(96, 16).Span, value);
             }
         }
 

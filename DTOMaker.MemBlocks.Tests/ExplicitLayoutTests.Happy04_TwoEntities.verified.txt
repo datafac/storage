@@ -9,6 +9,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DTOMaker.Runtime;
+using DataFac.Memory;
 namespace MyOrg.Models.MemBlocks
 {
     public sealed partial class MyOtherDTO : IMyOtherDTO, IFreezable
@@ -90,13 +91,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Int64)DTOMaker.Runtime.Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
+                return (Int64)Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
             }
 
             set
             {
                 if (_frozen) ThrowIsFrozenException(nameof(Field1));
-                DTOMaker.Runtime.Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, value);
+                Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, value);
             }
         }
 

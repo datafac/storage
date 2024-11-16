@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using DataFac.Memory;
+using FluentAssertions;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
