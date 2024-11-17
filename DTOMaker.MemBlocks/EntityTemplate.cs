@@ -8,8 +8,8 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using DTOMaker.Runtime;
 using DataFac.Memory;
+using DataFac.Runtime;
 //##if false
 using T_MemberType_ = System.Int32;
 namespace DataFac.Memory

@@ -5,7 +5,7 @@
 // </auto-generated>
 #pragma warning disable CS0414
 #nullable enable
-using DTOMaker.Runtime;
+using DataFac.Runtime;
 using MessagePack;
 using System;
 using System.Runtime.CompilerServices;

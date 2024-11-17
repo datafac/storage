@@ -8,8 +8,8 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using DTOMaker.Runtime;
 using DataFac.Memory;
+using DataFac.Runtime;
 namespace MyOrg.Models.MemBlocks
 {
     public sealed partial class MyDTO : IMyDTO, IFreezable
