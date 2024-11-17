@@ -90,10 +90,10 @@ namespace DTOMaker.MemBlocks
         {
             switch (entity.LayoutMethod)
             {
-                case Models.LayoutMethod.Explicit:
+                case LayoutMethod.Explicit:
                     ExplicitLayoutMembers(entity);
                     break;
-                case Models.LayoutMethod.SequentialV1:
+                case LayoutMethod.SequentialV1:
                     SequentialLayoutMembers(entity);
                     break;
             }

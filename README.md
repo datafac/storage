@@ -36,12 +36,9 @@ Features implemented:
 - DTOMaker.CSPoco source generator
 
 Features not implemented:
-- Nullable types. T? can be simulated using a pair of fields (Boolean, T) and a default implementation
-on the interface.
-- Enum data types. An enumeration type can be simulated with a casting property and a default implementation
-on the interface.
-- Strings (UTF8). String types can be simulated with a byte array field and a length field and a default
-implementation on the interface.
+- Nullable types. T? can be simulated using a pair of fields (Boolean, T).
+- Enum data types. An enumeration type can be simulated with a casting property.
+- Strings (UTF8). String types can be simulated with a byte array field and a length field.
 
 In progress:
 - Json (NewtonSoft) generator

@@ -28,6 +28,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\DTOMaker.Core\DTOMaker.Core.csproj" />
 	  <ProjectReference Include="..\DTOMaker.CSPoco\DTOMaker.CSPoco.csproj" />
+	  <ProjectReference Include="..\DTOMaker.Models\DTOMaker.Models.csproj" />
 	</ItemGroup>
 
 </Project>

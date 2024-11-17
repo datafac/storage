@@ -2,7 +2,6 @@
 
 namespace DTOMaker.Models
 {
-
     [AttributeUsage(AttributeTargets.Interface, AllowMultiple = false)]
     public class EntityLayoutAttribute : Attribute
     {

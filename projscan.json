@@ -2,6 +2,8 @@
   "CompanyName":  "Psiman62",
   "ProductName": "DTOMaker",
   "ExemptionCodes": [
-    "targetframeworks_notcontains_net7"
+    "targetframeworks_notcontains_net7",
+    "includesymbols_equals_true",
+    "symbolpackageformat_equals_snupkg"
   ]
 }

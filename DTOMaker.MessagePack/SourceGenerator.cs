@@ -62,8 +62,8 @@ namespace DTOMaker.MessagePack
         {
             if (context.SyntaxContextReceiver is not SyntaxReceiver syntaxReceiver) return;
 
-            // check that the users compilation references the expected libraries
-            CheckReferencedAssemblyNamesInclude(context, typeof(Models.DomainAttribute).Assembly);
+            //// check that the users compilation references the expected libraries
+            //CheckReferencedAssemblyNamesInclude(context, typeof(Models.DomainAttribute).Assembly);
 
             Version fv = new Version(ThisAssembly.AssemblyFileVersion);
             string shortVersion = $"{fv.Major}.{fv.Minor}";
