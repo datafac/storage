@@ -1,11 +1,16 @@
-# DTOMaker.Core
+# DTOMaker
 
 [![Build-Deploy](https://github.com/Psiman62/DTOMaker-Core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Psiman62/DTOMaker-Core/actions/workflows/dotnet.yml)
 
 *Warning: This is pre-release software under active development. Not for production use. Breaking changes occur often.*
 
-This package contains attributes for defining simple data models as interfaces, and also includes types used 
-by source genetators at compile-time, and by generated code at runtime.
+This repo contains several related packages.
+
+## DTOMaker.Models
+Attributes for defining simple data models as interfaces in C#.
+
+## DTOMaker.Core
+Core types used by source generators at compile-time, including a common syntax receiver, and a powerful template processor.
 
 ## Generators
 The following source generators depend on this package:
