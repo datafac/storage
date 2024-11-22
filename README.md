@@ -1,6 +1,6 @@
 # DTOMaker
 
-[![Build-Deploy](https://github.com/Psiman62/DTOMaker-Core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Psiman62/DTOMaker-Core/actions/workflows/dotnet.yml)
+todo badge
 
 *Warning: This is pre-release software under active development. Not for production use. Breaking changes occur often.*
 
@@ -17,16 +17,13 @@ The following source generators depend on this package:
 
 ### DTOMaker.MessagePack
 Generates DTOs decorated with MessagePack attributes (https://github.com/MessagePack-CSharp/MessagePack-CSharp).
-This source generator can be found at: https://github.com/Psiman62/DTOMaker.MessagePack
 
 ### DTOMaker.MemBlocks
 Generates DTOs whose internal data is a single memory block (Memory\<byte\>). Property getters and setters decode and encode
-values directly to the block with explicit byte ordering (little-endian or big-endian). This source generator can be found 
-at: https://github.com/Psiman62/DTOMaker-MemBlocks
+values directly to the block with explicit byte ordering (little-endian or big-endian).
 
 ### DTOMaker.CSPoco
-Generates basic POCOs (Plain Old C# Objects) that implement the data model interfaces. This source generator can be found 
-at: https://github.com/Psiman62/DTOMaker.CSPoco
+Generates basic POCOs (Plain Old C# Objects) that implement the data model interfaces.
 
 ## Features
 
@@ -70,4 +67,4 @@ model interfaces.
 ## Benchmarks
 
 Some benchmarking comparing the serialization and deserialization performance of various generated DTOs can
-be found at: https://github.com/Psiman62/DTOMaker-Samples
+be found at: todo

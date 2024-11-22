@@ -8,11 +8,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="DataFac.Runtime" Version="0.1.5" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\DTOMaker.Core\DTOMaker.Core.csproj" />
+		<PackageReference Include="DataFac.Runtime" Version="0.1.5" />
+		<PackageReference Include="System.Memory" Version="4.6.0" />
 	</ItemGroup>
 
 </Project>

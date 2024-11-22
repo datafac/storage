@@ -9,9 +9,9 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageProjectUrl>https://github.com/datafac/dtomaker</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datafac/dtomaker</RepositoryUrl>
-		<Company>Psiman62</Company>
+		<Company>DataFac</Company>
 		<Product>DTOMaker</Product>
-		<Authors>Psiman62 Contributors</Authors>
+		<Authors>DataFac Contributors</Authors>
 		<Title>DTOMaker Core</Title>
 		<Description>Attributes for defining simple data models as interfaces. These are consumed by source generators to emit DTO classes.</Description>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
