@@ -49,17 +49,10 @@ namespace MyOrg.Models.MessagePack
         }
 
         [IgnoreMember]
-        private Kind32? _Field1;
-        [IgnoreMember]
-        private Kind32 _Field1;
+        private Double _Field1;
+        [Obsolete("Removed", true)]
         [Key(1)]
-        public Kind32? Field1
-        {
-            get => _Field1;
-            set => _Field1 = IfNotFrozen(ref value);
-        }
-        [Key(1)]
-        public Kind32 Field1
+        public Double Field1
         {
             get => _Field1;
             set => _Field1 = IfNotFrozen(ref value);

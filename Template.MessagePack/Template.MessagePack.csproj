@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;net8.0;net9.0</TargetFrameworks>
+		<TargetFramework>netstandard2.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<WarningsAsErrors>nullable</WarningsAsErrors>
@@ -10,10 +10,6 @@
 	<ItemGroup>
 		<PackageReference Include="DataFac.Runtime" Version="0.1.5" />
 		<PackageReference Include="MessagePack" Version="2.5.192" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\DTOMaker.Core\DTOMaker.Core.csproj" />
 	</ItemGroup>
 
 </Project>
