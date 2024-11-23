@@ -7,8 +7,8 @@
 		<WarningsAsErrors>nullable</WarningsAsErrors>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageProjectUrl>https://github.com/datafac/dtomaker</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/datafac/dtomaker</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/datafac/dtomaker-core</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/datafac/dtomaker-core</RepositoryUrl>
 		<Company>DataFac</Company>
 		<Product>DTOMaker</Product>
 		<Authors>DataFac Contributors</Authors>
