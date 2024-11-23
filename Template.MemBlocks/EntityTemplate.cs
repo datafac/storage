@@ -144,13 +144,14 @@ namespace T_DomainName_.MemBlocks
                 else
                 {
                     // endian mismatch - decode each element
-                    Span<T_MemberType_> targetSpan = new T_MemberType_[T_ArrayLength_]; 
+                    var target = new T_MemberType_[T_ArrayLength_]; // todo alloc!
+                    Span<T_MemberType_> targetSpan = target.AsSpan();
                     for (int i = 0; i < T_ArrayLength_; i++)
                     {
                         var elementSpan = sourceSpan.Slice(T_FieldLength_ * i, T_FieldLength_);
                         targetSpan[i] = Codec_T_MemberType__T_MemberBELE_.ReadFromSpan(elementSpan);
                     }
-                    return targetSpan.ToArray(); // todo alloc!
+                    return target;
                 }
                 //##endif
             }

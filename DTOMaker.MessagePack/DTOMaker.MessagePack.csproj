@@ -7,11 +7,11 @@
 		<Nullable>enable</Nullable>
 		<WarningsAsErrors>nullable</WarningsAsErrors>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageProjectUrl>https://github.com/Psiman62/DTOMaker-MessagePack</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/Psiman62/DTOMaker-MessagePack</RepositoryUrl>
-		<Company>Psiman62</Company>
+		<PackageProjectUrl>https://github.com/datafac/dtomaker</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/datafac/dtomaker</RepositoryUrl>
+		<Company>DataFac</Company>
 		<Product>DTOMaker</Product>
-		<Authors>Psiman62 Contributors</Authors>
+		<Authors>DataFac Contributors</Authors>
 		<Title>DTOMaker Generator</Title>
 		<Description>Model-driven source generator for MessagePack data transport objects (DTOs).</Description>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
