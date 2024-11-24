@@ -27,10 +27,7 @@ public enum LayoutMethod : int
     /// sequence order. It is important that the member sequence and data type do
     /// not ever change, to ensure consistent backward compatibility. With this
     /// method, the entity memory block length can be limited, or left undefined
-    /// to allow automatic growth. Note that as each member is assigned a memory
-    /// location, an additional hidden control byte is also assigned, resulting
-    /// in total entity memory block size being larger than the sum of the sizes
-    /// of the declared member data types.
+    /// to allow automatic growth.
     /// </summary>
     SequentialV1 = 2,
 }
