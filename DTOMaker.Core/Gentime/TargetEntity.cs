@@ -13,6 +13,7 @@ namespace DTOMaker.Gentime
         public bool HasEntityLayoutAttribute { get; set; }
         public LayoutMethod LayoutMethod { get; set; }
         public int BlockLength { get; set; }
+        public string? ParentName { get; set; }
 
         private SyntaxDiagnostic? CheckHasEntityAttribute()
         {

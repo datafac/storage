@@ -5,35 +5,33 @@ using System.Linq;
 
 namespace DTOMaker.Gentime
 {
-    public sealed class ModelScope_Entity : IModelScope
+    public sealed class ModelScope_Domain : IModelScope
     {
-        private readonly TargetEntity _entity;
+        private readonly TargetDomain _domain;
         private readonly ILanguage _language;
         private readonly Dictionary<string, object?> _variables = new Dictionary<string, object?>();
         public IDictionary<string, object?> Variables => _variables;
 
-        public ModelScope_Entity(ILanguage language, TargetEntity entity, IEnumerable<KeyValuePair<string, object?>> tokens)
+        public ModelScope_Domain(ILanguage language, TargetDomain domain, IEnumerable<KeyValuePair<string, object?>> tokens)
         {
             _language = language;
-            _entity = entity;
-            
+            _domain = domain;
+
             foreach (var token in tokens)
             {
                 _variables[token.Key] = token.Value;
             }
-            _variables["EntityName"] = entity.Name;
-            _variables["ParentName"] = entity.ParentName ?? "EntityBase";
-            _variables["BlockLength"] = entity.BlockLength;
+            _variables["DomainName"] = domain.Name;
         }
 
         public (bool?, IModelScope[]) GetInnerScopes(string iteratorName)
         {
             switch (iteratorName.ToLowerInvariant())
             {
-                case "members":
-                    TargetMember[] members = _entity.Members.Values.ToArray();
-                    if (members.Length > 0)
-                        return (true, members.OrderBy(m => m.Sequence).Select(m => new ModelScope_Member(_language, m, _variables)).ToArray());
+                case "entities":
+                    TargetEntity[] entities = _domain.Entities.Values.ToArray();
+                    if (entities.Length > 0)
+                        return (true, entities.OrderBy(e => e.Name).Select(e => new ModelScope_Entity(_language, e, _variables)).ToArray());
                     else
                         return (false, new IModelScope[] { new ModelScope_Empty() });
                 default:

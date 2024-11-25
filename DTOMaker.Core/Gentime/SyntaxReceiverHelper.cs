@@ -69,6 +69,8 @@ namespace DTOMaker.Gentime
                     {
                         // found entity attribute
                         entity.HasEntityAttribute = true;
+                        // entity parent
+                        entity.ParentName = "EntityBase"; // todo
                         var attributeArguments = entityAttr.ConstructorArguments;
                         //if (CheckAttributeArguments(nameof(EntityAttribute), attributeArguments, 1, entity, idsLocation))
                         //{
