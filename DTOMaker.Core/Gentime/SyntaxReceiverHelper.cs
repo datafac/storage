@@ -70,7 +70,30 @@ namespace DTOMaker.Gentime
                         // found entity attribute
                         entity.HasEntityAttribute = true;
                         // entity parent
-                        entity.ParentName = idsSymbol.BaseType?.Name ?? "EntityBase";
+                        entity.ParentName = "EntityBase";
+                        if (idsSymbol.Interfaces.Length > 1)
+                        {
+                            // too many interfaces!
+                            domain.SyntaxErrors.Add(
+                                new SyntaxDiagnostic(
+                                    DiagnosticId.DTOM0008, "Invalid interface parent(s)", DiagnosticCategory.Design, idsLocation, DiagnosticSeverity.Error,
+                                    $"This interface can only be derived from one optional parent interface."));
+                        }
+                        else if (idsSymbol.Interfaces.Length == 1)
+                        {
+                            string parentName = idsSymbol.Interfaces[0].Name;
+                            if (parentName.Length <= 1 || !parentName.StartsWith("I"))
+                            {
+                                domain.SyntaxErrors.Add(
+                                    new SyntaxDiagnostic(
+                                        DiagnosticId.DTOM0001, "Invalid interface name", DiagnosticCategory.Naming, idsLocation, DiagnosticSeverity.Error,
+                                        $"Expected interface named '{parentName}' to start with 'I'."));
+                            }
+                            else
+                            {
+                                entity.ParentName = parentName.Substring(1);
+                            }
+                        }
                         var attributeArguments = entityAttr.ConstructorArguments;
                         //if (CheckAttributeArguments(nameof(EntityAttribute), attributeArguments, 1, entity, idsLocation))
                         //{
