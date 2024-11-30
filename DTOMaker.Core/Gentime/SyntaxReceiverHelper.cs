@@ -70,7 +70,7 @@ namespace DTOMaker.Gentime
                         // found entity attribute
                         entity.HasEntityAttribute = true;
                         // entity parent
-                        entity.ParentName = "EntityBase"; // todo
+                        entity.ParentName = idsSymbol.BaseType?.Name ?? "EntityBase";
                         var attributeArguments = entityAttr.ConstructorArguments;
                         //if (CheckAttributeArguments(nameof(EntityAttribute), attributeArguments, 1, entity, idsLocation))
                         //{

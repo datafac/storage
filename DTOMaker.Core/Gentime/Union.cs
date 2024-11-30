@@ -29,6 +29,7 @@ namespace DTOMaker.Gentime
             return Index == 0;
         }
 
+        // todo TResult
         public void Switch(Action<T0> action0, Action<T1> action1)
         {
             if (Index == 0)
