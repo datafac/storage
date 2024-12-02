@@ -14,6 +14,7 @@ namespace DTOMaker.Gentime
         public LayoutMethod LayoutMethod { get; set; }
         public int BlockLength { get; set; }
         public string? ParentName { get; set; }
+        public int IntTag { get; set; }
 
         private SyntaxDiagnostic? CheckHasEntityAttribute()
         {
