@@ -9,6 +9,6 @@
         public const string DTOM0005 = nameof(DTOM0005); // Invalid argument value
         public const string DTOM0006 = nameof(DTOM0006); // Missing [Entity] attribute
         public const string DTOM0007 = nameof(DTOM0007); // Missing [Member] attribute
-        public const string DTOM0008 = nameof(DTOM0008); // Invalid interface parent(s)
+        public const string DTOM0008 = nameof(DTOM0008); // Invalid base name(s)
     }
 }

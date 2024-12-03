@@ -7,13 +7,19 @@ namespace DTOMaker.Gentime
 {
     public abstract class TargetEntity : TargetBase
     {
+        private readonly TargetDomain _domain;
+        public TargetDomain Domain => _domain;
         public ConcurrentDictionary<string, TargetMember> Members { get; } = new ConcurrentDictionary<string, TargetMember>();
-        public TargetEntity(string name, Location location) : base(name, location) { }
+        public TargetEntity(TargetDomain domain, string name, Location location) : base(name, location)
+        {
+            _domain = domain;
+        }
         public bool HasEntityAttribute { get; set; }
         public bool HasEntityLayoutAttribute { get; set; }
         public LayoutMethod LayoutMethod { get; set; }
         public int BlockLength { get; set; }
-        public string? ParentName { get; set; }
+        public string? BaseName { get; set; }
+        public TargetEntity? Base { get; set; }
         public int Tag { get; set; }
 
         private SyntaxDiagnostic? CheckHasEntityAttribute()

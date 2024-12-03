@@ -5,6 +5,6 @@ namespace DTOMaker.CSPoco
 {
     internal sealed class CSPocoEntity : TargetEntity
     {
-        public CSPocoEntity(string name, Location location) : base(name, location) { }
+        public CSPocoEntity(TargetDomain domain, string name, Location location) : base(domain, name, location) { }
     }
 }

@@ -5,17 +5,19 @@ namespace DTOMaker.Gentime
 {
     internal sealed class ModelScope_Member : IModelScope
     {
+        private readonly ModelScope_Entity _entity;
         private readonly TargetMember _member;
         private readonly ILanguage _language;
         private readonly Dictionary<string, object?> _variables = new Dictionary<string, object?>();
         public IDictionary<string, object?> Variables => _variables;
 
-        public ModelScope_Member(ILanguage language, TargetMember member, IEnumerable<KeyValuePair<string, object?>> tokens)
+        public ModelScope_Member(ModelScope_Entity entity, ILanguage language, TargetMember member)
         {
+            _entity = entity;
             _language = language;
             _member = member;
 
-            foreach (var token in tokens)
+            foreach (var token in _entity.Variables)
             {
                 _variables[token.Key] = token.Value;
             }

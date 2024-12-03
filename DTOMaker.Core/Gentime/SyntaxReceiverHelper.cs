@@ -43,8 +43,8 @@ namespace DTOMaker.Gentime
 
         public static void ProcessNode(GeneratorSyntaxContext context, ConcurrentDictionary<string, TargetDomain> domains,
             Func<string, Location, TargetDomain> domainFactory,
-            Func<string, Location, TargetEntity> entityFactory,
-            Func<string, Location, TargetMember> memberFactory)
+            Func<TargetDomain, string, Location, TargetEntity> entityFactory,
+            Func<TargetEntity, string, Location, TargetMember> memberFactory)
         {
             if (context.Node is InterfaceDeclarationSyntax ids
                 && ids.Modifiers.Any(SyntaxKind.PublicKeyword)
@@ -64,34 +64,34 @@ namespace DTOMaker.Gentime
                                 $"Expected interface named '{interfaceName}' to start with 'I'."));
                     }
                     string entityName = interfaceName.Substring(1);
-                    var entity = domain.Entities.GetOrAdd(entityName, (n) => entityFactory(n, idsLocation));
+                    var entity = domain.Entities.GetOrAdd(entityName, (n) => entityFactory(domain, n, idsLocation));
                     if (idsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(EntityAttribute)) is AttributeData entityAttr)
                     {
                         // found entity attribute
                         entity.HasEntityAttribute = true;
-                        // entity parent
-                        entity.ParentName = "EntityBase";
+                        // entity base
+                        entity.BaseName = "EntityBase";
                         if (idsSymbol.Interfaces.Length > 1)
                         {
                             // too many interfaces!
                             domain.SyntaxErrors.Add(
                                 new SyntaxDiagnostic(
-                                    DiagnosticId.DTOM0008, "Invalid interface parent(s)", DiagnosticCategory.Design, idsLocation, DiagnosticSeverity.Error,
-                                    $"This interface can only be derived from one optional parent interface."));
+                                    DiagnosticId.DTOM0008, "Invalid base name(s)", DiagnosticCategory.Design, idsLocation, DiagnosticSeverity.Error,
+                                    $"This interface can only implement one optional other interface."));
                         }
                         else if (idsSymbol.Interfaces.Length == 1)
                         {
-                            string parentName = idsSymbol.Interfaces[0].Name;
-                            if (parentName.Length <= 1 || !parentName.StartsWith("I"))
+                            string baseName = idsSymbol.Interfaces[0].Name;
+                            if (baseName.Length <= 1 || !baseName.StartsWith("I"))
                             {
                                 domain.SyntaxErrors.Add(
                                     new SyntaxDiagnostic(
-                                        DiagnosticId.DTOM0001, "Invalid interface name", DiagnosticCategory.Naming, idsLocation, DiagnosticSeverity.Error,
-                                        $"Expected interface named '{parentName}' to start with 'I'."));
+                                        DiagnosticId.DTOM0001, "Invalid base name", DiagnosticCategory.Naming, idsLocation, DiagnosticSeverity.Error,
+                                        $"Expected interface named '{baseName}' to start with 'I'."));
                             }
                             else
                             {
-                                entity.ParentName = parentName.Substring(1);
+                                entity.BaseName = baseName.Substring(1);
                             }
                         }
                         var attributeArguments = entityAttr.ConstructorArguments;
@@ -128,8 +128,7 @@ namespace DTOMaker.Gentime
                         && domain.Entities.TryGetValue(entityName, out var entity))
                     {
                         Location pdsLocation = Location.Create(pds.SyntaxTree, pds.Span);
-                        var member = entity.Members.GetOrAdd(pds.Identifier.Text, (n) => memberFactory(n, pdsLocation));
-                        member.Parent = entity;
+                        var member = entity.Members.GetOrAdd(pds.Identifier.Text, (n) => memberFactory(entity, n, pdsLocation));
                         if (pdsSymbol.Type is INamedTypeSymbol pdsSymbolType)
                         {
                             member.MemberTypeName = pdsSymbolType.Name;

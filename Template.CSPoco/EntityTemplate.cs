@@ -15,8 +15,8 @@ namespace T_DomainName_.CSPoco
 {
     //##if false
     using T_MemberType_ = System.Int32;
-    public interface IT_ParentName_ { }
-    public interface IT_EntityName_ : IT_ParentName_
+    public interface IT_BaseName_ { }
+    public interface IT_EntityName_ : IT_BaseName_
     {
         //##if MemberIsNullable
         T_MemberType_? T_ScalarNullableMemberName_ { get; set; }
@@ -25,11 +25,11 @@ namespace T_DomainName_.CSPoco
         //##endif
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
     }
-    public class T_ParentName_ : EntityBase, IT_ParentName_, IEquatable<T_ParentName_>
+    public class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
-        public T_ParentName_() { }
-        public T_ParentName_(IT_ParentName_ source, bool frozen = false) : base(source, frozen) { }
-        public bool Equals(T_ParentName_? other)
+        public T_BaseName_() { }
+        public T_BaseName_(IT_BaseName_ source, bool frozen = false) : base(source, frozen) { }
+        public bool Equals(T_BaseName_? other)
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
@@ -38,7 +38,7 @@ namespace T_DomainName_.CSPoco
         }
     }
     //##endif
-    public partial class T_EntityName_ : T_ParentName_, IT_EntityName_, IEquatable<T_EntityName_>
+    public partial class T_EntityName_ : T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>
     {
         //##if false
         private const int T_ScalarNullableMemberSequence_ = 1;

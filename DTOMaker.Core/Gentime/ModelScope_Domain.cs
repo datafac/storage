@@ -12,15 +12,13 @@ namespace DTOMaker.Gentime
         private readonly Dictionary<string, object?> _variables = new Dictionary<string, object?>();
         public IDictionary<string, object?> Variables => _variables;
 
-        public ModelScope_Domain(ILanguage language, TargetDomain domain, IEnumerable<KeyValuePair<string, object?>> tokens)
+        public IEnumerable<TargetEntity> Entities => _domain.Entities.Values;
+
+        public ModelScope_Domain(ILanguage language, TargetDomain domain)
         {
             _language = language;
             _domain = domain;
 
-            foreach (var token in tokens)
-            {
-                _variables[token.Key] = token.Value;
-            }
             _variables["DomainName"] = domain.Name;
         }
 
@@ -31,7 +29,7 @@ namespace DTOMaker.Gentime
                 case "entities":
                     TargetEntity[] entities = _domain.Entities.Values.ToArray();
                     if (entities.Length > 0)
-                        return (true, entities.OrderBy(e => e.Name).Select(e => new ModelScope_Entity(_language, e, _variables)).ToArray());
+                        return (true, entities.OrderBy(e => e.Name).Select(e => new ModelScope_Entity(this, _language, e)).ToArray());
                     else
                         return (false, new IModelScope[] { new ModelScope_Empty() });
                 default:
