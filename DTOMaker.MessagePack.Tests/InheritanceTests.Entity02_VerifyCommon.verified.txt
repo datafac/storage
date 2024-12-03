@@ -12,6 +12,8 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
+    [Union(MyDTO.EntityTag, typeof(MyDTO))]
+    public abstract partial class MyBase { }
     public partial class MyBase : EntityBase, IMyBase, IFreezable
     {
 

@@ -11,11 +11,11 @@ using System.Text;
 namespace DTOMaker.MessagePack
 {
     [Generator(LanguageNames.CSharp)]
-    public class MessagePackSourceGenerator : ISourceGenerator
+    public class MessagePackSourceGenerator : SourceGeneratorBase
     {
-        public void Initialize(GeneratorInitializationContext context)
+        protected override void OnInitialize(GeneratorInitializationContext context)
         {
-            context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
+            context.RegisterForSyntaxNotifications(() => new MessagePackSyntaxReceiver());
         }
 
         private void EmitDiagnostics(GeneratorExecutionContext context, TargetBase target)
@@ -58,27 +58,11 @@ namespace DTOMaker.MessagePack
             }
         }
 
-        private string GenerateSourceText(ILanguage language, IModelScope outerScope, string templateName)
+        protected override void OnExecute(GeneratorExecutionContext context)
         {
-            var template = Assembly.GetExecutingAssembly().GetTemplate(templateName);
-            var processor = new TemplateProcessor();
-            var builder = new StringBuilder();
-            foreach (string line in processor.ProcessTemplate(template, language, outerScope))
-            {
-                builder.AppendLine(line);
-            }
-            return builder.ToString();
-        }
+            if (context.SyntaxContextReceiver is not MessagePackSyntaxReceiver syntaxReceiver) return;
 
-        public void Execute(GeneratorExecutionContext context)
-        {
-            if (context.SyntaxContextReceiver is not SyntaxReceiver syntaxReceiver) return;
-
-            //// check that the users compilation references the expected libraries
-            //CheckReferencedAssemblyNamesInclude(context, typeof(Models.DomainAttribute).Assembly);
-
-            //Version fv = new Version(ThisAssembly.AssemblyFileVersion);
-            //string shortVersion = $"{fv.Major}.{fv.Minor}";
+            var assembly = Assembly.GetExecutingAssembly();
             var language = Language_CSharp.Instance;
 
             foreach (var domain in syntaxReceiver.Domains.Values)
@@ -89,7 +73,7 @@ namespace DTOMaker.MessagePack
 
                 // emit entity base
                 {
-                    string sourceText = GenerateSourceText(language, domainScope, "DTOMaker.MessagePack.DomainTemplate.cs");
+                    string sourceText = GenerateSourceText(language, domainScope, assembly, "DTOMaker.MessagePack.DomainTemplate.cs");
                     context.AddSource(
                         $"{domain.Name}.EntityBase.MessagePack.g.cs",
                         sourceText);
@@ -105,7 +89,7 @@ namespace DTOMaker.MessagePack
                     }
 
                     var entityScope = new ModelScope_Entity(domainScope, language, entity);
-                    string sourceText = GenerateSourceText(language, entityScope, "DTOMaker.MessagePack.EntityTemplate.cs");
+                    string sourceText = GenerateSourceText(language, entityScope, assembly, "DTOMaker.MessagePack.EntityTemplate.cs");
                     context.AddSource(
                         $"{domain.Name}.{entity.Name}.MessagePack.g.cs",
                         sourceText);

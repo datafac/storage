@@ -1,14 +1,11 @@
 ﻿using DTOMaker.Gentime;
 using Microsoft.CodeAnalysis;
-using System.Collections.Concurrent;
 
 namespace DTOMaker.MessagePack
 {
-    internal class SyntaxReceiver : ISyntaxContextReceiver
+    internal class MessagePackSyntaxReceiver : SyntaxReceiverBase
     {
-        public ConcurrentDictionary<string, TargetDomain> Domains { get; } = new ConcurrentDictionary<string, TargetDomain>();
-
-        public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
+        protected override void OnOnVisitSyntaxNode(GeneratorSyntaxContext context)
         {
             SyntaxReceiverHelper.ProcessNode(context, Domains,
                 (n, l) => new MessagePackDomain(n, l),
