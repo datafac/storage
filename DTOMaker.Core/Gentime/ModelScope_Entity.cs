@@ -24,7 +24,7 @@ namespace DTOMaker.Gentime
             _variables["EntityName"] = entity.Name;
             _variables["ParentName"] = entity.ParentName ?? "EntityBase";
             _variables["BlockLength"] = entity.BlockLength;
-            _variables["EntityTag"] = entity.IntTag;
+            _variables["EntityTag"] = entity.Tag;
         }
 
         public (bool?, IModelScope[]) GetInnerScopes(string iteratorName)

@@ -5,11 +5,11 @@ namespace DTOMaker.Models
     [AttributeUsage(AttributeTargets.Interface, AllowMultiple = false)]
     public class EntityAttribute : Attribute
     {
-        public readonly int IntTag;
+        public readonly int Tag;
 
-        public EntityAttribute(int intTag = 0)
+        public EntityAttribute(int tag = 0)
         {
-            IntTag = intTag;
+            Tag = tag;
         }
     }
 }

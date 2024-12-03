@@ -97,7 +97,7 @@ namespace DTOMaker.Gentime
                         var attributeArguments = entityAttr.ConstructorArguments;
                         if (CheckAttributeArguments(nameof(EntityAttribute), attributeArguments, 1, entity, idsLocation))
                         {
-                            TryGetAttributeArgumentValue<int>(entity, idsLocation, attributeArguments, 0, (value) => { entity.IntTag = value; });
+                            TryGetAttributeArgumentValue<int>(entity, idsLocation, attributeArguments, 0, (value) => { entity.Tag = value; });
                         }
                     }
                     if (idsSymbol.GetAttributes().FirstOrDefault(a => a.AttributeClass?.Name == nameof(EntityLayoutAttribute)) is AttributeData entityLayoutAttr)
