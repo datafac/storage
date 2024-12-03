@@ -1,6 +1,7 @@
 # DTOMaker
 
-Types and source generators for building DTOs (Data Transport Objects).
+Types and source generators for building DTOs (Data Transport Objects) 
+and related POCOs (Plain Old CSharp Objects).
 
 [![Build-Deploy](https://github.com/datafac/dtomaker/actions/workflows/dotnet.yml/badge.svg)](https://github.com/datafac/dtomaker/actions/workflows/dotnet.yml)
 
