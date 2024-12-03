@@ -26,8 +26,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\DTOMaker.CSPoco\DTOMaker.CSPoco.csproj" />
-	  <ProjectReference Include="..\DTOMaker.Models\DTOMaker.Models.csproj" />
+	  <ProjectReference Include="..\DTOMaker.MessagePack\DTOMaker.MessagePack.csproj" />
+		<ProjectReference Include="..\DTOMaker.Models\DTOMaker.Models.csproj" />
 	</ItemGroup>
 
 </Project>

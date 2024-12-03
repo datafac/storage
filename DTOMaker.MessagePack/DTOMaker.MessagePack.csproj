@@ -10,13 +10,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="DomainTemplate.cs" />
-	  <Compile Remove="EntityTemplate.cs" />
+		<Compile Remove="DomainTemplate.cs" />
+		<Compile Remove="EntityTemplate.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Include="DomainTemplate.cs" />
-	  <EmbeddedResource Include="EntityTemplate.cs" />
+		<EmbeddedResource Include="DomainTemplate.cs" />
+		<EmbeddedResource Include="EntityTemplate.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -35,7 +35,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\DTOMaker.Core\DTOMaker.Core.csproj" />
+		<ProjectReference Include="..\DTOMaker.Core\DTOMaker.Core.csproj" />
 	</ItemGroup>
 
 </Project>
