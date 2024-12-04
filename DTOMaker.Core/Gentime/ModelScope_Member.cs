@@ -3,24 +3,29 @@ using System.Collections.Generic;
 
 namespace DTOMaker.Gentime
 {
-    internal sealed class ModelScope_Member : IModelScope
+    public abstract class ModelScopeBase : IModelScope
     {
-        private readonly ModelScope_Entity _entity;
-        private readonly TargetMember _member;
-        private readonly ILanguage _language;
-        private readonly Dictionary<string, object?> _variables = new Dictionary<string, object?>();
+        protected readonly ILanguage _language;
+        protected readonly Dictionary<string, object?> _variables = new Dictionary<string, object?>();
         public IDictionary<string, object?> Variables => _variables;
 
-        public ModelScope_Member(ModelScope_Entity entity, ILanguage language, TargetMember member)
+        protected ModelScopeBase(IModelScope parent, ILanguage language)
         {
-            _entity = entity;
             _language = language;
-            _member = member;
-
-            foreach (var token in _entity.Variables)
+            foreach (var token in parent.Variables)
             {
                 _variables[token.Key] = token.Value;
             }
+        }
+
+        protected abstract (bool?, IModelScope[]) OnGetInnerScopes(string iteratorName);
+        public (bool?, IModelScope[]) GetInnerScopes(string iteratorName) => OnGetInnerScopes(iteratorName);
+    }
+    internal sealed class ModelScopeMember : ModelScopeBase
+    {
+        public ModelScopeMember(ModelScopeEntity entity, ILanguage language, TargetMember member) 
+            : base(entity, language)
+        {
             string memberType = _language.GetDataTypeToken(member.MemberTypeName);
             _variables.Add("MemberIsObsolete", member.IsObsolete);
             _variables.Add("MemberObsoleteMessage", member.ObsoleteMessage);
@@ -51,9 +56,15 @@ namespace DTOMaker.Gentime
             _variables.Add("FieldLengthR4", member.FieldLength.ToString().PadLeft(4));
             _variables.Add("ArrayLengthR4", member.ArrayLength == 0 ? "    " : member.ArrayLength.ToString().PadLeft(4));
             _variables.Add("MemberTypeL7", memberType.PadRight(7));
+            // todo move these to MessagePack scope
+            int memberTag = 10 + member.Sequence; // todo 10 = member.Entity.MemberTagOffset 
+            _variables.Add("MemberTag", memberTag);
+            _variables.Add("ScalarMemberTag", memberTag);
+            _variables.Add(member.MemberIsNullable ? "ScalarNullableMemberTag" : "ScalarRequiredMemberTag", memberTag);
+            _variables.Add("VectorMemberTag", memberTag);
         }
 
-        public (bool?, IModelScope[]) GetInnerScopes(string iteratorName)
+        protected override (bool?, IModelScope[]) OnGetInnerScopes(string iteratorName)
         {
             return (null, Array.Empty<IModelScope>());
         }

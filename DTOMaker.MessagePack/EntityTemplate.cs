@@ -33,6 +33,9 @@ namespace T_DomainName_.MessagePack
 
         public T_BaseName_() { }
         public T_BaseName_(IT_BaseName_ source, bool frozen = false) : base(source, frozen) { }
+
+        [Key(1)] public T_MemberType_ BaseField1 { get; set; }
+
         public bool Equals(T_BaseName_? other)
         {
             if (ReferenceEquals(this, other)) return true;
@@ -52,12 +55,13 @@ namespace T_DomainName_.MessagePack
     public partial class T_EntityName_ : T_BaseName_, IT_EntityName_, IFreezable
     {
         //##if false
-        private const int T_ScalarNullableMemberSequence_ = 1;
-        private const int T_ScalarRequiredMemberSequence_ = 2;
-        private const int T_VectorMemberSequence_ = 3;
         private const string T_MemberObsoleteMessage_ = null;
         private const bool T_MemberObsoleteIsError_ = false;
         private const int T_EntityTag_ = 2;
+        private const int T_MemberTagOffset_ = 10;
+        private const int T_ScalarNullableMemberTag_ = T_MemberTagOffset_ + 1;
+        private const int T_ScalarRequiredMemberTag_ = T_MemberTagOffset_ + 2;
+        private const int T_VectorMemberTag_ = T_MemberTagOffset_ + 3;
         //##endif
 
         public new const int EntityTag = T_EntityTag_;
@@ -92,7 +96,7 @@ namespace T_DomainName_.MessagePack
         //##if MemberIsObsolete
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##endif
-        [Key(T_VectorMemberSequence_)]
+        [Key(T_VectorMemberTag_)]
         public ReadOnlyMemory<T_MemberType_> T_VectorMemberName_
         {
             get => _T_VectorMemberName_;
@@ -111,14 +115,14 @@ namespace T_DomainName_.MessagePack
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##endif
         //##if MemberIsNullable
-        [Key(T_ScalarNullableMemberSequence_)]
+        [Key(T_ScalarNullableMemberTag_)]
         public T_MemberType_? T_ScalarNullableMemberName_
         {
             get => _T_ScalarNullableMemberName_;
             set => _T_ScalarNullableMemberName_ = IfNotFrozen(ref value);
         }
         //##else
-        [Key(T_ScalarRequiredMemberSequence_)]
+        [Key(T_ScalarRequiredMemberTag_)]
         public T_MemberType_ T_ScalarRequiredMemberName_
         {
             get => _T_ScalarRequiredMemberName_;

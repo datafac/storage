@@ -90,7 +90,7 @@ namespace DTOMaker.CSPoco
                         EmitDiagnostics(context, member);
                     }
 
-                    var entityScope = new ModelScope_Entity(domainScope, language, entity);
+                    var entityScope = new ModelScopeEntity(domainScope, language, entity);
                     string sourceText = GenerateSourceText(language, entityScope, assembly, "DTOMaker.CSPoco.EntityTemplate.cs");
                     context.AddSource(
                         $"{domain.Name}.{entity.Name}.CSPoco.g.cs",

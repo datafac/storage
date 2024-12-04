@@ -29,7 +29,7 @@ namespace DTOMaker.Gentime
                 case "entities":
                     TargetEntity[] entities = _domain.Entities.Values.ToArray();
                     if (entities.Length > 0)
-                        return (true, entities.OrderBy(e => e.Name).Select(e => new ModelScope_Entity(this, _language, e)).ToArray());
+                        return (true, entities.OrderBy(e => e.Name).Select(e => new ModelScopeEntity(this, _language, e)).ToArray());
                     else
                         return (false, new IModelScope[] { new ModelScope_Empty() });
                 default:

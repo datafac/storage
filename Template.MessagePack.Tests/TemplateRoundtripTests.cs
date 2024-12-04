@@ -13,6 +13,7 @@ namespace Template_MessagePack.Tests
         public void Roundtrip01AsEntity()
         {
             var orig = new T_EntityName_();
+            orig.BaseField1 = 321;
             orig.T_ScalarRequiredMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
             orig.Freeze();
@@ -23,6 +24,7 @@ namespace Template_MessagePack.Tests
 
             copy.Freeze();
             copy.IsFrozen().Should().BeTrue();
+            copy.BaseField1!.Should().Be(orig.BaseField1);
             copy.T_ScalarRequiredMemberName_.Should().Be(orig.T_ScalarRequiredMemberName_);
             copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).Should().BeTrue();
         }
@@ -31,6 +33,7 @@ namespace Template_MessagePack.Tests
         public void Roundtrip02AsBase()
         {
             var orig = new T_EntityName_();
+            orig.BaseField1 = 321;
             orig.T_ScalarRequiredMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
             orig.Freeze();
@@ -44,6 +47,7 @@ namespace Template_MessagePack.Tests
             var copy = recd as T_EntityName_;
             copy.Should().NotBeNull();
             copy!.IsFrozen().Should().BeTrue();
+            copy.BaseField1!.Should().Be(orig.BaseField1);
             copy.T_ScalarRequiredMemberName_.Should().Be(orig.T_ScalarRequiredMemberName_);
             copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).Should().BeTrue();
         }
@@ -52,6 +56,7 @@ namespace Template_MessagePack.Tests
         public void Roundtrip03AsParent()
         {
             var orig = new T_EntityName_();
+            orig.BaseField1 = 321;
             orig.T_ScalarRequiredMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
             orig.Freeze();
@@ -65,6 +70,7 @@ namespace Template_MessagePack.Tests
             var copy = recd as T_EntityName_;
             copy.Should().NotBeNull();
             copy!.IsFrozen().Should().BeTrue();
+            copy.BaseField1!.Should().Be(orig.BaseField1);
             copy.T_ScalarRequiredMemberName_.Should().Be(orig.T_ScalarRequiredMemberName_);
             copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).Should().BeTrue();
         }
