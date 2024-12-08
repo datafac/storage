@@ -181,7 +181,7 @@ namespace DTOMaker.MemBlocks
             foreach (var domain in syntaxReceiver.Domains.Values)
             {
                 EmitDiagnostics(context, domain);
-                var domainScope = new ModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
+                var domainScope = new MemBlocksModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
                 foreach (var entity in domain.Entities.Values.OrderBy(e => e.Name))
                 {
                     // do any auto-layout if required

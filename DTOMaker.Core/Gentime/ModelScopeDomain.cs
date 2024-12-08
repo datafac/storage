@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace DTOMaker.Gentime
 {
-    public sealed class ModelScopeDomain : ModelScopeBase
+    public abstract class ModelScopeDomain : ModelScopeBase
     {
         private readonly TargetDomain _domain;
 

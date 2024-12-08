@@ -51,7 +51,7 @@ namespace DTOMaker.MessagePack
             {
                 EmitDiagnostics(context, domain);
 
-                var domainScope = new ModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
+                var domainScope = new MessagePackModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
 
                 // emit entity base
                 {

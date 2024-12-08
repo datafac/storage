@@ -46,7 +46,7 @@ namespace DTOMaker.CSPoco
             {
                 EmitDiagnostics(context, domain);
 
-                var domainScope = new ModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
+                var domainScope = new CSPocoModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
 
                 // emit base entity
                 {
