@@ -1,5 +1,4 @@
-﻿using DTOMaker.Gentime;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
 using System.Linq;

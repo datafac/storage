@@ -1,6 +1,5 @@
 ﻿using DTOMaker.Gentime;
 using Microsoft.CodeAnalysis;
-using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Linq;
 
