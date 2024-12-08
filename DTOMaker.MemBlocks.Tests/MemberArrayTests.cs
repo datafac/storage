@@ -7,26 +7,25 @@ using System.Threading.Tasks;
 using VerifyXunit;
 using Xunit;
 
-namespace DTOMaker.MessagePack.Tests
+namespace DTOMaker.MemBlocks.Tests
 {
-    public class DeprecationTests
+    public class MemberArrayTests
     {
         [Fact]
-        public async Task ObsoleteMember01()
+        public async Task Array01_FixedLength()
         {
             var inputSource =
                 """
-                using System;
                 using DTOMaker.Models;
-                using DTOMaker.Models.MessagePack;
                 namespace MyOrg.Models
                 {
-                    [Entity][EntityTag(1)]
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
-                        [Obsolete]
-                        [Member(1)] 
-                        double Field1 { get; set; }
+                        [Member(1)]
+                        [MemberLayout(arrayLength: 8)]
+                        ReadOnlyMemory<double> Values { get; set; }
                     }
                 }
                 """;
@@ -36,8 +35,8 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Should().HaveCount(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Should().HaveCount(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
             string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
@@ -45,21 +44,20 @@ namespace DTOMaker.MessagePack.Tests
         }
 
         [Fact]
-        public async Task ObsoleteMember02()
+        public void Array02_InvalidLength()
         {
             var inputSource =
                 """
-                using System;
                 using DTOMaker.Models;
-                using DTOMaker.Models.MessagePack;
                 namespace MyOrg.Models
                 {
-                    [Entity][EntityTag(1)]
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
-                        [Obsolete("Removed")]
                         [Member(1)] 
-                        double Field1 { get; set; }
+                        [MemberLayout(arrayLength: 3)]
+                        ReadOnlyMemory<double> Values { get; set; }
                     }
                 }
                 """;
@@ -68,31 +66,57 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Exception.Should().BeNull();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Should().HaveCount(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
 
-            // custom generation checks
-            string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
-            await Verifier.Verify(outputCode);
+            var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+            errors.Should().HaveCount(2);
+            errors[0].GetMessage().Should().Be("ArrayLength (3) is invalid. ArrayLength must be a whole power of 2 between 1 and 1024.");
+            errors[1].GetMessage().Should().Be("Total length (24) is invalid. Total length must be a whole power of 2 between 1 and 1024.");
         }
 
         [Fact]
-        public async Task ObsoleteMember03()
+        public void Array03_TooLarge()
         {
             var inputSource =
                 """
-                using System;
                 using DTOMaker.Models;
-                using DTOMaker.Models.MessagePack;
                 namespace MyOrg.Models
                 {
-                    [Entity][EntityTag(1)]
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
-                        [Obsolete("Removed", true)]
                         [Member(1)] 
-                        double Field1 { get; set; }
+                        [MemberLayout(arrayLength: 256)]
+                        ReadOnlyMemory<double> Values { get; set; }
+                    }
+                }
+                """;
+
+            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
+            generatorResult.Exception.Should().BeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+
+            var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+            errors.Should().HaveCount(1);
+            errors[0].GetMessage().Should().Be("Total length (2048) is invalid. Total length must be a whole power of 2 between 1 and 1024.");
+        }
+
+        [Fact]
+        public async Task Array04_BufferOfBytes()
+        {
+            var inputSource =
+                """
+                using DTOMaker.Models;
+                namespace MyOrg.Models
+                {
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
+                    public interface IMyDTO
+                    {
+                        [Member(1)] 
+                        [MemberLayout(arrayLength: 8)]
+                        ReadOnlyMemory<byte> Values { get; set; }
                     }
                 }
                 """;
@@ -102,8 +126,8 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Should().HaveCount(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Should().HaveCount(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
             string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));

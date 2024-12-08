@@ -17,6 +17,7 @@ namespace DTOMaker.MessagePack.Tests
             var inputSource =
                 """
                 using DTOMaker.Models;
+                using DTOMaker.Models.MessagePack;
                 namespace MyOrg.Models
                 {
                     [Entity][EntityTag(1)]

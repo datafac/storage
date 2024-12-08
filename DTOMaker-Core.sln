@@ -34,6 +34,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOMaker.MessagePack", "DTO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOMaker.MessagePack.Tests", "DTOMaker.MessagePack.Tests\DTOMaker.MessagePack.Tests.csproj", "{FAA6ECEB-A6D9-4770-B918-DBC08ABCE345}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOMaker.MemBlocks", "DTOMaker.MemBlocks\DTOMaker.MemBlocks.csproj", "{70591DA6-168E-49D9-B638-940F93E0D09C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOMaker.MemBlocks.Tests", "DTOMaker.MemBlocks.Tests\DTOMaker.MemBlocks.Tests.csproj", "{E301D930-2C94-4732-B334-DCCDBB962610}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.MemBlocks", "Template.MemBlocks\Template.MemBlocks.csproj", "{057FB412-6F04-4610-AC15-6C281F35A9F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.MemBlocks.Tests", "Template.MemBlocks.Tests\Template.MemBlocks.Tests.csproj", "{D1B0C35D-F224-4995-9B7A-C9C1F3822A6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOMaker.Models.MessagePack", "DTOMaker.Models.MessagePack\DTOMaker.Models.MessagePack.csproj", "{3B689F54-582C-42CD-9C36-CF24DBDA5CA9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,6 +94,26 @@ Global
 		{FAA6ECEB-A6D9-4770-B918-DBC08ABCE345}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAA6ECEB-A6D9-4770-B918-DBC08ABCE345}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAA6ECEB-A6D9-4770-B918-DBC08ABCE345}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70591DA6-168E-49D9-B638-940F93E0D09C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70591DA6-168E-49D9-B638-940F93E0D09C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70591DA6-168E-49D9-B638-940F93E0D09C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70591DA6-168E-49D9-B638-940F93E0D09C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E301D930-2C94-4732-B334-DCCDBB962610}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E301D930-2C94-4732-B334-DCCDBB962610}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E301D930-2C94-4732-B334-DCCDBB962610}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E301D930-2C94-4732-B334-DCCDBB962610}.Release|Any CPU.Build.0 = Release|Any CPU
+		{057FB412-6F04-4610-AC15-6C281F35A9F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{057FB412-6F04-4610-AC15-6C281F35A9F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{057FB412-6F04-4610-AC15-6C281F35A9F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{057FB412-6F04-4610-AC15-6C281F35A9F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1B0C35D-F224-4995-9B7A-C9C1F3822A6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1B0C35D-F224-4995-9B7A-C9C1F3822A6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1B0C35D-F224-4995-9B7A-C9C1F3822A6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1B0C35D-F224-4995-9B7A-C9C1F3822A6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B689F54-582C-42CD-9C36-CF24DBDA5CA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B689F54-582C-42CD-9C36-CF24DBDA5CA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B689F54-582C-42CD-9C36-CF24DBDA5CA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B689F54-582C-42CD-9C36-CF24DBDA5CA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

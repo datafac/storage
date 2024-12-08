@@ -38,25 +38,6 @@ namespace DTOMaker.MessagePack
                             diagnostic.Category, diagnostic.Severity, true), diagnostic.Location));
             }
         }
-        private void CheckReferencedAssemblyNamesInclude(GeneratorExecutionContext context, Assembly assembly)
-        {
-            string packageName = assembly.GetName().Name;
-            Version packageVersion = assembly.GetName().Version;
-            if (!context.Compilation.ReferencedAssemblyNames.Any(ai => ai.Name.Equals(packageName, StringComparison.OrdinalIgnoreCase)))
-            {
-                // todo major version error/minor version warning
-                // todo fix diag id, title and categ
-                context.ReportDiagnostic(Diagnostic.Create(
-                        new DiagnosticDescriptor(
-                            DiagnosticId.DMMP0001, 
-                            "Missing assembly reference",
-                            $"The generated code requires a reference to {packageName} (v{packageVersion} or later).",
-                            DiagnosticCategory.Other,
-                            DiagnosticSeverity.Warning,
-                            true),
-                            Location.None));
-            }
-        }
 
         protected override void OnExecute(GeneratorExecutionContext context)
         {

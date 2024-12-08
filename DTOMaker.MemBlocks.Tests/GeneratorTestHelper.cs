@@ -2,10 +2,13 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace DTOMaker.MessagePack.Tests
+namespace DTOMaker.MemBlocks.Tests
 {
     internal static class GeneratorTestHelper
     {
@@ -25,7 +28,6 @@ namespace DTOMaker.MessagePack.Tests
                             MetadataReference.CreateFromFile(typeof(Memory<>).GetTypeInfo().Assembly.Location),
                             // types for local tests
                             MetadataReference.CreateFromFile(typeof(DTOMaker.Models.EntityAttribute).GetTypeInfo().Assembly.Location),
-                            MetadataReference.CreateFromFile(typeof(DTOMaker.Models.MessagePack.EntityTagAttribute).GetTypeInfo().Assembly.Location),
                         };
 
             PortableExecutableReference[] metadataReferences = commonReferences.Concat(additionalReferences).ToArray();
@@ -51,7 +53,7 @@ namespace DTOMaker.MessagePack.Tests
 
             // directly create an instance of the generator
             // (Note: in the compiler this is loaded from an assembly, and created via reflection at runtime)
-            var generator = new MessagePackSourceGenerator();
+            var generator = new MemBlocksSourceGenerator();
 
             // Create the driver that will control the generation, passing in our generator
             GeneratorDriver driver = CSharpGeneratorDriver.Create(new ISourceGenerator[] { generator });

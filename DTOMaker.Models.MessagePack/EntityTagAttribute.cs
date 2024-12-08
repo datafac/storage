@@ -1,8 +1,7 @@
 ﻿using System;
 
-namespace DTOMaker.Models
+namespace DTOMaker.Models.MessagePack
 {
-    // todo to MessagePack repo
     [AttributeUsage(AttributeTargets.Interface, AllowMultiple = false)]
     public class EntityTagAttribute : Attribute
     {

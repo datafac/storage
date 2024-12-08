@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using VerifyXunit;
 using Xunit;
 
-namespace DTOMaker.MessagePack.Tests
+namespace DTOMaker.MemBlocks.Tests
 {
-    public class GeneratorTests
+    public class SequentialLayoutTests
     {
         [Fact]
         public async Task Happy01_NoMembers()
@@ -17,10 +17,10 @@ namespace DTOMaker.MessagePack.Tests
             var inputSource =
                 """
                 using DTOMaker.Models;
-                using DTOMaker.Models.MessagePack;
                 namespace MyOrg.Models
                 {
-                    [Entity][EntityTag(1)]
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
                     }
@@ -32,11 +32,11 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Should().HaveCount(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
-            outputSource.HintName.Should().Be("MyOrg.Models.MyDTO.MessagePack.g.cs");
+            outputSource.HintName.Should().Be("MyOrg.Models.MyDTO.MemBlocks.g.cs");
             string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
         }
@@ -47,13 +47,46 @@ namespace DTOMaker.MessagePack.Tests
             var inputSource =
                 """
                 using DTOMaker.Models;
-                using DTOMaker.Models.MessagePack;
                 namespace MyOrg.Models
                 {
-                    [Entity][EntityTag(1)]
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
+                    public interface IMyDTO
+                    {
+                        [Member(1)] 
+                        double Field1 { get; set; }
+                    }
+                }
+                """;
+
+            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
+            generatorResult.Exception.Should().BeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
+            generatorResult.GeneratedSources.Should().HaveCount(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
+
+            // custom generation checks
+            string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
+            await Verifier.Verify(outputCode);
+        }
+
+        [Fact]
+        public async Task Happy03_ThreeMembers()
+        {
+            var inputSource =
+                """
+                using DTOMaker.Models;
+                namespace MyOrg.Models
+                {
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
                         [Member(1)] double Field1 { get; set; }
+                        [Member(2)] bool Field2 { get; set; }
+                        [Member(3)] long Field3 { get; set; }
                     }
                 }
                 """;
@@ -63,29 +96,30 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Should().HaveCount(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
-            outputSource.HintName.Should().Be("MyOrg.Models.MyDTO.MessagePack.g.cs");
             string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
         }
 
         [Fact]
-        public async Task Happy03_TwoMembers()
+        public async Task Happy06_ObsoleteMember()
         {
             var inputSource =
                 """
+                using System;
                 using DTOMaker.Models;
-                using DTOMaker.Models.MessagePack;
                 namespace MyOrg.Models
                 {
-                    [Entity][EntityTag(1)]
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
-                        [Member(1)] double Field1 { get; set; }
-                        [Member(2)] long Field2 { get; set; }
+                        [Obsolete("Removed", true)]
+                        [Member(1)] 
+                        double Field1 { get; set; }
                     }
                 }
                 """;
@@ -95,71 +129,43 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Should().HaveCount(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
-            outputSource.HintName.Should().Be("MyOrg.Models.MyDTO.MessagePack.g.cs");
             string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
         }
 
         [Fact]
-        public async Task Happy04_TwoEntities()
+        public async Task Happy98_AllTypes()
         {
             var inputSource =
                 """
                 using DTOMaker.Models;
-                using DTOMaker.Models.MessagePack;
                 namespace MyOrg.Models
                 {
-                    [Entity][EntityTag(1)]
-                    public interface IMyFirstDTO
-                    {
-                        [Member(1)] double Field1 { get; set; }
-                    }
-
-                    [Entity][EntityTag(2)]
-                    public interface IMyOtherDTO
-                    {
-                        [Member(1)] long Field1 { get; set; }
-                    }
-                }
-                """;
-
-            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-
-            // custom generation checks
-            generatorResult.GeneratedSources.Length.Should().Be(3);
-            {
-                GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
-                outputSource.HintName.Should().Be("MyOrg.Models.MyFirstDTO.MessagePack.g.cs");
-            }
-            {
-                GeneratedSourceResult outputSource = generatorResult.GeneratedSources[2];
-                outputSource.HintName.Should().Be("MyOrg.Models.MyOtherDTO.MessagePack.g.cs");
-                string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
-                await Verifier.Verify(outputCode);
-            }
-        }
-
-        [Fact]
-        public async Task Happy05_ArrayMember()
-        {
-            var inputSource =
-                """
-                using DTOMaker.Models;
-                using DTOMaker.Models.MessagePack;
-                namespace MyOrg.Models
-                {
-                    [Entity][EntityTag(1)]
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
-                        [Member(1)] ReadOnlyMemory<double> Field1 { get; set; }
+                        [Member(1)]  bool    Field1  { get; set; }
+                        [Member(2)]  sbyte   Field2  { get; set; }
+                        [Member(3)]  byte    Field3  { get; set; }
+                        [Member(4)]  short   Field4  { get; set; }
+                        [Member(5)]  ushort  Field5  { get; set; }
+                        [Member(6)]  char    Field6  { get; set; }
+                        [Member(7)]  Half    Field7  { get; set; }
+                        [Member(8)]  int     Field8  { get; set; }
+                        [Member(9)]  uint    Field9  { get; set; }
+                        [Member(10)] float   Field10 { get; set; }
+                        [Member(11)] long    Field11 { get; set; }
+                        [Member(12)] ulong   Field12 { get; set; }
+                        [Member(13)] double  Field13 { get; set; }
+                        [Member(14)] Guid    Field14 { get; set; }
+                        [Member(15)] Int128  Field15 { get; set; }
+                        [Member(16)] UInt128 Field16 { get; set; }
+                        [Member(17)] Decimal Field17 { get; set; }
                     }
                 }
                 """;
@@ -169,28 +175,28 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Should().HaveCount(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
-            outputSource.HintName.Should().Be("MyOrg.Models.MyDTO.MessagePack.g.cs");
             string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
         }
 
         [Fact]
-        public async Task Happy06_StringMember()
+        public void Fault01_Unsupported_Enums()
         {
             var inputSource =
                 """
                 using DTOMaker.Models;
-                using DTOMaker.Models.MessagePack;
                 namespace MyOrg.Models
                 {
-                    [Entity][EntityTag(1)]
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
-                        [Member(1)] string Field1 { get; set; }
+                        [Member(1)] 
+                        DayOfWeek Field1 { get; set; }
                     }
                 }
                 """;
@@ -199,29 +205,27 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Exception.Should().BeNull();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
 
-            // custom generation checks
-            outputSource.HintName.Should().Be("MyOrg.Models.MyDTO.MessagePack.g.cs");
-            string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
-            await Verifier.Verify(outputCode);
+            var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+            errors.Should().HaveCount(2);
+            errors[0].GetMessage().Should().Be("MemberType 'DayOfWeek' not supported");
+            errors[1].GetMessage().Should().StartWith("FieldLength (0) is invalid");
         }
 
         [Fact]
-        public async Task Happy07_StringMember()
+        public void Fault02_Unsupported_NullValType()
         {
             var inputSource =
                 """
                 using DTOMaker.Models;
-                using DTOMaker.Models.MessagePack;
                 namespace MyOrg.Models
                 {
-                    [Entity][EntityTag(1)]
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
-                        [Member(1)] string? Field1 { get; set; }
+                        [Member(1)] 
+                        int? Field1 { get; set; }
                     }
                 }
                 """;
@@ -230,29 +234,26 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Exception.Should().BeNull();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
 
-            // custom generation checks
-            outputSource.HintName.Should().Be("MyOrg.Models.MyDTO.MessagePack.g.cs");
-            string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
-            await Verifier.Verify(outputCode);
+            var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+            errors.Should().HaveCount(1);
+            errors[0].GetMessage().Should().Be("Nullable type 'Int32?' is not supported.");
         }
 
         [Fact]
-        public void Fault01_OrphanMember()
+        public void Fault03_Unsupported_String()
         {
-            // note: [Entity] attribute is missing
             var inputSource =
                 """
                 using DTOMaker.Models;
-                using DTOMaker.Models.MessagePack;
                 namespace MyOrg.Models
                 {
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
-                        [Member(1)] double Field1 { get; set; }
+                        [Member(1)] 
+                        string Field1 { get; set; }
                     }
                 }
                 """;
@@ -261,10 +262,41 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Exception.Should().BeNull();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
 
-            // custom generation checks
-            generatorResult.GeneratedSources.Should().BeEmpty();
+            var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+            errors.Should().HaveCount(2);
+            errors[0].GetMessage().Should().Be("MemberType 'String' not supported");
+            errors[1].GetMessage().Should().StartWith("FieldLength (0) is invalid");
+        }
+
+        [Fact]
+        public void Fault03_Unsupported_NullRefType()
+        {
+            var inputSource =
+                """
+                using DTOMaker.Models;
+                namespace MyOrg.Models
+                {
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
+                    public interface IMyDTO
+                    {
+                        [Member(1)] 
+                        string? Field1 { get; set; }
+                    }
+                }
+                """;
+
+            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
+            generatorResult.Exception.Should().BeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+
+            var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+            errors.Should().HaveCount(3);
+            errors[0].GetMessage().Should().Be("MemberType 'String' not supported");
+            errors[1].GetMessage().Should().Be("Nullable type 'String?' is not supported.");
+            errors[2].GetMessage().Should().StartWith("FieldLength (0) is invalid");
         }
 
     }
