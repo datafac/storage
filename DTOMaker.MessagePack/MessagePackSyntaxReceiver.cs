@@ -1,16 +1,35 @@
 ﻿using DTOMaker.Gentime;
 using Microsoft.CodeAnalysis;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace DTOMaker.MessagePack
 {
+    public readonly struct EntityTagAttribute { }
+
     internal class MessagePackSyntaxReceiver : SyntaxReceiverBase
     {
-        protected override void OnOnVisitSyntaxNode(GeneratorSyntaxContext context)
+        private static TargetDomain DomainFactory(string name, Location location) => new MessagePackDomain(name, location);
+        private static TargetEntity EntityFactory(TargetDomain domain, string name, Location location) => new MessagePackEntity(domain, name, location);
+        private static TargetMember MemberFactory(TargetEntity entity, string name, Location location) => new MessagePackMember(entity, name, location);
+
+        protected override void OnProcessEntityAttributes(TargetEntity baseEntity, Location location, ImmutableArray<AttributeData> entityAttributes)
         {
-            SyntaxReceiverHelper.ProcessNode(context, Domains,
-                (n, l) => new MessagePackDomain(n, l),
-                (d, n, l) => new MessagePackEntity(d, n, l),
-                (e, n, l) => new MessagePackMember(e, n, l));
+            if (baseEntity is MessagePackEntity entity
+                && entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(EntityTagAttribute)) is AttributeData entityAttr)
+            {
+                // found entity tag attribute
+                var attributeArguments = entityAttr.ConstructorArguments;
+                if (CheckAttributeArguments(nameof(EntityLayoutAttribute), attributeArguments, 2, entity, location))
+                {
+                    TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 0, (value) => { entity.EntityTag = value; });
+                    TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 1, (value) => { entity.MemberTagOffset = value; });
+                }
+            }
+        }
+
+        public MessagePackSyntaxReceiver() : base(DomainFactory, EntityFactory, MemberFactory)
+        {
         }
     }
 }

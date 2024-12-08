@@ -19,7 +19,7 @@ namespace DTOMaker.MessagePack.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity(1)]
+                    [Entity][EntityTag(1)]
                     public interface IMyDTO
                     {
                     }

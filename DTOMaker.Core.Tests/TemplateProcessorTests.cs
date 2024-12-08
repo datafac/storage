@@ -23,7 +23,7 @@ namespace DTOMaker.Gentime.Tests
                 """;
             var input = inputSource.Split(Environment.NewLine.ToArray(), StringSplitOptions.RemoveEmptyEntries);
             var language = Language_CSharp.Instance;
-            var outerScope = new ModelScope_Empty();
+            var outerScope = ModelScopeEmpty.Instance;
             var processor = new TemplateProcessor();
             string[] processed = processor.ProcessTemplate(input, language, outerScope);
             string outputSource = string.Join(Environment.NewLine, processed);
@@ -48,7 +48,7 @@ namespace DTOMaker.Gentime.Tests
                 """;
             var input = inputSource.Split(Environment.NewLine.ToArray(), StringSplitOptions.RemoveEmptyEntries);
             var language = Language_CSharp.Instance;
-            var outerScope = new ModelScope_Empty();
+            var outerScope = ModelScopeEmpty.Instance;
             var processor = new TemplateProcessor();
             string[] processed = processor.ProcessTemplate(input, language, outerScope);
             string outputSource = string.Join(Environment.NewLine, processed);
@@ -76,7 +76,7 @@ namespace DTOMaker.Gentime.Tests
                 """;
             var input = inputSource.Split(Environment.NewLine.ToArray(), StringSplitOptions.RemoveEmptyEntries);
             var language = Language_CSharp.Instance;
-            var outerScope = new ModelScope_Empty();
+            var outerScope = ModelScopeEmpty.Instance;
             var processor = new TemplateProcessor();
             string[] processed = processor.ProcessTemplate(input, language, outerScope);
             string outputSource = string.Join(Environment.NewLine, processed);
@@ -104,7 +104,7 @@ namespace DTOMaker.Gentime.Tests
                 """;
             var input = inputSource.Split(Environment.NewLine.ToArray(), StringSplitOptions.RemoveEmptyEntries);
             var language = Language_CSharp.Instance;
-            var outerScope = new ModelScope_Empty();
+            var outerScope = ModelScopeEmpty.Instance;
             var processor = new TemplateProcessor();
             string[] processed = processor.ProcessTemplate(input, language, outerScope);
             string outputSource = string.Join(Environment.NewLine, processed);

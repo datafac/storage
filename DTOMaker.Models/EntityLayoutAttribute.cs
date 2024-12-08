@@ -2,6 +2,7 @@
 
 namespace DTOMaker.Models
 {
+    // todo move to MemBlocks repo
     [AttributeUsage(AttributeTargets.Interface, AllowMultiple = false)]
     public class EntityLayoutAttribute : Attribute
     {

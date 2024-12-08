@@ -1,16 +1,22 @@
 ﻿using DTOMaker.Gentime;
 using Microsoft.CodeAnalysis;
+using System.Collections.Immutable;
 
 namespace DTOMaker.CSPoco
 {
     internal class CSPocoSyntaxReceiver : SyntaxReceiverBase
     {
-        protected override void OnOnVisitSyntaxNode(GeneratorSyntaxContext context)
+        private static TargetDomain DomainFactory(string name, Location location) => new CSPocoDomain(name, location);
+        private static TargetEntity EntityFactory(TargetDomain domain, string name, Location location) => new CSPocoEntity(domain, name, location);
+        private static TargetMember MemberFactory(TargetEntity entity, string name, Location location) => new CSPocoMember(entity, name, location);
+
+        protected override void OnProcessEntityAttributes(TargetEntity entity, Location location, ImmutableArray<AttributeData> entityAttributes)
         {
-            SyntaxReceiverHelper.ProcessNode(context, Domains,
-                (n, l) => new CSPocoDomain(n, l),
-                (d, n, l) => new CSPocoEntity(d, n, l),
-                (e, n, l) => new CSPocoMember(e, n, l));
+            // no additional processing required yet
+        }
+
+        public CSPocoSyntaxReceiver() : base(DomainFactory, EntityFactory, MemberFactory)
+        {
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using DTOMaker.Gentime;
 using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DTOMaker.MessagePack
 {
@@ -10,10 +11,10 @@ namespace DTOMaker.MessagePack
 
         private SyntaxDiagnostic? CheckEntityTags()
         {
-            Dictionary<int, TargetEntity> map = new Dictionary<int, TargetEntity>();
-            foreach (var entity in this.Entities.Values)
+            Dictionary<int, MessagePackEntity> map = new Dictionary<int, MessagePackEntity>();
+            foreach (var entity in this.Entities.Values.OfType<MessagePackEntity>())
             {
-                int tag = entity.Tag;
+                int tag = entity.EntityTag;
                 if (tag == 0)
                 {
                     // undefined!

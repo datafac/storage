@@ -4,8 +4,11 @@
 
     public readonly struct DomainAttribute { }
     public readonly struct EntityAttribute { }
-    public readonly struct EntityLayoutAttribute { }
     public readonly struct MemberAttribute { }
+
+
+    // todo move to MemBlocks
+    public readonly struct EntityLayoutAttribute { }
     public readonly struct MemberLayoutAttribute { }
 
     public enum LayoutMethod : int

@@ -64,12 +64,13 @@ namespace DTOMaker.MessagePack
 
             var assembly = Assembly.GetExecutingAssembly();
             var language = Language_CSharp.Instance;
+            var factory = new MessagePackScopeFactory();
 
             foreach (var domain in syntaxReceiver.Domains.Values)
             {
                 EmitDiagnostics(context, domain);
 
-                var domainScope = new ModelScope_Domain(language, domain);
+                var domainScope = new ModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
 
                 // emit entity base
                 {
@@ -88,7 +89,7 @@ namespace DTOMaker.MessagePack
                         EmitDiagnostics(context, member);
                     }
 
-                    var entityScope = new ModelScopeEntity(domainScope, language, entity);
+                    var entityScope = factory.CreateEntity(domainScope, factory, language, entity);
                     string sourceText = GenerateSourceText(language, entityScope, assembly, "DTOMaker.MessagePack.EntityTemplate.cs");
                     context.AddSource(
                         $"{domain.Name}.{entity.Name}.MessagePack.g.cs",

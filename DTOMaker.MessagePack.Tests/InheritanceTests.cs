@@ -19,7 +19,8 @@ namespace DTOMaker.MessagePack.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity(1)]
+                    [Entity]
+                    [EntityTag(1)]
                     public interface IMyDTO
                     {
                     }
@@ -48,11 +49,13 @@ namespace DTOMaker.MessagePack.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity(1)]
+                    [Entity]
+                    [EntityTag(1)]
                     public interface IMyBase
                     {
                     }
-                    [Entity(2)]
+                    [Entity]
+                    [EntityTag(2, 10)]
                     public interface IMyDTO : IMyBase
                     {
                     }
@@ -81,11 +84,13 @@ namespace DTOMaker.MessagePack.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity(1)]
+                    [Entity]
+                    [EntityTag(1)]
                     public interface IMyBase
                     {
                     }
-                    [Entity(2)]
+                    [Entity]
+                    [EntityTag(2, 10)]
                     public interface IMyDTO : IMyBase
                     {
                     }
@@ -114,12 +119,14 @@ namespace DTOMaker.MessagePack.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity(1)]
+                    [Entity]
+                    [EntityTag(1)]
                     public interface IMyBase
                     {
                         [Member(1)] double BaseField1 { get; set; }
                     }
-                    [Entity(2)]
+                    [Entity]
+                    [EntityTag(2, 10)]
                     public interface IMyDTO : IMyBase
                     {
                         [Member(1)] double DTOField1 { get; set; }

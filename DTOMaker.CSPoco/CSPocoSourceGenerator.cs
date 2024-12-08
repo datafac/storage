@@ -6,6 +6,7 @@ using System.Reflection;
 
 namespace DTOMaker.CSPoco
 {
+    [Generator(LanguageNames.CSharp)]
     public class CSPocoSourceGenerator : SourceGeneratorBase
     {
         protected override void OnInitialize(GeneratorInitializationContext context)
@@ -15,7 +16,6 @@ namespace DTOMaker.CSPoco
 
         private void EmitDiagnostics(GeneratorExecutionContext context, TargetBase target)
         {
-            // todo fix msg ids
             foreach (var diagnostic in target.SyntaxErrors)
             {
                 // report diagnostic
@@ -34,43 +34,19 @@ namespace DTOMaker.CSPoco
             }
         }
 
-        private void CheckReferencedAssemblyNamesInclude(GeneratorExecutionContext context, Assembly assembly)
-        {
-            string packageName = assembly.GetName().Name;
-            Version packageVersion = assembly.GetName().Version;
-            if (!context.Compilation.ReferencedAssemblyNames.Any(ai => ai.Name.Equals(packageName, StringComparison.OrdinalIgnoreCase)))
-            {
-                // todo major version error/minor version warning
-                // todo fix diag id, title and categ
-                context.ReportDiagnostic(Diagnostic.Create(
-                        new DiagnosticDescriptor(
-                            DiagnosticId.DMMP0001,
-                            "Missing assembly reference",
-                            $"The generated code requires a reference to {packageName} (v{packageVersion} or later).",
-                            DiagnosticCategory.Other,
-                            DiagnosticSeverity.Warning,
-                            true),
-                            Location.None));
-            }
-        }
-
         protected override void OnExecute(GeneratorExecutionContext context)
         {
             if (context.SyntaxContextReceiver is not CSPocoSyntaxReceiver syntaxReceiver) return;
 
-            //// check that the users compilation references the expected libraries
-            //CheckReferencedAssemblyNamesInclude(context, typeof(DTOMaker.Models.DomainAttribute).Assembly);
-
             var assembly = Assembly.GetExecutingAssembly();
             var language = Language_CSharp.Instance;
-            //Version fv = new Version(ThisAssembly.AssemblyFileVersion);
-            //string shortVersion = $"{fv.Major}.{fv.Minor}";
+            var factory = new CSPocoScopeFactory();
 
             foreach (var domain in syntaxReceiver.Domains.Values)
             {
                 EmitDiagnostics(context, domain);
 
-                var domainScope = new ModelScope_Domain(language, domain);
+                var domainScope = new ModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
 
                 // emit base entity
                 {
@@ -90,7 +66,7 @@ namespace DTOMaker.CSPoco
                         EmitDiagnostics(context, member);
                     }
 
-                    var entityScope = new ModelScopeEntity(domainScope, language, entity);
+                    var entityScope = factory.CreateEntity(domainScope, factory, language, entity);
                     string sourceText = GenerateSourceText(language, entityScope, assembly, "DTOMaker.CSPoco.EntityTemplate.cs");
                     context.AddSource(
                         $"{domain.Name}.{entity.Name}.CSPoco.g.cs",
