@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DTOMaker.Models
+namespace DTOMaker.Models.MemBlocks
 {
     /// <summary>
     /// Defines the memory offset within the memory block of the underlying field.

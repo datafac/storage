@@ -20,12 +20,17 @@ namespace DTOMaker.MessagePack
             {
                 // found entity tag attribute
                 var attributeArguments = entityAttr.ConstructorArguments;
-                if (CheckAttributeArguments(nameof(EntityLayoutAttribute), attributeArguments, 2, entity, location))
+                if (CheckAttributeArguments(nameof(EntityTagAttribute), attributeArguments, 2, entity, location))
                 {
                     TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 0, (value) => { entity.EntityTag = value; });
                     TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 1, (value) => { entity.MemberTagOffset = value; });
                 }
             }
+        }
+
+        protected override void OnProcessMemberAttributes(TargetMember member, Location location, ImmutableArray<AttributeData> memberAttributes)
+        {
+            // not needed yet
         }
 
         public MessagePackSyntaxReceiver() : base(DomainFactory, EntityFactory, MemberFactory)

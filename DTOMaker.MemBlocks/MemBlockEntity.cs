@@ -7,6 +7,9 @@ namespace DTOMaker.MemBlocks
 {
     internal sealed class MemBlockEntity : TargetEntity
     {
+        public bool HasEntityLayoutAttribute { get; set; }
+        public LayoutMethod LayoutMethod { get; set; }
+
         public MemBlockEntity(TargetDomain domain, string name, Location location) : base(domain, name, location) { }
 
         private SyntaxDiagnostic? CheckHasEntityLayoutAttribute()

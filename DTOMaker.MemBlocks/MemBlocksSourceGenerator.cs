@@ -85,7 +85,7 @@ namespace DTOMaker.MemBlocks
             }
         }
 
-        private static void AutoLayoutMembers(TargetEntity entity)
+        private static void AutoLayoutMembers(MemBlockEntity entity)
         {
             switch (entity.LayoutMethod)
             {
@@ -181,7 +181,7 @@ namespace DTOMaker.MemBlocks
             {
                 EmitDiagnostics(context, domain);
                 var domainScope = new MemBlocksModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
-                foreach (var entity in domain.Entities.Values.OrderBy(e => e.Name))
+                foreach (var entity in domain.Entities.Values.OrderBy(e => e.Name).OfType<MemBlockEntity>())
                 {
                     // do any auto-layout if required
                     AutoLayoutMembers(entity);

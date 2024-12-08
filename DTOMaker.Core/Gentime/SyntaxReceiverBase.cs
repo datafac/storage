@@ -58,7 +58,9 @@ namespace DTOMaker.Gentime
             return false;
         }
 
-        protected abstract void OnProcessEntityAttributes(TargetEntity entity, Location location,  ImmutableArray<AttributeData> entityAttributes);
+        protected abstract void OnProcessEntityAttributes(TargetEntity entity, Location location, ImmutableArray<AttributeData> entityAttributes);
+
+        protected abstract void OnProcessMemberAttributes(TargetMember member, Location location, ImmutableArray<AttributeData> memberAttributes);
 
         protected virtual void OnProcessNode(GeneratorSyntaxContext context)
         {
@@ -116,18 +118,6 @@ namespace DTOMaker.Gentime
                         //{
                         //    TryGetAttributeArgumentValue<int>(entity, idsLocation, attributeArguments, 0, (value) => { entity.xxx = value; });
                         //}
-                    }
-                    // todo move EntityLayout attr processing to MemBlocks
-                    if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(EntityLayoutAttribute)) is AttributeData entityLayoutAttr)
-                    {
-                        // found entity layout attribute
-                        entity.HasEntityLayoutAttribute = true;
-                        var attributeArguments = entityLayoutAttr.ConstructorArguments;
-                        if (CheckAttributeArguments(nameof(EntityLayoutAttribute), attributeArguments, 2, entity, idsLocation))
-                        {
-                            TryGetAttributeArgumentValue<int>(entity, idsLocation, attributeArguments, 0, (value) => { entity.LayoutMethod = (LayoutMethod)value; });
-                            TryGetAttributeArgumentValue<int>(entity, idsLocation, attributeArguments, 1, (value) => { entity.BlockLength = value; });
-                        }
                     }
 
                     // additional entity attribute processing
@@ -201,21 +191,9 @@ namespace DTOMaker.Gentime
                                 TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 0, (value) => { member.Sequence = value; });
                             }
                         }
-                        // todo move MemberLayout attr processing to MemBlocks
-                        if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberLayoutAttribute)) is AttributeData memberOffsetAttr)
-                        {
-                            member.HasMemberLayoutAttribute = true;
-                            var attributeArguments = memberOffsetAttr.ConstructorArguments;
-                            if (CheckAttributeArguments(nameof(MemberLayoutAttribute), attributeArguments, 3, member, pdsLocation))
-                            {
-                                TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 0, (value) => { member.FieldOffset = value; });
-                                TryGetAttributeArgumentValue<bool>(member, pdsLocation, attributeArguments, 1, (value) => { member.IsBigEndian = value; });
-                                TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 2, (value) => { member.ArrayLength = value; });
-                            }
-                        }
 
                         // additional member attribute processing
-                        // todo OnProcessMemberAttributes(allAttributes);
+                        OnProcessMemberAttributes(member, pdsLocation, allAttributes);
                     }
                     else
                     {

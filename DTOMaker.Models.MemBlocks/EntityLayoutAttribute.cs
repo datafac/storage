@@ -1,8 +1,7 @@
 ﻿using System;
 
-namespace DTOMaker.Models
+namespace DTOMaker.Models.MemBlocks
 {
-    // todo move to MemBlocks repo
     [AttributeUsage(AttributeTargets.Interface, AllowMultiple = false)]
     public class EntityLayoutAttribute : Attribute
     {

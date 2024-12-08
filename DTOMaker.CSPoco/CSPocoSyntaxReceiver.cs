@@ -12,7 +12,12 @@ namespace DTOMaker.CSPoco
 
         protected override void OnProcessEntityAttributes(TargetEntity entity, Location location, ImmutableArray<AttributeData> entityAttributes)
         {
-            // no additional processing required yet
+            // not needed yet
+        }
+
+        protected override void OnProcessMemberAttributes(TargetMember member, Location location, ImmutableArray<AttributeData> memberAttributes)
+        {
+            // not needed yet
         }
 
         public CSPocoSyntaxReceiver() : base(DomainFactory, EntityFactory, MemberFactory)

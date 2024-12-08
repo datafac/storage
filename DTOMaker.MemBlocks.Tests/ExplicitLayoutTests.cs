@@ -9,6 +9,30 @@ using Xunit;
 
 namespace DTOMaker.MemBlocks.Tests
 {
+    public class AttributeSyncTests
+    {
+        private void LayoutMethodsAreEquivalent(DTOMaker.Models.MemBlocks.LayoutMethod a, DTOMaker.MemBlocks.LayoutMethod b)
+        {
+            int aOrdinal = (int)a;
+            int bOrdinal = (int)b;
+            bOrdinal.Should().Be(aOrdinal);
+        }
+
+        [Fact]
+        public void LayoutMethodsMatch()
+        {
+            LayoutMethodsAreEquivalent(DTOMaker.Models.MemBlocks.LayoutMethod.Undefined, DTOMaker.MemBlocks.LayoutMethod.Undefined);
+            LayoutMethodsAreEquivalent(DTOMaker.Models.MemBlocks.LayoutMethod.Explicit, DTOMaker.MemBlocks.LayoutMethod.Explicit);
+            LayoutMethodsAreEquivalent(DTOMaker.Models.MemBlocks.LayoutMethod.SequentialV1, DTOMaker.MemBlocks.LayoutMethod.SequentialV1);
+        }
+
+        [Fact]
+        public void AttributeNamesMatch()
+        {
+            nameof(DTOMaker.MemBlocks.EntityLayoutAttribute).Should().Be(nameof(DTOMaker.Models.MemBlocks.EntityLayoutAttribute));
+            nameof(DTOMaker.MemBlocks.MemberLayoutAttribute).Should().Be(nameof(DTOMaker.Models.MemBlocks.MemberLayoutAttribute));
+        }
+    }
     public class ExplicitLayoutTests
     {
         [Fact]
@@ -17,6 +41,7 @@ namespace DTOMaker.MemBlocks.Tests
             var inputSource =
                 """
                 using DTOMaker.Models;
+                using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
                     [Entity]
@@ -47,6 +72,7 @@ namespace DTOMaker.MemBlocks.Tests
             var inputSource =
                 """
                 using DTOMaker.Models;
+                using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
                     [Entity]
@@ -79,6 +105,7 @@ namespace DTOMaker.MemBlocks.Tests
             var inputSource =
                 """
                 using DTOMaker.Models;
+                using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
                     [Entity]
@@ -115,6 +142,7 @@ namespace DTOMaker.MemBlocks.Tests
             var inputSource =
                 """
                 using DTOMaker.Models;
+                using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
                     [Entity]
@@ -163,6 +191,7 @@ namespace DTOMaker.MemBlocks.Tests
             var inputSource =
                 """
                 using DTOMaker.Models;
+                using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
                     [Entity]
@@ -189,6 +218,7 @@ namespace DTOMaker.MemBlocks.Tests
             var inputSource =
                 """
                 using DTOMaker.Models;
+                using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
                     [Entity]
@@ -216,6 +246,7 @@ namespace DTOMaker.MemBlocks.Tests
             var inputSource =
                 """
                 using DTOMaker.Models;
+                using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
                     public interface IMyDTO
@@ -244,6 +275,7 @@ namespace DTOMaker.MemBlocks.Tests
             var inputSource =
                 """
                 using DTOMaker.Models;
+                using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
                     [EntityLayout(LayoutMethod.Explicit, 64)]
@@ -273,6 +305,7 @@ namespace DTOMaker.MemBlocks.Tests
             var inputSource =
                 """
                 using DTOMaker.Models;
+                using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
                     [Entity]
@@ -302,6 +335,7 @@ namespace DTOMaker.MemBlocks.Tests
             var inputSource =
                 """
                 using DTOMaker.Models;
+                using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
                     [Entity]
@@ -331,6 +365,7 @@ namespace DTOMaker.MemBlocks.Tests
             var inputSource =
                 """
                 using DTOMaker.Models;
+                using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
                     [Entity]
@@ -360,6 +395,7 @@ namespace DTOMaker.MemBlocks.Tests
             var inputSource =
                 """
                 using DTOMaker.Models;
+                using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
                     [Entity]
@@ -390,6 +426,7 @@ namespace DTOMaker.MemBlocks.Tests
             var inputSource =
                 """
                 using DTOMaker.Models;
+                using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
                     [Entity]
@@ -419,6 +456,7 @@ namespace DTOMaker.MemBlocks.Tests
             var inputSource =
                 """
                 using DTOMaker.Models;
+                using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
                     [Entity]

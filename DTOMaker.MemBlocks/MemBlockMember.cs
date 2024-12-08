@@ -8,7 +8,7 @@ namespace DTOMaker.MemBlocks
     {
         public MemBlockMember(TargetEntity entity, string name, Location location) : base(entity, name, location) { }
 
-        public LayoutMethod LayoutMethod => Entity?.LayoutMethod ?? LayoutMethod.Undefined;
+        public LayoutMethod LayoutMethod => (Entity as MemBlockEntity)?.LayoutMethod ?? LayoutMethod.Undefined;
 
         private SyntaxDiagnostic? CheckMemberType()
         {
