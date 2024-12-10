@@ -1,6 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace DTOMaker.Gentime
@@ -9,19 +8,11 @@ namespace DTOMaker.Gentime
     {
         private readonly TargetDomain _domain;
 
-        private readonly ImmutableArray<ModelScopeEntity> _entities;
-
         public ModelScopeDomain(IModelScope parent, IScopeFactory factory, ILanguage language, TargetDomain domain) 
-            : base(parent, language)
+            : base(parent, factory, language)
         {
             _domain = domain;
-
             _variables["DomainName"] = domain.Name;
-
-            _entities = _domain.Entities.Values
-                .OrderBy(e => e.Name)
-                .Select(e => factory.CreateEntity(this, factory, language, e))
-                .ToImmutableArray();
         }
 
         protected override (bool?, IModelScope[]) OnGetInnerScopes(string iteratorName)
@@ -29,9 +20,12 @@ namespace DTOMaker.Gentime
             switch (iteratorName.ToLowerInvariant())
             {
                 case "entities":
-                    TargetEntity[] entities = _domain.Entities.Values.ToArray();
+                    var entities = _domain.Entities.Values
+                        .OrderBy(e => e.Name)
+                        .Select(e => _factory.CreateEntity(this, _factory, _language, e))
+                        .ToArray();
                     if (entities.Length > 0)
-                        return (true, _entities.ToArray());
+                        return (true, entities);
                     else
                         return (false, new IModelScope[] { ModelScopeEmpty.Instance });
                 default:

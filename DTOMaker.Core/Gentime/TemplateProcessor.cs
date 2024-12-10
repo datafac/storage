@@ -86,7 +86,10 @@ namespace DTOMaker.Gentime
                 throw new TemplateException($"Command arg[{argn}] missing", source);
             return args[argn];
         }
-        private string[] ProcessTemplateScope(ReadOnlySpan<SourceLine> template, int startLine, NestedScope scope, ILanguage options)
+        private string[] ProcessTemplateScope(
+            ReadOnlySpan<SourceLine> template, 
+            int startLine, NestedScope scope, 
+            ILanguage options)
         {
             List<string> output = new List<string>();
             var parser = new ExprParser();

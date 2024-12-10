@@ -29,13 +29,19 @@ namespace DTOMaker.Gentime
             return Index == 0;
         }
 
-        // todo TResult
         public void Switch(Action<T0> action0, Action<T1> action1)
         {
             if (Index == 0)
                 action0(Value0);
             else
                 action1(Value1);
+        }
+
+        public TResult Match<TResult>(Func<T0, TResult> action0, Func<T1, TResult> action1)
+        {
+            return Index == 0 
+                ? action0(Value0) 
+                : action1(Value1);
         }
     }
 }

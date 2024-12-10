@@ -1,55 +1,53 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace DTOMaker.Gentime
 {
-    public interface IScopeFactory
-    {
-        ModelScopeEntity CreateEntity(IModelScope parent, IScopeFactory factory, ILanguage language, TargetEntity entity);
-        ModelScopeMember CreateMember(IModelScope parent, IScopeFactory factory, ILanguage language, TargetMember member);
-    }
     public abstract class ModelScopeEntity : ModelScopeBase
     {
-        private readonly ImmutableArray<ModelScopeEntity> _derivedEntities;
-        private readonly Lazy<ImmutableArray<ModelScopeMember>> _membersqqq;
+        protected readonly TargetEntity _entity;
 
         public ModelScopeEntity(IModelScope parent, IScopeFactory factory, ILanguage language, TargetEntity entity)
-            : base(parent, language)
+            : base(parent, factory, language)
         {
-            _derivedEntities = entity.Domain.Entities.Values
-                .Where(e => e.IsChildOf(entity))
-                .OrderBy(e => e.Name)
-                .Select(e => factory.CreateEntity(parent, factory, language, e))
-                .ToImmutableArray();
-
+            _entity = entity;
             _variables["EntityName"] = entity.Name;
             _variables["EntityName2"] = entity.Name;
             _variables["BaseName"] = entity.Base?.Name ?? "EntityBase";
-            _variables["HasDerivedEntities"] = _derivedEntities.Length > 0;
             _variables["BlockLength"] = entity.BlockLength;
 
-            _membersqqq = new Lazy<ImmutableArray<ModelScopeMember>>(
-                () => entity.Members.Values
-                    .OrderBy(m => m.Sequence)
-                    .Select(m => factory.CreateMember(this, factory, language, m))
-                    .ToImmutableArray());
+            _variables["DerivedEntityCount"] = _entity.DerivedEntities.Length;
+        }
+
+        private static bool IsDerivedFrom(TargetEntity candidate, TargetEntity parent)
+        {
+            if (ReferenceEquals(candidate, parent)) return false;
+            if (candidate.Base is null) return false;
+            if (candidate.Base.Name == parent.Name) return true;
+            return IsDerivedFrom(candidate.Base, parent);
         }
 
         protected override (bool?, IModelScope[]) OnGetInnerScopes(string iteratorName)
         {
             switch (iteratorName.ToLowerInvariant())
             {
-                case "derivedentities":
-                    if (_derivedEntities.Length > 0)
-                        return (true, _derivedEntities.ToArray());
+                case "members":
+                    var members = _entity.Members.Values
+                            .OrderBy(m => m.Sequence)
+                            .Select(m => _factory.CreateMember(this, _factory, _language, m))
+                            .ToArray();
+                    if (members.Length > 0)
+                        return (true, members);
                     else
                         return (false, new IModelScope[] { ModelScopeEmpty.Instance });
-                case "members":
-                    var members = _membersqqq.Value;
-                    if (members.Length > 0)
-                        return (true, members.ToArray());
+                case "derivedentities":
+                    var derivedEntities = _entity.DerivedEntities
+                        .OrderBy(e => e.Name)
+                        .Select(e => _factory.CreateEntity(this, _factory, _language, e))
+                        .ToArray();
+                    if (derivedEntities.Length > 0)
+                        return (true, derivedEntities);
                     else
                         return (false, new IModelScope[] { ModelScopeEmpty.Instance });
                 default:

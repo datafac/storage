@@ -18,6 +18,7 @@ namespace DTOMaker.Gentime
         public int BlockLength { get; set; }
         public string? BaseName { get; set; }
         public TargetEntity? Base { get; set; }
+        public TargetEntity[] DerivedEntities { get; set; } = [];
 
         private SyntaxDiagnostic? CheckHasEntityAttribute()
         {

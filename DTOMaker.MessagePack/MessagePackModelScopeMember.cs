@@ -8,13 +8,16 @@ namespace DTOMaker.MessagePack
         public MessagePackModelScopeMember(IModelScope parent, IScopeFactory factory, ILanguage language, TargetMember member)
             : base(parent, factory, language, member)
         {
-            MessagePackEntity entity = member.Entity as MessagePackEntity 
+            MessagePackEntity entity = member.Entity as MessagePackEntity
                 ?? throw new ArgumentException("Expected member.Entity to be a MessagePackEntity", nameof(member));
             int memberTag = entity.MemberTagOffset + member.Sequence;
-            _variables.Add("MemberTag", memberTag);
-            _variables.Add("ScalarMemberTag", memberTag);
-            _variables.Add(member.MemberIsNullable ? "ScalarNullableMemberTag" : "ScalarRequiredMemberTag", memberTag);
-            _variables.Add("VectorMemberTag", memberTag);
+            _variables["MemberTag"] = memberTag;
+            _variables["ScalarMemberTag"] = memberTag;
+            if (member.MemberIsNullable)
+                _variables["ScalarNullableMemberTag"] = memberTag;
+            else
+                _variables["ScalarRequiredMemberTag"] = memberTag;
+            _variables["VectorMemberTag"] = memberTag;
         }
     }
 }

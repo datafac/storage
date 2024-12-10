@@ -24,9 +24,7 @@ namespace T_DomainName_.MessagePack
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
     }
     [MessagePackObject]
-    //##foreach DerivedEntities
     [Union(T_EntityName_.EntityTag, typeof(T_EntityName_))]
-    //##endfor
     public abstract class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
         public const int EntityTag = 1;
@@ -49,7 +47,7 @@ namespace T_DomainName_.MessagePack
     //##foreach DerivedEntities
     [Union(T_EntityName_.EntityTag, typeof(T_EntityName_))]
     //##endfor
-    //##if HasDerivedEntities
+    //##if DerivedEntityCount > 0
     public abstract partial class T_EntityName2_ { }
     //##endif
     public partial class T_EntityName_ : T_BaseName_, IT_EntityName_, IFreezable

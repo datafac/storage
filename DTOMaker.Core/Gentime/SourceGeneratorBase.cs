@@ -10,6 +10,14 @@ namespace DTOMaker.Gentime
         protected abstract void OnInitialize(GeneratorInitializationContext context);
         public void Initialize(GeneratorInitializationContext context) => OnInitialize(context);
 
+        private static bool IsDerivedFrom(TargetEntity candidate, TargetEntity parent)
+        {
+            if (ReferenceEquals(candidate, parent)) return false;
+            if (candidate.Base is null) return false;
+            if (candidate.Base.Name == parent.Name) return true;
+            return IsDerivedFrom(candidate.Base, parent);
+        }
+
         protected abstract void OnExecute(GeneratorExecutionContext context);
         public void Execute(GeneratorExecutionContext context)
         {
@@ -20,6 +28,7 @@ namespace DTOMaker.Gentime
             {
                 foreach (var entity in domain.Entities.Values.ToArray())
                 {
+                    // fix/set entity base
                     if (entity.BaseName is not null && entity.BaseName != "EntityBase")
                     {
                         if (domain.Entities.TryGetValue(entity.BaseName, out var baseEntity))
@@ -35,6 +44,12 @@ namespace DTOMaker.Gentime
                                     $"Base name '{entity.BaseName}' does not refer to a known entity."));
                         }
                     }
+
+                    // determine derived entities
+                    entity.DerivedEntities = domain.Entities.Values
+                        .Where(e => IsDerivedFrom(e, entity))
+                        .OrderBy(e => e.Name)
+                        .ToArray();
                 }
             }
 
