@@ -14,15 +14,15 @@ call :importgroup CSPoco
 goto :eof
 
 :importgroup
-call :import %1 DTOMaker.%1
-call :import %1 DTOMaker.%1.Tests
-call :import %1 Template.%1
-call :import %1 Template.%1.Tests
+call :import DTOMaker.%1
+call :import DTOMaker.%1.Tests
+call :import Template.%1
+call :import Template.%1.Tests
 goto :eof
 
 
 :import
-robocopy ..\DTOMaker-%1\%2\ .\%2\ *.cs /mir /xd bin obj /z
+robocopy ..\DTOMaker\%1\ .\%1\ *.cs /mir /xd bin obj /z
 set _rc=%errorlevel%
 echo Robocopy returned: %_rc%
 if %_rc% EQU 2 goto :eof
