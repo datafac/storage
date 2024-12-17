@@ -31,6 +31,7 @@ namespace DTOMaker.MemBlocks
                 "UInt128" => null,
                 "Decimal" => null,
                 "Guid" => null,
+                "String" => null,
                 _ => new SyntaxDiagnostic(
                     DiagnosticId.DMMB0007, "Unsupported member datatype", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
                     $"MemberType '{MemberTypeName}' not supported")

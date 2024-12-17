@@ -81,6 +81,9 @@ namespace DTOMaker.MemBlocks
                 case "Guid":
                 case "Decimal":
                     return 16;
+                case "String":
+                    // encoded as UTF8
+                    return 1;
                 default:
                     return 0;
             }
