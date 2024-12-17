@@ -26,11 +26,12 @@ Features implemented:
 - DTOMaker.CSPoco source generator
 
 Features not implemented:
-- Nullable types. T? can be simulated using a pair of fields (Boolean, T).
-- Enum data types. An enumeration type can be simulated with a casting property.
-- Strings (UTF8). String types can be simulated with a byte or char array field and a length field.
+- Nullable types. T? can be implemented with a pair of fields (Boolean, T).
+- Enum data types. Enums can be implemented with an underlying integer property and a cast.
 
 In progress:
+- polymorphic types
+- Strings (UTF8).
 - Json (NewtonSoft) generator
 
 Coming next:
@@ -44,7 +45,6 @@ Coming next:
 Coming later:
 - C# records generator
 - Google Protobuf .proto generation
-- polymorphic types
 - generic patterns: lists, trees, unions, etc.
 - variable length arrays
 - logical value equality
