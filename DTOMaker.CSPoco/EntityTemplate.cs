@@ -59,8 +59,8 @@ namespace T_DomainName_.CSPoco
         public T_EntityName_() { }
         public T_EntityName_(IT_EntityName_ source, bool frozen = false) : base(source, frozen)
         {
-            //##foreach Members
             // todo freezable members
+            //##foreach Members
             //##if MemberIsArray
             _T_VectorMemberName_ = source.T_VectorMemberName_;
             //##else

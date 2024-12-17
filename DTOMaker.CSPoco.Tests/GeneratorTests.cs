@@ -178,7 +178,7 @@ namespace DTOMaker.CSPoco.Tests
         }
 
         [Fact]
-        public async Task Happy06_StringMember()
+        public async Task Happy06_StringMembers()
         {
             var inputSource =
                 """
@@ -188,37 +188,11 @@ namespace DTOMaker.CSPoco.Tests
                     [Entity]
                     public interface IMyDTO
                     {
-                        [Member(1)] string Field1 { get; set; }
-                    }
-                }
-                """;
-
-            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Should().HaveCount(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
-
-            // custom generation checks
-            outputSource.HintName.Should().Be("MyOrg.Models.MyDTO.CSPoco.g.cs");
-            string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
-            await Verifier.Verify(outputCode);
-        }
-
-        [Fact]
-        public async Task Happy07_StringMember()
-        {
-            var inputSource =
-                """
-                using DTOMaker.Models;
-                namespace MyOrg.Models
-                {
-                    [Entity]
-                    public interface IMyDTO
-                    {
-                        [Member(1)] string? Field1 { get; set; }
+                        [Member(1)] string FamilyName { get; set; }
+                        [Member(2)] string GivenName { get; set; }
+                        [Member(3)] string OtherNames_Value { get; set; }
+                        [Member(4)] bool   OtherNames_HasValue { get; set; }
+                                    string? OtherNames { get; set; }
                     }
                 }
                 """;

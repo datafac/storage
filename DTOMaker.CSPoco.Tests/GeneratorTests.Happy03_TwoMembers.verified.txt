@@ -26,7 +26,6 @@ namespace MyOrg.Models.CSPoco
         {
             // todo freezable members
             _Field1 = source.Field1;
-            // todo freezable members
             _Field2 = source.Field2;
         }
 

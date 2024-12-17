@@ -24,6 +24,7 @@ namespace MyOrg.Models.CSPoco
         public MyBase() { }
         public MyBase(IMyBase source, bool frozen = false) : base(source, frozen)
         {
+            // todo freezable members
         }
 
 
