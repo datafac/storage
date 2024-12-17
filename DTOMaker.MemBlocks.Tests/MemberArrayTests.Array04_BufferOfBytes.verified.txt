@@ -6,18 +6,25 @@
 #pragma warning disable CS0414
 #nullable enable
 using System;
+using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
 using DataFac.Runtime;
 namespace MyOrg.Models.MemBlocks
 {
-    public sealed partial class MyDTO : IMyDTO, IFreezable
+    public sealed partial class MyDTO : EntityBase, IMyDTO, IFreezable
     {
         private const int BlockLength = 8;
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
-        public ReadOnlyMemory<byte> Block => _frozen ? _readonlyBlock : _writableBlock.ToArray();
+
+        protected override void OnGetBuffers(ImmutableArray<ReadOnlyMemory<byte>>.Builder builder)
+        {
+            base.OnGetBuffers(builder);
+            var block = IsFrozen() ? _readonlyBlock : _writableBlock.ToArray();
+            builder.Add(block);
+        }
 
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
@@ -25,22 +32,26 @@ namespace MyOrg.Models.MemBlocks
         //     1     0     1     8  Byte    LE    Values
         // ------------------------------------------------------------
 
-        public MyDTO() => _readonlyBlock = _writableBlock = new byte[BlockLength];
-
-        public MyDTO(ReadOnlySpan<byte> source, bool frozen)
+        public MyDTO()
         {
-            Memory<byte> memory = new byte[BlockLength];
-            if (source.Length <= BlockLength)
-                source.CopyTo(memory.Span);
-            else
-                source.Slice(0, BlockLength).CopyTo(memory.Span);
-            _readonlyBlock = memory;
-            _writableBlock = memory;
-            _frozen = frozen;
+            _readonlyBlock = _writableBlock = new byte[BlockLength];
         }
 
-        public MyDTO(ReadOnlyMemory<byte> source)
+        public MyDTO(MyDTO source, bool frozen = false) : base(source, frozen)
         {
+            _writableBlock = source._writableBlock.ToArray();
+            _readonlyBlock = _writableBlock;
+        }
+
+        public MyDTO(IMyDTO source, bool frozen = false) : base(source, frozen)
+        {
+            _readonlyBlock = _writableBlock = new byte[BlockLength];
+            this.Values = source.Values;
+        }
+
+        public MyDTO(ImmutableArray<ReadOnlyMemory<byte>> buffers) : base(buffers.Slice(0, buffers.Length - 1))
+        {
+            ReadOnlyMemory<byte> source = buffers[buffers.Length - 1];
             if (source.Length >= BlockLength)
             {
                 _readonlyBlock = source.Slice(0, BlockLength);
@@ -49,42 +60,10 @@ namespace MyOrg.Models.MemBlocks
             {
                 // forced copy as source is too short
                 Memory<byte> memory = new byte[BlockLength];
-                source.Slice(0, BlockLength).Span.CopyTo(memory.Span);
+                source.Span.CopyTo(memory.Span);
                 _readonlyBlock = memory;
             }
             _writableBlock = Memory<byte>.Empty;
-            _frozen = true;
-        }
-        // todo move to base
-        private volatile bool _frozen = false;
-        public bool IsFrozen() => _frozen;
-        public IFreezable PartCopy() => new MyDTO(this);
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void ThrowIsFrozenException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} when frozen.");
-
-        public void Freeze()
-        {
-            if (_frozen) return;
-            _frozen = true;
-            // todo freeze base
-            // todo freeze model type refs
-        }
-
-        public MyDTO(MyDTO source)
-        {
-            // todo base ctor
-            // todo freezable members
-            _writableBlock = source._writableBlock.ToArray();
-            _readonlyBlock = _writableBlock;
-            _frozen = false;
-        }
-
-        public MyDTO(IMyDTO source) : this(ReadOnlySpan<byte>.Empty, false)
-        {
-            // todo base ctor
-            // todo freezable members
-            this.Values = source.Values;
         }
 
         public ReadOnlyMemory<Byte> Values
@@ -97,7 +76,7 @@ namespace MyOrg.Models.MemBlocks
 
             set
             {
-                if (_frozen) ThrowIsFrozenException(nameof(Values));
+                ThrowExceptionIfFrozen();
                 var targetSpan = _writableBlock.Slice(0, 1 * 8).Span;
                 targetSpan.Clear();
                 value.Span.CopyTo(MemoryMarshal.Cast<byte, Byte>(targetSpan));

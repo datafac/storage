@@ -10,9 +10,10 @@ using System.Text;
 namespace DTOMaker.MemBlocks
 {
     [Generator(LanguageNames.CSharp)]
-    public class MemBlocksSourceGenerator : ISourceGenerator
+    public class MemBlocksSourceGenerator : SourceGeneratorBase
     {
-        public void Initialize(GeneratorInitializationContext context)
+
+        protected override void OnInitialize(GeneratorInitializationContext context)
         {
             context.RegisterForSyntaxNotifications(() => new MemBlocksSyntaxReceiver());
         }
@@ -169,7 +170,7 @@ namespace DTOMaker.MemBlocks
             return result.ToArray();
         }
 
-        public void Execute(GeneratorExecutionContext context)
+        protected override void OnExecute(GeneratorExecutionContext context)
         {
             if (context.SyntaxContextReceiver is not MemBlocksSyntaxReceiver syntaxReceiver) return;
 
@@ -180,7 +181,18 @@ namespace DTOMaker.MemBlocks
             foreach (var domain in syntaxReceiver.Domains.Values)
             {
                 EmitDiagnostics(context, domain);
+
                 var domainScope = new MemBlocksModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
+
+                // emit base entity
+                {
+                    string sourceText = GenerateSourceText(language, domainScope, assembly, "DTOMaker.MemBlocks.DomainTemplate.cs");
+                    context.AddSource(
+                        $"{domain.Name}.EntityBase.MemBlocks.g.cs",
+                        sourceText);
+                }
+
+                // emit each entity
                 foreach (var entity in domain.Entities.Values.OrderBy(e => e.Name).OfType<MemBlockEntity>())
                 {
                     // do any auto-layout if required
@@ -193,16 +205,11 @@ namespace DTOMaker.MemBlocks
                         EmitDiagnostics(context, member);
                     }
 
-                    string hintName = $"{domain.Name}.{entity.Name}.MemBlocks.g.cs";
-                    var builder = new StringBuilder();
-                    var template = GetTemplate("DTOMaker.MemBlocks.EntityTemplate.cs");
-                    var processor = new TemplateProcessor();
-                    var outerScope = new MemBlocksModelScopeEntity(domainScope, factory, language, entity);
-                    foreach (string line in processor.ProcessTemplate(template, language, outerScope))
-                    {
-                        builder.AppendLine(line);
-                    }
-                    context.AddSource(hintName, builder.ToString());
+                    var entityScope = factory.CreateEntity(domainScope, factory, language, entity);
+                    string sourceText = GenerateSourceText(language, entityScope, assembly, "DTOMaker.MemBlocks.EntityTemplate.cs");
+                    context.AddSource(
+                        $"{domain.Name}.{entity.Name}.MemBlocks.g.cs",
+                        sourceText);
                 }
             }
         }

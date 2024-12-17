@@ -6,6 +6,7 @@
 #pragma warning disable CS0414
 #nullable enable
 using System;
+using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
@@ -24,13 +25,89 @@ namespace DataFac.Memory
 namespace T_DomainName_.MemBlocks
 {
     //##if false
-    public interface IT_EntityName_
+    public interface IT_BaseName_
+    {
+        T_MemberType_ BaseField1 { get; set; }
+    }
+    public class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
+    {
+        private const int BlockLength = 64;
+        private readonly Memory<byte> _writableBlock;
+        private readonly ReadOnlyMemory<byte> _readonlyBlock;
+
+        protected override void OnGetBuffers(ImmutableArray<ReadOnlyMemory<byte>>.Builder builder)
+        {
+            base.OnGetBuffers(builder);
+            var block = IsFrozen() ? _readonlyBlock : _writableBlock.ToArray();
+            builder.Add(block);
+        }
+
+        public T_BaseName_()
+        {
+            _readonlyBlock = _writableBlock = new byte[BlockLength];
+        }
+
+        public T_BaseName_(T_BaseName_ source, bool frozen = false) : base(source, frozen)
+        {
+            _writableBlock = source._writableBlock.ToArray();
+            _readonlyBlock = _writableBlock;
+        }
+
+        public T_BaseName_(IT_BaseName_ source, bool frozen = false) : base(source, frozen)
+        {
+            _readonlyBlock = _writableBlock = new byte[BlockLength];
+            this.BaseField1 = source.BaseField1;
+        }
+
+        public T_BaseName_(ImmutableArray<ReadOnlyMemory<byte>> buffers) : base(buffers.Slice(0, buffers.Length - 1))
+        {
+            ReadOnlyMemory<byte> source = buffers[buffers.Length - 1];
+            if (source.Length >= BlockLength)
+            {
+                _readonlyBlock = source.Slice(0, BlockLength);
+            }
+            else
+            {
+                // forced copy as source is too short
+                Memory<byte> memory = new byte[BlockLength];
+                source.Span.CopyTo(memory.Span);
+                _readonlyBlock = memory;
+            }
+            _writableBlock = Memory<byte>.Empty;
+        }
+
+        private const int T_FieldOffset_ = 4;
+        private const int T_FieldLength_ = 4;
+
+        public T_MemberType_ BaseField1
+        {
+            get
+            {
+                return (T_MemberType_)Codec_T_MemberType__T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_).Span);
+            }
+
+            set
+            {
+                ThrowExceptionIfFrozen();
+                Codec_T_MemberType__T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, T_FieldLength_).Span, value);
+            }
+        }
+
+        public bool Equals(T_BaseName_? other)
+        {
+            if (ReferenceEquals(this, other)) return true;
+            if (other is null) return false;
+            if (!base.Equals(other)) return false;
+            return true;
+        }
+    }
+    public interface IT_EntityName_ : IT_BaseName_
     {
         T_MemberType_ T_ScalarMemberName_ { get; set; }
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
     }
     //##endif
-    public sealed partial class T_EntityName_ : IT_EntityName_, IFreezable
+    public sealed partial class T_EntityName_ : T_BaseName_, IT_EntityName_, IFreezable
     {
         //##if false
         private const int T_BlockLength_ = 128;
@@ -39,7 +116,13 @@ namespace T_DomainName_.MemBlocks
         private const int BlockLength = T_BlockLength_;
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
-        public ReadOnlyMemory<byte> Block => _frozen ? _readonlyBlock : _writableBlock.ToArray();
+
+        protected override void OnGetBuffers(ImmutableArray<ReadOnlyMemory<byte>>.Builder builder)
+        {
+            base.OnGetBuffers(builder);
+            var block = IsFrozen() ? _readonlyBlock : _writableBlock.ToArray();
+            builder.Add(block);
+        }
 
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
@@ -49,22 +132,32 @@ namespace T_DomainName_.MemBlocks
         //##endfor
         // ------------------------------------------------------------
 
-        public T_EntityName_() => _readonlyBlock = _writableBlock = new byte[BlockLength];
-
-        public T_EntityName_(ReadOnlySpan<byte> source, bool frozen)
+        public T_EntityName_()
         {
-            Memory<byte> memory = new byte[BlockLength];
-            if (source.Length <= BlockLength)
-                source.CopyTo(memory.Span);
-            else
-                source.Slice(0, BlockLength).CopyTo(memory.Span);
-            _readonlyBlock = memory;
-            _writableBlock = memory;
-            _frozen = frozen;
+            _readonlyBlock = _writableBlock = new byte[BlockLength];
         }
 
-        public T_EntityName_(ReadOnlyMemory<byte> source)
+        public T_EntityName_(T_EntityName_ source, bool frozen = false) : base(source, frozen)
         {
+            _writableBlock = source._writableBlock.ToArray();
+            _readonlyBlock = _writableBlock;
+        }
+
+        public T_EntityName_(IT_EntityName_ source, bool frozen = false) : base(source, frozen)
+        {
+            _readonlyBlock = _writableBlock = new byte[BlockLength];
+            //##foreach Members
+            //##if MemberIsArray
+            this.T_VectorMemberName_ = source.T_VectorMemberName_;
+            //##else
+            this.T_ScalarMemberName_ = source.T_ScalarMemberName_;
+            //##endif
+            //##endfor
+        }
+
+        public T_EntityName_(ImmutableArray<ReadOnlyMemory<byte>> buffers) : base(buffers.Slice(0, buffers.Length - 1))
+        {
+            ReadOnlyMemory<byte> source = buffers[buffers.Length - 1];
             if (source.Length >= BlockLength)
             {
                 _readonlyBlock = source.Slice(0, BlockLength);
@@ -73,48 +166,10 @@ namespace T_DomainName_.MemBlocks
             {
                 // forced copy as source is too short
                 Memory<byte> memory = new byte[BlockLength];
-                source.Slice(0, BlockLength).Span.CopyTo(memory.Span);
+                source.Span.CopyTo(memory.Span);
                 _readonlyBlock = memory;
             }
             _writableBlock = Memory<byte>.Empty;
-            _frozen = true;
-        }
-        // todo move to base
-        private volatile bool _frozen = false;
-        public bool IsFrozen() => _frozen;
-        public IFreezable PartCopy() => new T_EntityName_(this);
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void ThrowIsFrozenException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} when frozen.");
-
-        public void Freeze()
-        {
-            if (_frozen) return;
-            _frozen = true;
-            // todo freeze base
-            // todo freeze model type refs
-        }
-
-        public T_EntityName_(T_EntityName_ source)
-        {
-            // todo base ctor
-            // todo freezable members
-            _writableBlock = source._writableBlock.ToArray();
-            _readonlyBlock = _writableBlock;
-            _frozen = false;
-        }
-
-        public T_EntityName_(IT_EntityName_ source) : this(ReadOnlySpan<byte>.Empty, false)
-        {
-            // todo base ctor
-            // todo freezable members
-            //##foreach Members
-            //##if MemberIsArray
-            this.T_VectorMemberName_ = source.T_VectorMemberName_;
-            //##else
-            this.T_ScalarMemberName_ = source.T_ScalarMemberName_;
-            //##endif
-            //##endfor
         }
 
         //##if false
@@ -158,7 +213,7 @@ namespace T_DomainName_.MemBlocks
 
             set
             {
-                if (_frozen) ThrowIsFrozenException(nameof(T_VectorMemberName_));
+                ThrowExceptionIfFrozen();
                 var targetSpan = _writableBlock.Slice(T_FieldOffset_, T_FieldLength_ * T_ArrayLength_).Span;
                 targetSpan.Clear();
                 //##if FieldLength == 1
@@ -193,7 +248,7 @@ namespace T_DomainName_.MemBlocks
 
             set
             {
-                if (_frozen) ThrowIsFrozenException(nameof(T_ScalarMemberName_));
+                ThrowExceptionIfFrozen();
                 Codec_T_MemberType__T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, T_FieldLength_).Span, value);
             }
         }

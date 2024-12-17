@@ -7,26 +7,21 @@ using System.Threading.Tasks;
 using VerifyXunit;
 using Xunit;
 
-namespace DTOMaker.MemBlocks.Tests
+namespace DTOMaker.CSPoco.Tests
 {
-    public class MemberArrayTests
+    public class InheritanceTests
     {
         [Fact]
-        public async Task Array01_FixedLength()
+        public async Task Entity01_VerifyBase()
         {
             var inputSource =
                 """
                 using DTOMaker.Models;
-                using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [EntityLayout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
-                        [Member(1)]
-                        [MemberLayout(arrayLength: 8)]
-                        ReadOnlyMemory<double> Values { get; set; }
                     }
                 }
                 """;
@@ -36,91 +31,30 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Should().HaveCount(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Length.Should().Be(2);
+            GeneratedSourceResult source = generatorResult.GeneratedSources[0];
 
             // custom generation checks
-            string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
+            source.HintName.Should().Be("MyOrg.Models.EntityBase.CSPoco.g.cs");
+            string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
         }
 
         [Fact]
-        public void Array02_InvalidLength()
+        public async Task Entity02_VerifyCommon()
         {
             var inputSource =
                 """
                 using DTOMaker.Models;
-                using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [EntityLayout(LayoutMethod.SequentialV1)]
-                    public interface IMyDTO
+                    public interface IMyBase
                     {
-                        [Member(1)] 
-                        [MemberLayout(arrayLength: 3)]
-                        ReadOnlyMemory<double> Values { get; set; }
                     }
-                }
-                """;
-
-            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-
-            var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Should().HaveCount(2);
-            errors[0].GetMessage().Should().Be("ArrayLength (3) is invalid. ArrayLength must be a whole power of 2 between 1 and 1024.");
-            errors[1].GetMessage().Should().Be("Total length (24) is invalid. Total length must be a whole power of 2 between 1 and 1024.");
-        }
-
-        [Fact]
-        public void Array03_TooLarge()
-        {
-            var inputSource =
-                """
-                using DTOMaker.Models;
-                using DTOMaker.Models.MemBlocks;
-                namespace MyOrg.Models
-                {
                     [Entity]
-                    [EntityLayout(LayoutMethod.SequentialV1)]
-                    public interface IMyDTO
+                    public interface IMyDTO : IMyBase
                     {
-                        [Member(1)] 
-                        [MemberLayout(arrayLength: 256)]
-                        ReadOnlyMemory<double> Values { get; set; }
-                    }
-                }
-                """;
-
-            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-
-            var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Should().HaveCount(1);
-            errors[0].GetMessage().Should().Be("Total length (2048) is invalid. Total length must be a whole power of 2 between 1 and 1024.");
-        }
-
-        [Fact]
-        public async Task Array04_BufferOfBytes()
-        {
-            var inputSource =
-                """
-                using DTOMaker.Models;
-                using DTOMaker.Models.MemBlocks;
-                namespace MyOrg.Models
-                {
-                    [Entity]
-                    [EntityLayout(LayoutMethod.SequentialV1)]
-                    public interface IMyDTO
-                    {
-                        [Member(1)] 
-                        [MemberLayout(arrayLength: 8)]
-                        ReadOnlyMemory<byte> Values { get; set; }
                     }
                 }
                 """;
@@ -130,13 +64,81 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Should().HaveCount(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Length.Should().Be(3);
+            GeneratedSourceResult source = generatorResult.GeneratedSources[1];
 
             // custom generation checks
-            string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
+            source.HintName.Should().Be("MyOrg.Models.MyBase.CSPoco.g.cs");
+            string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
         }
 
+        [Fact]
+        public async Task Entity03_VerifySpecific()
+        {
+            var inputSource =
+                """
+                using DTOMaker.Models;
+                namespace MyOrg.Models
+                {
+                    [Entity]
+                    public interface IMyBase
+                    {
+                    }
+                    [Entity]
+                    public interface IMyDTO : IMyBase
+                    {
+                    }
+                }
+                """;
+
+            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
+            generatorResult.Exception.Should().BeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
+            generatorResult.GeneratedSources.Length.Should().Be(3);
+            GeneratedSourceResult source = generatorResult.GeneratedSources[2];
+
+            // custom generation checks
+            source.HintName.Should().Be("MyOrg.Models.MyDTO.CSPoco.g.cs");
+            string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
+            await Verifier.Verify(outputCode);
+        }
+
+        [Fact]
+        public async Task Entity04_WithMembers()
+        {
+            var inputSource =
+                """
+                using DTOMaker.Models;
+                namespace MyOrg.Models
+                {
+                    [Entity]
+                    public interface IMyBase
+                    {
+                        [Member(1)] double BaseField1 { get; set; }
+                    }
+                    [Entity]
+                    public interface IMyDTO : IMyBase
+                    {
+                        [Member(1)] double DTOField1 { get; set; }
+                    }
+                }
+                """;
+
+            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
+            generatorResult.Exception.Should().BeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
+            generatorResult.GeneratedSources.Length.Should().Be(3);
+            GeneratedSourceResult source = generatorResult.GeneratedSources[2];
+
+            // custom generation checks
+            source.HintName.Should().Be("MyOrg.Models.MyDTO.CSPoco.g.cs");
+            string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
+            await Verifier.Verify(outputCode);
+        }
     }
 }
