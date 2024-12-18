@@ -156,15 +156,15 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)]
-                        [MemberLayout(arrayLength: 64)]
+                        [Length(64)]
                         string FamilyName { get; set; }
 
                         [Member(2)]
-                        [MemberLayout(arrayLength: 64)]
+                        [Length(64)]
                         string GivenNames { get; set; }
 
                         [Member(3)]
-                        [MemberLayout(arrayLength: 64)]
+                        [Length(64)]
                         string OtherNames_Value { get; set; }
 
                         [Member(4)] bool OtherNames_HasValue { get; set; }
@@ -337,7 +337,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)] 
-                        [MemberLayout(arrayLength: 31)]
+                        [Length(31)]
                         string Field1 { get; set; }
                     }
                 }

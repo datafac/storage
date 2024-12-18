@@ -6,7 +6,9 @@ using System.Linq;
 namespace DTOMaker.MemBlocks
 {
     public readonly struct EntityLayoutAttribute { }
-    public readonly struct MemberLayoutAttribute { }
+    public readonly struct OffsetAttribute { }
+    public readonly struct LengthAttribute { }
+    public readonly struct EndianAttribute { }
 
     internal class MemBlocksSyntaxReceiver : SyntaxReceiverBase
     {
@@ -34,15 +36,31 @@ namespace DTOMaker.MemBlocks
         {
             if (baseMember is MemBlockMember member)
             {
-                if (memberAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberLayoutAttribute)) is AttributeData memberOffsetAttr)
+                if (memberAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(OffsetAttribute)) is AttributeData memberOffsetAttr)
                 {
-                    member.HasMemberLayoutAttribute = true;
+                    member.HasOffsetAttribute = true;
                     var attributeArguments = memberOffsetAttr.ConstructorArguments;
-                    if (CheckAttributeArguments(nameof(MemberLayoutAttribute), attributeArguments, 3, member, location))
+                    if (CheckAttributeArguments(nameof(OffsetAttribute), attributeArguments, 1, member, location))
                     {
                         TryGetAttributeArgumentValue<int>(member, location, attributeArguments, 0, (value) => { member.FieldOffset = value; });
-                        TryGetAttributeArgumentValue<bool>(member, location, attributeArguments, 1, (value) => { member.IsBigEndian = value; });
-                        TryGetAttributeArgumentValue<int>(member, location, attributeArguments, 2, (value) => { member.ArrayLength = value; });
+                    }
+                }
+                if (memberAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(LengthAttribute)) is AttributeData memberLengthAttr)
+                {
+                    member.HasLengthAttribute = true;
+                    var attributeArguments = memberLengthAttr.ConstructorArguments;
+                    if (CheckAttributeArguments(nameof(LengthAttribute), attributeArguments, 1, member, location))
+                    {
+                        TryGetAttributeArgumentValue<int>(member, location, attributeArguments, 0, (value) => { member.ArrayLength = value; });
+                    }
+                }
+                if (memberAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(EndianAttribute)) is AttributeData memberEndianAttr)
+                {
+                    member.HasEndianAttribute = true;
+                    var attributeArguments = memberEndianAttr.ConstructorArguments;
+                    if (CheckAttributeArguments(nameof(EndianAttribute), attributeArguments, 1, member, location))
+                    {
+                        TryGetAttributeArgumentValue<bool>(member, location, attributeArguments, 0, (value) => { member.IsBigEndian = value; });
                     }
                 }
             }

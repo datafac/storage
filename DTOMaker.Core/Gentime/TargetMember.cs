@@ -12,7 +12,9 @@ namespace DTOMaker.Gentime
             _entity = entity;
         }
         public bool HasMemberAttribute { get; set; }
-        public bool HasMemberLayoutAttribute { get; set; }
+        public bool HasOffsetAttribute { get; set; }
+        public bool HasLengthAttribute { get; set; }
+        public bool HasEndianAttribute { get; set; }
         public string MemberTypeName { get; set; } = "";
         public bool MemberIsValueType { get; set; }
         public bool MemberIsReferenceType { get; set; }

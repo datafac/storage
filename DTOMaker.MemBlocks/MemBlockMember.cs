@@ -47,16 +47,16 @@ namespace DTOMaker.MemBlocks
                         $"Nullable type '{MemberTypeName}?' is not supported.");
         }
 
-        private SyntaxDiagnostic? CheckHasMemberLayoutAttribute()
+        private SyntaxDiagnostic? CheckHasOffsetAttribute()
         {
             if (LayoutMethod == LayoutMethod.SequentialV1)
                 return null;
 
-            if (HasMemberLayoutAttribute) return null;
+            if (HasOffsetAttribute) return null;
 
             return (SyntaxDiagnostic?)new SyntaxDiagnostic(
-                     DiagnosticId.DMMB0006, "Missing [MemberLayout] attribute", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                     "[MemberLayout] attribute is missing.");
+                     DiagnosticId.DMMB0006, "Missing [Offset] attribute", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+                     "[Offset] attribute is missing.");
         }
 
         private SyntaxDiagnostic? CheckFieldOffsetIsValid()
@@ -146,7 +146,7 @@ namespace DTOMaker.MemBlocks
             SyntaxDiagnostic? diagnostic2;
             if ((diagnostic2 = CheckMemberType()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckMemberIsNotNullable()) is not null) yield return diagnostic2;
-            if ((diagnostic2 = CheckHasMemberLayoutAttribute()) is not null) yield return diagnostic2;
+            if ((diagnostic2 = CheckHasOffsetAttribute()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckFieldOffsetIsValid()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckFieldLengthIsValid()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckArrayLengthIsValid()) is not null) yield return diagnostic2;

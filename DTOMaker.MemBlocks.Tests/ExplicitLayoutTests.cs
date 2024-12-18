@@ -30,7 +30,9 @@ namespace DTOMaker.MemBlocks.Tests
         public void AttributeNamesMatch()
         {
             nameof(DTOMaker.MemBlocks.EntityLayoutAttribute).Should().Be(nameof(DTOMaker.Models.MemBlocks.EntityLayoutAttribute));
-            nameof(DTOMaker.MemBlocks.MemberLayoutAttribute).Should().Be(nameof(DTOMaker.Models.MemBlocks.MemberLayoutAttribute));
+            nameof(DTOMaker.MemBlocks.OffsetAttribute).Should().Be(nameof(DTOMaker.Models.MemBlocks.OffsetAttribute));
+            nameof(DTOMaker.MemBlocks.LengthAttribute).Should().Be(nameof(DTOMaker.Models.MemBlocks.LengthAttribute));
+            nameof(DTOMaker.MemBlocks.EndianAttribute).Should().Be(nameof(DTOMaker.Models.MemBlocks.EndianAttribute));
         }
     }
     public class ExplicitLayoutTests
@@ -80,7 +82,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)] 
-                        [MemberLayout(0)]
+                        [Offset(0)]
                         double Field1 { get; set; }
                     }
                 }
@@ -113,11 +115,11 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)]
-                        [MemberLayout(8)] 
+                        [Offset(8)] 
                         double Field1 { get; set; }
 
                         [Member(2)]
-                        [MemberLayout(16)] 
+                        [Offset(16)] 
                         long Field2 { get; set; }
                     }
                 }
@@ -150,7 +152,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyFirstDTO
                     {
                         [Member(1)]
-                        [MemberLayout(0)] 
+                        [Offset(0)] 
                         double Field1 { get; set; }
                     }
 
@@ -159,7 +161,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyOtherDTO
                     {
                         [Member(1)]
-                        [MemberLayout(0)]
+                        [Offset(0)]
                         long Field1 { get; set; }
                     }
                 }
@@ -252,7 +254,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)]
-                        [MemberLayout(0)] 
+                        [Offset(0)] 
                         double Field1 { get; set; }
                     }
                 }
@@ -282,7 +284,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)]
-                        [MemberLayout(0)] 
+                        [Offset(0)] 
                         double Field1 { get; set; }
                     }
                 }
@@ -312,7 +314,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)]
-                        [MemberLayout(0)] 
+                        [Offset(0)] 
                         double Field1 { get; set; }
                     }
                 }
@@ -342,7 +344,7 @@ namespace DTOMaker.MemBlocks.Tests
                     [EntityLayout(LayoutMethod.Explicit, 64)]
                     public interface IMyDTO
                     {
-                        [MemberLayout(0)]
+                        [Offset(0)]
                         double Field1 { get; set; }
                     }
                 }
@@ -360,7 +362,7 @@ namespace DTOMaker.MemBlocks.Tests
         }
 
         [Fact]
-        public void Fault07_MissingMemberLayoutAttribute()
+        public void Fault07_MissingOffsetAttribute()
         {
             var inputSource =
                 """
@@ -385,7 +387,7 @@ namespace DTOMaker.MemBlocks.Tests
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
             errors.Should().HaveCount(1);
-            errors[0].GetMessage().Should().Be("[MemberLayout] attribute is missing.");
+            errors[0].GetMessage().Should().Be("[Offset] attribute is missing.");
             // 
         }
 
@@ -403,7 +405,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)] 
-                        [MemberLayout(-1)]
+                        [Offset(-1)]
                         double Field1 { get; set; }
                     }
                 }
@@ -434,7 +436,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)] 
-                        [MemberLayout(4)]
+                        [Offset(4)]
                         double Field1 { get; set; }
                     }
                 }
@@ -464,7 +466,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)] 
-                        [MemberLayout(4)]
+                        [Offset(4)]
                         double Field1 { get; set; }
                     }
                 }

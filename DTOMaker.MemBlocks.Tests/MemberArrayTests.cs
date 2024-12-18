@@ -25,7 +25,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)]
-                        [MemberLayout(arrayLength: 8)]
+                        [Length(8)]
                         ReadOnlyMemory<double> Values { get; set; }
                     }
                 }
@@ -58,7 +58,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)] 
-                        [MemberLayout(arrayLength: 3)]
+                        [Length(3)]
                         ReadOnlyMemory<double> Values { get; set; }
                     }
                 }
@@ -89,7 +89,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)] 
-                        [MemberLayout(arrayLength: 256)]
+                        [Length(256)]
                         ReadOnlyMemory<double> Values { get; set; }
                     }
                 }
@@ -119,7 +119,7 @@ namespace DTOMaker.MemBlocks.Tests
                     public interface IMyDTO
                     {
                         [Member(1)] 
-                        [MemberLayout(arrayLength: 8)]
+                        [Length(8)]
                         ReadOnlyMemory<byte> Values { get; set; }
                     }
                 }
