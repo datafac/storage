@@ -24,6 +24,8 @@ Features implemented:
 - DTOMaker.MessagePack source generator
 - DTOMaker.MemBlocks source generator
 - DTOMaker.CSPoco source generator
+- String members:
+  - UTF8-encoded fixed length strings (MemBlocks)
 
 Features not implemented:
 - Nullable types. T? can be implemented with a pair of fields (Boolean, T).
@@ -31,10 +33,9 @@ Features not implemented:
 
 In progress:
 - polymorphic types
-- Strings (UTF8).
-- Json (NewtonSoft) generator
 
 Coming next:
+- Json (NewtonSoft) generator
 - Json (System.Text) generator
 - ProtobufNet 3.0 generator
 - other model entities

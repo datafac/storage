@@ -293,36 +293,6 @@ namespace DTOMaker.MemBlocks.Tests
             errors[0].GetMessage().Should().Be("Nullable type 'Int32?' is not supported.");
         }
 
-        //[Fact]
-        public void Fault03_Unsupported_String()
-        {
-            var inputSource =
-                """
-                using DTOMaker.Models;
-                using DTOMaker.Models.MemBlocks;
-                namespace MyOrg.Models
-                {
-                    [Entity]
-                    [EntityLayout(LayoutMethod.SequentialV1)]
-                    public interface IMyDTO
-                    {
-                        [Member(1)] 
-                        string Field1 { get; set; }
-                    }
-                }
-                """;
-
-            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-
-            var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Should().HaveCount(2);
-            errors[0].GetMessage().Should().Be("MemberType 'String' not supported");
-            errors[1].GetMessage().Should().StartWith("FieldLength (0) is invalid");
-        }
-
         [Fact]
         public void Fault03_Unsupported_NullRefType()
         {
@@ -351,6 +321,36 @@ namespace DTOMaker.MemBlocks.Tests
             errors.Should().HaveCount(2);
             errors[0].GetMessage().Should().Be("Nullable type 'String?' is not supported.");
             errors[1].GetMessage().Should().Be("FieldLength (0) is invalid. FieldLength must be a whole power of 2 between 1 and 1024.");
+        }
+
+        [Fact]
+        public void Fault04_Invalid_StringLength()
+        {
+            var inputSource =
+                """
+                using DTOMaker.Models;
+                using DTOMaker.Models.MemBlocks;
+                namespace MyOrg.Models
+                {
+                    [Entity]
+                    [EntityLayout(LayoutMethod.SequentialV1)]
+                    public interface IMyDTO
+                    {
+                        [Member(1)] 
+                        [MemberLayout(arrayLength: 31)]
+                        string Field1 { get; set; }
+                    }
+                }
+                """;
+
+            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
+            generatorResult.Exception.Should().BeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+
+            var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+            errors.Should().HaveCount(1);
+            errors[0].GetMessage().Should().Be("FieldLength (31) is invalid. FieldLength must be a whole power of 2 between 1 and 1024.");
         }
 
     }
