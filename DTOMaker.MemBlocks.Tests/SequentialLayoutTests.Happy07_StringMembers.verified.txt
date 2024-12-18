@@ -15,7 +15,7 @@ namespace MyOrg.Models.MemBlocks
 {
     public sealed partial class MyDTO : EntityBase, IMyDTO, IFreezable
     {
-        private const int BlockLength = 4;
+        private const int BlockLength = 256;
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
@@ -29,10 +29,10 @@ namespace MyOrg.Models.MemBlocks
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
         //  ----  ----  ----  ----  ------- ----  -------
-        //     1     0    64     1  String  LE    FamilyName
-        //     2     1    64     1  String  LE    GivenNames
-        //     3     2    64     1  String  LE    OtherNames_Value
-        //     4     3     1        Boolean LE    OtherNames_HasValue
+        //     1     0    64        String  LE    FamilyName
+        //     2    64    64        String  LE    GivenNames
+        //     3   128    64        String  LE    OtherNames_Value
+        //     4   192     1        Boolean LE    OtherNames_HasValue
         // ------------------------------------------------------------
 
         public MyDTO()
@@ -76,13 +76,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (String)Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(0, 1).Span);
+                return (String)Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(0, 64).Span);
             }
 
             set
             {
                 ThrowExceptionIfFrozen();
-                Codec_String_LE.WriteToSpan(_writableBlock.Slice(0, 1).Span, value);
+                Codec_String_LE.WriteToSpan(_writableBlock.Slice(0, 64).Span, value);
             }
         }
 
@@ -90,13 +90,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (String)Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(1, 1).Span);
+                return (String)Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(64, 64).Span);
             }
 
             set
             {
                 ThrowExceptionIfFrozen();
-                Codec_String_LE.WriteToSpan(_writableBlock.Slice(1, 1).Span, value);
+                Codec_String_LE.WriteToSpan(_writableBlock.Slice(64, 64).Span, value);
             }
         }
 
@@ -104,13 +104,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (String)Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(2, 1).Span);
+                return (String)Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(128, 64).Span);
             }
 
             set
             {
                 ThrowExceptionIfFrozen();
-                Codec_String_LE.WriteToSpan(_writableBlock.Slice(2, 1).Span, value);
+                Codec_String_LE.WriteToSpan(_writableBlock.Slice(128, 64).Span, value);
             }
         }
 
@@ -118,13 +118,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Boolean)Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(3, 1).Span);
+                return (Boolean)Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(192, 1).Span);
             }
 
             set
             {
                 ThrowExceptionIfFrozen();
-                Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(3, 1).Span, value);
+                Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(192, 1).Span, value);
             }
         }
 

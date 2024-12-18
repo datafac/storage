@@ -146,6 +146,13 @@ namespace DTOMaker.MemBlocks
             {
                 // allocate value bytes
                 int fieldLength = GetFieldLength(member);
+                // adjust field/array length for String types
+                if(member.MemberTypeName == "String")
+                {
+                    fieldLength = member.ArrayLength;
+                    member.ArrayLength = 0;
+                }
+
                 member.FieldLength = fieldLength;
                 if (member.MemberIsArray)
                 {
