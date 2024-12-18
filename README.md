@@ -10,6 +10,14 @@ and related POCOs (Plain Old CSharp Objects).
 ## DTOMaker.Models
 Attributes for defining simple data models as interfaces in C#.
 
+## DTOMaker.Models.MemBlocks
+Additional attributes used by the DTOMaker.MemBlocks source generator, to 
+manage entity and member memory layout.
+
+## DTOMaker.Models.MessagePack
+Additional attributes used by the DTOMaker.MessagePack source generator, to manage
+MessagePack entity and meber keys.
+
 ## DTOMaker.Core
 Core types used by source generators at compile-time, including a common syntax receiver, and a powerful template processor.
 
