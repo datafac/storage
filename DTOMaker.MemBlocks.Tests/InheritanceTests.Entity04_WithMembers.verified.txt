@@ -12,10 +12,10 @@ using DataFac.Memory;
 using DataFac.Runtime;
 namespace MyOrg.Models.MemBlocks
 {
-    public sealed partial class MyDTO : EntityBase, IMyDTO, IFreezable
+    public sealed partial class MyDTO : MyBase, IMyDTO, IFreezable
     {
-        private const int ClassHeight = 1;
-        private const int BlockLength = 64;
+        private const int ClassHeight = 2;
+        private const int BlockLength = 8;
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
@@ -30,7 +30,7 @@ namespace MyOrg.Models.MemBlocks
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
         //  ----  ----  ----  ----  ------- ----  -------
-        //     1     0     8        Double  LE    Field1
+        //     1     0     8        Double  LE    DTOField1
         // ------------------------------------------------------------
 
         public MyDTO()
@@ -47,7 +47,7 @@ namespace MyOrg.Models.MemBlocks
         public MyDTO(IMyDTO source, bool frozen = false) : base(source, frozen)
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
-            this.Field1 = source.Field1;
+            this.DTOField1 = source.DTOField1;
         }
 
         public MyDTO(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers) : base(buffers)
@@ -67,7 +67,7 @@ namespace MyOrg.Models.MemBlocks
             _writableBlock = Memory<byte>.Empty;
         }
 
-        public Double Field1
+        public Double DTOField1
         {
             get
             {

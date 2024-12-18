@@ -6,7 +6,6 @@
 #pragma warning disable CS0414
 #nullable enable
 using System;
-using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
@@ -31,15 +30,17 @@ namespace T_DomainName_.MemBlocks
     }
     public class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
+        private const int ClassHeight = 1;
         private const int BlockLength = 64;
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
-        protected override void OnGetBuffers(ImmutableArray<ReadOnlyMemory<byte>>.Builder builder)
+        protected override int OnGetClassHeight() => ClassHeight;
+        protected override void OnGetBuffers(ReadOnlyMemory<byte>[] buffers)
         {
-            base.OnGetBuffers(builder);
+            base.OnGetBuffers(buffers);
             var block = IsFrozen() ? _readonlyBlock : _writableBlock.ToArray();
-            builder.Add(block);
+            buffers[ClassHeight - 1] = block;
         }
 
         public T_BaseName_()
@@ -59,9 +60,9 @@ namespace T_DomainName_.MemBlocks
             this.BaseField1 = source.BaseField1;
         }
 
-        public T_BaseName_(ImmutableArray<ReadOnlyMemory<byte>> buffers) : base(buffers.Slice(0, buffers.Length - 1))
+        public T_BaseName_(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers) : base(buffers)
         {
-            ReadOnlyMemory<byte> source = buffers[buffers.Length - 1];
+            ReadOnlyMemory<byte> source = buffers.Span[ClassHeight - 1];
             if (source.Length >= BlockLength)
             {
                 _readonlyBlock = source.Slice(0, BlockLength);
@@ -110,18 +111,21 @@ namespace T_DomainName_.MemBlocks
     public sealed partial class T_EntityName_ : T_BaseName_, IT_EntityName_, IFreezable
     {
         //##if false
+        private const int T_ClassHeight_ = 2;
         private const int T_BlockLength_ = 128;
         private const bool T_MemberObsoleteIsError_ = false;
         //##endif
+        private const int ClassHeight = T_ClassHeight_;
         private const int BlockLength = T_BlockLength_;
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
-        protected override void OnGetBuffers(ImmutableArray<ReadOnlyMemory<byte>>.Builder builder)
+        protected override int OnGetClassHeight() => ClassHeight;
+        protected override void OnGetBuffers(ReadOnlyMemory<byte>[] buffers)
         {
-            base.OnGetBuffers(builder);
+            base.OnGetBuffers(buffers);
             var block = IsFrozen() ? _readonlyBlock : _writableBlock.ToArray();
-            builder.Add(block);
+            buffers[ClassHeight - 1] = block;
         }
 
         // -------------------- field map -----------------------------
@@ -155,9 +159,9 @@ namespace T_DomainName_.MemBlocks
             //##endfor
         }
 
-        public T_EntityName_(ImmutableArray<ReadOnlyMemory<byte>> buffers) : base(buffers.Slice(0, buffers.Length - 1))
+        public T_EntityName_(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers) : base(buffers)
         {
-            ReadOnlyMemory<byte> source = buffers[buffers.Length - 1];
+            ReadOnlyMemory<byte> source = buffers.Span[ClassHeight - 1];
             if (source.Length >= BlockLength)
             {
                 _readonlyBlock = source.Slice(0, BlockLength);

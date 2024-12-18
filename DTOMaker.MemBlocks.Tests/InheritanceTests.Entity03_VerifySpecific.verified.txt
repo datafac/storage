@@ -12,10 +12,10 @@ using DataFac.Memory;
 using DataFac.Runtime;
 namespace MyOrg.Models.MemBlocks
 {
-    public sealed partial class MyDTO : EntityBase, IMyDTO, IFreezable
+    public sealed partial class MyDTO : MyBase, IMyDTO, IFreezable
     {
-        private const int ClassHeight = 1;
-        private const int BlockLength = 64;
+        private const int ClassHeight = 2;
+        private const int BlockLength = 0;
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
@@ -30,7 +30,6 @@ namespace MyOrg.Models.MemBlocks
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
         //  ----  ----  ----  ----  ------- ----  -------
-        //     1     0     8        Double  LE    Field1
         // ------------------------------------------------------------
 
         public MyDTO()
@@ -47,7 +46,6 @@ namespace MyOrg.Models.MemBlocks
         public MyDTO(IMyDTO source, bool frozen = false) : base(source, frozen)
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
-            this.Field1 = source.Field1;
         }
 
         public MyDTO(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers) : base(buffers)
@@ -65,20 +63,6 @@ namespace MyOrg.Models.MemBlocks
                 _readonlyBlock = memory;
             }
             _writableBlock = Memory<byte>.Empty;
-        }
-
-        public Double Field1
-        {
-            get
-            {
-                return (Double)Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
-            }
-
-            set
-            {
-                ThrowExceptionIfFrozen();
-                Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, value);
-            }
         }
 
     }

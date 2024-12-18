@@ -6,7 +6,6 @@
 #pragma warning disable CS0414
 #nullable enable
 using System;
-using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
@@ -20,9 +19,8 @@ namespace T_DomainName_.MemBlocks
         {
             _frozen = frozen;
         }
-        public EntityBase(ImmutableArray<ReadOnlyMemory<byte>> buffers)
+        public EntityBase(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
         {
-            if (buffers.Length > 0) throw new ArgumentException("Too many buffers", nameof(buffers));
             _frozen = true;
         }
         private volatile bool _frozen = false;
@@ -35,12 +33,13 @@ namespace T_DomainName_.MemBlocks
             OnFreeze();
         }
 
-        protected virtual void OnGetBuffers(ImmutableArray<ReadOnlyMemory<byte>>.Builder builder) { }
-        public ImmutableArray<ReadOnlyMemory<byte>> GetBuffers()
+        protected abstract int OnGetClassHeight();
+        protected virtual void OnGetBuffers(ReadOnlyMemory<byte>[] buffers) { }
+        public ReadOnlyMemory<ReadOnlyMemory<byte>> GetBuffers()
         {
-            var builder = ImmutableArray.CreateBuilder<ReadOnlyMemory<byte>>();
-            OnGetBuffers(builder);
-            var buffers = builder.ToImmutable();
+            int height = OnGetClassHeight();
+            ReadOnlyMemory<byte>[] buffers = new ReadOnlyMemory<byte>[height];
+            OnGetBuffers(buffers);
             return buffers;
         }
         protected virtual IFreezable OnPartCopy() => throw new NotImplementedException();

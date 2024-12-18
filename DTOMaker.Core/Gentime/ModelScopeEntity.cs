@@ -16,6 +16,7 @@ namespace DTOMaker.Gentime
             _variables["EntityName2"] = entity.Name;
             _variables["BaseName"] = entity.Base?.Name ?? "EntityBase";
             _variables["BlockLength"] = entity.BlockLength;
+            _variables["ClassHeight"] = entity.GetClassHeight();
 
             _variables["DerivedEntityCount"] = _entity.DerivedEntities.Length;
         }

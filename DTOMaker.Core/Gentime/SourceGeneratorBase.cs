@@ -26,9 +26,9 @@ namespace DTOMaker.Gentime
             // fix entity hierarchy
             foreach (var domain in syntaxReceiver.Domains.Values)
             {
+                // fix/set entity base
                 foreach (var entity in domain.Entities.Values.ToArray())
                 {
-                    // fix/set entity base
                     if (entity.BaseName is not null && entity.BaseName != "EntityBase")
                     {
                         if (domain.Entities.TryGetValue(entity.BaseName, out var baseEntity))

@@ -16,7 +16,7 @@ manage entity and member memory layout.
 
 ## DTOMaker.Models.MessagePack
 Additional attributes used by the DTOMaker.MessagePack source generator, to manage
-MessagePack entity and meber keys.
+MessagePack entity and member keys.
 
 ## DTOMaker.Core
 Core types used by source generators at compile-time, including a common syntax receiver, and a powerful template processor.
