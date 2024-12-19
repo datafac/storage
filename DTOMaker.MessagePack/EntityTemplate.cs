@@ -56,6 +56,10 @@ namespace T_DomainName_.MessagePack
     //##endif
     public partial class T_EntityName_ : T_BaseName_, IT_EntityName_, IFreezable
     {
+        // Derived entities: T_DerivedEntityCount_
+        //##foreach DerivedEntities
+        // - T_EntityName_
+        //##endfor
         //##if false
         private const string T_MemberObsoleteMessage_ = null;
         private const bool T_MemberObsoleteIsError_ = false;

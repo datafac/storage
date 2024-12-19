@@ -113,6 +113,11 @@ namespace T_DomainName_.MemBlocks
     //##endif
     public partial class T_EntityName_ : T_BaseName_, IT_EntityName_, IFreezable
     {
+        // Derived entities: T_DerivedEntityCount_
+        //##foreach DerivedEntities
+        // - T_EntityName_
+        //##endfor
+
         //##if false
         private const int T_ClassHeight_ = 2;
         private const int T_BlockLength_ = 128;

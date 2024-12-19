@@ -42,6 +42,10 @@ namespace T_DomainName_.CSPoco
     //##endif
     public partial class T_EntityName_ : T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>
     {
+        // Derived entities: T_DerivedEntityCount_
+        //##foreach DerivedEntities
+        // - T_EntityName_
+        //##endfor
         //##if false
         private const int T_ScalarNullableMemberSequence_ = 1;
         private const int T_ScalarRequiredMemberSequence_ = 2;

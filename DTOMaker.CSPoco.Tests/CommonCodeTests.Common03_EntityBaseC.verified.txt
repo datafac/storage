@@ -12,6 +12,7 @@ namespace MyOrg.Models.CSPoco
 {
     public partial class MyDTO : MyBase, IMyDTO, IEquatable<MyDTO>
     {
+        // Derived entities: 0
 
         protected override void OnFreeze()
         {

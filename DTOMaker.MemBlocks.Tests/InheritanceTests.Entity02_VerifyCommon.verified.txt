@@ -14,6 +14,9 @@ namespace MyOrg.Models.MemBlocks
 {
     public partial class MyBase : EntityBase, IMyBase, IFreezable
     {
+        // Derived entities: 1
+        // - MyDTO
+
         private const int ClassHeight = 1;
         private const int BlockLength = 0;
         private readonly Memory<byte> _writableBlock;
