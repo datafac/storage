@@ -47,7 +47,7 @@ namespace T_DomainName_.MessagePack
         }
 
         public bool Equals(EntityBase? other) => true;
-        public override bool Equals(object obj) => obj is EntityBase;
+        public override bool Equals(object? obj) => obj is EntityBase;
         public override int GetHashCode() => 0;
     }
 }
