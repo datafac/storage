@@ -24,16 +24,17 @@ Core types used by source generators at compile-time, including a common syntax 
 ## Features
 
 Features implemented:
-- Data types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
-- IFreezable support
-- Templates as code, template processing
-- [Obsolete] members
-- Fixed length arrays of above types.
 - DTOMaker.MessagePack source generator
 - DTOMaker.MemBlocks source generator
 - DTOMaker.CSPoco source generator
-- String members:
-  - UTF8-encoded fixed length strings (MemBlocks)
+- Member value types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
+- Member reference types: String
+  - Required or nullable strings for CSPoco and MessagePack
+  - Non-nullable UTF8-encoded fixed length strings for MemBlocks
+- IFreezable support
+- Templates as code, template processing
+- [Obsolete] members
+- Fixed length arrays of above value types.
 
 Features not implemented:
 - Nullable types. T? can be implemented with a pair of fields (Boolean, T).

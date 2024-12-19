@@ -36,6 +36,11 @@ namespace T_DomainName_.CSPoco
             if (!base.Equals(other)) return false;
             return true;
         }
+        public override bool Equals(object? obj) => obj is T_BaseName_ other && Equals(other);
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
     //##endif
     public partial class T_EntityName_ : T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>
@@ -138,7 +143,7 @@ namespace T_DomainName_.CSPoco
         private int CalcHashCode()
         {
             HashCode result = new HashCode();
-            // todo result.Add(base.GetHashCode());
+            result.Add(base.GetHashCode());
             //##foreach Members
             //##if MemberIsArray
             result.Add(_T_VectorMemberName_.Length);

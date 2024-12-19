@@ -53,7 +53,7 @@ namespace MyOrg.Models.CSPoco
         private int CalcHashCode()
         {
             HashCode result = new HashCode();
-            // todo result.Add(base.GetHashCode());
+            result.Add(base.GetHashCode());
             result.Add(_Field1);
             return result.ToHashCode();
         }

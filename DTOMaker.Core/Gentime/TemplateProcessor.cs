@@ -115,7 +115,7 @@ namespace DTOMaker.Gentime
                                 if (parsed is null) throw new TemplateException("Unknown error", line);
                                 if (parsed is ErrorNode error) throw new TemplateException(error.Message ?? "", line);
                                 parsed.Evaluate(scope.ModelScope.Variables);
-                                // todo check for eval error
+                                // todo? check for eval error
                             }
                             break;
                         case TemplateCommand.If:
