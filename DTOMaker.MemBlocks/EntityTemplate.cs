@@ -39,7 +39,7 @@ namespace T_DomainName_.MemBlocks
         protected override void OnGetBuffers(ReadOnlyMemory<byte>[] buffers)
         {
             base.OnGetBuffers(buffers);
-            var block = IsFrozen() ? _readonlyBlock : _writableBlock.ToArray();
+            var block = IsFrozen ? _readonlyBlock : _writableBlock.ToArray();
             buffers[ClassHeight - 1] = block;
         }
 
@@ -124,7 +124,7 @@ namespace T_DomainName_.MemBlocks
         protected override void OnGetBuffers(ReadOnlyMemory<byte>[] buffers)
         {
             base.OnGetBuffers(buffers);
-            var block = IsFrozen() ? _readonlyBlock : _writableBlock.ToArray();
+            var block = IsFrozen ? _readonlyBlock : _writableBlock.ToArray();
             buffers[ClassHeight - 1] = block;
         }
 

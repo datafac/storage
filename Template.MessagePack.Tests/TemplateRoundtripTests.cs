@@ -23,7 +23,7 @@ namespace Template_MessagePack.Tests
             bytesRead.Should().Be(buffer.Length);
 
             copy.Freeze();
-            copy.IsFrozen().Should().BeTrue();
+            copy.IsFrozen.Should().BeTrue();
             copy.BaseField1!.Should().Be(orig.BaseField1);
             copy.T_ScalarRequiredMemberName_.Should().Be(orig.T_ScalarRequiredMemberName_);
             copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).Should().BeTrue();
@@ -46,7 +46,7 @@ namespace Template_MessagePack.Tests
             recd.Freeze();
             var copy = recd as T_EntityName_;
             copy.Should().NotBeNull();
-            copy!.IsFrozen().Should().BeTrue();
+            copy!.IsFrozen.Should().BeTrue();
             copy.BaseField1!.Should().Be(orig.BaseField1);
             copy.T_ScalarRequiredMemberName_.Should().Be(orig.T_ScalarRequiredMemberName_);
             copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).Should().BeTrue();
@@ -69,7 +69,7 @@ namespace Template_MessagePack.Tests
             recd.Freeze();
             var copy = recd as T_EntityName_;
             copy.Should().NotBeNull();
-            copy!.IsFrozen().Should().BeTrue();
+            copy!.IsFrozen.Should().BeTrue();
             copy.BaseField1!.Should().Be(orig.BaseField1);
             copy.T_ScalarRequiredMemberName_.Should().Be(orig.T_ScalarRequiredMemberName_);
             copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).Should().BeTrue();

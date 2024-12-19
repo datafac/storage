@@ -163,7 +163,7 @@ namespace T_DomainName_.CSPoco
         public override int GetHashCode()
         {
             if (_hashCode.HasValue) return _hashCode.Value;
-            if (!this.IsFrozen()) return CalcHashCode();
+            if (!IsFrozen) return CalcHashCode();
             _hashCode = CalcHashCode();
             return _hashCode.Value;
         }

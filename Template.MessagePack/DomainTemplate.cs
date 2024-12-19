@@ -24,7 +24,8 @@ namespace T_DomainName_.MessagePack
         }
         [IgnoreMember]
         private volatile bool _frozen;
-        public bool IsFrozen() => _frozen;
+        [IgnoreMember]
+        public bool IsFrozen => _frozen;
         protected virtual void OnFreeze() { }
         public void Freeze()
         {

@@ -40,7 +40,7 @@ namespace Template.MemBlocks.Tests
             var buffers = orig.GetBuffers();
 
             var copy = new T_DomainName_.MemBlocks.T_EntityName_(buffers);
-            copy.IsFrozen().Should().BeTrue();
+            copy.IsFrozen.Should().BeTrue();
             copy.BaseField1.Should().Be(orig.BaseField1);
             copy.T_ScalarMemberName_.Should().Be(orig.T_ScalarMemberName_);
             copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).Should().BeTrue();

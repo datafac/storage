@@ -18,7 +18,7 @@ namespace T_DomainName_.CSPoco
             _frozen = frozen;
         }
         private volatile bool _frozen;
-        public bool IsFrozen() => _frozen;
+        public bool IsFrozen => _frozen;
         protected virtual void OnFreeze() { }
         public void Freeze()
         {

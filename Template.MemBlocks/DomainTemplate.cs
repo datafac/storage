@@ -24,7 +24,7 @@ namespace T_DomainName_.MemBlocks
             _frozen = true;
         }
         private volatile bool _frozen = false;
-        public bool IsFrozen() => _frozen;
+        public bool IsFrozen => _frozen;
         protected virtual void OnFreeze() { }
         public void Freeze()
         {
