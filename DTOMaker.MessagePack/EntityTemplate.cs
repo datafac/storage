@@ -51,8 +51,6 @@ namespace T_DomainName_.MessagePack
     //##endfor
     //##if DerivedEntityCount > 0
     public abstract partial class T_EntityName2_ { }
-    //##else
-    public sealed partial class T_EntityName3_ { }
     //##endif
     public partial class T_EntityName_ : T_BaseName_, IT_EntityName_, IFreezable
     {

@@ -99,8 +99,11 @@ namespace T_DomainName_.MemBlocks
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
             if (!base.Equals(other)) return false;
+            if (!_readonlyBlock.Span.SequenceEqual(other._readonlyBlock.Span)) return false;
             return true;
         }
+        public override bool Equals(object? obj) => obj is T_BaseName_ other && Equals(other);
+        public override int GetHashCode() => base.GetHashCode();
     }
     public interface IT_EntityName_ : IT_BaseName_
     {
@@ -108,10 +111,7 @@ namespace T_DomainName_.MemBlocks
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
     }
     //##endif
-    //##if DerivedEntityCount == 0
-    public sealed partial class T_EntityName2_ { }
-    //##endif
-    public partial class T_EntityName_ : T_BaseName_, IT_EntityName_, IFreezable
+    public partial class T_EntityName_ : T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>
     {
         // Derived entities: T_DerivedEntityCount_
         //##foreach DerivedEntities
@@ -267,5 +267,42 @@ namespace T_DomainName_.MemBlocks
 
         //##endif
         //##endfor
+
+        public bool Equals(T_EntityName_? other)
+        {
+            if (ReferenceEquals(this, other)) return true;
+            if (other is null) return false;
+            if (!base.Equals(other)) return false;
+            if (!_readonlyBlock.Span.SequenceEqual(other._readonlyBlock.Span)) return false;
+            return true;
+        }
+        public override bool Equals(object? obj) => obj is T_EntityName_ other && Equals(other);
+
+        private int CalcHashCode()
+        {
+            HashCode result = new HashCode();
+            result.Add(base.GetHashCode());
+#if NET8_0_OR_GREATER
+            result.AddBytes(_readonlyBlock.Span);
+#else
+            var byteSpan = _readonlyBlock.Span;
+            result.Add(byteSpan.Length);
+            for (int i = 0; i < byteSpan.Length; i++)
+            {
+                result.Add(byteSpan[i]);
+            }
+#endif
+            return result.ToHashCode();
+        }
+
+        private int? _hashCode;
+        public override int GetHashCode()
+        {
+            if (_hashCode.HasValue) return _hashCode.Value;
+            if (!IsFrozen) return CalcHashCode();
+            _hashCode = CalcHashCode();
+            return _hashCode.Value;
+        }
+
     }
 }
