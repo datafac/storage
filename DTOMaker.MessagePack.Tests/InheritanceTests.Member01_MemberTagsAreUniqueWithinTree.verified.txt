@@ -31,7 +31,7 @@ namespace MyOrg.Models.MessagePack
         }
 
         [IgnoreMember]
-        private Double _DTOField1;
+        private Double _DTOField1 = default;
         [Key(11)]
         public Double DTOField1
         {

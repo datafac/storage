@@ -32,7 +32,7 @@ namespace MyOrg.Models.MessagePack
         }
 
         [IgnoreMember]
-        private Double _Field1;
+        private Double _Field1 = default;
         [Key(1)]
         public Double Field1
         {
@@ -41,7 +41,7 @@ namespace MyOrg.Models.MessagePack
         }
 
         [IgnoreMember]
-        private Int64 _Field2;
+        private Int64 _Field2 = default;
         [Key(2)]
         public Int64 Field2
         {

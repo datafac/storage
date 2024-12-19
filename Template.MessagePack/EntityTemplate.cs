@@ -60,6 +60,7 @@ namespace T_DomainName_.MessagePack
         private const int T_ScalarNullableMemberTag_ = T_MemberTagOffset_ + 1;
         private const int T_ScalarRequiredMemberTag_ = T_MemberTagOffset_ + 2;
         private const int T_VectorMemberTag_ = T_MemberTagOffset_ + 3;
+        private const int T_MemberDefaultValue_ = 0;
         //##endif
 
         public new const int EntityTag = T_EntityTag_;
@@ -107,7 +108,7 @@ namespace T_DomainName_.MessagePack
         private T_MemberType_? _T_ScalarNullableMemberName_;
         //##else
         [IgnoreMember]
-        private T_MemberType_ _T_ScalarRequiredMemberName_;
+        private T_MemberType_ _T_ScalarRequiredMemberName_ = T_MemberDefaultValue_;
         //##endif
         //##if MemberIsObsolete
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]

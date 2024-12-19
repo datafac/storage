@@ -31,7 +31,7 @@ namespace MyOrg.Models.MessagePack
         }
 
         [IgnoreMember]
-        private Double _Field1;
+        private Double _Field1 = default;
         [Obsolete("", false)]
         [Key(1)]
         public Double Field1

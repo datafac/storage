@@ -31,7 +31,7 @@ namespace MyOrg.Models.MessagePack
         }
 
         [IgnoreMember]
-        private Int64 _Field1;
+        private Int64 _Field1 = default;
         [Key(1)]
         public Int64 Field1
         {
