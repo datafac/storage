@@ -41,6 +41,8 @@ namespace T_DomainName_.MessagePack
             if (!base.Equals(other)) return false;
             return true;
         }
+        public override bool Equals(object obj) => obj is T_BaseName_ other && Equals(other);
+        public override int GetHashCode() => base.GetHashCode();
     }
     //##endif
     [MessagePackObject]
@@ -159,7 +161,7 @@ namespace T_DomainName_.MessagePack
         private int CalcHashCode()
         {
             HashCode result = new HashCode();
-            // todo result.Add(base.GetHashCode());
+            result.Add(base.GetHashCode());
             //##foreach Members
             //##if MemberIsArray
             result.Add(_T_VectorMemberName_.Length);

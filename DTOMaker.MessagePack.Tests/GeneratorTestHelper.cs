@@ -29,7 +29,7 @@ namespace DTOMaker.MessagePack.Tests
 
             PortableExecutableReference[] metadataReferences = commonReferences.Concat(additionalReferences).ToArray();
 
-            // todo? how to use LanguageVersion.Preview
+            // how to use LanguageVersion.Preview
             // https://github.com/dotnet/roslyn/blob/main/docs/features/source-generators.cookbook.md
             //
 

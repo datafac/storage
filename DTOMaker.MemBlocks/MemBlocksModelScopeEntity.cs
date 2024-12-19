@@ -10,7 +10,6 @@ namespace DTOMaker.MemBlocks
         {
             MemBlockEntity entity = baseEntity as MemBlockEntity
                 ?? throw new ArgumentException("Expected baseEntity to be a MemBlocksEntity", nameof(baseEntity));
-            // todo entity layout stuff
         }
     }
 }

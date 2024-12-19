@@ -35,24 +35,6 @@ namespace DTOMaker.MemBlocks
                             diagnostic.Id, diagnostic.Title, diagnostic.Message, diagnostic.Category, diagnostic.Severity, true), diagnostic.Location));
             }
         }
-        private void CheckReferencedAssemblyNamesInclude(GeneratorExecutionContext context, Assembly assembly)
-        {
-            string packageName = assembly.GetName().Name;
-            Version packageVersion = assembly.GetName().Version;
-            if (!context.Compilation.ReferencedAssemblyNames.Any(ai => ai.Name.Equals(packageName, StringComparison.OrdinalIgnoreCase)))
-            {
-                // todo major version error/minor version warning
-                context.ReportDiagnostic(Diagnostic.Create(
-                        new DiagnosticDescriptor(
-                            DiagnosticId.DMMB0010,
-                            "Missing assembly reference",
-                            $"The generated code requires a reference to {packageName} (v{packageVersion} or later).",
-                            DiagnosticCategory.Other,
-                            DiagnosticSeverity.Warning,
-                            true),
-                            Location.None));
-            }
-        }
 
         private static int GetFieldLength(TargetMember member)
         {
@@ -164,20 +146,6 @@ namespace DTOMaker.MemBlocks
                 }
             }
             entity.BlockLength = minBlockLength;
-        }
-
-        private static string[] GetTemplate(string templateName)
-        {
-            using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(templateName);
-            if (stream is null) throw new ArgumentException($"Template '{templateName}' not found", nameof(templateName));
-            var result = new List<string>();
-            using var reader = new StreamReader(stream);
-            string? line;
-            while ((line = reader.ReadLine()) is not null)
-            {
-                result.Add(line);
-            }
-            return result.ToArray();
         }
 
         protected override void OnExecute(GeneratorExecutionContext context)

@@ -24,7 +24,7 @@ namespace MyOrg.Models.CSPoco
         public MyDTO() { }
         public MyDTO(IMyDTO source, bool frozen = false) : base(source, frozen)
         {
-            // todo freezable members
+            // todo entity members
             _Field1 = source.Field1;
             _Field2 = source.Field2;
         }

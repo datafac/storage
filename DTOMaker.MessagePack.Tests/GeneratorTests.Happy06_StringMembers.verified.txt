@@ -90,7 +90,7 @@ namespace MyOrg.Models.MessagePack
         private int CalcHashCode()
         {
             HashCode result = new HashCode();
-            // todo result.Add(base.GetHashCode());
+            result.Add(base.GetHashCode());
             result.Add(_FamilyName);
             result.Add(_GivenName);
             result.Add(_OtherNames_Value);

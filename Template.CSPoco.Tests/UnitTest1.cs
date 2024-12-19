@@ -5,7 +5,6 @@ namespace Template_CSPoco.Tests
         [Fact]
         public void Roundtrip()
         {
-            // todo
         }
     }
 }
