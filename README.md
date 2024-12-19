@@ -43,18 +43,21 @@ Features not implemented:
 In progress:
 - polymorphic types
 
-Coming next:
+Coming soon:
+- reservation (hidden members)
+- entity members
 - Json (NewtonSoft) generator
 - Json (System.Text) generator
+- Orleans generator
 - ProtobufNet 3.0 generator
-- other model entities
-- member wire names and tags
-- reservation (hidden members)
+- NetStrux generator
 - compact layout method
 
 Coming later:
 - C# records generator
 - Google Protobuf .proto generation
+- model.json generation
+- command-line alternative
 - generic patterns: lists, trees, unions, etc.
 - variable length arrays
 - logical value equality

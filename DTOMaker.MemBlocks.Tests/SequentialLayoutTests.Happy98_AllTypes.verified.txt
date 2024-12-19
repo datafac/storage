@@ -12,7 +12,8 @@ using DataFac.Memory;
 using DataFac.Runtime;
 namespace MyOrg.Models.MemBlocks
 {
-    public sealed partial class MyDTO : EntityBase, IMyDTO, IFreezable
+    public sealed partial class MyDTO { }
+    public partial class MyDTO : EntityBase, IMyDTO, IFreezable
     {
         private const int ClassHeight = 1;
         private const int BlockLength = 128;

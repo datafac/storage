@@ -108,7 +108,10 @@ namespace T_DomainName_.MemBlocks
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
     }
     //##endif
-    public sealed partial class T_EntityName_ : T_BaseName_, IT_EntityName_, IFreezable
+    //##if DerivedEntityCount == 0
+    public sealed partial class T_EntityName2_ { }
+    //##endif
+    public partial class T_EntityName_ : T_BaseName_, IT_EntityName_, IFreezable
     {
         //##if false
         private const int T_ClassHeight_ = 2;

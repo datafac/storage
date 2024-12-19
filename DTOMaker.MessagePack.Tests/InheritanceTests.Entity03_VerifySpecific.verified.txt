@@ -12,6 +12,7 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
+    public sealed partial class MyDTO { }
     public partial class MyDTO : MyBase, IMyDTO, IFreezable
     {
 
