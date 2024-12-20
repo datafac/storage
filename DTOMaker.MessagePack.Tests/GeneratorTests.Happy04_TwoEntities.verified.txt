@@ -12,7 +12,6 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    public sealed partial class MyOtherDTO { }
     public partial class MyOtherDTO : EntityBase, IMyOtherDTO, IFreezable
     {
         // Derived entities: 0

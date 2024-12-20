@@ -12,8 +12,7 @@ using DataFac.Memory;
 using DataFac.Runtime;
 namespace MyOrg.Models.MemBlocks
 {
-    public sealed partial class MyDTO { }
-    public partial class MyDTO : MyBase, IMyDTO, IFreezable
+    public partial class MyDTO : MyBase, IMyDTO, IEquatable<MyDTO>
     {
         // Derived entities: 0
 
@@ -66,6 +65,43 @@ namespace MyOrg.Models.MemBlocks
                 _readonlyBlock = memory;
             }
             _writableBlock = Memory<byte>.Empty;
+        }
+
+
+        public bool Equals(MyDTO? other)
+        {
+            if (ReferenceEquals(this, other)) return true;
+            if (other is null) return false;
+            if (!base.Equals(other)) return false;
+            if (!_readonlyBlock.Span.SequenceEqual(other._readonlyBlock.Span)) return false;
+            return true;
+        }
+        public override bool Equals(object? obj) => obj is MyDTO other && Equals(other);
+
+        private int CalcHashCode()
+        {
+            HashCode result = new HashCode();
+            result.Add(base.GetHashCode());
+#if NET8_0_OR_GREATER
+            result.AddBytes(_readonlyBlock.Span);
+#else
+            var byteSpan = _readonlyBlock.Span;
+            result.Add(byteSpan.Length);
+            for (int i = 0; i < byteSpan.Length; i++)
+            {
+                result.Add(byteSpan[i]);
+            }
+#endif
+            return result.ToHashCode();
+        }
+
+        private int? _hashCode;
+        public override int GetHashCode()
+        {
+            if (_hashCode.HasValue) return _hashCode.Value;
+            if (!IsFrozen) return CalcHashCode();
+            _hashCode = CalcHashCode();
+            return _hashCode.Value;
         }
 
     }
