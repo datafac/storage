@@ -21,7 +21,7 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [EntityLayout(LayoutMethod.SequentialV1)]
+                    [EntityLayout("MyDTO", LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
                     }
@@ -52,12 +52,12 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [EntityLayout(LayoutMethod.SequentialV1)]
+                    [EntityLayout("MyBase", LayoutMethod.SequentialV1)]
                     public interface IMyBase
                     {
                     }
                     [Entity]
-                    [EntityLayout(LayoutMethod.SequentialV1)]
+                    [EntityLayout("MyDTO", LayoutMethod.SequentialV1)]
                     public interface IMyDTO : IMyBase
                     {
                     }
@@ -88,12 +88,12 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [EntityLayout(LayoutMethod.SequentialV1)]
+                    [EntityLayout("MyBase", LayoutMethod.SequentialV1)]
                     public interface IMyBase
                     {
                     }
                     [Entity]
-                    [EntityLayout(LayoutMethod.SequentialV1)]
+                    [EntityLayout("MyDTO", LayoutMethod.SequentialV1)]
                     public interface IMyDTO : IMyBase
                     {
                     }
@@ -124,13 +124,13 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [EntityLayout(LayoutMethod.SequentialV1)]
+                    [EntityLayout("MyBase", LayoutMethod.SequentialV1)]
                     public interface IMyBase
                     {
                         [Member(1)] double BaseField1 { get; set; }
                     }
                     [Entity]
-                    [EntityLayout(LayoutMethod.SequentialV1)]
+                    [EntityLayout("MyDTO", LayoutMethod.SequentialV1)]
                     public interface IMyDTO : IMyBase
                     {
                         [Member(1)] double DTOField1 { get; set; }

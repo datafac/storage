@@ -14,6 +14,17 @@ namespace T_DomainName_.MemBlocks
 {
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {
+        public static EntityBase CreateFrom(string entityId, ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
+        {
+            return entityId switch
+            {
+                //##foreach Entities
+                T_EntityName_.EntityId => new T_EntityName_(buffers),
+                //##endfor
+                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
+            };
+        }
+
         public EntityBase() { }
         public EntityBase(object? notUsed, bool frozen)
         {
@@ -33,6 +44,8 @@ namespace T_DomainName_.MemBlocks
             OnFreeze();
         }
 
+        protected abstract string OnGetEntityId();
+        public string GetEntityId() => OnGetEntityId();
         protected abstract int OnGetClassHeight();
         protected virtual void OnGetBuffers(ReadOnlyMemory<byte>[] buffers) { }
         public ReadOnlyMemory<ReadOnlyMemory<byte>> GetBuffers()

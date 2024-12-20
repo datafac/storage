@@ -21,6 +21,17 @@ namespace MyOrg.Models.MemBlocks
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
+        public new const string EntityId = "MyOtherDTO";
+
+        public new static MyOtherDTO CreateFrom(string entityId, ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
+        {
+            return entityId switch
+            {
+                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
+            };
+        }
+
+        protected override string OnGetEntityId() => EntityId;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override void OnGetBuffers(ReadOnlyMemory<byte>[] buffers)
         {

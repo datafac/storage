@@ -15,7 +15,6 @@ namespace DTOMaker.Gentime
             _domain = domain;
         }
         public bool HasEntityAttribute { get; set; }
-        public int BlockLength { get; set; }
         public string? BaseName { get; set; }
         public TargetEntity? Base { get; set; }
         public TargetEntity[] DerivedEntities { get; set; } = [];

@@ -20,13 +20,22 @@ namespace MyOrg.Models.MessagePack
         // - MyDTO
 
         public new const int EntityTag = 1;
+
+        public new static MyBase Create(int entityTag, ReadOnlyMemory<byte> buffer)
+        {
+            int bytesRead;
+            return entityTag switch
+            {
+                MyDTO.EntityTag => MessagePackSerializer.Deserialize<MyDTO>(buffer, out bytesRead),
+                _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
+            };
+        }
+
         protected override void OnFreeze()
         {
             base.OnFreeze();
             // todo freezable members
         }
-
-        protected override IFreezable OnPartCopy() => new MyBase(this);
 
         public MyBase() { }
         public MyBase(IMyBase source, bool frozen = false) : base(source, frozen)

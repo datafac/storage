@@ -27,9 +27,4 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\Template.CSPoco\Template.CSPoco.csproj" />
 	</ItemGroup>
-
-	<ItemGroup>
-		<Using Include="Xunit" />
-	</ItemGroup>
-
 </Project>

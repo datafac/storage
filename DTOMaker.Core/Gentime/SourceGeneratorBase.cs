@@ -27,7 +27,8 @@ namespace DTOMaker.Gentime
             foreach (var domain in syntaxReceiver.Domains.Values)
             {
                 // fix/set entity base
-                foreach (var entity in domain.Entities.Values.ToArray())
+                var entities = domain.Entities.Values.ToArray();
+                foreach (var entity in entities)
                 {
                     if (entity.BaseName is not null && entity.BaseName != "EntityBase")
                     {
@@ -44,8 +45,11 @@ namespace DTOMaker.Gentime
                                     $"Base name '{entity.BaseName}' does not refer to a known entity."));
                         }
                     }
+                }
 
-                    // determine derived entities
+                // determine derived entities
+                foreach (var entity in entities)
+                {
                     entity.DerivedEntities = domain.Entities.Values
                         .Where(e => IsDerivedFrom(e, entity))
                         .OrderBy(e => e.Name)

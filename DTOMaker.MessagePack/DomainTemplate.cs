@@ -13,10 +13,26 @@ namespace T_DomainName_.MessagePack
 {
     [MessagePackObject]
     //##foreach Entities
+    //##if DerivedEntityCount == 0
     [Union(T_EntityName_.EntityTag, typeof(T_EntityName_))]
+    //##endif
     //##endfor
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {
+        public static EntityBase Create(int entityTag, ReadOnlyMemory<byte> buffer)
+        {
+            int bytesRead;
+            return entityTag switch
+            {
+                //##foreach Entities
+                //##if DerivedEntityCount == 0
+                T_EntityName_.EntityTag => MessagePackSerializer.Deserialize<T_EntityName_>(buffer, out bytesRead),
+                //##endif
+                //##endfor
+                _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
+            };
+        }
+
         public EntityBase() { }
         public EntityBase(object? notUsed, bool frozen)
         {
@@ -33,7 +49,7 @@ namespace T_DomainName_.MessagePack
             _frozen = true;
             OnFreeze();
         }
-        protected virtual IFreezable OnPartCopy() => throw new NotImplementedException();
+        protected abstract IFreezable OnPartCopy();
         public IFreezable PartCopy() => OnPartCopy();
 
         [MethodImpl(MethodImplOptions.NoInlining)]

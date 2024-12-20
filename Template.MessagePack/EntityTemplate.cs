@@ -47,7 +47,9 @@ namespace T_DomainName_.MessagePack
     //##endif
     [MessagePackObject]
     //##foreach DerivedEntities
+    //##if DerivedEntityCount == 0
     [Union(T_EntityName_.EntityTag, typeof(T_EntityName_))]
+    //##endif
     //##endfor
     //##if DerivedEntityCount > 0
     public abstract partial class T_EntityName2_ { }
@@ -70,14 +72,31 @@ namespace T_DomainName_.MessagePack
         //##endif
 
         public new const int EntityTag = T_EntityTag_;
+
+        public new static T_EntityName_ Create(int entityTag, ReadOnlyMemory<byte> buffer)
+        {
+            int bytesRead;
+            return entityTag switch
+            {
+                //##foreach DerivedEntities
+                //##if DerivedEntityCount == 0
+                T_EntityName_.EntityTag => MessagePackSerializer.Deserialize<T_EntityName_>(buffer, out bytesRead),
+                //##endif
+                //##endfor
+                _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
+            };
+        }
+
         protected override void OnFreeze()
         {
             base.OnFreeze();
             // todo freezable members
         }
 
+        //##if DerivedEntityCount == 0
         protected override IFreezable OnPartCopy() => new T_EntityName_(this);
 
+        //##endif
         public T_EntityName_() { }
         public T_EntityName_(IT_EntityName_ source, bool frozen = false) : base(source, frozen)
         {

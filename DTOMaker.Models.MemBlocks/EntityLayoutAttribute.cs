@@ -7,7 +7,7 @@ namespace DTOMaker.Models.MemBlocks
     {
         public readonly LayoutMethod LayoutMethod;
         public readonly int BlockLength;
-        public EntityLayoutAttribute(LayoutMethod layoutMethod, int blockLength = 0)
+        public EntityLayoutAttribute(string entityId, LayoutMethod layoutMethod, int blockLength = 0)
         {
             BlockLength = blockLength;
             LayoutMethod = layoutMethod;

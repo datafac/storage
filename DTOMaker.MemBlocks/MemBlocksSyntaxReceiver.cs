@@ -24,10 +24,11 @@ namespace DTOMaker.MemBlocks
                 // found entity layout attribute
                 entity.HasEntityLayoutAttribute = true;
                 var attributeArguments = entityLayoutAttr.ConstructorArguments;
-                if (CheckAttributeArguments(nameof(EntityLayoutAttribute), attributeArguments, 2, entity, location))
+                if (CheckAttributeArguments(nameof(EntityLayoutAttribute), attributeArguments, 3, entity, location))
                 {
-                    TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 0, (value) => { entity.LayoutMethod = (LayoutMethod)value; });
-                    TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 1, (value) => { entity.BlockLength = value; });
+                    TryGetAttributeArgumentValue<string>(entity, location, attributeArguments, 0, (value) => { entity.EntityId = value; });
+                    TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 1, (value) => { entity.LayoutMethod = (LayoutMethod)value; });
+                    TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 2, (value) => { entity.BlockLength = value; });
                 }
             }
         }

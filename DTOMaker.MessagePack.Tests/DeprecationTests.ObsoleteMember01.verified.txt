@@ -17,6 +17,16 @@ namespace MyOrg.Models.MessagePack
         // Derived entities: 0
 
         public new const int EntityTag = 1;
+
+        public new static MyDTO Create(int entityTag, ReadOnlyMemory<byte> buffer)
+        {
+            int bytesRead;
+            return entityTag switch
+            {
+                _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
+            };
+        }
+
         protected override void OnFreeze()
         {
             base.OnFreeze();

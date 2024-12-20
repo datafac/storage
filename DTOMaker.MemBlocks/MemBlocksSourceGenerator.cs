@@ -100,8 +100,10 @@ namespace DTOMaker.MemBlocks
         /// Calculates offset and length for all members in sequential order
         /// </summary>
         /// <param name="entity"></param>
-        private static void SequentialLayoutMembers(TargetEntity entity)
+        private static void SequentialLayoutMembers(TargetEntity baseEntity)
         {
+            if (baseEntity is not MemBlockEntity entity) return;
+
             int minBlockLength = 0;
             int fieldOffset = 0;
 

@@ -1,3 +1,5 @@
+using Xunit;
+
 namespace Template_CSPoco.Tests
 {
     public class TemplateRoundtripTests

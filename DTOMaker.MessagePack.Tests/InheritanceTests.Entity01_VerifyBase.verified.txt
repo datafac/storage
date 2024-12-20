@@ -15,6 +15,16 @@ namespace MyOrg.Models.MessagePack
     [Union(MyDTO.EntityTag, typeof(MyDTO))]
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {
+        public static EntityBase Create(int entityTag, ReadOnlyMemory<byte> buffer)
+        {
+            int bytesRead;
+            return entityTag switch
+            {
+                MyDTO.EntityTag => MessagePackSerializer.Deserialize<MyDTO>(buffer, out bytesRead),
+                _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
+            };
+        }
+
         public EntityBase() { }
         public EntityBase(object? notUsed, bool frozen)
         {
@@ -31,7 +41,7 @@ namespace MyOrg.Models.MessagePack
             _frozen = true;
             OnFreeze();
         }
-        protected virtual IFreezable OnPartCopy() => throw new NotImplementedException();
+        protected abstract IFreezable OnPartCopy();
         public IFreezable PartCopy() => OnPartCopy();
 
         [MethodImpl(MethodImplOptions.NoInlining)]

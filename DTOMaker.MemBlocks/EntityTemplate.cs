@@ -35,6 +35,7 @@ namespace T_DomainName_.MemBlocks
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
+        protected override string OnGetEntityId() => "_undefined_";
         protected override int OnGetClassHeight() => ClassHeight;
         protected override void OnGetBuffers(ReadOnlyMemory<byte>[] buffers)
         {
@@ -128,6 +129,20 @@ namespace T_DomainName_.MemBlocks
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
+        public new const string EntityId = "T_EntityId_";
+
+        public new static T_EntityName_ CreateFrom(string entityId, ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
+        {
+            return entityId switch
+            {
+                //##foreach DerivedEntities
+                T_EntityName_.EntityId => new T_EntityName_(buffers),
+                //##endfor
+                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
+            };
+        }
+
+        protected override string OnGetEntityId() => EntityId;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override void OnGetBuffers(ReadOnlyMemory<byte>[] buffers)
         {

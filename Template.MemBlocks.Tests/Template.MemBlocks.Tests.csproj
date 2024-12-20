@@ -29,9 +29,4 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\Template.MemBlocks\Template.MemBlocks.csproj" />
 	</ItemGroup>
-
-	<ItemGroup>
-		<Using Include="Xunit" />
-	</ItemGroup>
-
 </Project>

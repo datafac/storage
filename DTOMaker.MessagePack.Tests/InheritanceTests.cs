@@ -9,6 +9,7 @@ using Xunit;
 
 namespace DTOMaker.MessagePack.Tests
 {
+
     public class InheritanceTests
     {
         [Fact]
