@@ -35,13 +35,13 @@ Features implemented:
 - Templates as code, template processing
 - [Obsolete] members
 - Fixed length arrays of above value types.
+- polymorphic types
 
 Features not implemented:
 - Nullable types. T? can be implemented with a pair of fields (Boolean, T).
 - Enum data types. Enums can be implemented with an underlying integer property and a cast.
 
 In progress:
-- polymorphic types
 
 Coming soon:
 - reservation (hidden members)
