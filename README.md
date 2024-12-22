@@ -5,7 +5,7 @@ and related POCOs (Plain Old CSharp Objects).
 
 [![Build-Deploy](https://github.com/datafac/dtomaker/actions/workflows/dotnet.yml/badge.svg)](https://github.com/datafac/dtomaker/actions/workflows/dotnet.yml)
 
-*Warning: This is pre-release software under active development. Not for production use. Breaking changes occur often.*
+*Warning: This is pre-release software under active development. Breaking changes may occur.*
 
 ## DTOMaker.Models
 Attributes for defining simple data models as interfaces in C#.
@@ -28,7 +28,7 @@ Features implemented:
 - DTOMaker.MemBlocks source generator
 - DTOMaker.CSPoco source generator
 - Member value types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
-- Member reference types: String
+- String member types:
   - Required or nullable strings for CSPoco and MessagePack
   - Non-nullable UTF8-encoded fixed length strings for MemBlocks
 - IFreezable support

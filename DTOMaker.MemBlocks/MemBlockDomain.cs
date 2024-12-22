@@ -13,14 +13,14 @@ namespace DTOMaker.MemBlocks
         {
             Dictionary<string, MemBlockEntity> idMap = new Dictionary<string, MemBlockEntity>();
 
-            foreach (var entity in this.Entities.Values.OfType<MemBlockEntity>())
+            foreach (var entity in this.Entities.Values.OfType<MemBlockEntity>().OrderBy(e => e.Name))
             {
                 string id = entity.EntityId;
-                if (idMap.TryGetValue(id, out var existing))
+                if (idMap.TryGetValue(id, out var otherEntity))
                 {
                     return new SyntaxDiagnostic(
                         DiagnosticId.DMMB0011, "Duplicate entity id", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                        $"Entity identifier '{id}' is not unique. Are you missing an [Id] attribute?");
+                        $"Entity id ({id}) is already used by entity: {otherEntity.Name}");
                 }
                 idMap[id] = entity;
             }
