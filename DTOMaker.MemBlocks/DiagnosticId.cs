@@ -12,5 +12,6 @@
         public const string DMMB0008 = nameof(DMMB0008); // Member layout issue
         public const string DMMB0009 = nameof(DMMB0009); // Invalid array length
         public const string DMMB0010 = nameof(DMMB0010); // Missing assembly reference
+        public const string DMMB0011 = nameof(DMMB0011); // Duplicate entity id
     }
 }

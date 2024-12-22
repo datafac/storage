@@ -353,5 +353,32 @@ namespace DTOMaker.MemBlocks.Tests
             errors[0].GetMessage().Should().Be("FieldLength (31) is invalid. FieldLength must be a whole power of 2 between 1 and 1024.");
         }
 
+        [Fact]
+        public void Fault05_EntityId_NotUnique()
+        {
+            var inputSource =
+                """
+                using DTOMaker.Models;
+                using DTOMaker.Models.MemBlocks;
+                namespace MyOrg.Models
+                {
+                    [Entity] [Id("DTO1")][Layout(LayoutMethod.SequentialV1)]
+                    public interface IMyDTO1 { }
+
+                    [Entity] [Id("DTO1")][Layout(LayoutMethod.SequentialV1)]
+                    public interface IMyDTO2 { }
+                }
+                """;
+
+            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
+            generatorResult.Exception.Should().BeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+
+            var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+            errors.Should().HaveCount(1);
+            errors[0].GetMessage().Should().StartWith("Entity identifier 'DTO1' is not unique.");
+        }
+
     }
 }
