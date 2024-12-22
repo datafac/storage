@@ -5,7 +5,8 @@ using System.Linq;
 
 namespace DTOMaker.MemBlocks
 {
-    public readonly struct EntityLayoutAttribute { }
+    public readonly struct IdAttribute { }
+    public readonly struct LayoutAttribute { }
     public readonly struct OffsetAttribute { }
     public readonly struct LengthAttribute { }
     public readonly struct EndianAttribute { }
@@ -18,17 +19,29 @@ namespace DTOMaker.MemBlocks
 
         protected override void OnProcessEntityAttributes(TargetEntity baseEntity, Location location, ImmutableArray<AttributeData> entityAttributes)
         {
-            if (baseEntity is MemBlockEntity entity
-                && entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(EntityLayoutAttribute)) is AttributeData entityLayoutAttr)
+            if (baseEntity is MemBlockEntity entity)
             {
-                // found entity layout attribute
-                entity.HasEntityLayoutAttribute = true;
-                var attributeArguments = entityLayoutAttr.ConstructorArguments;
-                if (CheckAttributeArguments(nameof(EntityLayoutAttribute), attributeArguments, 3, entity, location))
+                entity.EntityId = entity.Name;
+                if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(IdAttribute)) is AttributeData idAttr)
                 {
-                    TryGetAttributeArgumentValue<string>(entity, location, attributeArguments, 0, (value) => { entity.EntityId = value; });
-                    TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 1, (value) => { entity.LayoutMethod = (LayoutMethod)value; });
-                    TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 2, (value) => { entity.BlockLength = value; });
+                    // found entity id attribute
+                    entity.HasEntityLayoutAttribute = true;
+                    var attributeArguments = idAttr.ConstructorArguments;
+                    if (CheckAttributeArguments(nameof(IdAttribute), attributeArguments, 1, entity, location))
+                    {
+                        TryGetAttributeArgumentValue<string>(entity, location, attributeArguments, 0, (value) => { entity.EntityId = value; });
+                    }
+                }
+                if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(LayoutAttribute)) is AttributeData entityLayoutAttr)
+                {
+                    // found entity layout attribute
+                    entity.HasEntityLayoutAttribute = true;
+                    var attributeArguments = entityLayoutAttr.ConstructorArguments;
+                    if (CheckAttributeArguments(nameof(LayoutAttribute), attributeArguments, 2, entity, location))
+                    {
+                        TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 0, (value) => { entity.LayoutMethod = (LayoutMethod)value; });
+                        TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 1, (value) => { entity.BlockLength = value; });
+                    }
                 }
             }
         }

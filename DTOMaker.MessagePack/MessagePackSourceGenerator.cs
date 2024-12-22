@@ -15,7 +15,6 @@ namespace DTOMaker.MessagePack
 
         private void EmitDiagnostics(GeneratorExecutionContext context, TargetBase target)
         {
-            // todo fix msg ids
             foreach (var diagnostic in target.SyntaxErrors)
             {
                 // report diagnostic

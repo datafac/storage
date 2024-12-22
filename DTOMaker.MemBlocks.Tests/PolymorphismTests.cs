@@ -17,35 +17,35 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
-                    [Entity] [EntityLayout("Polygon", LayoutMethod.SequentialV1)]
+                    [Entity] [Id("Polygon")][Layout(LayoutMethod.SequentialV1)]
                     public interface IPolygon { }
 
-                    [Entity] [EntityLayout("Triangle", LayoutMethod.SequentialV1)] 
+                    [Entity] [Id("Triangle")][Layout(LayoutMethod.SequentialV1)] 
                     public interface ITriangle : IPolygon { }
 
-                    [Entity] [EntityLayout("Equilateral", LayoutMethod.SequentialV1)] 
+                    [Entity] [Id("Equilateral")][Layout(LayoutMethod.SequentialV1)] 
                     public interface IEquilateral : ITriangle
                     {
                         [Member(1)] double Length { get; set; }
                     }
 
-                    [Entity] [EntityLayout("RightTriangle", LayoutMethod.SequentialV1)] 
+                    [Entity] [Id("RightTriangle")][Layout(LayoutMethod.SequentialV1)] 
                     public interface IRightTriangle : ITriangle
                     {
                         [Member(1)] double Length { get; set; }
                         [Member(2)] double Height { get; set; }
                     }
 
-                    [Entity] [EntityLayout("Quadrilateral", LayoutMethod.SequentialV1)] 
+                    [Entity] [Id("Quadrilateral")][Layout(LayoutMethod.SequentialV1)] 
                     public interface IQuadrilateral : IPolygon { }
 
-                    [Entity] [EntityLayout("Square", LayoutMethod.SequentialV1)] 
+                    [Entity] [Id("Square")][Layout(LayoutMethod.SequentialV1)] 
                     public interface ISquare : IQuadrilateral
                     {
                         [Member(1)] double Length { get; set; }
                     }
 
-                    [Entity] [EntityLayout("Rectangle", LayoutMethod.SequentialV1)] 
+                    [Entity] [Id("Rectangle")][Layout(LayoutMethod.SequentialV1)] 
                     public interface IRectangle : IQuadrilateral
                     {
                         [Member(1)] double Length { get; set; }

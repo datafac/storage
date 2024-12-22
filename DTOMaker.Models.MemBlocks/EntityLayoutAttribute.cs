@@ -3,14 +3,12 @@
 namespace DTOMaker.Models.MemBlocks
 {
     [AttributeUsage(AttributeTargets.Interface, AllowMultiple = false)]
-    public class EntityLayoutAttribute : Attribute
+    public class IdAttribute : Attribute
     {
-        public readonly LayoutMethod LayoutMethod;
-        public readonly int BlockLength;
-        public EntityLayoutAttribute(string entityId, LayoutMethod layoutMethod, int blockLength = 0)
+        public readonly string EntityId;
+        public IdAttribute(string entityId)
         {
-            BlockLength = blockLength;
-            LayoutMethod = layoutMethod;
+            EntityId = entityId;
         }
     }
 }

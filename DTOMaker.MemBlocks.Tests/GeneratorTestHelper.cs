@@ -24,7 +24,7 @@ namespace DTOMaker.MemBlocks.Tests
                             MetadataReference.CreateFromFile(typeof(Memory<>).GetTypeInfo().Assembly.Location),
                             // types for local tests
                             MetadataReference.CreateFromFile(typeof(DTOMaker.Models.EntityAttribute).GetTypeInfo().Assembly.Location),
-                            MetadataReference.CreateFromFile(typeof(DTOMaker.Models.MemBlocks.EntityLayoutAttribute).GetTypeInfo().Assembly.Location),
+                            MetadataReference.CreateFromFile(typeof(DTOMaker.Models.MemBlocks.LayoutAttribute).GetTypeInfo().Assembly.Location),
                         };
 
             PortableExecutableReference[] metadataReferences = commonReferences.Concat(additionalReferences).ToArray();

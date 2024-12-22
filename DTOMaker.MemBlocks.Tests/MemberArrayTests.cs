@@ -21,7 +21,7 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [EntityLayout("MyDTO", LayoutMethod.SequentialV1)]
+                    [Id("MyDTO")][Layout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
                         [Member(1)]
@@ -54,7 +54,7 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [EntityLayout("MyDTO", LayoutMethod.SequentialV1)]
+                    [Id("MyDTO")][Layout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
                         [Member(1)] 
@@ -85,7 +85,7 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [EntityLayout("MyDTO", LayoutMethod.SequentialV1)]
+                    [Id("MyDTO")][Layout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
                         [Member(1)] 
@@ -115,7 +115,7 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [EntityLayout("MyDTO", LayoutMethod.SequentialV1)]
+                    [Id("MyDTO")][Layout(LayoutMethod.SequentialV1)]
                     public interface IMyDTO
                     {
                         [Member(1)] 
