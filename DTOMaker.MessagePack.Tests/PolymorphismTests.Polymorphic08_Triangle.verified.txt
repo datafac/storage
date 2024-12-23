@@ -66,6 +66,7 @@ namespace MyOrg.Models.MessagePack
             return result.ToHashCode();
         }
 
+        [IgnoreMember]
         private int? _hashCode;
         public override int GetHashCode()
         {

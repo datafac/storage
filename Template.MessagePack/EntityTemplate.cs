@@ -203,6 +203,7 @@ namespace T_DomainName_.MessagePack
             return result.ToHashCode();
         }
 
+        [IgnoreMember]
         private int? _hashCode;
         public override int GetHashCode()
         {
