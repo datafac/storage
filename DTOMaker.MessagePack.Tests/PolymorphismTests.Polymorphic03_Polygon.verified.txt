@@ -17,7 +17,7 @@ namespace MyOrg.Models.MessagePack
     [Union(RightTriangle.EntityTag, typeof(RightTriangle))]
     [Union(Square.EntityTag, typeof(Square))]
     public abstract partial class Polygon { }
-    public partial class Polygon : EntityBase, IPolygon, IFreezable
+    public partial class Polygon : EntityBase, IPolygon, IEquatable<Polygon>
     {
         // Derived entities: 6
         // - Equilateral
@@ -31,13 +31,12 @@ namespace MyOrg.Models.MessagePack
 
         public new static Polygon Create(int entityTag, ReadOnlyMemory<byte> buffer)
         {
-            int bytesRead;
             return entityTag switch
             {
-                Equilateral.EntityTag => MessagePackSerializer.Deserialize<Equilateral>(buffer, out bytesRead),
-                Rectangle.EntityTag => MessagePackSerializer.Deserialize<Rectangle>(buffer, out bytesRead),
-                RightTriangle.EntityTag => MessagePackSerializer.Deserialize<RightTriangle>(buffer, out bytesRead),
-                Square.EntityTag => MessagePackSerializer.Deserialize<Square>(buffer, out bytesRead),
+                Equilateral.EntityTag => MessagePackSerializer.Deserialize<Equilateral>(buffer, out var _),
+                Rectangle.EntityTag => MessagePackSerializer.Deserialize<Rectangle>(buffer, out var _),
+                RightTriangle.EntityTag => MessagePackSerializer.Deserialize<RightTriangle>(buffer, out var _),
+                Square.EntityTag => MessagePackSerializer.Deserialize<Square>(buffer, out var _),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
             };
         }

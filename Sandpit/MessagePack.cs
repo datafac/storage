@@ -109,6 +109,7 @@ namespace Sandpit.MessagePack
             return result.ToHashCode();
         }
 
+        [IgnoreMember]
         private int? _hashCode;
         public override int GetHashCode()
         {
@@ -172,6 +173,7 @@ namespace Sandpit.MessagePack
             return result.ToHashCode();
         }
 
+        [IgnoreMember]
         private int? _hashCode;
         public override int GetHashCode()
         {
@@ -226,6 +228,7 @@ namespace Sandpit.MessagePack
             return result.ToHashCode();
         }
 
+        [IgnoreMember]
         private int? _hashCode;
         public override int GetHashCode()
         {
@@ -301,6 +304,7 @@ namespace Sandpit.MessagePack
             return result.ToHashCode();
         }
 
+        [IgnoreMember]
         private int? _hashCode;
         public override int GetHashCode()
         {
@@ -376,6 +380,7 @@ namespace Sandpit.MessagePack
             return result.ToHashCode();
         }
 
+        [IgnoreMember]
         private int? _hashCode;
         public override int GetHashCode()
         {
@@ -439,6 +444,7 @@ namespace Sandpit.MessagePack
             return result.ToHashCode();
         }
 
+        [IgnoreMember]
         private int? _hashCode;
         public override int GetHashCode()
         {

@@ -14,7 +14,7 @@ namespace MyOrg.Models.MessagePack
     [MessagePackObject]
     [Union(MyDTO.EntityTag, typeof(MyDTO))]
     public abstract partial class MyBase { }
-    public partial class MyBase : EntityBase, IMyBase, IFreezable
+    public partial class MyBase : EntityBase, IMyBase, IEquatable<MyBase>
     {
         // Derived entities: 1
         // - MyDTO
@@ -23,10 +23,9 @@ namespace MyOrg.Models.MessagePack
 
         public new static MyBase Create(int entityTag, ReadOnlyMemory<byte> buffer)
         {
-            int bytesRead;
             return entityTag switch
             {
-                MyDTO.EntityTag => MessagePackSerializer.Deserialize<MyDTO>(buffer, out bytesRead),
+                MyDTO.EntityTag => MessagePackSerializer.Deserialize<MyDTO>(buffer, out var _),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
             };
         }

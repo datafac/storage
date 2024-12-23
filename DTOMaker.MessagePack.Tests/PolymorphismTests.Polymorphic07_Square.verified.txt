@@ -12,7 +12,7 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    public partial class Square : Quadrilateral, ISquare, IFreezable
+    public partial class Square : Quadrilateral, ISquare, IEquatable<Square>
     {
         // Derived entities: 0
 
@@ -20,7 +20,6 @@ namespace MyOrg.Models.MessagePack
 
         public new static Square Create(int entityTag, ReadOnlyMemory<byte> buffer)
         {
-            int bytesRead;
             return entityTag switch
             {
                 _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
