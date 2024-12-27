@@ -178,10 +178,9 @@ namespace T_DomainName_.MessagePack
             return true;
         }
 
-        public override bool Equals(object? obj)
-        {
-            return obj is T_EntityName_ other && Equals(other);
-        }
+        public override bool Equals(object? obj) => obj is T_EntityName_ other && Equals(other);
+        public static bool operator ==(T_EntityName_? left, T_EntityName_? right) => left is not null ? left.Equals(right) : (right is null);
+        public static bool operator !=(T_EntityName_? left, T_EntityName_? right) => left is not null ? !left.Equals(right) : (right is not null);
 
         private int CalcHashCode()
         {

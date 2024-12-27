@@ -291,7 +291,10 @@ namespace T_DomainName_.MemBlocks
             if (!_readonlyBlock.Span.SequenceEqual(other._readonlyBlock.Span)) return false;
             return true;
         }
+
         public override bool Equals(object? obj) => obj is T_EntityName_ other && Equals(other);
+        public static bool operator ==(T_EntityName_? left, T_EntityName_? right) => left is not null ? left.Equals(right) : (right is null);
+        public static bool operator !=(T_EntityName_? left, T_EntityName_? right) => left is not null ? !left.Equals(right) : (right is not null);
 
         private int CalcHashCode()
         {

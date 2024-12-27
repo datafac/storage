@@ -127,19 +127,18 @@ namespace T_DomainName_.CSPoco
             if (!_T_VectorMemberName_.Span.SequenceEqual(other.T_VectorMemberName_.Span)) return false;
             //##else
             //##if MemberIsNullable
-            if (!_T_ScalarNullableMemberName_.Equals(other.T_ScalarNullableMemberName_)) return false;
+            if (_T_ScalarNullableMemberName_ != other.T_ScalarNullableMemberName_) return false;
             //##else
-            if (!_T_ScalarRequiredMemberName_.Equals(other.T_ScalarRequiredMemberName_)) return false;
+            if (_T_ScalarRequiredMemberName_ != other.T_ScalarRequiredMemberName_) return false;
             //##endif
             //##endif
             //##endfor
             return true;
         }
 
-        public override bool Equals(object? obj)
-        {
-            return obj is T_EntityName_ other && Equals(other);
-        }
+        public override bool Equals(object? obj) => obj is T_EntityName_ other && Equals(other);
+        public static bool operator ==(T_EntityName_? left, T_EntityName_? right) => left is not null ? left.Equals(right) : (right is null);
+        public static bool operator !=(T_EntityName_? left, T_EntityName_? right) => left is not null ? !left.Equals(right) : (right is not null);
 
         private int CalcHashCode()
         {
