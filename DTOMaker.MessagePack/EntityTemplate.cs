@@ -169,9 +169,9 @@ namespace T_DomainName_.MessagePack
             if (!_T_VectorMemberName_.Span.SequenceEqual(other.T_VectorMemberName_.Span)) return false;
             //##else
             //##if MemberIsNullable
-            if (!_T_ScalarNullableMemberName_.Equals(other.T_ScalarNullableMemberName_)) return false;
+            if (_T_ScalarNullableMemberName_ != other.T_ScalarNullableMemberName_) return false;
             //##else
-            if (!_T_ScalarRequiredMemberName_.Equals(other.T_ScalarRequiredMemberName_)) return false;
+            if (_T_ScalarRequiredMemberName_ != other.T_ScalarRequiredMemberName_) return false;
             //##endif
             //##endif
             //##endfor

@@ -85,10 +85,10 @@ namespace MyOrg.Models.MessagePack
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
             if (!base.Equals(other)) return false;
-            if (!_FamilyName.Equals(other.FamilyName)) return false;
-            if (!_GivenName.Equals(other.GivenName)) return false;
-            if (!_OtherNames_Value.Equals(other.OtherNames_Value)) return false;
-            if (!_OtherNames_HasValue.Equals(other.OtherNames_HasValue)) return false;
+            if (_FamilyName != other.FamilyName) return false;
+            if (_GivenName != other.GivenName) return false;
+            if (_OtherNames_Value != other.OtherNames_Value) return false;
+            if (_OtherNames_HasValue != other.OtherNames_HasValue) return false;
             return true;
         }
 

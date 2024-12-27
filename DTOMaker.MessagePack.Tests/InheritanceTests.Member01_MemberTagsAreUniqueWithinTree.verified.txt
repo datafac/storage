@@ -55,7 +55,7 @@ namespace MyOrg.Models.MessagePack
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
             if (!base.Equals(other)) return false;
-            if (!_DTOField1.Equals(other.DTOField1)) return false;
+            if (_DTOField1 != other.DTOField1) return false;
             return true;
         }
 

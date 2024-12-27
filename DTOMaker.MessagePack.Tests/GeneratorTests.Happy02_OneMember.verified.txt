@@ -55,7 +55,7 @@ namespace MyOrg.Models.MessagePack
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
             if (!base.Equals(other)) return false;
-            if (!_Field1.Equals(other.Field1)) return false;
+            if (_Field1 != other.Field1) return false;
             return true;
         }
 

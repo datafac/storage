@@ -55,7 +55,7 @@ namespace MyOrg.Models.MessagePack
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
             if (!base.Equals(other)) return false;
-            if (!_Length.Equals(other.Length)) return false;
+            if (_Length != other.Length) return false;
             return true;
         }
 
