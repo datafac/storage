@@ -16,13 +16,13 @@ namespace MyOrg.Models.MessagePack
     {
         // Derived entities: 0
 
-        public new const int EntityTag = 2;
+        public new const int EntityKey = 2;
 
-        public new static MyOtherDTO Create(int entityTag, ReadOnlyMemory<byte> buffer)
+        public new static MyOtherDTO Create(int entityKey, ReadOnlyMemory<byte> buffer)
         {
-            return entityTag switch
+            return entityKey switch
             {
-                _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
+                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }
 

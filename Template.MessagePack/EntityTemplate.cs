@@ -24,10 +24,10 @@ namespace T_DomainName_.MessagePack
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
     }
     [MessagePackObject]
-    [Union(T_EntityName_.EntityTag, typeof(T_EntityName_))]
+    [Union(T_EntityName_.EntityKey, typeof(T_EntityName_))]
     public abstract class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
-        public const int EntityTag = 1;
+        public const int EntityKey = 1;
 
         public T_BaseName_() { }
         public T_BaseName_(IT_BaseName_ source, bool frozen = false) : base(source, frozen) { }
@@ -51,7 +51,7 @@ namespace T_DomainName_.MessagePack
     [MessagePackObject]
     //##foreach DerivedEntities
     //##if DerivedEntityCount == 0
-    [Union(T_EntityName_.EntityTag, typeof(T_EntityName_))]
+    [Union(T_EntityName_.EntityKey, typeof(T_EntityName_))]
     //##endif
     //##endfor
     //##if DerivedEntityCount > 0
@@ -66,26 +66,26 @@ namespace T_DomainName_.MessagePack
         //##if false
         private const string T_MemberObsoleteMessage_ = null;
         private const bool T_MemberObsoleteIsError_ = false;
-        private const int T_EntityTag_ = 2;
-        private const int T_MemberTagOffset_ = 10;
-        private const int T_ScalarNullableMemberTag_ = T_MemberTagOffset_ + 1;
-        private const int T_ScalarRequiredMemberTag_ = T_MemberTagOffset_ + 2;
-        private const int T_VectorMemberTag_ = T_MemberTagOffset_ + 3;
+        private const int T_EntityKey_ = 2;
+        private const int T_MemberKeyOffset_ = 10;
+        private const int T_ScalarNullableMemberKey_ = T_MemberKeyOffset_ + 1;
+        private const int T_ScalarRequiredMemberKey_ = T_MemberKeyOffset_ + 2;
+        private const int T_VectorMemberKey_ = T_MemberKeyOffset_ + 3;
         private const int T_MemberDefaultValue_ = 0;
         //##endif
 
-        public new const int EntityTag = T_EntityTag_;
+        public new const int EntityKey = T_EntityKey_;
 
-        public new static T_EntityName_ Create(int entityTag, ReadOnlyMemory<byte> buffer)
+        public new static T_EntityName_ Create(int entityKey, ReadOnlyMemory<byte> buffer)
         {
-            return entityTag switch
+            return entityKey switch
             {
                 //##foreach DerivedEntities
                 //##if DerivedEntityCount == 0
-                T_EntityName_.EntityTag => MessagePackSerializer.Deserialize<T_EntityName_>(buffer, out var _),
+                T_EntityName_.EntityKey => MessagePackSerializer.Deserialize<T_EntityName_>(buffer, out var _),
                 //##endif
                 //##endfor
-                _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
+                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }
 
@@ -122,7 +122,7 @@ namespace T_DomainName_.MessagePack
         //##if MemberIsObsolete
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##endif
-        [Key(T_VectorMemberTag_)]
+        [Key(T_VectorMemberKey_)]
         public ReadOnlyMemory<T_MemberType_> T_VectorMemberName_
         {
             get => _T_VectorMemberName_;
@@ -141,14 +141,14 @@ namespace T_DomainName_.MessagePack
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##endif
         //##if MemberIsNullable
-        [Key(T_ScalarNullableMemberTag_)]
+        [Key(T_ScalarNullableMemberKey_)]
         public T_MemberType_? T_ScalarNullableMemberName_
         {
             get => _T_ScalarNullableMemberName_;
             set => _T_ScalarNullableMemberName_ = IfNotFrozen(ref value);
         }
         //##else
-        [Key(T_ScalarRequiredMemberTag_)]
+        [Key(T_ScalarRequiredMemberKey_)]
         public T_MemberType_ T_ScalarRequiredMemberName_
         {
             get => _T_ScalarRequiredMemberName_;

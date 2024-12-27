@@ -17,23 +17,23 @@ namespace DTOMaker.MessagePack.Tests
                 using DTOMaker.Models.MessagePack;
                 namespace MyOrg.Models
                 {
-                    [Entity] [EntityTag(1)] public interface IPolygon { }
-                    [Entity] [EntityTag(2)] public interface ITriangle : IPolygon { }
-                    [Entity] [EntityTag(3)] public interface IEquilateral : ITriangle
+                    [Entity] [EntityKey(1)] public interface IPolygon { }
+                    [Entity] [EntityKey(2)] public interface ITriangle : IPolygon { }
+                    [Entity] [EntityKey(3)] public interface IEquilateral : ITriangle
                     {
                         [Member(1)] double Length { get; set; }
                     }
-                    [Entity] [EntityTag(4)] public interface IRightTriangle : ITriangle
+                    [Entity] [EntityKey(4)] public interface IRightTriangle : ITriangle
                     {
                         [Member(1)] double Length { get; set; }
                         [Member(2)] double Height { get; set; }
                     }
-                    [Entity] [EntityTag(5)] public interface IQuadrilateral : IPolygon { }
-                    [Entity] [EntityTag(6)] public interface ISquare : IQuadrilateral
+                    [Entity] [EntityKey(5)] public interface IQuadrilateral : IPolygon { }
+                    [Entity] [EntityKey(6)] public interface ISquare : IQuadrilateral
                     {
                         [Member(1)] double Length { get; set; }
                     }
-                    [Entity] [EntityTag(7)] public interface IRectangle : IQuadrilateral
+                    [Entity] [EntityKey(7)] public interface IRectangle : IQuadrilateral
                     {
                         [Member(1)] double Length { get; set; }
                         [Member(2)] double Height { get; set; }

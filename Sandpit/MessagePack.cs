@@ -7,10 +7,10 @@ namespace Sandpit.MessagePack
 {
     // ---------- implementations
     [MessagePackObject]
-    [Union(Equilateral.EntityTag, typeof(Equilateral))]
-    [Union(Rectangle.EntityTag, typeof(Rectangle))]
-    [Union(RightTriangle.EntityTag, typeof(RightTriangle))]
-    [Union(Square.EntityTag, typeof(Square))]
+    [Union(Equilateral.EntityKey, typeof(Equilateral))]
+    [Union(Rectangle.EntityKey, typeof(Rectangle))]
+    [Union(RightTriangle.EntityKey, typeof(RightTriangle))]
+    [Union(Square.EntityKey, typeof(Square))]
     public abstract partial class Polygon { }
     public partial class Polygon : EntityBase, IPolygon, IFreezable
     {
@@ -22,7 +22,7 @@ namespace Sandpit.MessagePack
         // - Square
         // - Triangle
 
-        public new const int EntityTag = 1;
+        public new const int EntityKey = 1;
         protected override void OnFreeze()
         {
             base.OnFreeze();
@@ -67,8 +67,8 @@ namespace Sandpit.MessagePack
     }
 
     [MessagePackObject]
-    [Union(Equilateral.EntityTag, typeof(Equilateral))]
-    [Union(RightTriangle.EntityTag, typeof(RightTriangle))]
+    [Union(Equilateral.EntityKey, typeof(Equilateral))]
+    [Union(RightTriangle.EntityKey, typeof(RightTriangle))]
     public abstract partial class Triangle { }
     public partial class Triangle : Polygon, ITriangle, IFreezable
     {
@@ -76,7 +76,7 @@ namespace Sandpit.MessagePack
         // - Equilateral
         // - RightTriangle
 
-        public new const int EntityTag = 2;
+        public new const int EntityKey = 2;
         protected override void OnFreeze()
         {
             base.OnFreeze();
@@ -126,7 +126,7 @@ namespace Sandpit.MessagePack
     {
         // Derived entities: 0
 
-        public new const int EntityTag = 3;
+        public new const int EntityKey = 3;
         protected override void OnFreeze()
         {
             base.OnFreeze();
@@ -186,8 +186,8 @@ namespace Sandpit.MessagePack
     }
 
     [MessagePackObject]
-    [Union(Rectangle.EntityTag, typeof(Rectangle))]
-    [Union(Square.EntityTag, typeof(Square))]
+    [Union(Rectangle.EntityKey, typeof(Rectangle))]
+    [Union(Square.EntityKey, typeof(Square))]
     public abstract partial class Quadrilateral { }
     public partial class Quadrilateral : Polygon, IQuadrilateral, IFreezable
     {
@@ -195,7 +195,7 @@ namespace Sandpit.MessagePack
         // - Rectangle
         // - Square
 
-        public new const int EntityTag = 5;
+        public new const int EntityKey = 5;
         protected override void OnFreeze()
         {
             base.OnFreeze();
@@ -245,7 +245,7 @@ namespace Sandpit.MessagePack
     {
         // Derived entities: 0
 
-        public new const int EntityTag = 7;
+        public new const int EntityKey = 7;
         protected override void OnFreeze()
         {
             base.OnFreeze();
@@ -321,7 +321,7 @@ namespace Sandpit.MessagePack
     {
         // Derived entities: 0
 
-        public new const int EntityTag = 4;
+        public new const int EntityKey = 4;
         protected override void OnFreeze()
         {
             base.OnFreeze();
@@ -397,7 +397,7 @@ namespace Sandpit.MessagePack
     {
         // Derived entities: 0
 
-        public new const int EntityTag = 6;
+        public new const int EntityKey = 6;
         protected override void OnFreeze()
         {
             base.OnFreeze();
@@ -457,25 +457,25 @@ namespace Sandpit.MessagePack
     }
 
     [MessagePackObject]
-    [Union(Equilateral.EntityTag, typeof(Equilateral))]
-    [Union(Polygon.EntityTag, typeof(Polygon))]
-    [Union(Quadrilateral.EntityTag, typeof(Quadrilateral))]
-    [Union(Rectangle.EntityTag, typeof(Rectangle))]
-    [Union(RightTriangle.EntityTag, typeof(RightTriangle))]
-    [Union(Square.EntityTag, typeof(Square))]
-    [Union(Triangle.EntityTag, typeof(Triangle))]
+    [Union(Equilateral.EntityKey, typeof(Equilateral))]
+    [Union(Polygon.EntityKey, typeof(Polygon))]
+    [Union(Quadrilateral.EntityKey, typeof(Quadrilateral))]
+    [Union(Rectangle.EntityKey, typeof(Rectangle))]
+    [Union(RightTriangle.EntityKey, typeof(RightTriangle))]
+    [Union(Square.EntityKey, typeof(Square))]
+    [Union(Triangle.EntityKey, typeof(Triangle))]
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {
-        public static EntityBase CreateFrom(int entityTag, ReadOnlyMemory<byte> buffer)
+        public static EntityBase CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
         {
             int bytesRead;
-            return entityTag switch
+            return entityKey switch
             {
-                Equilateral.EntityTag => MessagePackSerializer.Deserialize<Equilateral>(buffer, out bytesRead),
-                Rectangle.EntityTag => MessagePackSerializer.Deserialize<Rectangle>(buffer, out bytesRead),
-                RightTriangle.EntityTag => MessagePackSerializer.Deserialize<RightTriangle>(buffer, out bytesRead),
-                Square.EntityTag => MessagePackSerializer.Deserialize<Square>(buffer, out bytesRead),
-                _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
+                Equilateral.EntityKey => MessagePackSerializer.Deserialize<Equilateral>(buffer, out bytesRead),
+                Rectangle.EntityKey => MessagePackSerializer.Deserialize<Rectangle>(buffer, out bytesRead),
+                RightTriangle.EntityKey => MessagePackSerializer.Deserialize<RightTriangle>(buffer, out bytesRead),
+                Square.EntityKey => MessagePackSerializer.Deserialize<Square>(buffer, out bytesRead),
+                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }
 

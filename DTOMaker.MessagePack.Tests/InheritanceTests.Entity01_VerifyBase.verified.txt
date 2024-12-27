@@ -12,16 +12,15 @@ using System.Runtime.CompilerServices;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    [Union(MyDTO.EntityTag, typeof(MyDTO))]
+    [Union(MyDTO.EntityKey, typeof(MyDTO))]
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {
-        public static EntityBase Create(int entityTag, ReadOnlyMemory<byte> buffer)
+        public static EntityBase Create(int entityKey, ReadOnlyMemory<byte> buffer)
         {
-            int bytesRead;
-            return entityTag switch
+            return entityKey switch
             {
-                MyDTO.EntityTag => MessagePackSerializer.Deserialize<MyDTO>(buffer, out bytesRead),
-                _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
+                MyDTO.EntityKey => MessagePackSerializer.Deserialize<MyDTO>(buffer, out _),
+                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }
 

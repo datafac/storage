@@ -10,14 +10,20 @@ namespace DTOMaker.MessagePack
         {
             MessagePackEntity entity = member.Entity as MessagePackEntity
                 ?? throw new ArgumentException("Expected member.Entity to be a MessagePackEntity", nameof(member));
-            int memberTag = entity.MemberTagOffset + member.Sequence;
-            _variables["MemberTag"] = memberTag;
-            _variables["ScalarMemberTag"] = memberTag;
+            var memberKeyOffset = entity.MemberKeyOffset;
+            if (memberKeyOffset == 0)
+            {
+                int classHeight = member.Entity.GetClassHeight();
+                memberKeyOffset = (classHeight - 1) * 100;
+            }
+            int memberKey = memberKeyOffset + member.Sequence;
+            _variables["MemberKey"] = memberKey;
+            _variables["ScalarMemberKey"] = memberKey;
             if (member.MemberIsNullable)
-                _variables["ScalarNullableMemberTag"] = memberTag;
+                _variables["ScalarNullableMemberKey"] = memberKey;
             else
-                _variables["ScalarRequiredMemberTag"] = memberTag;
-            _variables["VectorMemberTag"] = memberTag;
+                _variables["ScalarRequiredMemberKey"] = memberKey;
+            _variables["VectorMemberKey"] = memberKey;
         }
     }
 }

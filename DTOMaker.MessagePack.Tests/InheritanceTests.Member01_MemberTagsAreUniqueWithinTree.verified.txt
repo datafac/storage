@@ -16,7 +16,7 @@ namespace MyOrg.Models.MessagePack
     {
         // Derived entities: 0
 
-        public new const int EntityTag = 2;
+        public new const int EntityKey = 2;
 
         public new static MyDTO Create(int entityTag, ReadOnlyMemory<byte> buffer)
         {

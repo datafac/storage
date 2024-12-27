@@ -19,7 +19,7 @@ namespace DTOMaker.Gentime
         public TargetEntity? Base { get; set; }
         public TargetEntity[] DerivedEntities { get; set; } = [];
 
-        internal int GetClassHeight() => Base is not null ? Base.GetClassHeight() + 1 : 1;
+        public int GetClassHeight() => Base is not null ? Base.GetClassHeight() + 1 : 1;
 
         private SyntaxDiagnostic? CheckHasEntityAttribute()
         {

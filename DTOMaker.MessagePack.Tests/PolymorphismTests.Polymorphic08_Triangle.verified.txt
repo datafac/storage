@@ -12,8 +12,8 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    [Union(Equilateral.EntityTag, typeof(Equilateral))]
-    [Union(RightTriangle.EntityTag, typeof(RightTriangle))]
+    [Union(Equilateral.EntityKey, typeof(Equilateral))]
+    [Union(RightTriangle.EntityKey, typeof(RightTriangle))]
     public abstract partial class Triangle { }
     public partial class Triangle : Polygon, ITriangle, IEquatable<Triangle>
     {
@@ -21,15 +21,15 @@ namespace MyOrg.Models.MessagePack
         // - Equilateral
         // - RightTriangle
 
-        public new const int EntityTag = 2;
+        public new const int EntityKey = 2;
 
-        public new static Triangle Create(int entityTag, ReadOnlyMemory<byte> buffer)
+        public new static Triangle Create(int entityKey, ReadOnlyMemory<byte> buffer)
         {
-            return entityTag switch
+            return entityKey switch
             {
-                Equilateral.EntityTag => MessagePackSerializer.Deserialize<Equilateral>(buffer, out var _),
-                RightTriangle.EntityTag => MessagePackSerializer.Deserialize<RightTriangle>(buffer, out var _),
-                _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
+                Equilateral.EntityKey => MessagePackSerializer.Deserialize<Equilateral>(buffer, out var _),
+                RightTriangle.EntityKey => MessagePackSerializer.Deserialize<RightTriangle>(buffer, out var _),
+                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }
 

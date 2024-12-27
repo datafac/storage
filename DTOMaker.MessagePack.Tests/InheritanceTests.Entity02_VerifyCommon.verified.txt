@@ -12,21 +12,21 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    [Union(MyDTO.EntityTag, typeof(MyDTO))]
+    [Union(MyDTO.EntityKey, typeof(MyDTO))]
     public abstract partial class MyBase { }
     public partial class MyBase : EntityBase, IMyBase, IEquatable<MyBase>
     {
         // Derived entities: 1
         // - MyDTO
 
-        public new const int EntityTag = 1;
+        public new const int EntityKey = 1;
 
-        public new static MyBase Create(int entityTag, ReadOnlyMemory<byte> buffer)
+        public new static MyBase Create(int entityKey, ReadOnlyMemory<byte> buffer)
         {
-            return entityTag switch
+            return entityKey switch
             {
-                MyDTO.EntityTag => MessagePackSerializer.Deserialize<MyDTO>(buffer, out var _),
-                _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
+                MyDTO.EntityKey => MessagePackSerializer.Deserialize<MyDTO>(buffer, out var _),
+                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }
 

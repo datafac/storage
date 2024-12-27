@@ -12,8 +12,8 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    [Union(Rectangle.EntityTag, typeof(Rectangle))]
-    [Union(Square.EntityTag, typeof(Square))]
+    [Union(Rectangle.EntityKey, typeof(Rectangle))]
+    [Union(Square.EntityKey, typeof(Square))]
     public abstract partial class Quadrilateral { }
     public partial class Quadrilateral : Polygon, IQuadrilateral, IEquatable<Quadrilateral>
     {
@@ -21,15 +21,15 @@ namespace MyOrg.Models.MessagePack
         // - Rectangle
         // - Square
 
-        public new const int EntityTag = 5;
+        public new const int EntityKey = 5;
 
-        public new static Quadrilateral Create(int entityTag, ReadOnlyMemory<byte> buffer)
+        public new static Quadrilateral Create(int entityKey, ReadOnlyMemory<byte> buffer)
         {
-            return entityTag switch
+            return entityKey switch
             {
-                Rectangle.EntityTag => MessagePackSerializer.Deserialize<Rectangle>(buffer, out var _),
-                Square.EntityTag => MessagePackSerializer.Deserialize<Square>(buffer, out var _),
-                _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
+                Rectangle.EntityKey => MessagePackSerializer.Deserialize<Rectangle>(buffer, out var _),
+                Square.EntityKey => MessagePackSerializer.Deserialize<Square>(buffer, out var _),
+                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }
 

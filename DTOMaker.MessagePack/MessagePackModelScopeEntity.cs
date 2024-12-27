@@ -10,7 +10,7 @@ namespace DTOMaker.MessagePack
         {
             MessagePackEntity entity = baseEntity as MessagePackEntity
                 ?? throw new ArgumentException("Expected baseEntity to be a MessagePackEntity", nameof(baseEntity));
-            _variables["EntityTag"] = entity.EntityTag;
+            _variables["EntityKey"] = entity.EntityKey;
         }
     }
 }

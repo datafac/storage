@@ -16,13 +16,13 @@ namespace MyOrg.Models.MessagePack
     {
         // Derived entities: 0
 
-        public new const int EntityTag = 4;
+        public new const int EntityKey = 4;
 
-        public new static RightTriangle Create(int entityTag, ReadOnlyMemory<byte> buffer)
+        public new static RightTriangle Create(int entityKey, ReadOnlyMemory<byte> buffer)
         {
-            return entityTag switch
+            return entityKey switch
             {
-                _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
+                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }
 
@@ -43,7 +43,7 @@ namespace MyOrg.Models.MessagePack
 
         [IgnoreMember]
         private Double _Length = default;
-        [Key(1)]
+        [Key(201)]
         public Double Length
         {
             get => _Length;
@@ -52,7 +52,7 @@ namespace MyOrg.Models.MessagePack
 
         [IgnoreMember]
         private Double _Height = default;
-        [Key(2)]
+        [Key(202)]
         public Double Height
         {
             get => _Height;

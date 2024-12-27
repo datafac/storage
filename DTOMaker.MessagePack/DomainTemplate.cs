@@ -14,22 +14,21 @@ namespace T_DomainName_.MessagePack
     [MessagePackObject]
     //##foreach Entities
     //##if DerivedEntityCount == 0
-    [Union(T_EntityName_.EntityTag, typeof(T_EntityName_))]
+    [Union(T_EntityName_.EntityKey, typeof(T_EntityName_))]
     //##endif
     //##endfor
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {
-        public static EntityBase Create(int entityTag, ReadOnlyMemory<byte> buffer)
+        public static EntityBase Create(int entityKey, ReadOnlyMemory<byte> buffer)
         {
-            int bytesRead;
-            return entityTag switch
+            return entityKey switch
             {
                 //##foreach Entities
                 //##if DerivedEntityCount == 0
-                T_EntityName_.EntityTag => MessagePackSerializer.Deserialize<T_EntityName_>(buffer, out bytesRead),
+                T_EntityName_.EntityKey => MessagePackSerializer.Deserialize<T_EntityName_>(buffer, out _),
                 //##endif
                 //##endfor
-                _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
+                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }
 

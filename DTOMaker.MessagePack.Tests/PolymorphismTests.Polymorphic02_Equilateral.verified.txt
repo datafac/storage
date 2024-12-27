@@ -16,13 +16,13 @@ namespace MyOrg.Models.MessagePack
     {
         // Derived entities: 0
 
-        public new const int EntityTag = 3;
+        public new const int EntityKey = 3;
 
-        public new static Equilateral Create(int entityTag, ReadOnlyMemory<byte> buffer)
+        public new static Equilateral Create(int entityKey, ReadOnlyMemory<byte> buffer)
         {
-            return entityTag switch
+            return entityKey switch
             {
-                _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
+                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }
 
@@ -42,7 +42,7 @@ namespace MyOrg.Models.MessagePack
 
         [IgnoreMember]
         private Double _Length = default;
-        [Key(1)]
+        [Key(201)]
         public Double Length
         {
             get => _Length;

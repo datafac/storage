@@ -22,7 +22,7 @@ namespace DTOMaker.MessagePack.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [EntityTag(1)]
+                    [EntityKey(1)]
                     public interface IMyDTO
                     {
                     }
@@ -53,12 +53,12 @@ namespace DTOMaker.MessagePack.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [EntityTag(1)]
+                    [EntityKey(1)]
                     public interface IMyBase
                     {
                     }
                     [Entity]
-                    [EntityTag(2, 10)]
+                    [EntityKey(2, 10)]
                     public interface IMyDTO : IMyBase
                     {
                     }
@@ -89,12 +89,12 @@ namespace DTOMaker.MessagePack.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [EntityTag(1)]
+                    [EntityKey(1)]
                     public interface IMyBase
                     {
                     }
                     [Entity]
-                    [EntityTag(2, 10)]
+                    [EntityKey(2, 10)]
                     public interface IMyDTO : IMyBase
                     {
                     }
@@ -116,7 +116,7 @@ namespace DTOMaker.MessagePack.Tests
         }
 
         [Fact]
-        public async Task Member01_MemberTagsAreUniqueWithinTree()
+        public async Task Member01_MemberKeysAreUniqueWithinTree()
         {
             var inputSource =
                 """
@@ -125,13 +125,13 @@ namespace DTOMaker.MessagePack.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [EntityTag(1)]
+                    [EntityKey(1)]
                     public interface IMyBase
                     {
                         [Member(1)] double BaseField1 { get; set; }
                     }
                     [Entity]
-                    [EntityTag(2, 10)]
+                    [EntityKey(2, 10)]
                     public interface IMyDTO : IMyBase
                     {
                         [Member(1)] double DTOField1 { get; set; }

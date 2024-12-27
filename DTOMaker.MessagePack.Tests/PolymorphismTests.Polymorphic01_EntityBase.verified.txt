@@ -12,22 +12,21 @@ using System.Runtime.CompilerServices;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    [Union(Equilateral.EntityTag, typeof(Equilateral))]
-    [Union(Rectangle.EntityTag, typeof(Rectangle))]
-    [Union(RightTriangle.EntityTag, typeof(RightTriangle))]
-    [Union(Square.EntityTag, typeof(Square))]
+    [Union(Equilateral.EntityKey, typeof(Equilateral))]
+    [Union(Rectangle.EntityKey, typeof(Rectangle))]
+    [Union(RightTriangle.EntityKey, typeof(RightTriangle))]
+    [Union(Square.EntityKey, typeof(Square))]
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {
-        public static EntityBase Create(int entityTag, ReadOnlyMemory<byte> buffer)
+        public static EntityBase Create(int entityKey, ReadOnlyMemory<byte> buffer)
         {
-            int bytesRead;
-            return entityTag switch
+            return entityKey switch
             {
-                Equilateral.EntityTag => MessagePackSerializer.Deserialize<Equilateral>(buffer, out bytesRead),
-                Rectangle.EntityTag => MessagePackSerializer.Deserialize<Rectangle>(buffer, out bytesRead),
-                RightTriangle.EntityTag => MessagePackSerializer.Deserialize<RightTriangle>(buffer, out bytesRead),
-                Square.EntityTag => MessagePackSerializer.Deserialize<Square>(buffer, out bytesRead),
-                _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
+                Equilateral.EntityKey => MessagePackSerializer.Deserialize<Equilateral>(buffer, out _),
+                Rectangle.EntityKey => MessagePackSerializer.Deserialize<Rectangle>(buffer, out _),
+                RightTriangle.EntityKey => MessagePackSerializer.Deserialize<RightTriangle>(buffer, out _),
+                Square.EntityKey => MessagePackSerializer.Deserialize<Square>(buffer, out _),
+                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }
 

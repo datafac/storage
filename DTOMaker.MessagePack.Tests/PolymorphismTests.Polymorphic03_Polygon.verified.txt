@@ -12,10 +12,10 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    [Union(Equilateral.EntityTag, typeof(Equilateral))]
-    [Union(Rectangle.EntityTag, typeof(Rectangle))]
-    [Union(RightTriangle.EntityTag, typeof(RightTriangle))]
-    [Union(Square.EntityTag, typeof(Square))]
+    [Union(Equilateral.EntityKey, typeof(Equilateral))]
+    [Union(Rectangle.EntityKey, typeof(Rectangle))]
+    [Union(RightTriangle.EntityKey, typeof(RightTriangle))]
+    [Union(Square.EntityKey, typeof(Square))]
     public abstract partial class Polygon { }
     public partial class Polygon : EntityBase, IPolygon, IEquatable<Polygon>
     {
@@ -27,17 +27,17 @@ namespace MyOrg.Models.MessagePack
         // - Square
         // - Triangle
 
-        public new const int EntityTag = 1;
+        public new const int EntityKey = 1;
 
-        public new static Polygon Create(int entityTag, ReadOnlyMemory<byte> buffer)
+        public new static Polygon Create(int entityKey, ReadOnlyMemory<byte> buffer)
         {
-            return entityTag switch
+            return entityKey switch
             {
-                Equilateral.EntityTag => MessagePackSerializer.Deserialize<Equilateral>(buffer, out var _),
-                Rectangle.EntityTag => MessagePackSerializer.Deserialize<Rectangle>(buffer, out var _),
-                RightTriangle.EntityTag => MessagePackSerializer.Deserialize<RightTriangle>(buffer, out var _),
-                Square.EntityTag => MessagePackSerializer.Deserialize<Square>(buffer, out var _),
-                _ => throw new ArgumentOutOfRangeException(nameof(entityTag), entityTag, null)
+                Equilateral.EntityKey => MessagePackSerializer.Deserialize<Equilateral>(buffer, out var _),
+                Rectangle.EntityKey => MessagePackSerializer.Deserialize<Rectangle>(buffer, out var _),
+                RightTriangle.EntityKey => MessagePackSerializer.Deserialize<RightTriangle>(buffer, out var _),
+                Square.EntityKey => MessagePackSerializer.Deserialize<Square>(buffer, out var _),
+                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }
 
