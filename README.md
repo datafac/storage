@@ -1,7 +1,7 @@
 # DTOMaker
 
 Types and source generators for building DTOs (Data Transport Objects) 
-and related POCOs (Plain Old CSharp Objects).
+and related POCOs (Plain Old C# Objects).
 
 [![Build-Deploy](https://github.com/datafac/dtomaker/actions/workflows/dotnet.yml/badge.svg)](https://github.com/datafac/dtomaker/actions/workflows/dotnet.yml)
 
@@ -42,10 +42,10 @@ Features not implemented:
 - Enum data types. Enums can be implemented with an underlying integer property and a cast.
 
 In progress:
+- entity members
 
 Coming soon:
 - reservation (hidden members)
-- entity members
 - Json (NewtonSoft) generator
 - Json (System.Text) generator
 - Orleans generator
