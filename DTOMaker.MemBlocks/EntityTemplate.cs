@@ -25,7 +25,6 @@ namespace DataFac.Memory
 namespace T_NameSpace_.MemBlocks
 {
     //##if false
-    using T_EntityFullName_ = T_NameSpace_.MemBlocks.T_EntityName_;
     public interface IT_BaseName_
     {
         T_MemberType_ BaseField1 { get; set; }
@@ -138,7 +137,7 @@ namespace T_NameSpace_.MemBlocks
             return entityId switch
             {
                 //##foreach DerivedEntities
-                T_EntityFullName_.EntityId => new T_EntityFullName_(buffers),
+                T_NameSpace_.MemBlocks.T_EntityName_.EntityId => new T_NameSpace_.MemBlocks.T_EntityName_(buffers),
                 //##endfor
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };

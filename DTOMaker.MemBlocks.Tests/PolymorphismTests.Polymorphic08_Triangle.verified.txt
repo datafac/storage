@@ -30,8 +30,8 @@ namespace MyOrg.Models.MemBlocks
         {
             return entityId switch
             {
-                MyOrg.Models.Equilateral.EntityId => new MyOrg.Models.Equilateral(buffers),
-                MyOrg.Models.RightTriangle.EntityId => new MyOrg.Models.RightTriangle(buffers),
+                MyOrg.Models.MemBlocks.Equilateral.EntityId => new MyOrg.Models.MemBlocks.Equilateral(buffers),
+                MyOrg.Models.MemBlocks.RightTriangle.EntityId => new MyOrg.Models.MemBlocks.RightTriangle(buffers),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }

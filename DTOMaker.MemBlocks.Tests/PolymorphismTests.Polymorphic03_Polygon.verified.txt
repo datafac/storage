@@ -34,12 +34,12 @@ namespace MyOrg.Models.MemBlocks
         {
             return entityId switch
             {
-                MyOrg.Models.Equilateral.EntityId => new MyOrg.Models.Equilateral(buffers),
-                MyOrg.Models.Quadrilateral.EntityId => new MyOrg.Models.Quadrilateral(buffers),
-                MyOrg.Models.Rectangle.EntityId => new MyOrg.Models.Rectangle(buffers),
-                MyOrg.Models.RightTriangle.EntityId => new MyOrg.Models.RightTriangle(buffers),
-                MyOrg.Models.Square.EntityId => new MyOrg.Models.Square(buffers),
-                MyOrg.Models.Triangle.EntityId => new MyOrg.Models.Triangle(buffers),
+                MyOrg.Models.MemBlocks.Equilateral.EntityId => new MyOrg.Models.MemBlocks.Equilateral(buffers),
+                MyOrg.Models.MemBlocks.Quadrilateral.EntityId => new MyOrg.Models.MemBlocks.Quadrilateral(buffers),
+                MyOrg.Models.MemBlocks.Rectangle.EntityId => new MyOrg.Models.MemBlocks.Rectangle(buffers),
+                MyOrg.Models.MemBlocks.RightTriangle.EntityId => new MyOrg.Models.MemBlocks.RightTriangle(buffers),
+                MyOrg.Models.MemBlocks.Square.EntityId => new MyOrg.Models.MemBlocks.Square(buffers),
+                MyOrg.Models.MemBlocks.Triangle.EntityId => new MyOrg.Models.MemBlocks.Triangle(buffers),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }

@@ -16,13 +16,10 @@ namespace DTOMaker.Common.MessagePack
 //##endif
 namespace T_DomainName_.MessagePack
 {
-    //##if false
-    using T_EntityFullName_ = T_NameSpace_.MessagePack.T_EntityName_;
-    //##endif
     [MessagePackObject]
     //##foreach Entities
     //##if DerivedEntityCount == 0
-    [Union(T_EntityFullName_.EntityKey, typeof(T_EntityFullName_))]
+    [Union(T_NameSpace_.MessagePack.T_EntityName_.EntityKey, typeof(T_NameSpace_.MessagePack.T_EntityName_))]
     //##endif
     //##endfor
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
@@ -33,7 +30,7 @@ namespace T_DomainName_.MessagePack
             {
                 //##foreach Entities
                 //##if DerivedEntityCount == 0
-                T_EntityFullName_.EntityKey => MessagePackSerializer.Deserialize<T_EntityFullName_>(buffer, out _),
+                T_NameSpace_.MessagePack.T_EntityName_.EntityKey => MessagePackSerializer.Deserialize<T_NameSpace_.MessagePack.T_EntityName_>(buffer, out _),
                 //##endif
                 //##endfor
                 _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)

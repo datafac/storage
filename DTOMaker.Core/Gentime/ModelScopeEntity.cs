@@ -15,7 +15,6 @@ namespace DTOMaker.Gentime
             _variables["NameSpace"] = entity.EntityName.NameSpace;
             _variables["EntityName"] = entity.EntityName.ShortName;
             _variables["EntityName2"] = entity.EntityName.ShortName;
-            _variables["EntityFullName"] = entity.EntityName.FullName;
             _variables["BaseName"] = entity.Base?.EntityName.ShortName ?? EntityFQN.DefaultBase.ShortName;
             _variables["BaseFullName"] = entity.Base?.EntityName.FullName ?? EntityFQN.DefaultBase.FullName;
             _variables["ClassHeight"] = entity.GetClassHeight();

@@ -14,7 +14,6 @@ namespace T_NameSpace_.MessagePack
 {
     //##if false
     using T_MemberType_ = System.Int32;
-    using T_EntityFullName_ = T_NameSpace_.MessagePack.T_EntityName_;
     public interface IT_BaseName_ { }
     public interface IT_EntityName_ : IT_BaseName_
     {
@@ -84,7 +83,7 @@ namespace T_NameSpace_.MessagePack
             {
                 //##foreach DerivedEntities
                 //##if DerivedEntityCount == 0
-                T_EntityFullName_.EntityKey => MessagePackSerializer.Deserialize<T_EntityFullName_>(buffer, out var _),
+                T_NameSpace_.MessagePack.T_EntityName_.EntityKey => MessagePackSerializer.Deserialize<T_NameSpace_.MessagePack.T_EntityName_>(buffer, out var _),
                 //##endif
                 //##endfor
                 _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)

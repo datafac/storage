@@ -19,8 +19,8 @@ namespace DTOMaker.Common.MemBlocks
         {
             return entityId switch
             {
-                MyOrg.DomainA.MyDTO.EntityId => new MyOrg.DomainA.MyDTO(buffers),
-                MyOrg.DomainB.MyDTO.EntityId => new MyOrg.DomainB.MyDTO(buffers),
+                MyOrg.DomainA.MemBlocks.MyDTO.EntityId => new MyOrg.DomainA.MemBlocks.MyDTO(buffers),
+                MyOrg.DomainB.MemBlocks.MyDTO.EntityId => new MyOrg.DomainB.MemBlocks.MyDTO(buffers),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }

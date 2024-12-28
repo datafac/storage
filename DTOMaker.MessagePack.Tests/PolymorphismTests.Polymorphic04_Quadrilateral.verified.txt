@@ -28,8 +28,8 @@ namespace MyOrg.Models.MessagePack
         {
             return entityKey switch
             {
-                MyOrg.Models.Rectangle.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.Rectangle>(buffer, out var _),
-                MyOrg.Models.Square.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.Square>(buffer, out var _),
+                MyOrg.Models.MessagePack.Rectangle.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Rectangle>(buffer, out var _),
+                MyOrg.Models.MessagePack.Square.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Square>(buffer, out var _),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }

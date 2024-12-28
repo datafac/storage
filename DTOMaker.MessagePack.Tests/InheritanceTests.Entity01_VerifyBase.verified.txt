@@ -12,14 +12,14 @@ using System.Runtime.CompilerServices;
 namespace DTOMaker.Common.MessagePack
 {
     [MessagePackObject]
-    [Union(MyOrg.Models.MyDTO.EntityKey, typeof(MyOrg.Models.MyDTO))]
+    [Union(MyOrg.Models.MessagePack.MyDTO.EntityKey, typeof(MyOrg.Models.MessagePack.MyDTO))]
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {
         public static EntityBase Create(int entityKey, ReadOnlyMemory<byte> buffer)
         {
             return entityKey switch
             {
-                MyOrg.Models.MyDTO.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MyDTO>(buffer, out _),
+                MyOrg.Models.MessagePack.MyDTO.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.MyDTO>(buffer, out _),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }

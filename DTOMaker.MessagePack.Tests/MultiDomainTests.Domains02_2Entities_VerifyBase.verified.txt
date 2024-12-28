@@ -12,16 +12,16 @@ using System.Runtime.CompilerServices;
 namespace DTOMaker.Common.MessagePack
 {
     [MessagePackObject]
-    [Union(MyOrg.DomainA.MyDTO.EntityKey, typeof(MyOrg.DomainA.MyDTO))]
-    [Union(MyOrg.DomainB.MyDTO.EntityKey, typeof(MyOrg.DomainB.MyDTO))]
+    [Union(MyOrg.DomainA.MessagePack.MyDTO.EntityKey, typeof(MyOrg.DomainA.MessagePack.MyDTO))]
+    [Union(MyOrg.DomainB.MessagePack.MyDTO.EntityKey, typeof(MyOrg.DomainB.MessagePack.MyDTO))]
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {
         public static EntityBase Create(int entityKey, ReadOnlyMemory<byte> buffer)
         {
             return entityKey switch
             {
-                MyOrg.DomainA.MyDTO.EntityKey => MessagePackSerializer.Deserialize<MyOrg.DomainA.MyDTO>(buffer, out _),
-                MyOrg.DomainB.MyDTO.EntityKey => MessagePackSerializer.Deserialize<MyOrg.DomainB.MyDTO>(buffer, out _),
+                MyOrg.DomainA.MessagePack.MyDTO.EntityKey => MessagePackSerializer.Deserialize<MyOrg.DomainA.MessagePack.MyDTO>(buffer, out _),
+                MyOrg.DomainB.MessagePack.MyDTO.EntityKey => MessagePackSerializer.Deserialize<MyOrg.DomainB.MessagePack.MyDTO>(buffer, out _),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }

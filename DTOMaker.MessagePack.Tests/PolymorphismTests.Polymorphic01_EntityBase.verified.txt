@@ -12,20 +12,20 @@ using System.Runtime.CompilerServices;
 namespace DTOMaker.Common.MessagePack
 {
     [MessagePackObject]
-    [Union(MyOrg.Models.Equilateral.EntityKey, typeof(MyOrg.Models.Equilateral))]
-    [Union(MyOrg.Models.Rectangle.EntityKey, typeof(MyOrg.Models.Rectangle))]
-    [Union(MyOrg.Models.RightTriangle.EntityKey, typeof(MyOrg.Models.RightTriangle))]
-    [Union(MyOrg.Models.Square.EntityKey, typeof(MyOrg.Models.Square))]
+    [Union(MyOrg.Models.MessagePack.Equilateral.EntityKey, typeof(MyOrg.Models.MessagePack.Equilateral))]
+    [Union(MyOrg.Models.MessagePack.Rectangle.EntityKey, typeof(MyOrg.Models.MessagePack.Rectangle))]
+    [Union(MyOrg.Models.MessagePack.RightTriangle.EntityKey, typeof(MyOrg.Models.MessagePack.RightTriangle))]
+    [Union(MyOrg.Models.MessagePack.Square.EntityKey, typeof(MyOrg.Models.MessagePack.Square))]
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {
         public static EntityBase Create(int entityKey, ReadOnlyMemory<byte> buffer)
         {
             return entityKey switch
             {
-                MyOrg.Models.Equilateral.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.Equilateral>(buffer, out _),
-                MyOrg.Models.Rectangle.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.Rectangle>(buffer, out _),
-                MyOrg.Models.RightTriangle.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.RightTriangle>(buffer, out _),
-                MyOrg.Models.Square.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.Square>(buffer, out _),
+                MyOrg.Models.MessagePack.Equilateral.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Equilateral>(buffer, out _),
+                MyOrg.Models.MessagePack.Rectangle.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Rectangle>(buffer, out _),
+                MyOrg.Models.MessagePack.RightTriangle.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.RightTriangle>(buffer, out _),
+                MyOrg.Models.MessagePack.Square.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Square>(buffer, out _),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }

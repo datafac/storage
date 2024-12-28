@@ -29,7 +29,7 @@ namespace MyOrg.Models.MemBlocks
         {
             return entityId switch
             {
-                MyOrg.Models.MyDTO.EntityId => new MyOrg.Models.MyDTO(buffers),
+                MyOrg.Models.MemBlocks.MyDTO.EntityId => new MyOrg.Models.MemBlocks.MyDTO(buffers),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }
