@@ -24,7 +24,7 @@ namespace T_NameSpace_.MessagePack
         //##endif
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
     }
-    [MessagePackObject]
+    [MessagePackObject(AllowPrivate = true)]
     [Union(T_EntityName_.EntityKey, typeof(T_EntityName_))]
     public abstract class T_BaseName_ : T_DomainName_.MessagePack.EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
@@ -49,7 +49,7 @@ namespace T_NameSpace_.MessagePack
         public override int GetHashCode() => base.GetHashCode();
     }
     //##endif
-    [MessagePackObject]
+    [MessagePackObject(AllowPrivate = true)]
     //##foreach DerivedEntities
     //##if DerivedEntityCount == 0
     [Union(T_EntityName_.EntityKey, typeof(T_EntityName_))]

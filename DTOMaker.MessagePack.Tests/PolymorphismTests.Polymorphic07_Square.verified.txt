@@ -12,7 +12,7 @@ using System;
 
 namespace MyOrg.Models.MessagePack
 {
-    [MessagePackObject]
+    [MessagePackObject(AllowPrivate = true)]
     public partial class Square : Quadrilateral, ISquare, IEquatable<Square>
     {
         // Derived entities: 0

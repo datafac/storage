@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 
 namespace DTOMaker.Common.MessagePack
 {
-    [MessagePackObject]
+    [MessagePackObject(AllowPrivate = true)]
     [Union(MyOrg.Models.MessagePack.MyDTO.EntityKey, typeof(MyOrg.Models.MessagePack.MyDTO))]
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {

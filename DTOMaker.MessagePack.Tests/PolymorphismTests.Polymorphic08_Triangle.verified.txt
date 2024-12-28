@@ -12,7 +12,7 @@ using System;
 
 namespace MyOrg.Models.MessagePack
 {
-    [MessagePackObject]
+    [MessagePackObject(AllowPrivate = true)]
     [Union(Equilateral.EntityKey, typeof(Equilateral))]
     [Union(RightTriangle.EntityKey, typeof(RightTriangle))]
     public abstract partial class Triangle { }
