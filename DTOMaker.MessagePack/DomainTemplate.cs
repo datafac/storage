@@ -16,7 +16,7 @@ namespace DTOMaker.Common.MessagePack
 //##endif
 namespace T_DomainName_.MessagePack
 {
-    [MessagePackObject(AllowPrivate = true)]
+    [MessagePackObject]
     //##foreach Entities
     //##if DerivedEntityCount == 0
     [Union(T_NameSpace_.MessagePack.T_EntityName_.EntityKey, typeof(T_NameSpace_.MessagePack.T_EntityName_))]

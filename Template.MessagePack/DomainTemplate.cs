@@ -16,7 +16,6 @@ namespace DTOMaker.Common.MessagePack
 //##endif
 namespace T_DomainName_.MessagePack
 {
-    //todo [MessagePackObject(AllowPrivate = true)]
     [MessagePackObject]
     //##foreach Entities
     //##if DerivedEntityCount == 0

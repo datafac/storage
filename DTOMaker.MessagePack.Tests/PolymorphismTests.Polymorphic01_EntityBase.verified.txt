@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 
 namespace DTOMaker.Common.MessagePack
 {
-    [MessagePackObject(AllowPrivate = true)]
+    [MessagePackObject]
     [Union(MyOrg.Models.MessagePack.Equilateral.EntityKey, typeof(MyOrg.Models.MessagePack.Equilateral))]
     [Union(MyOrg.Models.MessagePack.Rectangle.EntityKey, typeof(MyOrg.Models.MessagePack.Rectangle))]
     [Union(MyOrg.Models.MessagePack.RightTriangle.EntityKey, typeof(MyOrg.Models.MessagePack.RightTriangle))]

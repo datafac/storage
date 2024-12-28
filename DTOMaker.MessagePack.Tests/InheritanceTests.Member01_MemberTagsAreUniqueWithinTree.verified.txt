@@ -11,7 +11,7 @@ using System;
 
 namespace MyOrg.Models.MessagePack
 {
-    [MessagePackObject(AllowPrivate = true)]
+    [MessagePackObject]
     public partial class MyDTO : MyBase, IMyDTO, IEquatable<MyDTO>
     {
         // Derived entities: 0
