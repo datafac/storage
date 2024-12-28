@@ -133,7 +133,7 @@ namespace DTOMaker.CSPoco.Tests
             generatorResult.GeneratedSources.Should().HaveCount(3);
             {
                 GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
-                outputSource.HintName.Should().Be("MyOrg.Models.EntityBase.CSPoco.g.cs");
+                outputSource.HintName.Should().Be("DTOMaker.Common.EntityBase.CSPoco.g.cs");
             }
             {
                 GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
@@ -234,7 +234,7 @@ namespace DTOMaker.CSPoco.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
 
             // custom generation checks
-            generatorResult.GeneratedSources.Should().BeEmpty();
+            generatorResult.GeneratedSources.Should().HaveCount(1);
         }
 
     }

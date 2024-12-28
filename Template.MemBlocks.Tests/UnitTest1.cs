@@ -32,7 +32,7 @@ namespace Template.MemBlocks.Tests
         [Fact]
         public void Test1()
         {
-            var orig = new T_DomainName_.MemBlocks.T_EntityName_();
+            var orig = new T_NameSpace_.MemBlocks.T_EntityName_();
             orig.BaseField1 = 789;
             orig.T_ScalarMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
@@ -40,7 +40,7 @@ namespace Template.MemBlocks.Tests
 
             var buffers = orig.GetBuffers();
 
-            var copy = new T_DomainName_.MemBlocks.T_EntityName_(buffers);
+            var copy = new T_NameSpace_.MemBlocks.T_EntityName_(buffers);
             copy.IsFrozen.Should().BeTrue();
             copy.BaseField1.Should().Be(orig.BaseField1);
             copy.T_ScalarMemberName_.Should().Be(orig.T_ScalarMemberName_);

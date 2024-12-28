@@ -6,6 +6,7 @@
 #pragma warning disable CS0414
 #nullable enable
 using DataFac.Runtime;
+using DTOMaker.Common.MessagePack;
 using MessagePack;
 using System;
 
@@ -25,7 +26,7 @@ namespace MyOrg.Models.MessagePack
         {
             return entityKey switch
             {
-                MyDTO.EntityKey => MessagePackSerializer.Deserialize<MyDTO>(buffer, out var _),
+                MyOrg.Models.MyDTO.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MyDTO>(buffer, out var _),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }

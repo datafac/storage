@@ -14,14 +14,14 @@ namespace DTOMaker.MemBlocks
     internal class MemBlocksSyntaxReceiver : SyntaxReceiverBase
     {
         private static TargetDomain DomainFactory(string name, Location location) => new MemBlockDomain(name, location);
-        private static TargetEntity EntityFactory(TargetDomain domain, string name, Location location) => new MemBlockEntity(domain, name, location);
+        private static TargetEntity EntityFactory(TargetDomain domain, string nameSpace, string name, Location location) => new MemBlockEntity(domain, nameSpace, name, location);
         private static TargetMember MemberFactory(TargetEntity entity, string name, Location location) => new MemBlockMember(entity, name, location);
 
         protected override void OnProcessEntityAttributes(TargetEntity baseEntity, Location location, ImmutableArray<AttributeData> entityAttributes)
         {
             if (baseEntity is MemBlockEntity entity)
             {
-                entity.EntityId = entity.Name;
+                entity.EntityId = entity.EntityName.FullName;
                 if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(IdAttribute)) is AttributeData idAttr)
                 {
                     // found entity id attribute

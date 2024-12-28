@@ -377,7 +377,7 @@ namespace DTOMaker.MemBlocks.Tests
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
             errors.Should().HaveCount(1);
-            errors[0].GetMessage().Should().Be("Entity id (12345) is already used by entity: MyDTO1");
+            errors[0].GetMessage().Should().Be("Entity id (12345) is already used by entity: MyOrg.Models.MyDTO1");
         }
 
     }

@@ -6,6 +6,7 @@
 #pragma warning disable CS0414
 #nullable enable
 using DataFac.Runtime;
+using DTOMaker.Common.MessagePack;
 using MessagePack;
 using System;
 
@@ -33,10 +34,10 @@ namespace MyOrg.Models.MessagePack
         {
             return entityKey switch
             {
-                Equilateral.EntityKey => MessagePackSerializer.Deserialize<Equilateral>(buffer, out var _),
-                Rectangle.EntityKey => MessagePackSerializer.Deserialize<Rectangle>(buffer, out var _),
-                RightTriangle.EntityKey => MessagePackSerializer.Deserialize<RightTriangle>(buffer, out var _),
-                Square.EntityKey => MessagePackSerializer.Deserialize<Square>(buffer, out var _),
+                MyOrg.Models.Equilateral.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.Equilateral>(buffer, out var _),
+                MyOrg.Models.Rectangle.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.Rectangle>(buffer, out var _),
+                MyOrg.Models.RightTriangle.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.RightTriangle>(buffer, out var _),
+                MyOrg.Models.Square.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.Square>(buffer, out var _),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }

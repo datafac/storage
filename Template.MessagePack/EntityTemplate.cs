@@ -6,13 +6,15 @@
 #pragma warning disable CS0414
 #nullable enable
 using DataFac.Runtime;
+using DTOMaker.Common.MessagePack;
 using MessagePack;
 using System;
 
-namespace T_DomainName_.MessagePack
+namespace T_NameSpace_.MessagePack
 {
     //##if false
     using T_MemberType_ = System.Int32;
+    using T_EntityFullName_ = T_NameSpace_.MessagePack.T_EntityName_;
     public interface IT_BaseName_ { }
     public interface IT_EntityName_ : IT_BaseName_
     {
@@ -25,7 +27,7 @@ namespace T_DomainName_.MessagePack
     }
     [MessagePackObject]
     [Union(T_EntityName_.EntityKey, typeof(T_EntityName_))]
-    public abstract class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
+    public abstract class T_BaseName_ : T_DomainName_.MessagePack.EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
         public const int EntityKey = 1;
 
@@ -82,7 +84,7 @@ namespace T_DomainName_.MessagePack
             {
                 //##foreach DerivedEntities
                 //##if DerivedEntityCount == 0
-                T_EntityName_.EntityKey => MessagePackSerializer.Deserialize<T_EntityName_>(buffer, out var _),
+                T_EntityFullName_.EntityKey => MessagePackSerializer.Deserialize<T_EntityFullName_>(buffer, out var _),
                 //##endif
                 //##endfor
                 _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)

@@ -14,7 +14,7 @@ namespace DTOMaker.Gentime
         {
             if (ReferenceEquals(candidate, parent)) return false;
             if (candidate.Base is null) return false;
-            if (candidate.Base.Name == parent.Name) return true;
+            if (candidate.Base.EntityName.Equals(parent.EntityName)) return true;
             return IsDerivedFrom(candidate.Base, parent);
         }
 
@@ -24,15 +24,16 @@ namespace DTOMaker.Gentime
             if (context.SyntaxContextReceiver is not SyntaxReceiverBase syntaxReceiver) return;
 
             // fix entity hierarchy
-            foreach (var domain in syntaxReceiver.Domains.Values)
+            var domain = syntaxReceiver.Domain;
+            //foreach (var domain in syntaxReceiver.Domains.Values)
             {
                 // fix/set entity base
                 var entities = domain.Entities.Values.ToArray();
                 foreach (var entity in entities)
                 {
-                    if (entity.BaseName is not null && entity.BaseName != "EntityBase")
+                    if (!entity.BaseName.Equals(EntityFQN.DefaultBase))
                     {
-                        if (domain.Entities.TryGetValue(entity.BaseName, out var baseEntity))
+                        if (domain.Entities.TryGetValue(entity.BaseName.FullName, out var baseEntity))
                         {
                             entity.Base = baseEntity;
                         }
@@ -52,7 +53,7 @@ namespace DTOMaker.Gentime
                 {
                     entity.DerivedEntities = domain.Entities.Values
                         .Where(e => IsDerivedFrom(e, entity))
-                        .OrderBy(e => e.Name)
+                        .OrderBy(e => e.EntityName.FullName)
                         .ToArray();
                 }
             }

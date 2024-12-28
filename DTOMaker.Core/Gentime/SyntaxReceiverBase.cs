@@ -2,7 +2,6 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -10,18 +9,18 @@ namespace DTOMaker.Gentime
 {
     public abstract class SyntaxReceiverBase : ISyntaxContextReceiver
     {
-        public ConcurrentDictionary<string, TargetDomain> Domains { get; } = new ConcurrentDictionary<string, TargetDomain>();
+        private readonly TargetDomain _domain;
+        public TargetDomain Domain => _domain;
 
-        private readonly Func<string, Location, TargetDomain> _domainFactory;
-        private readonly Func<TargetDomain, string, Location, TargetEntity> _entityFactory;
+        private readonly Func<TargetDomain, string, string, Location, TargetEntity> _entityFactory;
         private readonly Func<TargetEntity, string, Location, TargetMember> _memberFactory;
 
         protected SyntaxReceiverBase(
             Func<string, Location, TargetDomain> domainFactory, 
-            Func<TargetDomain, string, Location, TargetEntity> entityFactory, 
+            Func<TargetDomain, string, string, Location, TargetEntity> entityFactory, 
             Func<TargetEntity, string, Location, TargetMember> memberFactory)
         {
-            _domainFactory = domainFactory;
+            _domain = domainFactory(EntityFQN.DefaultBase.NameSpace, Location.None); 
             _entityFactory = entityFactory;
             _memberFactory = memberFactory;
         }
@@ -72,28 +71,30 @@ namespace DTOMaker.Gentime
                 {
                     Location ndsLocation = Location.Create(nds.SyntaxTree, nds.Span);
                     Location idsLocation = Location.Create(ids.SyntaxTree, ids.Span);
-                    var domain = Domains.GetOrAdd(nds.Name.ToString(), (n) => _domainFactory(n, ndsLocation));
+                    string entityNamespace = nds.Name.ToString();
+                    //var domain = Domains.GetOrAdd(nds.Name.ToString(), (n) => _domainFactory(n, ndsLocation));
                     string interfaceName = ids.Identifier.Text;
                     if (interfaceName.Length <= 1 || !interfaceName.StartsWith("I"))
                     {
-                        domain.SyntaxErrors.Add(
+                        Domain.SyntaxErrors.Add(
                             new SyntaxDiagnostic(
                                 DiagnosticId.DTOM0001, "Invalid interface name", DiagnosticCategory.Naming, idsLocation, DiagnosticSeverity.Error,
                                 $"Expected interface named '{interfaceName}' to start with 'I'."));
                     }
                     string entityName = interfaceName.Substring(1);
-                    var entity = domain.Entities.GetOrAdd(entityName, (n) => _entityFactory(domain, n, idsLocation));
+                    string entityFullName = entityNamespace + "." + entityName;
+                    var entity = Domain.Entities.GetOrAdd(entityFullName, (n) => _entityFactory(Domain, entityNamespace, entityName, idsLocation));
                     ImmutableArray<AttributeData> entityAttributes = idsSymbol.GetAttributes();
                     if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(EntityAttribute)) is AttributeData entityAttr)
                     {
                         // found entity attribute
                         entity.HasEntityAttribute = true;
                         // entity base
-                        entity.BaseName = "EntityBase";
+                        entity.BaseName = EntityFQN.DefaultBase;
                         if (idsSymbol.Interfaces.Length > 1)
                         {
                             // too many interfaces!
-                            domain.SyntaxErrors.Add(
+                            entity.SyntaxErrors.Add(
                                 new SyntaxDiagnostic(
                                     DiagnosticId.DTOM0008, "Invalid base name(s)", DiagnosticCategory.Design, idsLocation, DiagnosticSeverity.Error,
                                     $"This interface can only implement one optional other interface."));
@@ -103,14 +104,15 @@ namespace DTOMaker.Gentime
                             string baseName = idsSymbol.Interfaces[0].Name;
                             if (baseName.Length <= 1 || !baseName.StartsWith("I"))
                             {
-                                domain.SyntaxErrors.Add(
+                                entity.SyntaxErrors.Add(
                                     new SyntaxDiagnostic(
                                         DiagnosticId.DTOM0001, "Invalid base name", DiagnosticCategory.Naming, idsLocation, DiagnosticSeverity.Error,
                                         $"Expected interface named '{baseName}' to start with 'I'."));
                             }
                             else
                             {
-                                entity.BaseName = baseName.Substring(1);
+                                // todo base namespace may be different!
+                                entity.BaseName = new EntityFQN(entityNamespace, baseName.Substring(1));
                             }
                         }
                         //var attributeArguments = entityAttr.ConstructorArguments;
@@ -132,11 +134,10 @@ namespace DTOMaker.Gentime
                     && ids2.Parent is NamespaceDeclarationSyntax nds2
                     && pds.AttributeLists.Count > 0)
                 {
-                    string domainName = nds2.Name.ToString();
-                    string interfaceName = ids2.Identifier.Text;
-                    string entityName = interfaceName.Substring(1);
-                    if (Domains.TryGetValue(domainName, out var domain)
-                        && domain.Entities.TryGetValue(entityName, out var entity))
+                    string entityNamespace = nds2.Name.ToString();
+                    string entityName = ids2.Identifier.Text.Substring(1);
+                    string entityFullName = entityNamespace + "." + entityName;
+                    if (Domain.Entities.TryGetValue(entityFullName, out var entity))
                     {
                         Location pdsLocation = Location.Create(pds.SyntaxTree, pds.Span);
                         var member = entity.Members.GetOrAdd(pds.Identifier.Text, (n) => _memberFactory(entity, n, pdsLocation));

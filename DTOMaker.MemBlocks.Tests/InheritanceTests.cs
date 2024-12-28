@@ -37,7 +37,7 @@ namespace DTOMaker.MemBlocks.Tests
             GeneratedSourceResult source = generatorResult.GeneratedSources[0];
 
             // custom generation checks
-            source.HintName.Should().Be("MyOrg.Models.EntityBase.MemBlocks.g.cs");
+            source.HintName.Should().Be("DTOMaker.Common.EntityBase.MemBlocks.g.cs");
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
         }

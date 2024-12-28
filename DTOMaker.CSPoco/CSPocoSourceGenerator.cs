@@ -41,36 +41,33 @@ namespace DTOMaker.CSPoco
             var language = Language_CSharp.Instance;
             var factory = new CSPocoScopeFactory();
 
-            foreach (var domain in syntaxReceiver.Domains.Values)
+            var domain = syntaxReceiver.Domain;
+            EmitDiagnostics(context, domain);
+
+            var domainScope = new CSPocoModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
+
+            // emit entity base
             {
-                EmitDiagnostics(context, domain);
+                string sourceText = GenerateSourceText(language, domainScope, assembly, "DTOMaker.CSPoco.DomainTemplate.cs");
+                context.AddSource(
+                    $"{EntityFQN.DefaultBase.FullName}.CSPoco.g.cs",
+                    sourceText);
+            }
 
-                var domainScope = new CSPocoModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
-
-                // emit base entity
+            // emit each entity
+            foreach (var entity in domain.Entities.Values.OrderBy(e => e.EntityName.FullName))
+            {
+                EmitDiagnostics(context, entity);
+                foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence))
                 {
-                    string sourceText = GenerateSourceText(language, domainScope, assembly, "DTOMaker.CSPoco.DomainTemplate.cs");
-                    context.AddSource(
-                        $"{domain.Name}.EntityBase.CSPoco.g.cs",
-                        sourceText);
+                    EmitDiagnostics(context, member);
                 }
 
-                // emit each entity
-                foreach (var entity in domain.Entities.Values.OrderBy(e => e.Name))
-                {
-                    // run checks
-                    EmitDiagnostics(context, entity);
-                    foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence))
-                    {
-                        EmitDiagnostics(context, member);
-                    }
-
-                    var entityScope = factory.CreateEntity(domainScope, factory, language, entity);
-                    string sourceText = GenerateSourceText(language, entityScope, assembly, "DTOMaker.CSPoco.EntityTemplate.cs");
-                    context.AddSource(
-                        $"{domain.Name}.{entity.Name}.CSPoco.g.cs",
-                        sourceText);
-                }
+                var entityScope = factory.CreateEntity(domainScope, factory, language, entity);
+                string sourceText = GenerateSourceText(language, entityScope, assembly, "DTOMaker.CSPoco.EntityTemplate.cs");
+                context.AddSource(
+                    $"{entity.EntityName.FullName}.CSPoco.g.cs",
+                    sourceText);
             }
         }
     }

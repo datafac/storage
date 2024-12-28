@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
 using DataFac.Runtime;
+using DTOMaker.Common.MemBlocks;
 namespace MyOrg.Models.MemBlocks
 {
     public partial class MyOtherDTO : EntityBase, IMyOtherDTO, IEquatable<MyOtherDTO>

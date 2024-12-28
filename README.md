@@ -42,6 +42,7 @@ Features not implemented:
 - Enum data types. Enums can be implemented with an underlying integer property and a cast.
 
 In progress:
+- multiple domains
 - entity members
 
 Coming soon:

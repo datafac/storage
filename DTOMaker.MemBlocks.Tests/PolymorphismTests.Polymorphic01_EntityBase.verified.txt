@@ -10,7 +10,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
 using DataFac.Runtime;
-namespace MyOrg.Models.MemBlocks
+
+namespace DTOMaker.Common.MemBlocks
 {
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {
@@ -18,13 +19,13 @@ namespace MyOrg.Models.MemBlocks
         {
             return entityId switch
             {
-                Equilateral.EntityId => new Equilateral(buffers),
-                Polygon.EntityId => new Polygon(buffers),
-                Quadrilateral.EntityId => new Quadrilateral(buffers),
-                Rectangle.EntityId => new Rectangle(buffers),
-                RightTriangle.EntityId => new RightTriangle(buffers),
-                Square.EntityId => new Square(buffers),
-                Triangle.EntityId => new Triangle(buffers),
+                MyOrg.Models.Equilateral.EntityId => new MyOrg.Models.Equilateral(buffers),
+                MyOrg.Models.Polygon.EntityId => new MyOrg.Models.Polygon(buffers),
+                MyOrg.Models.Quadrilateral.EntityId => new MyOrg.Models.Quadrilateral(buffers),
+                MyOrg.Models.Rectangle.EntityId => new MyOrg.Models.Rectangle(buffers),
+                MyOrg.Models.RightTriangle.EntityId => new MyOrg.Models.RightTriangle(buffers),
+                MyOrg.Models.Square.EntityId => new MyOrg.Models.Square(buffers),
+                MyOrg.Models.Triangle.EntityId => new MyOrg.Models.Triangle(buffers),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }

@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
 using DataFac.Runtime;
+using DTOMaker.Common.MemBlocks;
 namespace MyOrg.Models.MemBlocks
 {
     public partial class Quadrilateral : Polygon, IQuadrilateral, IEquatable<Quadrilateral>
@@ -29,8 +30,8 @@ namespace MyOrg.Models.MemBlocks
         {
             return entityId switch
             {
-                Rectangle.EntityId => new Rectangle(buffers),
-                Square.EntityId => new Square(buffers),
+                MyOrg.Models.Rectangle.EntityId => new MyOrg.Models.Rectangle(buffers),
+                MyOrg.Models.Square.EntityId => new MyOrg.Models.Square(buffers),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }

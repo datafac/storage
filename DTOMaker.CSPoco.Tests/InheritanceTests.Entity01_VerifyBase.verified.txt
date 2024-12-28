@@ -8,7 +8,7 @@ using DataFac.Runtime;
 using System;
 using System.Runtime.CompilerServices;
 
-namespace MyOrg.Models.CSPoco
+namespace DTOMaker.Common.CSPoco
 {
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {

@@ -237,7 +237,9 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
 
             // custom generation checks
-            generatorResult.GeneratedSources.Should().BeEmpty();
+            generatorResult.GeneratedSources.Length.Should().Be(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
+            outputSource.HintName.Should().Be("DTOMaker.Common.EntityBase.MessagePack.g.cs");
         }
 
     }

@@ -158,39 +158,36 @@ namespace DTOMaker.MemBlocks
             var language = Language_CSharp.Instance;
             var factory = new MemBlocksScopeFactory();
 
-            foreach (var domain in syntaxReceiver.Domains.Values)
+            var domain = syntaxReceiver.Domain;
+            EmitDiagnostics(context, domain);
+
+            var domainScope = new MemBlocksModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
+
+            // emit entity base
             {
-                EmitDiagnostics(context, domain);
+                string sourceText = GenerateSourceText(language, domainScope, assembly, "DTOMaker.MemBlocks.DomainTemplate.cs");
+                context.AddSource(
+                    $"{EntityFQN.DefaultBase.FullName}.MemBlocks.g.cs",
+                    sourceText);
+            }
 
-                var domainScope = new MemBlocksModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
+            // emit each entity
+            foreach (var entity in domain.Entities.Values.OrderBy(e => e.EntityName.FullName).OfType<MemBlockEntity>())
+            {
+                // do any auto-layout if required
+                AutoLayoutMembers(entity);
 
-                // emit base entity
+                EmitDiagnostics(context, entity);
+                foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence))
                 {
-                    string sourceText = GenerateSourceText(language, domainScope, assembly, "DTOMaker.MemBlocks.DomainTemplate.cs");
-                    context.AddSource(
-                        $"{domain.Name}.EntityBase.MemBlocks.g.cs",
-                        sourceText);
+                    EmitDiagnostics(context, member);
                 }
 
-                // emit each entity
-                foreach (var entity in domain.Entities.Values.OrderBy(e => e.Name).OfType<MemBlockEntity>())
-                {
-                    // do any auto-layout if required
-                    AutoLayoutMembers(entity);
-
-                    // run checks
-                    EmitDiagnostics(context, entity);
-                    foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence))
-                    {
-                        EmitDiagnostics(context, member);
-                    }
-
-                    var entityScope = factory.CreateEntity(domainScope, factory, language, entity);
-                    string sourceText = GenerateSourceText(language, entityScope, assembly, "DTOMaker.MemBlocks.EntityTemplate.cs");
-                    context.AddSource(
-                        $"{domain.Name}.{entity.Name}.MemBlocks.g.cs",
-                        sourceText);
-                }
+                var entityScope = factory.CreateEntity(domainScope, factory, language, entity);
+                string sourceText = GenerateSourceText(language, entityScope, assembly, "DTOMaker.MemBlocks.EntityTemplate.cs");
+                context.AddSource(
+                    $"{entity.EntityName.FullName}.MemBlocks.g.cs",
+                    sourceText);
             }
         }
     }

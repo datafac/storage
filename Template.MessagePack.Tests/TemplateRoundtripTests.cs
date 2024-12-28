@@ -4,6 +4,7 @@ using System;
 using Xunit;
 
 using T_DomainName_.MessagePack;
+using T_NameSpace_.MessagePack;
 
 namespace Template_MessagePack.Tests
 {

@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
 using DataFac.Runtime;
+using DTOMaker.Common.MemBlocks;
 namespace MyOrg.Models.MemBlocks
 {
     public partial class MyBase : EntityBase, IMyBase, IEquatable<MyBase>
@@ -28,7 +29,7 @@ namespace MyOrg.Models.MemBlocks
         {
             return entityId switch
             {
-                MyDTO.EntityId => new MyDTO(buffers),
+                MyOrg.Models.MyDTO.EntityId => new MyOrg.Models.MyDTO(buffers),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }

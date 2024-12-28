@@ -8,6 +8,11 @@ using DataFac.Runtime;
 using System;
 using System.Runtime.CompilerServices;
 
+//##if false
+namespace DTOMaker.Common.CSPoco
+{ 
+}
+//##endif
 namespace T_DomainName_.CSPoco
 {
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>

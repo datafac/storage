@@ -41,35 +41,33 @@ namespace DTOMaker.MessagePack
             var language = Language_CSharp.Instance;
             var factory = new MessagePackScopeFactory();
 
-            foreach (var domain in syntaxReceiver.Domains.Values)
+            var domain = syntaxReceiver.Domain;
+            EmitDiagnostics(context, domain);
+
+            var domainScope = new MessagePackModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
+
+            // emit entity base
             {
-                EmitDiagnostics(context, domain);
+                string sourceText = GenerateSourceText(language, domainScope, assembly, "DTOMaker.MessagePack.DomainTemplate.cs");
+                context.AddSource(
+                    $"{EntityFQN.DefaultBase.FullName}.MessagePack.g.cs",
+                    sourceText);
+            }
 
-                var domainScope = new MessagePackModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
-
-                // emit entity base
+            // emit each entity
+            foreach (var entity in domain.Entities.Values.OrderBy(e => e.EntityName.FullName))
+            {
+                EmitDiagnostics(context, entity);
+                foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence))
                 {
-                    string sourceText = GenerateSourceText(language, domainScope, assembly, "DTOMaker.MessagePack.DomainTemplate.cs");
-                    context.AddSource(
-                        $"{domain.Name}.EntityBase.MessagePack.g.cs",
-                        sourceText);
+                    EmitDiagnostics(context, member);
                 }
 
-                // emit each entity
-                foreach (var entity in domain.Entities.Values.OrderBy(e => e.Name))
-                {
-                    EmitDiagnostics(context, entity);
-                    foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence))
-                    {
-                        EmitDiagnostics(context, member);
-                    }
-
-                    var entityScope = factory.CreateEntity(domainScope, factory, language, entity);
-                    string sourceText = GenerateSourceText(language, entityScope, assembly, "DTOMaker.MessagePack.EntityTemplate.cs");
-                    context.AddSource(
-                        $"{domain.Name}.{entity.Name}.MessagePack.g.cs",
-                        sourceText);
-                }
+                var entityScope = factory.CreateEntity(domainScope, factory, language, entity);
+                string sourceText = GenerateSourceText(language, entityScope, assembly, "DTOMaker.MessagePack.EntityTemplate.cs");
+                context.AddSource(
+                    $"{entity.EntityName.FullName}.MessagePack.g.cs",
+                    sourceText);
             }
         }
     }

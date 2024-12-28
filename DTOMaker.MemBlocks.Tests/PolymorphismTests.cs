@@ -62,7 +62,7 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Should().BeEmpty();
             generatorResult.GeneratedSources.Length.Should().Be(8);
             GeneratedSourceResult source = generatorResult.GeneratedSources[0];
-            source.HintName.Should().Be("MyOrg.Models.EntityBase.MemBlocks.g.cs");
+            source.HintName.Should().Be("DTOMaker.Common.EntityBase.MemBlocks.g.cs");
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
         }

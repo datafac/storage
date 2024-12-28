@@ -21,7 +21,7 @@ namespace DTOMaker.Gentime
             {
                 case "entities":
                     var entities = _domain.Entities.Values
-                        .OrderBy(e => e.Name)
+                        .OrderBy(e => e.EntityName.FullName)
                         .Select(e => _factory.CreateEntity(this, _factory, _language, e))
                         .ToArray();
                     if (entities.Length > 0)

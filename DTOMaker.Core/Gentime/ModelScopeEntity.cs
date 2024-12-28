@@ -12,9 +12,12 @@ namespace DTOMaker.Gentime
             : base(parent, factory, language)
         {
             _entity = entity;
-            _variables["EntityName"] = entity.Name;
-            _variables["EntityName2"] = entity.Name;
-            _variables["BaseName"] = entity.Base?.Name ?? "EntityBase";
+            _variables["NameSpace"] = entity.EntityName.NameSpace;
+            _variables["EntityName"] = entity.EntityName.ShortName;
+            _variables["EntityName2"] = entity.EntityName.ShortName;
+            _variables["EntityFullName"] = entity.EntityName.FullName;
+            _variables["BaseName"] = entity.Base?.EntityName.ShortName ?? EntityFQN.DefaultBase.ShortName;
+            _variables["BaseFullName"] = entity.Base?.EntityName.FullName ?? EntityFQN.DefaultBase.FullName;
             _variables["ClassHeight"] = entity.GetClassHeight();
 
             _variables["DerivedEntityCount"] = _entity.DerivedEntities.Length;
@@ -24,7 +27,7 @@ namespace DTOMaker.Gentime
         {
             if (ReferenceEquals(candidate, parent)) return false;
             if (candidate.Base is null) return false;
-            if (candidate.Base.Name == parent.Name) return true;
+            if (candidate.Base.EntityName.Equals(parent.EntityName)) return true;
             return IsDerivedFrom(candidate.Base, parent);
         }
 
@@ -43,7 +46,7 @@ namespace DTOMaker.Gentime
                         return (false, new IModelScope[] { ModelScopeEmpty.Instance });
                 case "derivedentities":
                     var derivedEntities = _entity.DerivedEntities
-                        .OrderBy(e => e.Name)
+                        .OrderBy(e => e.EntityName.FullName)
                         .Select(e => _factory.CreateEntity(this, _factory, _language, e))
                         .ToArray();
                     if (derivedEntities.Length > 0)

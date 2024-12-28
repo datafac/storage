@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
 using DataFac.Runtime;
+using DTOMaker.Common.MemBlocks;
 //##if false
 using T_MemberType_ = System.Int32;
 namespace DataFac.Memory
@@ -21,14 +22,15 @@ namespace DataFac.Memory
     }
 }
 //##endif
-namespace T_DomainName_.MemBlocks
+namespace T_NameSpace_.MemBlocks
 {
     //##if false
+    using T_EntityFullName_ = T_NameSpace_.MemBlocks.T_EntityName_;
     public interface IT_BaseName_
     {
         T_MemberType_ BaseField1 { get; set; }
     }
-    public class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
+    public class T_BaseName_ : T_DomainName_.MemBlocks.EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
         private const int ClassHeight = 1;
         private const int BlockLength = 64;
@@ -136,7 +138,7 @@ namespace T_DomainName_.MemBlocks
             return entityId switch
             {
                 //##foreach DerivedEntities
-                T_EntityName_.EntityId => new T_EntityName_(buffers),
+                T_EntityFullName_.EntityId => new T_EntityFullName_(buffers),
                 //##endfor
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };

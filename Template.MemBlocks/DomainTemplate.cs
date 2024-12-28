@@ -10,8 +10,17 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
 using DataFac.Runtime;
+
+//##if false
+namespace DTOMaker.Common.MemBlocks
+{
+}
+//##endif
 namespace T_DomainName_.MemBlocks
 {
+    //##if false
+    using T_EntityFullName_ = T_NameSpace_.MemBlocks.T_EntityName_;
+    //##endif
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {
         public static EntityBase CreateFrom(string entityId, ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
@@ -19,7 +28,7 @@ namespace T_DomainName_.MemBlocks
             return entityId switch
             {
                 //##foreach Entities
-                T_EntityName_.EntityId => new T_EntityName_(buffers),
+                T_EntityFullName_.EntityId => new T_EntityFullName_(buffers),
                 //##endfor
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };

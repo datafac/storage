@@ -268,7 +268,7 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
 
             // custom generation checks
-            generatorResult.GeneratedSources.Length.Should().Be(0);
+            generatorResult.GeneratedSources.Length.Should().Be(1);
         }
 
         [Fact]

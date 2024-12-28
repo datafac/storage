@@ -35,7 +35,7 @@ namespace DTOMaker.CSPoco.Tests
             GeneratedSourceResult source = generatorResult.GeneratedSources[0];
 
             // custom generation checks
-            source.HintName.Should().Be("MyOrg.Models.EntityBase.CSPoco.g.cs");
+            source.HintName.Should().Be("DTOMaker.Common.EntityBase.CSPoco.g.cs");
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
         }

@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
 using DataFac.Runtime;
+using DTOMaker.Common.MemBlocks;
 namespace MyOrg.Models.MemBlocks
 {
     public partial class Triangle : Polygon, ITriangle, IEquatable<Triangle>
@@ -29,8 +30,8 @@ namespace MyOrg.Models.MemBlocks
         {
             return entityId switch
             {
-                Equilateral.EntityId => new Equilateral(buffers),
-                RightTriangle.EntityId => new RightTriangle(buffers),
+                MyOrg.Models.Equilateral.EntityId => new MyOrg.Models.Equilateral(buffers),
+                MyOrg.Models.RightTriangle.EntityId => new MyOrg.Models.RightTriangle(buffers),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }

@@ -49,7 +49,7 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Diagnostics.Should().BeEmpty();
             generatorResult.GeneratedSources.Length.Should().Be(8);
             GeneratedSourceResult source = generatorResult.GeneratedSources[0];
-            source.HintName.Should().Be("MyOrg.Models.EntityBase.MessagePack.g.cs");
+            source.HintName.Should().Be("DTOMaker.Common.EntityBase.MessagePack.g.cs");
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
         }

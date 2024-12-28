@@ -15,7 +15,7 @@ namespace DTOMaker.MessagePack
             foreach (var entity in this.Entities.Values.OfType<MessagePackEntity>())
             {
                 int key = entity.EntityKey;
-                if (key == 0)
+                if (key <= 0)
                 {
                     // undefined!
                     return new SyntaxDiagnostic(
@@ -28,7 +28,7 @@ namespace DTOMaker.MessagePack
                     // duplicate!
                     return new SyntaxDiagnostic(
                         DiagnosticId.DMMP0002, "Invalid entity key", DiagnosticCategory.Design, entity.Location, DiagnosticSeverity.Error,
-                        $"Entity key ({key}) is already used by entity: {otherEntity.Name}");
+                        $"Entity key ({key}) is already used by entity: {otherEntity.EntityName}");
                 }
 
                 map[key] = entity;

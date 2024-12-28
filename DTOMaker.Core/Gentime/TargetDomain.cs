@@ -6,8 +6,12 @@ namespace DTOMaker.Gentime
 {
     public abstract class TargetDomain : TargetBase
     {
+        public string Name { get; }
         public ConcurrentDictionary<string, TargetEntity> Entities { get; } = new ConcurrentDictionary<string, TargetEntity>();
-        public TargetDomain(string name, Location location) : base(name, location) { }
+        public TargetDomain(string name, Location location) : base(location)
+        {
+            Name = name;
+        }
         protected override IEnumerable<SyntaxDiagnostic> OnGetValidationDiagnostics() { yield break; }
     }
 }

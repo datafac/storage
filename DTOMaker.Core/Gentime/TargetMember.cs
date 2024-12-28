@@ -5,10 +5,12 @@ namespace DTOMaker.Gentime
 {
     public abstract class TargetMember : TargetBase
     {
+        public string Name { get; }
         private readonly TargetEntity _entity;
         public TargetEntity Entity => _entity;
-        public TargetMember(TargetEntity entity, string name, Location location) : base(name, location)
+        public TargetMember(TargetEntity entity, string name, Location location) : base(location)
         {
+            Name = name;
             _entity = entity;
         }
         public bool HasMemberAttribute { get; set; }

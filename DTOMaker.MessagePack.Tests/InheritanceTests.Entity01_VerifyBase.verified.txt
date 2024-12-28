@@ -9,17 +9,17 @@ using MessagePack;
 using System;
 using System.Runtime.CompilerServices;
 
-namespace MyOrg.Models.MessagePack
+namespace DTOMaker.Common.MessagePack
 {
     [MessagePackObject]
-    [Union(MyDTO.EntityKey, typeof(MyDTO))]
+    [Union(MyOrg.Models.MyDTO.EntityKey, typeof(MyOrg.Models.MyDTO))]
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {
         public static EntityBase Create(int entityKey, ReadOnlyMemory<byte> buffer)
         {
             return entityKey switch
             {
-                MyDTO.EntityKey => MessagePackSerializer.Deserialize<MyDTO>(buffer, out _),
+                MyOrg.Models.MyDTO.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MyDTO>(buffer, out _),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }
