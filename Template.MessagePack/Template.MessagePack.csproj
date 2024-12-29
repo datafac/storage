@@ -12,4 +12,8 @@
 		<PackageReference Include="MessagePack" Version="2.5.192" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\DTOMaker.Runtime.MessagePack\DTOMaker.Runtime.MessagePack.csproj" />
+	</ItemGroup>
+
 </Project>

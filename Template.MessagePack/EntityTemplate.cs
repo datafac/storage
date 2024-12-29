@@ -6,7 +6,7 @@
 #pragma warning disable CS0414
 #nullable enable
 using DataFac.Runtime;
-using DTOMaker.Common.MessagePack;
+using DTOMaker.Runtime.MessagePack;
 using MessagePack;
 using System;
 
@@ -26,7 +26,7 @@ namespace T_NameSpace_.MessagePack
     }
     [MessagePackObject]
     [Union(T_EntityName_.EntityKey, typeof(T_EntityName_))]
-    public abstract class T_BaseName_ : T_DomainName_.MessagePack.EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
+    public abstract class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
         public const int EntityKey = 1;
 

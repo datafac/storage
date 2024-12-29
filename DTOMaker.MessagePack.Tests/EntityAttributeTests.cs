@@ -32,8 +32,8 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Length.Should().Be(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
             outputSource.HintName.Should().Be("MyOrg.Models.MyDTO.MessagePack.g.cs");

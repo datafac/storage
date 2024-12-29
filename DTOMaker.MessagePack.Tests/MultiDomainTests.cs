@@ -35,22 +35,9 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
 
             // custom generation checks
-            generatorResult.GeneratedSources.Length.Should().Be(3);
-            generatorResult.GeneratedSources[0].HintName.Should().Be("DTOMaker.Common.EntityBase.MessagePack.g.cs");
-            generatorResult.GeneratedSources[1].HintName.Should().Be("MyOrg.DomainA.MyDTO.MessagePack.g.cs");
-            generatorResult.GeneratedSources[2].HintName.Should().Be("MyOrg.DomainB.MyDTO.MessagePack.g.cs");
-        }
-
-        [Fact]
-        public async Task Domains02_2Entities_VerifyBase()
-        {
-            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-
-            generatorResult.GeneratedSources.Length.Should().Be(3);
-            var source = generatorResult.GeneratedSources[0];
-
-            string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
-            await Verifier.Verify(outputCode);
+            generatorResult.GeneratedSources.Length.Should().Be(2);
+            generatorResult.GeneratedSources[0].HintName.Should().Be("MyOrg.DomainA.MyDTO.MessagePack.g.cs");
+            generatorResult.GeneratedSources[1].HintName.Should().Be("MyOrg.DomainB.MyDTO.MessagePack.g.cs");
         }
 
         [Fact]
@@ -58,8 +45,8 @@ namespace DTOMaker.MessagePack.Tests
         {
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
 
-            generatorResult.GeneratedSources.Length.Should().Be(3);
-            var source = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Length.Should().Be(2);
+            var source = generatorResult.GeneratedSources[0];
 
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
@@ -70,8 +57,8 @@ namespace DTOMaker.MessagePack.Tests
         {
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
 
-            generatorResult.GeneratedSources.Length.Should().Be(3);
-            var source = generatorResult.GeneratedSources[2];
+            generatorResult.GeneratedSources.Length.Should().Be(2);
+            var source = generatorResult.GeneratedSources[1];
 
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);

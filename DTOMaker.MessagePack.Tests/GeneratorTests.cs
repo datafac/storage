@@ -32,8 +32,8 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Length.Should().Be(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
             outputSource.HintName.Should().Be("MyOrg.Models.MyDTO.MessagePack.g.cs");
@@ -63,8 +63,8 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Length.Should().Be(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
             outputSource.HintName.Should().Be("MyOrg.Models.MyDTO.MessagePack.g.cs");
@@ -95,8 +95,8 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Length.Should().Be(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
             outputSource.HintName.Should().Be("MyOrg.Models.MyDTO.MessagePack.g.cs");
@@ -134,13 +134,13 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
 
             // custom generation checks
-            generatorResult.GeneratedSources.Length.Should().Be(3);
+            generatorResult.GeneratedSources.Length.Should().Be(2);
             {
-                GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+                GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
                 outputSource.HintName.Should().Be("MyOrg.Models.MyFirstDTO.MessagePack.g.cs");
             }
             {
-                GeneratedSourceResult outputSource = generatorResult.GeneratedSources[2];
+                GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
                 outputSource.HintName.Should().Be("MyOrg.Models.MyOtherDTO.MessagePack.g.cs");
                 string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
                 await Verifier.Verify(outputCode);
@@ -169,8 +169,8 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Length.Should().Be(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
             outputSource.HintName.Should().Be("MyOrg.Models.MyDTO.MessagePack.g.cs");
@@ -204,8 +204,8 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Length.Should().Be(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
             outputSource.HintName.Should().Be("MyOrg.Models.MyDTO.MessagePack.g.cs");
@@ -237,9 +237,7 @@ namespace DTOMaker.MessagePack.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
 
             // custom generation checks
-            generatorResult.GeneratedSources.Length.Should().Be(1);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
-            outputSource.HintName.Should().Be("DTOMaker.Common.EntityBase.MessagePack.g.cs");
+            generatorResult.GeneratedSources.Length.Should().Be(0);
         }
 
     }

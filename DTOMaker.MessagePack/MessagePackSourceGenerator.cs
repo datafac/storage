@@ -46,14 +46,6 @@ namespace DTOMaker.MessagePack
 
             var domainScope = new MessagePackModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
 
-            // emit entity base
-            {
-                string sourceText = GenerateSourceText(language, domainScope, assembly, "DTOMaker.MessagePack.DomainTemplate.cs");
-                context.AddSource(
-                    $"{EntityFQN.DefaultBase.FullName}.MessagePack.g.cs",
-                    sourceText);
-            }
-
             // emit each entity
             foreach (var entity in domain.Entities.Values.OrderBy(e => e.EntityName.FullName))
             {

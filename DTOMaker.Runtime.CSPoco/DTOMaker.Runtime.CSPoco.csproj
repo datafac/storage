@@ -13,7 +13,7 @@
 		<Product>DTOMaker</Product>
 		<Authors>DataFac Contributors</Authors>
 		<Title>DTOMaker Core</Title>
-		<Description>Runtime types for DTOMaker.CSPoco.</Description>
+		<Description>Runtime types for DTOMaker.CSPoco entities</Description>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<EnableNETAnalyzers>True</EnableNETAnalyzers>
