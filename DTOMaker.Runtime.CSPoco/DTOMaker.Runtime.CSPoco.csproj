@@ -13,7 +13,7 @@
 		<Product>DTOMaker</Product>
 		<Authors>DataFac Contributors</Authors>
 		<Title>DTOMaker Core</Title>
-		<Description>Attributes for defining simple data models as interfaces. These are consumed by source generators to emit DTO classes.</Description>
+		<Description>Runtime types for DTOMaker.CSPoco.</Description>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<EnableNETAnalyzers>True</EnableNETAnalyzers>
@@ -34,7 +34,6 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="System.Memory" Version="4.6.0" />
 	</ItemGroup>
 
 </Project>
