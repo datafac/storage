@@ -6,7 +6,7 @@
 #pragma warning disable CS0414
 #nullable enable
 using DataFac.Runtime;
-using DTOMaker.Common.CSPoco;
+using DTOMaker.Runtime.CSPoco;
 using System;
 
 namespace MyOrg.Models.CSPoco

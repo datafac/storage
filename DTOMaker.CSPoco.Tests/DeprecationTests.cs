@@ -35,9 +35,8 @@ namespace DTOMaker.CSPoco.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Should().HaveCount(2);
-            GeneratedSourceResult domainSource = generatorResult.GeneratedSources[0];
-            GeneratedSourceResult entitySource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Should().HaveCount(1);
+            GeneratedSourceResult entitySource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
             string outputCode = string.Join(Environment.NewLine, entitySource.SourceText.Lines.Select(tl => tl.ToString()));
@@ -68,9 +67,8 @@ namespace DTOMaker.CSPoco.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Should().HaveCount(2);
-            GeneratedSourceResult domainSource = generatorResult.GeneratedSources[0];
-            GeneratedSourceResult entitySource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Should().HaveCount(1);
+            GeneratedSourceResult entitySource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
             string outputCode = string.Join(Environment.NewLine, entitySource.SourceText.Lines.Select(tl => tl.ToString()));
@@ -101,9 +99,8 @@ namespace DTOMaker.CSPoco.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Should().HaveCount(2);
-            GeneratedSourceResult domainSource = generatorResult.GeneratedSources[0];
-            GeneratedSourceResult entitySource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Should().HaveCount(1);
+            GeneratedSourceResult entitySource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
             string outputCode = string.Join(Environment.NewLine, entitySource.SourceText.Lines.Select(tl => tl.ToString()));

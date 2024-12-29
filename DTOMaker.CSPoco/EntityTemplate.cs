@@ -9,7 +9,7 @@
 #pragma warning disable CS0414
 #nullable enable
 using DataFac.Runtime;
-using DTOMaker.Common.CSPoco;
+using DTOMaker.Runtime.CSPoco;
 using System;
 
 namespace T_NameSpace_.CSPoco
@@ -26,7 +26,7 @@ namespace T_NameSpace_.CSPoco
         //##endif
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
     }
-    public class T_BaseName_ : T_DomainName_.CSPoco.EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
+    public class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
         public T_BaseName_() { }
         public T_BaseName_(IT_BaseName_ source, bool frozen = false) : base(source, frozen) { }

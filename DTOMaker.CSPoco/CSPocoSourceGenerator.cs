@@ -46,14 +46,6 @@ namespace DTOMaker.CSPoco
 
             var domainScope = new CSPocoModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
 
-            // emit entity base
-            {
-                string sourceText = GenerateSourceText(language, domainScope, assembly, "DTOMaker.CSPoco.DomainTemplate.cs");
-                context.AddSource(
-                    $"{EntityFQN.DefaultBase.FullName}.CSPoco.g.cs",
-                    sourceText);
-            }
-
             // emit each entity
             foreach (var entity in domain.Entities.Values.OrderBy(e => e.EntityName.FullName))
             {

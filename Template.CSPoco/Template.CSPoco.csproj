@@ -12,4 +12,8 @@
 		<PackageReference Include="System.Memory" Version="4.6.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\DTOMaker.Runtime.CSPoco\DTOMaker.Runtime.CSPoco.csproj" />
+	</ItemGroup>
+
 </Project>
