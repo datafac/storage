@@ -54,6 +54,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandpit.Tests", "Sandpit.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOMaker.Runtime.CSPoco", "DTOMaker.Runtime.CSPoco\DTOMaker.Runtime.CSPoco.csproj", "{840396D7-D74A-44BE-8427-D47C0A2C42B9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOMaker.Runtime.MemBlocks", "DTOMaker.Runtime.MemBlocks\DTOMaker.Runtime.MemBlocks.csproj", "{D1B61FE2-9B35-450C-B409-173ECD6DF073}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -140,6 +142,10 @@ Global
 		{840396D7-D74A-44BE-8427-D47C0A2C42B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{840396D7-D74A-44BE-8427-D47C0A2C42B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{840396D7-D74A-44BE-8427-D47C0A2C42B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1B61FE2-9B35-450C-B409-173ECD6DF073}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1B61FE2-9B35-450C-B409-173ECD6DF073}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1B61FE2-9B35-450C-B409-173ECD6DF073}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1B61FE2-9B35-450C-B409-173ECD6DF073}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

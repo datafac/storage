@@ -60,8 +60,8 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Should().HaveCount(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Should().HaveCount(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
             outputSource.HintName.Should().Be("MyOrg.Models.MyDTO.MemBlocks.g.cs");
@@ -94,8 +94,8 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Should().HaveCount(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Should().HaveCount(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
             string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
@@ -131,8 +131,8 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Should().HaveCount(2);
-            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+            generatorResult.GeneratedSources.Should().HaveCount(1);
+            GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
             string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
@@ -175,13 +175,13 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
 
             // custom generation checks
-            generatorResult.GeneratedSources.Length.Should().Be(3);
+            generatorResult.GeneratedSources.Length.Should().Be(2);
             {
-                GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
+                GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
                 outputSource.HintName.Should().Be("MyOrg.Models.MyFirstDTO.MemBlocks.g.cs");
             }
             {
-                GeneratedSourceResult outputSource = generatorResult.GeneratedSources[2];
+                GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
                 outputSource.HintName.Should().Be("MyOrg.Models.MyOtherDTO.MemBlocks.g.cs");
                 string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
                 await Verifier.Verify(outputCode);
@@ -268,7 +268,7 @@ namespace DTOMaker.MemBlocks.Tests
             generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
 
             // custom generation checks
-            generatorResult.GeneratedSources.Length.Should().Be(1);
+            generatorResult.GeneratedSources.Length.Should().Be(0);
         }
 
         [Fact]

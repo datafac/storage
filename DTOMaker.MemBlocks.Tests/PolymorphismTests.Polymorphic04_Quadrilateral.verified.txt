@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
 using DataFac.Runtime;
-using DTOMaker.Common.MemBlocks;
+using DTOMaker.Runtime.MemBlocks;
 namespace MyOrg.Models.MemBlocks
 {
     public partial class Quadrilateral : Polygon, IQuadrilateral, IEquatable<Quadrilateral>

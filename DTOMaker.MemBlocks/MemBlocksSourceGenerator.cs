@@ -163,14 +163,6 @@ namespace DTOMaker.MemBlocks
 
             var domainScope = new MemBlocksModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
 
-            // emit entity base
-            {
-                string sourceText = GenerateSourceText(language, domainScope, assembly, "DTOMaker.MemBlocks.DomainTemplate.cs");
-                context.AddSource(
-                    $"{EntityFQN.DefaultBase.FullName}.MemBlocks.g.cs",
-                    sourceText);
-            }
-
             // emit each entity
             foreach (var entity in domain.Entities.Values.OrderBy(e => e.EntityName.FullName).OfType<MemBlockEntity>())
             {

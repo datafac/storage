@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
 using DataFac.Runtime;
-using DTOMaker.Common.MemBlocks;
+using DTOMaker.Runtime.MemBlocks;
 //##if false
 using T_MemberType_ = System.Int32;
 namespace DataFac.Memory
@@ -29,7 +29,7 @@ namespace T_NameSpace_.MemBlocks
     {
         T_MemberType_ BaseField1 { get; set; }
     }
-    public class T_BaseName_ : T_DomainName_.MemBlocks.EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
+    public class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
         private const int ClassHeight = 1;
         private const int BlockLength = 64;
