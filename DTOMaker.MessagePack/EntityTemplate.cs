@@ -28,7 +28,7 @@ namespace T_NameSpace_.MessagePack
     [Union(T_EntityName_.EntityKey, typeof(T_EntityName_))]
     public abstract class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
-        public const int EntityKey = 1;
+        public new const int EntityKey = 1;
 
         public T_BaseName_() { }
         public T_BaseName_(IT_BaseName_ source, bool frozen = false) : base(source, frozen) { }

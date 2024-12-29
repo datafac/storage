@@ -52,6 +52,19 @@ namespace MyOrg.Models.MemBlocks
             var block = IsFrozen ? _readonlyBlock : _writableBlock.ToArray();
             buffers[ClassHeight - 1] = block;
         }
+        protected override void OnLoadBuffers(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
+        {
+            base.OnLoadBuffers(buffers);
+            ReadOnlyMemory<byte> source = buffers.Span[ClassHeight - 1];
+            if (source.Length > BlockLength)
+            {
+                source.Slice(0, BlockLength).CopyTo(_writableBlock);
+            }
+            else
+            {
+                source.CopyTo(_writableBlock);
+            }
+        }
 
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name

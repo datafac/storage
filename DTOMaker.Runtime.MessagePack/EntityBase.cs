@@ -8,6 +8,8 @@ namespace DTOMaker.Runtime.MessagePack
     [MessagePackObject]
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {
+        public const int EntityKey = 0;
+
         public EntityBase() { }
         public EntityBase(object? notUsed, bool frozen)
         {

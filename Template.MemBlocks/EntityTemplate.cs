@@ -36,6 +36,8 @@ namespace T_NameSpace_.MemBlocks
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
+        public new const string EntityId = "T_BaseName_";
+
         protected override string OnGetEntityId() => "_undefined_";
         protected override int OnGetClassHeight() => ClassHeight;
         protected override void OnGetBuffers(ReadOnlyMemory<byte>[] buffers)
@@ -43,6 +45,19 @@ namespace T_NameSpace_.MemBlocks
             base.OnGetBuffers(buffers);
             var block = IsFrozen ? _readonlyBlock : _writableBlock.ToArray();
             buffers[ClassHeight - 1] = block;
+        }
+        protected override void OnLoadBuffers(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
+        {
+            base.OnLoadBuffers(buffers);
+            ReadOnlyMemory<byte> source = buffers.Span[ClassHeight - 1];
+            if (source.Length > BlockLength)
+            {
+                source.Slice(0, BlockLength).CopyTo(_writableBlock);
+            }
+            else
+            {
+                source.CopyTo(_writableBlock);
+            }
         }
 
         public T_BaseName_()
@@ -65,7 +80,7 @@ namespace T_NameSpace_.MemBlocks
         public T_BaseName_(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers) : base(buffers)
         {
             ReadOnlyMemory<byte> source = buffers.Span[ClassHeight - 1];
-            if (source.Length >= BlockLength)
+            if (source.Length > BlockLength)
             {
                 _readonlyBlock = source.Slice(0, BlockLength);
             }
@@ -150,6 +165,19 @@ namespace T_NameSpace_.MemBlocks
             base.OnGetBuffers(buffers);
             var block = IsFrozen ? _readonlyBlock : _writableBlock.ToArray();
             buffers[ClassHeight - 1] = block;
+        }
+        protected override void OnLoadBuffers(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
+        {
+            base.OnLoadBuffers(buffers);
+            ReadOnlyMemory<byte> source = buffers.Span[ClassHeight - 1];
+            if (source.Length > BlockLength)
+            {
+                source.Slice(0, BlockLength).CopyTo(_writableBlock);
+            }
+            else
+            {
+                source.CopyTo(_writableBlock);
+            }
         }
 
         // -------------------- field map -----------------------------
