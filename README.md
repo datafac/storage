@@ -66,6 +66,9 @@ Coming later:
 These models are consumed by the following source generators to emit DTO classes that implement the 
 model interfaces.
 
+## DTOMaker.Runtime
+Common types used at runtime by DTOMaker entities.
+
 ## Benchmarks
 
 Some benchmarking comparing the serialization and deserialization performance of various generated DTOs can
