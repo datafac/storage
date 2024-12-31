@@ -14,9 +14,6 @@ namespace DTOMaker.Gentime
             _entity = entity;
         }
         public bool HasMemberAttribute { get; set; }
-        public bool HasOffsetAttribute { get; set; }
-        public bool HasLengthAttribute { get; set; }
-        public bool HasEndianAttribute { get; set; }
         public string MemberTypeName { get; set; } = "";
         public bool MemberIsValueType { get; set; }
         public bool MemberIsReferenceType { get; set; }
@@ -26,11 +23,6 @@ namespace DTOMaker.Gentime
         public bool ObsoleteIsError { get; set; }
         public int Sequence { get; set; }
         public bool MemberIsArray { get; set; }
-        public int ArrayLength { get; set; }
-        public int FieldOffset { get; set; }
-        public int FieldLength { get; set; }
-        public int TotalLength => MemberIsArray ? FieldLength * ArrayLength : FieldLength;
-        public bool IsBigEndian { get; set; } = false;
 
         private SyntaxDiagnostic? CheckHasMemberAttribute()
         {

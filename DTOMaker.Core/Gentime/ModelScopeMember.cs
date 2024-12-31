@@ -32,17 +32,6 @@ namespace DTOMaker.Gentime
             _variables["VectorMemberName"] = member.Name;
             _variables["MemberJsonName"] = member.Name.ToCamelCase();
             _variables["MemberDefaultValue"] = _language.GetDefaultValue(member.MemberTypeName);
-            _variables["FieldOffset"] = member.FieldOffset;
-            _variables["FieldLength"] = member.FieldLength;
-            _variables["ArrayLength"] = member.ArrayLength;
-            _variables["MemberBELE"] = member.IsBigEndian ? "BE" : "LE";
-            _variables["IsBigEndian"] = member.IsBigEndian;
-            // padded versions of above for docgen
-            _variables["MemberSequenceR4"] = member.Sequence.ToString().PadLeft(4);
-            _variables["FieldOffsetR4"] = member.FieldOffset.ToString().PadLeft(4);
-            _variables["FieldLengthR4"] = member.FieldLength.ToString().PadLeft(4);
-            _variables["ArrayLengthR4"] = member.ArrayLength == 0 ? "    " : member.ArrayLength.ToString().PadLeft(4);
-            _variables["MemberTypeL7"] = memberType.PadRight(7);
         }
 
         protected override (bool?, IModelScope[]) OnGetInnerScopes(string iteratorName)
