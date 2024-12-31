@@ -1,9 +1,5 @@
 {
   "CompanyName":  "DataFac",
   "ProductName": "DTOMaker",
-  "ExemptionCodes": [
-    "targetframeworks_notcontains_net7",
-    "includesymbols_equals_true",
-    "symbolpackageformat_equals_snupkg"
-  ]
+  "ExemptionCodes": []
 }
