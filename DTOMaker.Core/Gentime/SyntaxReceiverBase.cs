@@ -72,7 +72,6 @@ namespace DTOMaker.Gentime
                     Location ndsLocation = Location.Create(nds.SyntaxTree, nds.Span);
                     Location idsLocation = Location.Create(ids.SyntaxTree, ids.Span);
                     string entityNamespace = nds.Name.ToString();
-                    //var domain = Domains.GetOrAdd(nds.Name.ToString(), (n) => _domainFactory(n, ndsLocation));
                     string interfaceName = ids.Identifier.Text;
                     if (interfaceName.Length <= 1 || !interfaceName.StartsWith("I"))
                     {
@@ -101,7 +100,9 @@ namespace DTOMaker.Gentime
                         }
                         else if (idsSymbol.Interfaces.Length == 1)
                         {
-                            string baseName = idsSymbol.Interfaces[0].Name;
+                            var intf = idsSymbol.Interfaces[0];
+                            string baseNameSpace = intf.ContainingNamespace.ToDisplayString();
+                            string baseName = intf.Name;
                             if (baseName.Length <= 1 || !baseName.StartsWith("I"))
                             {
                                 entity.SyntaxErrors.Add(
@@ -112,7 +113,7 @@ namespace DTOMaker.Gentime
                             else
                             {
                                 // todo base namespace may be different!
-                                entity.BaseName = new EntityFQN(entityNamespace, baseName.Substring(1));
+                                entity.BaseName = new EntityFQN(baseNameSpace, baseName.Substring(1));
                             }
                         }
                         //var attributeArguments = entityAttr.ConstructorArguments;
