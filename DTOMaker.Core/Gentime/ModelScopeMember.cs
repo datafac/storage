@@ -15,7 +15,7 @@ namespace DTOMaker.Gentime
             _variables["MemberIsNullable"] = member.MemberIsNullable;
             _variables["MemberIsValueType"] = member.MemberIsValueType;
             _variables["MemberIsReferenceType"] = member.MemberIsReferenceType;
-            _variables["MemberIsArray"] = member.MemberIsArray;
+            _variables["MemberIsVector"] = member.MemberIsVector;
             _variables["MemberSequence"] = member.Sequence;
             _variables["ScalarMemberSequence"] = member.Sequence;
             if (member.MemberIsNullable)
@@ -23,15 +23,17 @@ namespace DTOMaker.Gentime
             else
                 _variables["ScalarRequiredMemberSequence"] = member.Sequence;
             _variables["VectorMemberSequence"] = member.Sequence;
-            _variables["MemberName"] = member.Name;
-            _variables["ScalarMemberName"] = member.Name;
+            _variables["MemberNameSpace"] = member.MemberName.NameSpace;
+            _variables["MemberName"] = member.MemberName.ShortName;
+            _variables["ScalarMemberName"] = member.MemberName.ShortName;
             if (member.MemberIsNullable)
-                _variables["ScalarNullableMemberName"] = member.Name;
+                _variables["ScalarNullableMemberName"] = member.MemberName.ShortName;
             else
-                _variables["ScalarRequiredMemberName"] = member.Name;
-            _variables["VectorMemberName"] = member.Name;
-            _variables["MemberJsonName"] = member.Name.ToCamelCase();
+                _variables["ScalarRequiredMemberName"] = member.MemberName.ShortName;
+            _variables["VectorMemberName"] = member.MemberName.ShortName;
+            _variables["MemberJsonName"] = member.MemberName.ShortName.ToCamelCase();
             _variables["MemberDefaultValue"] = _language.GetDefaultValue(member.MemberTypeName);
+            _variables["MemberIsEntity"] = member.MemberIsEntity;
         }
 
         protected override (bool?, IModelScope[]) OnGetInnerScopes(string iteratorName)

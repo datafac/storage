@@ -5,12 +5,12 @@ namespace DTOMaker.Gentime
 {
     public abstract class TargetMember : TargetBase
     {
-        public string Name { get; }
+        public TypeFullName MemberName { get; }
         private readonly TargetEntity _entity;
         public TargetEntity Entity => _entity;
-        public TargetMember(TargetEntity entity, string name, Location location) : base(location)
+        public TargetMember(TargetEntity entity, string nameSpace, string name, Location location) : base(location)
         {
-            Name = name;
+            MemberName = new TypeFullName(nameSpace, name);
             _entity = entity;
         }
         public bool HasMemberAttribute { get; set; }
@@ -22,7 +22,8 @@ namespace DTOMaker.Gentime
         public string ObsoleteMessage { get; set; } = "";
         public bool ObsoleteIsError { get; set; }
         public int Sequence { get; set; }
-        public bool MemberIsArray { get; set; }
+        public bool MemberIsVector { get; set; }
+        public bool MemberIsEntity { get; set; }
 
         private SyntaxDiagnostic? CheckHasMemberAttribute()
         {

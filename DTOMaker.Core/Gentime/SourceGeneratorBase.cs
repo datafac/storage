@@ -25,36 +25,46 @@ namespace DTOMaker.Gentime
 
             // fix entity hierarchy
             var domain = syntaxReceiver.Domain;
-            //foreach (var domain in syntaxReceiver.Domains.Values)
+            // fix/set entity base
+            var entities = domain.Entities.Values.ToArray();
+            foreach (var entity in entities)
             {
-                // fix/set entity base
-                var entities = domain.Entities.Values.ToArray();
-                foreach (var entity in entities)
+                if (!entity.BaseName.Equals(TypeFullName.DefaultBase))
                 {
-                    if (!entity.BaseName.Equals(EntityFQN.DefaultBase))
+                    if (domain.Entities.TryGetValue(entity.BaseName.FullName, out var baseEntity))
                     {
-                        if (domain.Entities.TryGetValue(entity.BaseName.FullName, out var baseEntity))
-                        {
-                            entity.Base = baseEntity;
-                        }
-                        else
-                        {
-                            // invalid base name!
-                            entity.SyntaxErrors.Add(
-                                new SyntaxDiagnostic(
-                                    DiagnosticId.DTOM0008, "Invalid base name", DiagnosticCategory.Design, entity.Location, DiagnosticSeverity.Error,
-                                    $"Base name '{entity.BaseName}' does not refer to a known entity."));
-                        }
+                        entity.Base = baseEntity;
+                    }
+                    else
+                    {
+                        // invalid base name!
+                        entity.SyntaxErrors.Add(
+                            new SyntaxDiagnostic(
+                                DiagnosticId.DTOM0008, "Invalid base name", DiagnosticCategory.Design, entity.Location, DiagnosticSeverity.Error,
+                                $"Base name '{entity.BaseName}' does not refer to a known entity."));
                     }
                 }
+            }
 
-                // determine derived entities
-                foreach (var entity in entities)
+            // determine derived entities
+            foreach (var entity in entities)
+            {
+                entity.DerivedEntities = domain.Entities.Values
+                    .Where(e => IsDerivedFrom(e, entity))
+                    .OrderBy(e => e.EntityName.FullName)
+                    .ToArray();
+            }
+
+            // determine entity members
+            foreach (var entity in entities)
+            {
+                foreach (var member in entity.Members.Values)
                 {
-                    entity.DerivedEntities = domain.Entities.Values
-                        .Where(e => IsDerivedFrom(e, entity))
-                        .OrderBy(e => e.EntityName.FullName)
-                        .ToArray();
+                    var entity2 = entities.FirstOrDefault(e => e.EntityName == member.MemberName);
+                    if (entity2 is not null)
+                    {
+                        member.MemberIsEntity = true;
+                    }
                 }
             }
 

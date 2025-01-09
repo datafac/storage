@@ -20,7 +20,7 @@ namespace DTOMaker.Gentime
             Func<TargetDomain, string, string, Location, TargetEntity> entityFactory, 
             Func<TargetEntity, string, Location, TargetMember> memberFactory)
         {
-            _domain = domainFactory(EntityFQN.DefaultBase.NameSpace, Location.None); 
+            _domain = domainFactory(TypeFullName.DefaultBase.NameSpace, Location.None); 
             _entityFactory = entityFactory;
             _memberFactory = memberFactory;
         }
@@ -89,7 +89,7 @@ namespace DTOMaker.Gentime
                         // found entity attribute
                         entity.HasEntityAttribute = true;
                         // entity base
-                        entity.BaseName = EntityFQN.DefaultBase;
+                        entity.BaseName = TypeFullName.DefaultBase;
                         if (idsSymbol.Interfaces.Length > 1)
                         {
                             // too many interfaces!
@@ -113,7 +113,7 @@ namespace DTOMaker.Gentime
                             else
                             {
                                 // todo base namespace may be different!
-                                entity.BaseName = new EntityFQN(baseNameSpace, baseName.Substring(1));
+                                entity.BaseName = new TypeFullName(baseNameSpace, baseName.Substring(1));
                             }
                         }
                         //var attributeArguments = entityAttr.ConstructorArguments;
@@ -149,7 +149,7 @@ namespace DTOMaker.Gentime
                             member.MemberIsReferenceType = pdsSymbolType.IsReferenceType;
                             if (pdsSymbolType.IsGenericType && pdsSymbolType.Name == "ReadOnlyMemory" && pdsSymbolType.TypeArguments.Length == 1)
                             {
-                                member.MemberIsArray = true;
+                                member.MemberIsVector = true;
                                 ITypeSymbol typeArg0 = pdsSymbolType.TypeArguments[0];
                                 member.MemberTypeName = typeArg0.Name;
                                 member.MemberIsValueType = typeArg0.IsValueType;

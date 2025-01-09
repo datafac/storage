@@ -8,18 +8,18 @@ namespace DTOMaker.Gentime
 {
     public abstract class TargetEntity : TargetBase
     {
-        public EntityFQN EntityName { get; }
+        public TypeFullName EntityName { get; }
 
         private readonly TargetDomain _domain;
         public TargetDomain Domain => _domain;
         public ConcurrentDictionary<string, TargetMember> Members { get; } = new ConcurrentDictionary<string, TargetMember>();
         public TargetEntity(TargetDomain domain, string nameSpace, string name, Location location) : base(location)
         {
-            EntityName = new EntityFQN(nameSpace, name);
+            EntityName = new TypeFullName(nameSpace, name);
             _domain = domain;
         }
         public bool HasEntityAttribute { get; set; }
-        public EntityFQN BaseName { get; set; } = EntityFQN.DefaultBase;
+        public TypeFullName BaseName { get; set; } = TypeFullName.DefaultBase;
         public TargetEntity? Base { get; set; }
         public TargetEntity[] DerivedEntities { get; set; } = [];
 
@@ -41,7 +41,7 @@ namespace DTOMaker.Gentime
                 if (member.Sequence != expectedSequence)
                     return new SyntaxDiagnostic(
                         DiagnosticId.DTOM0003, "Invalid member sequence", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,
-                        $"Expected member '{member.Name}' sequence to be {expectedSequence}, but found {member.Sequence}.");
+                        $"Expected member '{member.MemberName}' sequence to be {expectedSequence}, but found {member.Sequence}.");
                 expectedSequence++;
             }
             return null;
