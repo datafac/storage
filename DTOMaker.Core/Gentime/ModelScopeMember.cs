@@ -11,6 +11,8 @@ namespace DTOMaker.Gentime
             _variables["MemberObsoleteMessage"] = member.ObsoleteMessage;
             _variables["MemberObsoleteIsError"] = member.ObsoleteIsError;
             _variables["MemberType"] = _language.GetDataTypeToken(member.MemberType);
+            _variables["MemberTypeName"] = member.MemberType.ShortName;
+            _variables["MemberTypeNameSpace"] = member.MemberType.NameSpace;
             _variables["MemberIsNullable"] = member.MemberIsNullable;
             _variables["MemberIsValueType"] = member.MemberIsValueType;
             _variables["MemberIsReferenceType"] = member.MemberIsReferenceType;
