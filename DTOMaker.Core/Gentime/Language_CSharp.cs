@@ -37,14 +37,14 @@
             };
         }
 
-        public string GetDataTypeToken(string dataTypeName)
+        public string GetDataTypeToken(TypeFullName typeFullName)
         {
-            return dataTypeName;
+            return typeFullName.ShortName;
         }
 
-        public string GetDefaultValue(string dataTypeName)
+        public string GetDefaultValue(TypeFullName typeFullName)
         {
-            return dataTypeName switch
+            return typeFullName.ShortName switch
             {
                 "String" => "string.Empty",
                 //todo NativeType.Binary => "Octets.Empty",

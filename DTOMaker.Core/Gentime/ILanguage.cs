@@ -6,8 +6,8 @@
         string CommandPrefix { get; }
         string TokenPrefix { get; }
         string TokenSuffix { get; }
-        string GetDataTypeToken(string dataTypeName);
-        string GetDefaultValue(string dataTypeName);
+        string GetDataTypeToken(TypeFullName typeFullName);
+        string GetDefaultValue(TypeFullName typeFullName);
         string GetValueAsCode(object? value);
     }
 }

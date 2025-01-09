@@ -60,10 +60,11 @@ namespace DTOMaker.Gentime
             {
                 foreach (var member in entity.Members.Values)
                 {
-                    var entity2 = entities.FirstOrDefault(e => e.EntityName == member.MemberName);
+                    var entity2 = entities.FirstOrDefault(e => e.EntityName.WithShortName(sn => "I" + sn) == member.MemberType);
                     if (entity2 is not null)
                     {
                         member.MemberIsEntity = true;
+                        member.MemberType = entity2.EntityName;
                     }
                 }
             }

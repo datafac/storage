@@ -138,36 +138,36 @@ namespace DTOMaker.Gentime
                     string entityNamespace = nds2.Name.ToString();
                     string entityName = ids2.Identifier.Text.Substring(1);
                     string entityFullName = entityNamespace + "." + entityName;
-                    if (Domain.Entities.TryGetValue(entityFullName, out var entity))
+                    if (Domain.Entities.TryGetValue(entityFullName, out var entity)
+                        && pdsSymbol.Type is INamedTypeSymbol pdsSymbolType)
                     {
+                        string memberTypeName = pdsSymbolType.Name;
+                        string memberTypeNameSpace = pdsSymbolType.ContainingNamespace.ToDisplayString();
                         Location pdsLocation = Location.Create(pds.SyntaxTree, pds.Span);
                         var member = entity.Members.GetOrAdd(pds.Identifier.Text, (n) => _memberFactory(entity, n, pdsLocation));
-                        if (pdsSymbol.Type is INamedTypeSymbol pdsSymbolType)
+                        member.MemberType = new TypeFullName(memberTypeNameSpace, memberTypeName);
+                        member.MemberIsValueType = pdsSymbolType.IsValueType;
+                        member.MemberIsReferenceType = pdsSymbolType.IsReferenceType;
+                        if (pdsSymbolType.IsGenericType && pdsSymbolType.Name == "ReadOnlyMemory" && pdsSymbolType.TypeArguments.Length == 1)
                         {
-                            member.MemberTypeName = pdsSymbolType.Name;
-                            member.MemberIsValueType = pdsSymbolType.IsValueType;
-                            member.MemberIsReferenceType = pdsSymbolType.IsReferenceType;
-                            if (pdsSymbolType.IsGenericType && pdsSymbolType.Name == "ReadOnlyMemory" && pdsSymbolType.TypeArguments.Length == 1)
-                            {
-                                member.MemberIsVector = true;
-                                ITypeSymbol typeArg0 = pdsSymbolType.TypeArguments[0];
-                                member.MemberTypeName = typeArg0.Name;
-                                member.MemberIsValueType = typeArg0.IsValueType;
-                                member.MemberIsReferenceType = typeArg0.IsReferenceType;
-                            }
-                            else if (pdsSymbolType.IsGenericType && pdsSymbolType.Name == "Nullable" && pdsSymbolType.TypeArguments.Length == 1)
-                            {
-                                member.MemberIsNullable = true;
-                                ITypeSymbol typeArg0 = pdsSymbolType.TypeArguments[0];
-                                member.MemberTypeName = typeArg0.Name;
-                                member.MemberIsValueType = typeArg0.IsValueType;
-                                member.MemberIsReferenceType = typeArg0.IsReferenceType;
-                            }
-                            else if (pdsSymbolType.IsReferenceType && pdsSymbolType.NullableAnnotation == NullableAnnotation.Annotated)
-                            {
-                                // nullable ref type
-                                member.MemberIsNullable = true;
-                            }
+                            member.MemberIsVector = true;
+                            ITypeSymbol typeArg0 = pdsSymbolType.TypeArguments[0];
+                            member.MemberType = new TypeFullName(typeArg0.ContainingNamespace.ToDisplayString(), typeArg0.Name);
+                            member.MemberIsValueType = typeArg0.IsValueType;
+                            member.MemberIsReferenceType = typeArg0.IsReferenceType;
+                        }
+                        else if (pdsSymbolType.IsGenericType && pdsSymbolType.Name == "Nullable" && pdsSymbolType.TypeArguments.Length == 1)
+                        {
+                            member.MemberIsNullable = true;
+                            ITypeSymbol typeArg0 = pdsSymbolType.TypeArguments[0];
+                            member.MemberType = new TypeFullName(typeArg0.ContainingNamespace.ToDisplayString(), typeArg0.Name);
+                            member.MemberIsValueType = typeArg0.IsValueType;
+                            member.MemberIsReferenceType = typeArg0.IsReferenceType;
+                        }
+                        else if (pdsSymbolType.IsReferenceType && pdsSymbolType.NullableAnnotation == NullableAnnotation.Annotated)
+                        {
+                            // nullable ref type
+                            member.MemberIsNullable = true;
                         }
                         ImmutableArray<AttributeData> allAttributes = pdsSymbol.GetAttributes();
                         if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(ObsoleteAttribute)) is AttributeData obsoleteAttr)

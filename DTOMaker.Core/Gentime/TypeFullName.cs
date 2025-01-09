@@ -4,7 +4,6 @@ namespace DTOMaker.Gentime
 {
     public readonly struct TypeFullName : IEquatable<TypeFullName>
     {
-        // todo choose a suitable common namespace
         private static readonly TypeFullName _defaultBase = new TypeFullName("DTOMaker.Runtime", "EntityBase");
         public static TypeFullName DefaultBase => _defaultBase;
 
@@ -30,5 +29,7 @@ namespace DTOMaker.Gentime
         public static bool operator !=(TypeFullName left, TypeFullName right) => !left.Equals(right);
 
         public override string ToString() => _fullName;
+
+        public TypeFullName WithShortName(Func<string, string> modifier) => new TypeFullName(_nameSpace, modifier(_shortName));
     }
 }

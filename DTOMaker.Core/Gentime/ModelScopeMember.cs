@@ -7,11 +7,10 @@ namespace DTOMaker.Gentime
         public ModelScopeMember(IModelScope parent, IScopeFactory factory, ILanguage language, TargetMember member) 
             : base(parent, factory, language)
         {
-            string memberType = _language.GetDataTypeToken(member.MemberTypeName);
             _variables["MemberIsObsolete"] = member.IsObsolete;
             _variables["MemberObsoleteMessage"] = member.ObsoleteMessage;
             _variables["MemberObsoleteIsError"] = member.ObsoleteIsError;
-            _variables["MemberType"] = memberType;
+            _variables["MemberType"] = _language.GetDataTypeToken(member.MemberType);
             _variables["MemberIsNullable"] = member.MemberIsNullable;
             _variables["MemberIsValueType"] = member.MemberIsValueType;
             _variables["MemberIsReferenceType"] = member.MemberIsReferenceType;
@@ -23,17 +22,23 @@ namespace DTOMaker.Gentime
             else
                 _variables["ScalarRequiredMemberSequence"] = member.Sequence;
             _variables["VectorMemberSequence"] = member.Sequence;
-            _variables["MemberNameSpace"] = member.MemberName.NameSpace;
-            _variables["MemberName"] = member.MemberName.ShortName;
-            _variables["ScalarMemberName"] = member.MemberName.ShortName;
+            _variables["MemberName"] = member.Name;
+            _variables["ScalarMemberName"] = member.Name;
             if (member.MemberIsNullable)
-                _variables["ScalarNullableMemberName"] = member.MemberName.ShortName;
+                _variables["ScalarNullableMemberName"] = member.Name;
             else
-                _variables["ScalarRequiredMemberName"] = member.MemberName.ShortName;
-            _variables["VectorMemberName"] = member.MemberName.ShortName;
-            _variables["MemberJsonName"] = member.MemberName.ShortName.ToCamelCase();
-            _variables["MemberDefaultValue"] = _language.GetDefaultValue(member.MemberTypeName);
+                _variables["ScalarRequiredMemberName"] = member.Name;
+            _variables["VectorMemberName"] = member.Name;
+            _variables["MemberJsonName"] = member.Name.ToCamelCase();
+            _variables["MemberDefaultValue"] = _language.GetDefaultValue(member.MemberType);
             _variables["MemberIsEntity"] = member.MemberIsEntity;
+            if (member.MemberIsEntity)
+            {
+                if (member.MemberIsNullable)
+                    _variables["NullableEntityMemberName"] = member.Name;
+                else
+                    _variables["RequiredEntityMemberName"] = member.Name;
+            }
         }
 
         protected override (bool?, IModelScope[]) OnGetInnerScopes(string iteratorName)
