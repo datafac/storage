@@ -7,8 +7,8 @@
 		<Nullable>enable</Nullable>
 		<WarningsAsErrors>nullable</WarningsAsErrors>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageProjectUrl>https://github.com/datafac/dtomaker-messagepack</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/datafac/dtomaker-messagepack</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/datafac/dtomaker-core</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/datafac/dtomaker-core</RepositoryUrl>
 		<Company>DataFac</Company>
 		<Product>DTOMaker</Product>
 		<Authors>DataFac Contributors</Authors>
