@@ -86,6 +86,7 @@ namespace DTOMaker.Gentime
                 throw new TemplateException($"Command arg[{argn}] missing", source);
             return args[argn];
         }
+        // todo remove or export this when not used
         private string[] ProcessTemplateScope(
             ReadOnlySpan<SourceLine> template, 
             int startLine, NestedScope scope, 

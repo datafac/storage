@@ -15,7 +15,6 @@ namespace DTOMaker.MemBlocks
         public int StringLength { get; set; }
         public int ArrayCapacity { get; set; }
         public int FieldOffset { get; set; }
-        public int FieldLength { get; set; }
         public int TotalLength => MemberIsVector ? FieldLength * ArrayCapacity : FieldLength;
         public bool IsBigEndian { get; set; } = false;
 

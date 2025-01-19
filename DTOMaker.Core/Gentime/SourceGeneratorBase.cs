@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -72,6 +73,7 @@ namespace DTOMaker.Gentime
             OnExecute(context);
         }
 
+        [Obsolete("Use EntityGenerator instead!", false)]
         protected string GenerateSourceText(ILanguage language, IModelScope outerScope, Assembly assembly, string templateName)
         {
             var template = assembly.GetTemplate(templateName);

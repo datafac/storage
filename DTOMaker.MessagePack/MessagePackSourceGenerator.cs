@@ -63,7 +63,6 @@ namespace DTOMaker.MessagePack
                 var generator = new EntityGenerator(language);
                 string sourceText = generator.GenerateSourceText(entityScope);
 
-                //string sourceText = GenerateSourceText(language, entityScope, assembly, "DTOMaker.MessagePack.EntityTemplate.cs");
                 context.AddSource($"{entity.EntityName.FullName}.MessagePack.g.cs", sourceText);
             }
         }

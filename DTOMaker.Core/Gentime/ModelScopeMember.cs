@@ -49,6 +49,7 @@ namespace DTOMaker.Gentime
         public bool IsNullable => _member.MemberIsNullable;
         public bool IsVector => _member.MemberIsVector;
         public bool IsObsolete => _member.IsObsolete;
+        public int FieldLength => _member.FieldLength;
 
         protected override (bool?, IModelScope[]) OnGetInnerScopes(string iteratorName)
         {

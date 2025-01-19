@@ -192,6 +192,7 @@ namespace DTOMaker.MemBlocks.Tests
         {
             var inputSource =
                 """
+                using System;
                 using DTOMaker.Models;
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
@@ -239,6 +240,7 @@ namespace DTOMaker.MemBlocks.Tests
         {
             var inputSource =
                 """
+                using System;
                 using DTOMaker.Models;
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
@@ -260,7 +262,7 @@ namespace DTOMaker.MemBlocks.Tests
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
             errors.Should().HaveCount(2);
-            errors[0].GetMessage().Should().Be("MemberType 'DayOfWeek' not supported");
+            errors[0].GetMessage().Should().Be("MemberType 'System.DayOfWeek' not supported");
             errors[1].GetMessage().Should().StartWith("FieldLength (0) is invalid");
         }
 

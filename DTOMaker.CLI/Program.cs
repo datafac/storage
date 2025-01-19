@@ -121,6 +121,7 @@ namespace DTOMaker.CLI
             return (input, "");
         }
 
+        // todo make language agnostic
         private const string PrefixCSharpComment = "//";
         private const string PrefixMetaCode = "##";
         private const string EmitCodePrefix = "Emit(\"";
@@ -146,14 +147,6 @@ namespace DTOMaker.CLI
                     string metacode = candidate.Substring(PrefixMetaCode.Length);
                     return $"{outerIndent}{innerIndent}{metacode}";
                 }
-                else
-                {
-                    // not metacode - just emit the input unchanged
-                }
-            }
-            else
-            {
-                // not comment - emit code
             }
             string encodedSource = EncodeSource(outerIndent, sourceCode);
             return $"{EmitCodePrefix}{encodedSource}{EmitCodeSuffix}";

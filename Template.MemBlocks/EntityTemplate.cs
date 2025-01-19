@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
 using DTOMaker.Runtime.MemBlocks;
-//##if false
+//##if(false) {
 using T_MemberType_ = System.Int32;
 namespace DataFac.Memory
 {
@@ -120,28 +120,29 @@ namespace T_BaseNameSpace_.MemBlocks
         public override int GetHashCode() => base.GetHashCode();
     }
 }
-//##endif
+//##}
 namespace T_NameSpace_.MemBlocks
 {
-    //##if false
+    //##if(false) {
     public interface IT_EntityName_ : T_BaseNameSpace_.MemBlocks.IT_BaseName_
     {
         T_MemberType_ T_ScalarMemberName_ { get; set; }
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
     }
-    //##endif
+    //##}
     public partial class T_EntityName_ : T_BaseNameSpace_.MemBlocks.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>
     {
         // Derived entities: T_DerivedEntityCount_
-        //##foreach DerivedEntities
+        //##foreach(var derived in entity.DerivedEntities) {
+        //##using var _ = NewScope(derived);
         // - T_EntityName_
-        //##endfor
+        //##}
 
-        //##if false
+        //##if(false) {
         private const int T_ClassHeight_ = 2;
         private const int T_BlockLength_ = 128;
         private const bool T_MemberObsoleteIsError_ = false;
-        //##endif
+        //##}
         private const int ClassHeight = T_ClassHeight_;
         private const int BlockLength = T_BlockLength_;
         private readonly Memory<byte> _writableBlock;
@@ -153,9 +154,10 @@ namespace T_NameSpace_.MemBlocks
         {
             return entityId switch
             {
-                //##foreach DerivedEntities
+                //##foreach(var derived in entity.DerivedEntities) {
+                //##using var _ = NewScope(derived);
                 T_NameSpace_.MemBlocks.T_EntityName_.EntityId => new T_NameSpace_.MemBlocks.T_EntityName_(buffers),
-                //##endfor
+                //##}
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }
@@ -185,9 +187,10 @@ namespace T_NameSpace_.MemBlocks
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
         //  ----  ----  ----  ----  ------- ----  -------
-        //##foreach Members
+        //##foreach(var member in entity.Members) {
+        //##using var _ = NewScope(member);
         //  T_MemberSequenceR4_  T_FieldOffsetR4_  T_FieldLengthR4_  T_ArrayLengthR4_  T_MemberTypeL7_ T_MemberBELE_    T_MemberName_
-        //##endfor
+        //##}
         // ------------------------------------------------------------
 
         public T_EntityName_()
@@ -204,13 +207,14 @@ namespace T_NameSpace_.MemBlocks
         public T_EntityName_(IT_EntityName_ source, bool frozen = false) : base(source, frozen)
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
-            //##foreach Members
-            //##if MemberIsVector
+            //##foreach(var member in entity.Members) {
+            //##using var _ = NewScope(member);
+            //##if(member.IsVector) {
             this.T_VectorMemberName_ = source.T_VectorMemberName_;
-            //##else
+            //##} else {
             this.T_ScalarMemberName_ = source.T_ScalarMemberName_;
-            //##endif
-            //##endfor
+            //##}
+            //##}
         }
 
         public T_EntityName_(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers) : base(buffers)
@@ -230,25 +234,26 @@ namespace T_NameSpace_.MemBlocks
             _writableBlock = Memory<byte>.Empty;
         }
 
-        //##if false
+        //##if(false) {
         private const int T_FieldOffset_ = 32;
         private const int T_FieldLength_ = 8;
         private const bool T_IsBigEndian_ = false;
         private const int T_ArrayLength_ = 4;
-        //##endif
-        //##foreach Members
-        //##if MemberIsObsolete
+        //##}
+        //##foreach(var member in entity.Members) {
+        //##using var _ = NewScope(member);
+        //##if(member.IsObsolete) {
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
-        //##endif
-        //##if MemberIsVector
+        //##}
+        //##if(member.IsVector) {
         public ReadOnlyMemory<T_MemberType_> T_VectorMemberName_
         {
             get
             {
                 var sourceSpan = _readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_ * T_ArrayLength_).Span;
-                //##if FieldLength == 1
+                //##if(member.FieldLength == 1) {
                 return MemoryMarshal.Cast<byte, T_MemberType_>(sourceSpan).ToArray(); // todo alloc!
-                //##else
+                //##} else {
                 if (BitConverter.IsLittleEndian != T_IsBigEndian_)
                 {
                     // endian match
@@ -266,7 +271,7 @@ namespace T_NameSpace_.MemBlocks
                     }
                     return target;
                 }
-                //##endif
+                //##}
             }
 
             set
@@ -274,9 +279,9 @@ namespace T_NameSpace_.MemBlocks
                 ThrowExceptionIfFrozen();
                 var targetSpan = _writableBlock.Slice(T_FieldOffset_, T_FieldLength_ * T_ArrayLength_).Span;
                 targetSpan.Clear();
-                //##if FieldLength == 1
+                //##if(member.FieldLength == 1) {
                 value.Span.CopyTo(MemoryMarshal.Cast<byte, T_MemberType_>(targetSpan));
-                //##else
+                //##} else {
                 if (BitConverter.IsLittleEndian != T_IsBigEndian_)
                 {
                     // endian match
@@ -292,11 +297,11 @@ namespace T_NameSpace_.MemBlocks
                         Codec_T_MemberType__T_MemberBELE_.WriteToSpan(elementSpan, sourceSpan[i]);
                     }
                 }
-                //##endif
+                //##}
             }
         }
 
-        //##else
+        //##} else {
         public T_MemberType_ T_ScalarMemberName_
         {
             get
@@ -311,8 +316,8 @@ namespace T_NameSpace_.MemBlocks
             }
         }
 
-        //##endif
-        //##endfor
+        //##}
+        //##}
 
         public bool Equals(T_EntityName_? other)
         {

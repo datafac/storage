@@ -26,6 +26,7 @@ namespace DTOMaker.Gentime
         public int Sequence { get; set; }
         public bool MemberIsVector { get; set; }
         public bool MemberIsEntity { get; set; }
+        public int FieldLength { get; set; }
 
         private SyntaxDiagnostic? CheckHasMemberAttribute()
         {

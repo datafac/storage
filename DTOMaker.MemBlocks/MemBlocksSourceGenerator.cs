@@ -175,10 +175,11 @@ namespace DTOMaker.MemBlocks
                 }
 
                 var entityScope = factory.CreateEntity(domainScope, factory, language, entity);
-                string sourceText = GenerateSourceText(language, entityScope, assembly, "DTOMaker.MemBlocks.EntityTemplate.cs");
-                context.AddSource(
-                    $"{entity.EntityName.FullName}.MemBlocks.g.cs",
-                    sourceText);
+
+                var generator = new EntityGenerator(language);
+                string sourceText = generator.GenerateSourceText(entityScope);
+
+                context.AddSource($"{entity.EntityName.FullName}.MemBlocks.g.cs", sourceText);
             }
         }
     }
