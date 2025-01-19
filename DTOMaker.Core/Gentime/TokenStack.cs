@@ -25,7 +25,9 @@ namespace DTOMaker.Gentime
         public ImmutableDictionary<string, object?> Top => _stack.Peek();
         public IDisposable NewScope(IEnumerable<KeyValuePair<string, object?>> tokens)
         {
-            _stack.Push(_stack.Peek().SetItems(tokens));
+            var oldScope = _stack.Peek();
+            var newScope = oldScope.SetItems(tokens);
+            _stack.Push(newScope);
             return new Disposer(_stack);
         }
     }

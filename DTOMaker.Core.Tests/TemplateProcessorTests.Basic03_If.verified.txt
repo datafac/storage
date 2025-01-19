@@ -1,2 +1,0 @@
-﻿// Condition1 is TRUE
-// Count is 2L

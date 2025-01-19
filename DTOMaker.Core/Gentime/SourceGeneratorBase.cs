@@ -1,8 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
-using System;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 
 namespace DTOMaker.Gentime
 {
@@ -71,19 +68,6 @@ namespace DTOMaker.Gentime
             }
 
             OnExecute(context);
-        }
-
-        [Obsolete("Use EntityGenerator instead!", true)]
-        protected string GenerateSourceText(ILanguage language, IModelScope outerScope, Assembly assembly, string templateName)
-        {
-            var template = assembly.GetTemplate(templateName);
-            var processor = new TemplateProcessor();
-            var builder = new StringBuilder();
-            foreach (string line in processor.ProcessTemplate(template, language, outerScope))
-            {
-                builder.AppendLine(line);
-            }
-            return builder.ToString();
         }
     }
 }
