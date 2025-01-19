@@ -13,8 +13,9 @@ Emit("// Warning: Changes made to this file will be lost if re-generated.");
 Emit("// </auto-generated>");
 if(false) {
 Emit("#pragma warning disable CS0618 // Type or member is obsolete");
+Emit("#pragma warning disable CS0162 // Unreachable code detected");
 }
-Emit("#pragma warning disable CS0414");
+Emit("#pragma warning disable CS0109 // Member does not hide an inherited member; new keyword is not required");
 Emit("#nullable enable");
 Emit("using DTOMaker.Runtime;");
 Emit("using DTOMaker.Runtime.CSPoco;");

@@ -5,8 +5,9 @@
 // </auto-generated>
 //##if(false) {
 #pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0162 // Unreachable code detected
 //##}
-#pragma warning disable CS0414
+#pragma warning disable CS0109 // Member does not hide an inherited member; new keyword is not required
 #nullable enable
 using DTOMaker.Runtime;
 using DTOMaker.Runtime.CSPoco;
