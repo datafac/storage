@@ -9,7 +9,6 @@
 
 	<ItemGroup>
 	  <PackageReference Include="DataFac.Memory" Version="0.6.2" />
-	  <PackageReference Include="DataFac.Runtime" Version="0.3.1" />
 	  <PackageReference Include="System.Collections.Immutable" Version="9.0.1" />
 	</ItemGroup>
 
