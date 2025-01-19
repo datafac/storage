@@ -18,19 +18,17 @@ namespace MyOrg.Models.CSPoco
         protected override void OnFreeze()
         {
             base.OnFreeze();
-            // todo freezable members
         }
 
         protected override IFreezable OnPartCopy() => new MyDTO(this);
 
         public MyDTO() { }
-        public MyDTO(IMyDTO source, bool frozen = false) : base(source, frozen)
+        public MyDTO(IMyDTO source) : base(source)
         {
-            // todo entity members
             _DTOField1 = source.DTOField1;
         }
 
-        private Double _DTOField1;
+        private Double _DTOField1 = default;
         public Double DTOField1
         {
             get => _DTOField1;

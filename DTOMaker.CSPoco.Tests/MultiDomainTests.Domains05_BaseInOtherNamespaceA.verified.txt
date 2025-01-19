@@ -19,15 +19,11 @@ namespace MyOrg.DomainA.CSPoco
         protected override void OnFreeze()
         {
             base.OnFreeze();
-            // todo freezable members
         }
 
-        protected override IFreezable OnPartCopy() => new MyBase(this);
-
         public MyBase() { }
-        public MyBase(IMyBase source, bool frozen = false) : base(source, frozen)
+        public MyBase(IMyBase source) : base(source)
         {
-            // todo entity members
         }
 
 

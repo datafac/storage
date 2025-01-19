@@ -6,10 +6,7 @@ namespace DTOMaker.Runtime.CSPoco
     public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {
         public EntityBase() { }
-        public EntityBase(object? notUsed, bool frozen)
-        {
-            _frozen = frozen;
-        }
+        public EntityBase(object? notUsed) { }
         private volatile bool _frozen;
         public bool IsFrozen => _frozen;
         protected virtual void OnFreeze() { }
@@ -30,6 +27,12 @@ namespace DTOMaker.Runtime.CSPoco
         {
             if (_frozen) ThrowIsFrozenException(methodName);
             return ref value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void ThrowIfFrozen([CallerMemberName] string? methodName = null)
+        {
+            if (_frozen) ThrowIsFrozenException(methodName);
         }
 
         public bool Equals(EntityBase? other) => true;

@@ -18,43 +18,41 @@ namespace MyOrg.Models.CSPoco
         protected override void OnFreeze()
         {
             base.OnFreeze();
-            // todo freezable members
         }
 
         protected override IFreezable OnPartCopy() => new MyDTO(this);
 
         public MyDTO() { }
-        public MyDTO(IMyDTO source, bool frozen = false) : base(source, frozen)
+        public MyDTO(IMyDTO source) : base(source)
         {
-            // todo entity members
             _FamilyName = source.FamilyName;
             _GivenName = source.GivenName;
             _OtherNames_Value = source.OtherNames_Value;
             _OtherNames_HasValue = source.OtherNames_HasValue;
         }
 
-        private String _FamilyName;
+        private String _FamilyName = string.Empty;
         public String FamilyName
         {
             get => _FamilyName;
             set => _FamilyName = IfNotFrozen(ref value);
         }
 
-        private String _GivenName;
+        private String _GivenName = string.Empty;
         public String GivenName
         {
             get => _GivenName;
             set => _GivenName = IfNotFrozen(ref value);
         }
 
-        private String _OtherNames_Value;
+        private String _OtherNames_Value = string.Empty;
         public String OtherNames_Value
         {
             get => _OtherNames_Value;
             set => _OtherNames_Value = IfNotFrozen(ref value);
         }
 
-        private Boolean _OtherNames_HasValue;
+        private Boolean _OtherNames_HasValue = default;
         public Boolean OtherNames_HasValue
         {
             get => _OtherNames_HasValue;

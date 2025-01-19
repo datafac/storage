@@ -18,27 +18,25 @@ namespace MyOrg.Models.CSPoco
         protected override void OnFreeze()
         {
             base.OnFreeze();
-            // todo freezable members
         }
 
         protected override IFreezable OnPartCopy() => new MyDTO(this);
 
         public MyDTO() { }
-        public MyDTO(IMyDTO source, bool frozen = false) : base(source, frozen)
+        public MyDTO(IMyDTO source) : base(source)
         {
-            // todo entity members
             _Field1 = source.Field1;
             _Field2 = source.Field2;
         }
 
-        private Double _Field1;
+        private Double _Field1 = default;
         public Double Field1
         {
             get => _Field1;
             set => _Field1 = IfNotFrozen(ref value);
         }
 
-        private Int64 _Field2;
+        private Int64 _Field2 = default;
         public Int64 Field2
         {
             get => _Field2;

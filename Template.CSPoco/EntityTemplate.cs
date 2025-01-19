@@ -13,14 +13,36 @@ using DTOMaker.Runtime;
 using DTOMaker.Runtime.CSPoco;
 using System;
 
-//##if(false) {
+//##if (false) {
+namespace T_MemberTypeNameSpace_
+{
+    public interface IT_MemberTypeName_ { }
+}
+namespace T_MemberTypeNameSpace_.CSPoco
+{
+    public class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_
+    {
+        private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();
+        public static T_MemberTypeName_ Empty => _empty;
+        public T_MemberTypeName_() { }
+        public T_MemberTypeName_(IT_MemberTypeName_ source) { }
+        protected override IFreezable OnPartCopy() => throw new NotImplementedException();
+    }
+}
 namespace T_BaseNameSpace_.CSPoco
 {
+    using T_MemberType_ = System.Int32;
     public interface IT_BaseName_ { }
-    public class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
+    public abstract class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
         public T_BaseName_() { }
-        public T_BaseName_(IT_BaseName_ source, bool frozen = false) : base(source, frozen) { }
+        public T_BaseName_(IT_BaseName_ source) : base(source) { }
+
+        protected override void OnFreeze() => base.OnFreeze();
+        protected override IFreezable OnPartCopy() => throw new NotImplementedException();
+
+        public T_MemberType_ BaseField1 { get; set; }
+
         public bool Equals(T_BaseName_? other)
         {
             if (ReferenceEquals(this, other)) return true;
@@ -35,48 +57,62 @@ namespace T_BaseNameSpace_.CSPoco
 //##}
 namespace T_NameSpace_.CSPoco
 {
-    //##if(false) {
+    //##if (false) {
     using T_MemberType_ = System.Int32;
     public interface IT_EntityName_ : T_BaseNameSpace_.CSPoco.IT_BaseName_
     {
         T_MemberType_? T_ScalarNullableMemberName_ { get; set; }
         T_MemberType_ T_ScalarRequiredMemberName_ { get; set; }
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
+        T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberName_ { get; set; }
+        T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; set; }
     }
     //##}
     public partial class T_EntityName_ : T_BaseNameSpace_.CSPoco.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>
     {
         // Derived entities: T_DerivedEntityCount_
-        //##foreach(var derived in entity.DerivedEntities) {
+        //##foreach (var derived in entity.DerivedEntities) {
         //##using var _ = NewScope(derived);
         // - T_EntityName_
         //##}
-        //##if(false) {
-        private const int T_ScalarNullableMemberSequence_ = 1;
-        private const int T_ScalarRequiredMemberSequence_ = 2;
-        private const int T_VectorMemberSequence_ = 3;
+        //##if (false) {
         private const string T_MemberObsoleteMessage_ = null;
         private const bool T_MemberObsoleteIsError_ = false;
+        private const int T_MemberDefaultValue_ = 0;
         //##}
 
         protected override void OnFreeze()
         {
             base.OnFreeze();
-            // todo freezable members
+            //##foreach (var member in entity.Members) {
+            //##using var _ = NewScope(member);
+            //##if (member.IsEntity) {
+            //##if (member.IsNullable) {
+            _T_NullableEntityMemberName_?.Freeze();
+            //##} else {
+            _T_RequiredEntityMemberName_.Freeze();
+            //##}
+            //##}
+            //##}
         }
 
         protected override IFreezable OnPartCopy() => new T_EntityName_(this);
 
         public T_EntityName_() { }
-        public T_EntityName_(IT_EntityName_ source, bool frozen = false) : base(source, frozen)
+        public T_EntityName_(IT_EntityName_ source) : base(source)
         {
-            // todo entity members
-            //##foreach(var member in entity.Members) {
+            //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
-            //##if(member.IsVector) {
+            //##if (member.IsVector) {
             _T_VectorMemberName_ = source.T_VectorMemberName_;
+            //##} else if (member.IsEntity) {
+            //##if (member.IsNullable) {
+            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : new T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_(source.T_NullableEntityMemberName_);
             //##} else {
-            //##if(member.IsNullable) {
+            _T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_(source.T_RequiredEntityMemberName_);
+            //##}
+            //##} else {
+            //##if (member.IsNullable) {
             _T_ScalarNullableMemberName_ = source.T_ScalarNullableMemberName_;
             //##} else {
             _T_ScalarRequiredMemberName_ = source.T_ScalarRequiredMemberName_;
@@ -85,11 +121,11 @@ namespace T_NameSpace_.CSPoco
             //##}
         }
 
-        //##foreach(var member in entity.Members) {
+        //##foreach (var member in entity.Members) {
         //##using var _ = NewScope(member);
-        //##if(member.IsVector) {
+        //##if (member.IsVector) {
         private ReadOnlyMemory<T_MemberType_> _T_VectorMemberName_;
-        //##if(member.IsObsolete) {
+        //##if (member.IsObsolete) {
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##}
         public ReadOnlyMemory<T_MemberType_> T_VectorMemberName_
@@ -97,17 +133,50 @@ namespace T_NameSpace_.CSPoco
             get => _T_VectorMemberName_;
             set => _T_VectorMemberName_ = IfNotFrozen(ref value);
         }
-
+        //##} else if (member.IsEntity) {
+        //##if (member.IsNullable) {
+        private T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_? _T_NullableEntityMemberName_;
+        public T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_? T_NullableEntityMemberName_
+        {
+            get => _T_NullableEntityMemberName_;
+            set => _T_NullableEntityMemberName_ = IfNotFrozen(ref value);
+        }
+        T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityName_.T_NullableEntityMemberName_
+        {
+            get => _T_NullableEntityMemberName_;
+            set
+            {
+                ThrowIfFrozen();
+                _T_NullableEntityMemberName_ = value is null ? null : new T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_(value);
+            }
+        }
         //##} else {
-        //##if(member.IsNullable) {
+        private T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_.Empty;
+        public T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_ T_RequiredEntityMemberName_
+        {
+            get => _T_RequiredEntityMemberName_;
+            set => _T_RequiredEntityMemberName_ = IfNotFrozen(ref value);
+        }
+        T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityName_.T_RequiredEntityMemberName_
+        {
+            get => _T_RequiredEntityMemberName_;
+            set
+            {
+                ThrowIfFrozen();
+                _T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_(value);
+            }
+        }
+        //##}
+        //##} else {
+        //##if (member.IsNullable) {
         private T_MemberType_? _T_ScalarNullableMemberName_;
         //##} else {
-        private T_MemberType_ _T_ScalarRequiredMemberName_;
+        private T_MemberType_ _T_ScalarRequiredMemberName_ = T_MemberDefaultValue_;
         //##}
-        //##if(member.IsObsolete) {
+        //##if (member.IsObsolete) {
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##}
-        //##if(member.IsNullable) {
+        //##if (member.IsNullable) {
         public T_MemberType_? T_ScalarNullableMemberName_
         {
             get => _T_ScalarNullableMemberName_;
@@ -120,8 +189,8 @@ namespace T_NameSpace_.CSPoco
             set => _T_ScalarRequiredMemberName_ = IfNotFrozen(ref value);
         }
         //##}
-
         //##}
+
         //##}
 
         public bool Equals(T_EntityName_? other)
@@ -129,12 +198,12 @@ namespace T_NameSpace_.CSPoco
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
             if (!base.Equals(other)) return false;
-            //##foreach(var member in entity.Members) {
+            //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
-            //##if(member.IsVector) {
+            //##if (member.IsVector) {
             if (!_T_VectorMemberName_.Span.SequenceEqual(other.T_VectorMemberName_.Span)) return false;
             //##} else {
-            //##if(member.IsNullable) {
+            //##if (member.IsNullable) {
             if (_T_ScalarNullableMemberName_ != other.T_ScalarNullableMemberName_) return false;
             //##} else {
             if (_T_ScalarRequiredMemberName_ != other.T_ScalarRequiredMemberName_) return false;
@@ -152,16 +221,16 @@ namespace T_NameSpace_.CSPoco
         {
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
-            //##foreach(var member in entity.Members) {
+            //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
-            //##if(member.IsVector) {
+            //##if (member.IsVector) {
             result.Add(_T_VectorMemberName_.Length);
             for (int i = 0; i < _T_VectorMemberName_.Length; i++)
             {
                 result.Add(_T_VectorMemberName_.Span[i]);
             }
             //##} else {
-            //##if(member.IsNullable) {
+            //##if (member.IsNullable) {
             result.Add(_T_ScalarNullableMemberName_);
             //##} else {
             result.Add(_T_ScalarRequiredMemberName_);
