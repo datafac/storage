@@ -25,6 +25,13 @@ namespace DTOMaker.MessagePack
                 _variables["ScalarRequiredMemberKey"] = memberKey;
             if (member.MemberIsVector)
                 _variables["VectorMemberKey"] = memberKey;
+            if (member.MemberIsEntity)
+            {
+                if (member.MemberIsNullable)
+                    _variables["NullableEntityMemberKey"] = memberKey;
+                else
+                    _variables["RequiredEntityMemberKey"] = memberKey;
+            }
         }
     }
 }

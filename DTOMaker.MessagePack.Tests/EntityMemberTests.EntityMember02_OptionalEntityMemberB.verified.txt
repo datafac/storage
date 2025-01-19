@@ -43,7 +43,7 @@ namespace MyOrg.DomainB.MessagePack
 
         [IgnoreMember]
         private MyOrg.DomainA.MessagePack.MyDTO1? _Member1;
-        [Key(T_NullableEntityMemberKey_)]
+        [Key(1)]
         public MyOrg.DomainA.MessagePack.MyDTO1? Member1
         {
             get => _Member1;

@@ -31,6 +31,30 @@ namespace DTOMaker.Gentime
             return IsDerivedFrom(candidate.Base, parent);
         }
 
+        public int DerivedEntityCount => _entity.DerivedEntities.Length;
+
+        public ModelScopeMember[] Members
+        {
+            get
+            {
+                return _entity.Members.Values
+                            .OrderBy(m => m.Sequence)
+                            .Select(m => _factory.CreateMember(this, _factory, _language, m))
+                            .ToArray();
+            }
+        }
+
+        public ModelScopeEntity[] DerivedEntities
+        {
+            get
+            {
+                return _entity.DerivedEntities
+                        .OrderBy(e => e.EntityName.FullName)
+                        .Select(e => _factory.CreateEntity(this, _factory, _language, e))
+                        .ToArray();
+            }
+        }
+
         protected override (bool?, IModelScope[]) OnGetInnerScopes(string iteratorName)
         {
             switch (iteratorName.ToLowerInvariant())

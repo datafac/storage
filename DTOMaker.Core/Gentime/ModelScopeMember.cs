@@ -4,9 +4,11 @@ namespace DTOMaker.Gentime
 {
     public abstract class ModelScopeMember : ModelScopeBase
     {
+        private readonly TargetMember _member;
         public ModelScopeMember(IModelScope parent, IScopeFactory factory, ILanguage language, TargetMember member) 
             : base(parent, factory, language)
         {
+            _member = member;
             _variables["MemberIsObsolete"] = member.IsObsolete;
             _variables["MemberObsoleteMessage"] = member.ObsoleteMessage;
             _variables["MemberObsoleteIsError"] = member.ObsoleteIsError;
@@ -42,6 +44,11 @@ namespace DTOMaker.Gentime
                     _variables["RequiredEntityMemberName"] = member.Name;
             }
         }
+
+        public bool IsEntity => _member.MemberIsEntity;
+        public bool IsNullable => _member.MemberIsNullable;
+        public bool IsVector => _member.MemberIsVector;
+        public bool IsObsolete => _member.IsObsolete;
 
         protected override (bool?, IModelScope[]) OnGetInnerScopes(string iteratorName)
         {

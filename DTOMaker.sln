@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
 		projscan.json = projscan.json
 		README.md = README.md
+		t2g.cmd = t2g.cmd
 		version.json = version.json
 	EndProjectSection
 EndProject
@@ -59,6 +60,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.MemBlocks", "Template.MemBlocks\Template.MemBlocks.csproj", "{3AE71E19-E462-4769-A460-482CAD3EEC0A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.MemBlocks.Tests", "Template.MemBlocks.Tests\Template.MemBlocks.Tests.csproj", "{5CBE97BA-6CBA-4758-83AF-286522F2F4BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTOMaker.CLI", "DTOMaker.CLI\DTOMaker.CLI.csproj", "{3D7F7027-D043-4EFD-A7E6-573DDDB4779B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -150,6 +153,10 @@ Global
 		{5CBE97BA-6CBA-4758-83AF-286522F2F4BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CBE97BA-6CBA-4758-83AF-286522F2F4BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CBE97BA-6CBA-4758-83AF-286522F2F4BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D7F7027-D043-4EFD-A7E6-573DDDB4779B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D7F7027-D043-4EFD-A7E6-573DDDB4779B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D7F7027-D043-4EFD-A7E6-573DDDB4779B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D7F7027-D043-4EFD-A7E6-573DDDB4779B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

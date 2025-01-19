@@ -1,7 +1,10 @@
 ﻿using DTOMaker.Gentime;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace DTOMaker.MessagePack
 {
@@ -56,10 +59,12 @@ namespace DTOMaker.MessagePack
                 }
 
                 var entityScope = factory.CreateEntity(domainScope, factory, language, entity);
-                string sourceText = GenerateSourceText(language, entityScope, assembly, "DTOMaker.MessagePack.EntityTemplate.cs");
-                context.AddSource(
-                    $"{entity.EntityName.FullName}.MessagePack.g.cs",
-                    sourceText);
+
+                var generator = new EntityGenerator(language);
+                string sourceText = generator.GenerateSourceText(entityScope);
+
+                //string sourceText = GenerateSourceText(language, entityScope, assembly, "DTOMaker.MessagePack.EntityTemplate.cs");
+                context.AddSource($"{entity.EntityName.FullName}.MessagePack.g.cs", sourceText);
             }
         }
     }
