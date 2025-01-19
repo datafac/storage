@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using Xunit;
 
+#pragma warning disable CS0618 // Type or member is obsolete
+
 namespace Template.MemBlocks.Tests
 {
     public class ReadOnlyMemoryTests

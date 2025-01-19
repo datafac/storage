@@ -3,6 +3,8 @@ using MessagePack;
 using System;
 using Xunit;
 
+#pragma warning disable CS0618 // Type or member is obsolete
+
 using T_NameSpace_.MessagePack;
 
 namespace Template_MessagePack.Tests

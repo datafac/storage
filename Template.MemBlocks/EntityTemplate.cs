@@ -5,8 +5,9 @@
 // </auto-generated>
 //##if(false) {
 #pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0162 // Unreachable code detected
 //##}
-#pragma warning disable CS0414
+#pragma warning disable CS0109 // Member does not hide an inherited member; new keyword is not required
 #nullable enable
 using System;
 using System.Runtime.CompilerServices;
@@ -256,7 +257,7 @@ namespace T_NameSpace_.MemBlocks
                 var sourceSpan = _readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_ * T_ArrayLength_).Span;
                 //##if(member.FieldLength == 1) {
                 return MemoryMarshal.Cast<byte, T_MemberType_>(sourceSpan).ToArray(); // todo alloc!
-                //##} else {
+                                                                                      //##} else {
                 if (BitConverter.IsLittleEndian != T_IsBigEndian_)
                 {
                     // endian match
@@ -274,7 +275,7 @@ namespace T_NameSpace_.MemBlocks
                     }
                     return target;
                 }
-                //##}
+                              //##}
             }
 
             set
