@@ -6,7 +6,7 @@
 		<Nullable>enable</Nullable>
 		<WarningsAsErrors>nullable</WarningsAsErrors>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageProjectUrl>https://github.com/datafac/dtomaker-memblocks</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/datafac/dtomaker-core</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datafac/dtomaker-core</RepositoryUrl>
 		<Company>DataFac</Company>
 		<Product>DTOMaker</Product>
@@ -35,15 +35,12 @@
 		<!-- Package the generator in the analyzer directory of the nuget package -->
 		<None Include="$(OutputPath)$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 		<!-- Private dependencies of this generator that consumers of this generator will not reference. -->
+		<PackageReference Include="DTOMaker.Core" Version="0.55.14-dev" PrivateAssets="all" GeneratePathProperty="true" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<!-- Package the DTOMaker.Core dependency alongside the generator assembly -->
 		<None Include="$(PkgDTOMaker_Core)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Compile Remove="DomainTemplate.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -59,10 +56,6 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\DTOMaker.Core\DTOMaker.Core.csproj" />
 	</ItemGroup>
 
 </Project>
