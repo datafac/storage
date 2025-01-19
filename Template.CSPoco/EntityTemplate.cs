@@ -3,16 +3,16 @@
 // NuGet: https://www.nuget.org/packages/DTOMaker.CSPoco
 // Warning: Changes made to this file will be lost if re-generated.
 // </auto-generated>
-//##if false
+//##if(false) {
 #pragma warning disable CS0618 // Type or member is obsolete
-//##endif
+//##}
 #pragma warning disable CS0414
 #nullable enable
 using DTOMaker.Runtime;
 using DTOMaker.Runtime.CSPoco;
 using System;
 
-//##if false
+//##if(false) {
 namespace T_BaseNameSpace_.CSPoco
 {
     public interface IT_BaseName_ { }
@@ -31,34 +31,32 @@ namespace T_BaseNameSpace_.CSPoco
         public override int GetHashCode() => base.GetHashCode();
     }
 }
-//##endif
+//##}
 namespace T_NameSpace_.CSPoco
 {
-    //##if false
+    //##if(false) {
     using T_MemberType_ = System.Int32;
     public interface IT_EntityName_ : T_BaseNameSpace_.CSPoco.IT_BaseName_
     {
-        //##if MemberIsNullable
         T_MemberType_? T_ScalarNullableMemberName_ { get; set; }
-        //##else
         T_MemberType_ T_ScalarRequiredMemberName_ { get; set; }
-        //##endif
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
     }
-    //##endif
+    //##}
     public partial class T_EntityName_ : T_BaseNameSpace_.CSPoco.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>
     {
         // Derived entities: T_DerivedEntityCount_
-        //##foreach DerivedEntities
+        //##foreach(var derived in entity.DerivedEntities) {
+        //##using var _ = NewScope(derived);
         // - T_EntityName_
-        //##endfor
-        //##if false
+        //##}
+        //##if(false) {
         private const int T_ScalarNullableMemberSequence_ = 1;
         private const int T_ScalarRequiredMemberSequence_ = 2;
         private const int T_VectorMemberSequence_ = 3;
         private const string T_MemberObsoleteMessage_ = null;
         private const bool T_MemberObsoleteIsError_ = false;
-        //##endif
+        //##}
 
         protected override void OnFreeze()
         {
@@ -72,73 +70,76 @@ namespace T_NameSpace_.CSPoco
         public T_EntityName_(IT_EntityName_ source, bool frozen = false) : base(source, frozen)
         {
             // todo entity members
-            //##foreach Members
-            //##if MemberIsVector
+            //##foreach(var member in entity.Members) {
+            //##using var _ = NewScope(member);
+            //##if(member.IsVector) {
             _T_VectorMemberName_ = source.T_VectorMemberName_;
-            //##else
-            //##if MemberIsNullable
+            //##} else {
+            //##if(member.IsNullable) {
             _T_ScalarNullableMemberName_ = source.T_ScalarNullableMemberName_;
-            //##else
+            //##} else {
             _T_ScalarRequiredMemberName_ = source.T_ScalarRequiredMemberName_;
-            //##endif
-            //##endif
-            //##endfor
+            //##}
+            //##}
+            //##}
         }
 
-        //##foreach Members
-        //##if MemberIsVector
+        //##foreach(var member in entity.Members) {
+        //##using var _ = NewScope(member);
+        //##if(member.IsVector) {
         private ReadOnlyMemory<T_MemberType_> _T_VectorMemberName_;
-        //##if MemberIsObsolete
+        //##if(member.IsObsolete) {
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
-        //##endif
+        //##}
         public ReadOnlyMemory<T_MemberType_> T_VectorMemberName_
         {
             get => _T_VectorMemberName_;
             set => _T_VectorMemberName_ = IfNotFrozen(ref value);
         }
 
-        //##else
-        //##if MemberIsNullable
+        //##} else {
+        //##if(member.IsNullable) {
         private T_MemberType_? _T_ScalarNullableMemberName_;
-        //##else
+        //##} else {
         private T_MemberType_ _T_ScalarRequiredMemberName_;
-        //##endif
-        //##if MemberIsObsolete
+        //##}
+        //##if(member.IsObsolete) {
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
-        //##endif
-        //##if MemberIsNullable
+        //##}
+        //##if(member.IsNullable) {
         public T_MemberType_? T_ScalarNullableMemberName_
         {
             get => _T_ScalarNullableMemberName_;
             set => _T_ScalarNullableMemberName_ = IfNotFrozen(ref value);
         }
-        //##else
+        //##} else {
         public T_MemberType_ T_ScalarRequiredMemberName_
         {
             get => _T_ScalarRequiredMemberName_;
             set => _T_ScalarRequiredMemberName_ = IfNotFrozen(ref value);
         }
-        //##endif
+        //##}
 
-        //##endif
-        //##endfor
+        //##}
+        //##}
 
         public bool Equals(T_EntityName_? other)
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
             if (!base.Equals(other)) return false;
-            //##foreach Members
-            //##if MemberIsVector
+            //##foreach(var member in entity.Members) {
+            //##using var _ = NewScope(member);
+            //##if(member.IsVector) {
             if (!_T_VectorMemberName_.Span.SequenceEqual(other.T_VectorMemberName_.Span)) return false;
-            //##else
-            //##if MemberIsNullable
+            //##} else {
+            //##if(member.IsNullable) {
             if (_T_ScalarNullableMemberName_ != other.T_ScalarNullableMemberName_) return false;
-                              //##else
+            //##} else {
             if (_T_ScalarRequiredMemberName_ != other.T_ScalarRequiredMemberName_) return false;
-            //##endif
-            //##endif
-            //##endfor
+            //##}
+            //##}
+            //##}
             return true;
         }
 
@@ -150,21 +151,22 @@ namespace T_NameSpace_.CSPoco
         {
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
-            //##foreach Members
-            //##if MemberIsVector
+            //##foreach(var member in entity.Members) {
+            //##using var _ = NewScope(member);
+            //##if(member.IsVector) {
             result.Add(_T_VectorMemberName_.Length);
             for (int i = 0; i < _T_VectorMemberName_.Length; i++)
             {
                 result.Add(_T_VectorMemberName_.Span[i]);
             }
-            //##else
-            //##if MemberIsNullable
+            //##} else {
+            //##if(member.IsNullable) {
             result.Add(_T_ScalarNullableMemberName_);
-            //##else
+            //##} else {
             result.Add(_T_ScalarRequiredMemberName_);
-            //##endif
-            //##endif
-            //##endfor
+            //##}
+            //##}
+            //##}
             return result.ToHashCode();
         }
 

@@ -47,11 +47,6 @@
 
 	<ItemGroup>
 	  <Compile Remove="DomainTemplate.cs" />
-	  <Compile Remove="EntityTemplate.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Include="EntityTemplate.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

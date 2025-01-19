@@ -3,6 +3,9 @@
 // NuGet: https://www.nuget.org/packages/DTOMaker.MemBlocks
 // Warning: Changes made to this file will be lost if re-generated.
 // </auto-generated>
+//##if(false) {
+#pragma warning disable CS0618 // Type or member is obsolete
+//##}
 #pragma warning disable CS0414
 #nullable enable
 using System;

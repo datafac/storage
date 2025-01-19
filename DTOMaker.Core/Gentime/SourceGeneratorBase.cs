@@ -73,7 +73,7 @@ namespace DTOMaker.Gentime
             OnExecute(context);
         }
 
-        [Obsolete("Use EntityGenerator instead!", false)]
+        [Obsolete("Use EntityGenerator instead!", true)]
         protected string GenerateSourceText(ILanguage language, IModelScope outerScope, Assembly assembly, string templateName)
         {
             var template = assembly.GetTemplate(templateName);

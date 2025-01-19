@@ -56,10 +56,11 @@ namespace DTOMaker.CSPoco
                 }
 
                 var entityScope = factory.CreateEntity(domainScope, factory, language, entity);
-                string sourceText = GenerateSourceText(language, entityScope, assembly, "DTOMaker.CSPoco.EntityTemplate.cs");
-                context.AddSource(
-                    $"{entity.EntityName.FullName}.CSPoco.g.cs",
-                    sourceText);
+
+                var generator = new EntityGenerator(language);
+                string sourceText = generator.GenerateSourceText(entityScope);
+
+                context.AddSource($"{entity.EntityName.FullName}.CSPoco.g.cs", sourceText);
             }
         }
     }
