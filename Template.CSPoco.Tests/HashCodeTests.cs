@@ -22,11 +22,11 @@ namespace Template_CSPoco.Tests
         [Fact]
         public void Equality02_ScalarData()
         {
-            var orig = new T_NameSpace_.CSPoco.T_EntityName_() { T_ScalarRequiredMemberName_ = 123 };
+            var orig = new T_NameSpace_.CSPoco.T_EntityName_() { T_RequiredScalarMemberName_ = 123 };
             orig.Freeze();
             int origHash = orig.GetHashCode();
 
-            var copy = new T_NameSpace_.CSPoco.T_EntityName_() { T_ScalarRequiredMemberName_ = 123 };
+            var copy = new T_NameSpace_.CSPoco.T_EntityName_() { T_RequiredScalarMemberName_ = 123 };
             copy.Freeze();
             int copyHash = copy.GetHashCode();
 

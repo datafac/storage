@@ -35,7 +35,7 @@
 		<!-- Package the generator in the analyzer directory of the nuget package -->
 		<None Include="$(OutputPath)$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 		<!-- Private dependencies of this generator that consumers of this generator will not reference. -->
-		<PackageReference Include="DTOMaker.Core" Version="0.55.24-dev" PrivateAssets="all" GeneratePathProperty="true" />
+		<PackageReference Include="DTOMaker.Core" Version="0.55.25-dev" PrivateAssets="all" GeneratePathProperty="true" />
 		<PackageReference Include="System.Memory" Version="4.6.0" PrivateAssets="all" GeneratePathProperty="true" />
 	</ItemGroup>
 

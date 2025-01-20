@@ -65,8 +65,8 @@ namespace T_NameSpace_
     using T_MemberType_ = System.Int32;
     public interface IT_EntityName_ : T_BaseNameSpace_.IT_BaseName_
     {
-        T_MemberType_? T_ScalarNullableMemberName_ { get; set; }
-        T_MemberType_ T_ScalarRequiredMemberName_ { get; set; }
+        T_MemberType_? T_NullableScalarMemberName_ { get; set; }
+        T_MemberType_ T_RequiredScalarMemberName_ { get; set; }
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
         T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberName_ { get; set; }
         T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; set; }
@@ -139,9 +139,9 @@ namespace T_NameSpace_.CSPoco
             //##}
             //##} else {
             //##if (member.IsNullable) {
-            _T_ScalarNullableMemberName_ = source.T_ScalarNullableMemberName_;
+            _T_NullableScalarMemberName_ = source.T_NullableScalarMemberName_;
             //##} else {
-            _T_ScalarRequiredMemberName_ = source.T_ScalarRequiredMemberName_;
+            _T_RequiredScalarMemberName_ = source.T_RequiredScalarMemberName_;
             //##}
             //##}
             //##}
@@ -195,24 +195,24 @@ namespace T_NameSpace_.CSPoco
         //##}
         //##} else {
         //##if (member.IsNullable) {
-        private T_MemberType_? _T_ScalarNullableMemberName_;
+        private T_MemberType_? _T_NullableScalarMemberName_;
         //##} else {
-        private T_MemberType_ _T_ScalarRequiredMemberName_ = T_MemberDefaultValue_;
+        private T_MemberType_ _T_RequiredScalarMemberName_ = T_MemberDefaultValue_;
         //##}
         //##if (member.IsObsolete) {
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##}
         //##if (member.IsNullable) {
-        public T_MemberType_? T_ScalarNullableMemberName_
+        public T_MemberType_? T_NullableScalarMemberName_
         {
-            get => _T_ScalarNullableMemberName_;
-            set => _T_ScalarNullableMemberName_ = IfNotFrozen(ref value);
+            get => _T_NullableScalarMemberName_;
+            set => _T_NullableScalarMemberName_ = IfNotFrozen(ref value);
         }
         //##} else {
-        public T_MemberType_ T_ScalarRequiredMemberName_
+        public T_MemberType_ T_RequiredScalarMemberName_
         {
-            get => _T_ScalarRequiredMemberName_;
-            set => _T_ScalarRequiredMemberName_ = IfNotFrozen(ref value);
+            get => _T_RequiredScalarMemberName_;
+            set => _T_RequiredScalarMemberName_ = IfNotFrozen(ref value);
         }
         //##}
         //##}
@@ -230,9 +230,9 @@ namespace T_NameSpace_.CSPoco
             if (!_T_VectorMemberName_.Span.SequenceEqual(other.T_VectorMemberName_.Span)) return false;
             //##} else {
             //##if (member.IsNullable) {
-            if (_T_ScalarNullableMemberName_ != other.T_ScalarNullableMemberName_) return false;
+            if (_T_NullableScalarMemberName_ != other.T_NullableScalarMemberName_) return false;
             //##} else {
-            if (_T_ScalarRequiredMemberName_ != other.T_ScalarRequiredMemberName_) return false;
+            if (_T_RequiredScalarMemberName_ != other.T_RequiredScalarMemberName_) return false;
             //##}
             //##}
             //##}
@@ -257,9 +257,9 @@ namespace T_NameSpace_.CSPoco
             }
             //##} else {
             //##if (member.IsNullable) {
-            result.Add(_T_ScalarNullableMemberName_);
+            result.Add(_T_NullableScalarMemberName_);
             //##} else {
-            result.Add(_T_ScalarRequiredMemberName_);
+            result.Add(_T_RequiredScalarMemberName_);
             //##}
             //##}
             //##}

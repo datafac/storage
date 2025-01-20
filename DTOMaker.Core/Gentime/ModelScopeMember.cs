@@ -22,16 +22,16 @@ namespace DTOMaker.Gentime
             _tokens["MemberSequence"] = member.Sequence;
             _tokens["ScalarMemberSequence"] = member.Sequence;
             if (member.MemberIsNullable)
-                _tokens["ScalarNullableMemberSequence"] = member.Sequence;
+                _tokens["NullableScalarMemberSequence"] = member.Sequence;
             else
-                _tokens["ScalarRequiredMemberSequence"] = member.Sequence;
+                _tokens["RequiredScalarMemberSequence"] = member.Sequence;
             _tokens["VectorMemberSequence"] = member.Sequence;
             _tokens["MemberName"] = member.Name;
             _tokens["ScalarMemberName"] = member.Name;
             if (member.MemberIsNullable)
-                _tokens["ScalarNullableMemberName"] = member.Name;
+                _tokens["NullableScalarMemberName"] = member.Name;
             else
-                _tokens["ScalarRequiredMemberName"] = member.Name;
+                _tokens["RequiredScalarMemberName"] = member.Name;
             _tokens["VectorMemberName"] = member.Name;
             _tokens["MemberJsonName"] = member.Name.ToCamelCase();
             _tokens["MemberDefaultValue"] = _language.GetDefaultValue(member.MemberType);

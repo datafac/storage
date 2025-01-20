@@ -73,8 +73,8 @@ Emit("{");
 Emit("    using T_MemberType_ = System.Int32;");
 Emit("    public interface IT_EntityName_ : T_BaseNameSpace_.IT_BaseName_");
 Emit("    {");
-Emit("        T_MemberType_? T_ScalarNullableMemberName_ { get; set; }");
-Emit("        T_MemberType_ T_ScalarRequiredMemberName_ { get; set; }");
+Emit("        T_MemberType_? T_NullableScalarMemberName_ { get; set; }");
+Emit("        T_MemberType_ T_RequiredScalarMemberName_ { get; set; }");
 Emit("        ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }");
 Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberName_ { get; set; }");
 Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; set; }");
@@ -147,9 +147,9 @@ Emit("            _T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.CSPo
             }
             } else {
             if (member.IsNullable) {
-Emit("            _T_ScalarNullableMemberName_ = source.T_ScalarNullableMemberName_;");
+Emit("            _T_NullableScalarMemberName_ = source.T_NullableScalarMemberName_;");
             } else {
-Emit("            _T_ScalarRequiredMemberName_ = source.T_ScalarRequiredMemberName_;");
+Emit("            _T_RequiredScalarMemberName_ = source.T_RequiredScalarMemberName_;");
             }
             }
             }
@@ -203,24 +203,24 @@ Emit("        }");
         }
         } else {
         if (member.IsNullable) {
-Emit("        private T_MemberType_? _T_ScalarNullableMemberName_;");
+Emit("        private T_MemberType_? _T_NullableScalarMemberName_;");
         } else {
-Emit("        private T_MemberType_ _T_ScalarRequiredMemberName_ = T_MemberDefaultValue_;");
+Emit("        private T_MemberType_ _T_RequiredScalarMemberName_ = T_MemberDefaultValue_;");
         }
         if (member.IsObsolete) {
 Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
         }
         if (member.IsNullable) {
-Emit("        public T_MemberType_? T_ScalarNullableMemberName_");
+Emit("        public T_MemberType_? T_NullableScalarMemberName_");
 Emit("        {");
-Emit("            get => _T_ScalarNullableMemberName_;");
-Emit("            set => _T_ScalarNullableMemberName_ = IfNotFrozen(ref value);");
+Emit("            get => _T_NullableScalarMemberName_;");
+Emit("            set => _T_NullableScalarMemberName_ = IfNotFrozen(ref value);");
 Emit("        }");
         } else {
-Emit("        public T_MemberType_ T_ScalarRequiredMemberName_");
+Emit("        public T_MemberType_ T_RequiredScalarMemberName_");
 Emit("        {");
-Emit("            get => _T_ScalarRequiredMemberName_;");
-Emit("            set => _T_ScalarRequiredMemberName_ = IfNotFrozen(ref value);");
+Emit("            get => _T_RequiredScalarMemberName_;");
+Emit("            set => _T_RequiredScalarMemberName_ = IfNotFrozen(ref value);");
 Emit("        }");
         }
         }
@@ -238,9 +238,9 @@ Emit("            if (!base.Equals(other)) return false;");
 Emit("            if (!_T_VectorMemberName_.Span.SequenceEqual(other.T_VectorMemberName_.Span)) return false;");
             } else {
             if (member.IsNullable) {
-Emit("            if (_T_ScalarNullableMemberName_ != other.T_ScalarNullableMemberName_) return false;");
+Emit("            if (_T_NullableScalarMemberName_ != other.T_NullableScalarMemberName_) return false;");
             } else {
-Emit("            if (_T_ScalarRequiredMemberName_ != other.T_ScalarRequiredMemberName_) return false;");
+Emit("            if (_T_RequiredScalarMemberName_ != other.T_RequiredScalarMemberName_) return false;");
             }
             }
             }
@@ -265,9 +265,9 @@ Emit("                result.Add(_T_VectorMemberName_.Span[i]);");
 Emit("            }");
             } else {
             if (member.IsNullable) {
-Emit("            result.Add(_T_ScalarNullableMemberName_);");
+Emit("            result.Add(_T_NullableScalarMemberName_);");
             } else {
-Emit("            result.Add(_T_ScalarRequiredMemberName_);");
+Emit("            result.Add(_T_RequiredScalarMemberName_);");
             }
             }
             }

@@ -20,9 +20,9 @@ namespace DTOMaker.MessagePack
             _tokens["MemberKey"] = memberKey;
             _tokens["ScalarMemberKey"] = memberKey;
             if (member.MemberIsNullable)
-                _tokens["ScalarNullableMemberKey"] = memberKey;
+                _tokens["NullableScalarMemberKey"] = memberKey;
             else
-                _tokens["ScalarRequiredMemberKey"] = memberKey;
+                _tokens["RequiredScalarMemberKey"] = memberKey;
             if (member.MemberIsVector)
                 _tokens["VectorMemberKey"] = memberKey;
             if (member.MemberIsEntity)
