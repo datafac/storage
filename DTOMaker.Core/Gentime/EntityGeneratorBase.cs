@@ -80,7 +80,7 @@ namespace DTOMaker.Gentime
 
         protected IDisposable NewScope(ModelScopeBase scope)
         {
-            return _tokenStack.NewScope(scope.Variables);
+            return _tokenStack.NewScope(scope.Tokens);
         }
 
         protected abstract void OnGenerate(ModelScopeEntity scope);

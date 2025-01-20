@@ -23,7 +23,7 @@ namespace DTOMaker.Gentime
         private readonly Stack<ImmutableDictionary<string, object?>> _stack = new Stack<ImmutableDictionary<string, object?>>();
         public TokenStack() => _stack.Push(ImmutableDictionary<string, object?>.Empty);
         public ImmutableDictionary<string, object?> Top => _stack.Peek();
-        public IDisposable NewScope(IEnumerable<KeyValuePair<string, object?>> tokens)
+        public IDisposable NewScope(IReadOnlyDictionary<string, object?> tokens)
         {
             var oldScope = _stack.Peek();
             var newScope = oldScope.SetItems(tokens);

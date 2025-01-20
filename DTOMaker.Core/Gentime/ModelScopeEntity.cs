@@ -12,15 +12,15 @@ namespace DTOMaker.Gentime
             : base(parent, factory, language)
         {
             _entity = entity;
-            _variables["NameSpace"] = entity.EntityName.NameSpace;
-            _variables["EntityName"] = entity.EntityName.ShortName;
-            _variables["EntityName2"] = entity.EntityName.ShortName;
-            _variables["BaseName"] = entity.Base?.EntityName.ShortName ?? TypeFullName.DefaultBase.ShortName;
-            _variables["BaseNameSpace"] = entity.Base?.EntityName.NameSpace ?? TypeFullName.DefaultBase.NameSpace;
-            _variables["BaseFullName"] = entity.Base?.EntityName.FullName ?? TypeFullName.DefaultBase.FullName;
-            _variables["ClassHeight"] = entity.GetClassHeight();
+            _tokens["NameSpace"] = entity.EntityName.NameSpace;
+            _tokens["EntityName"] = entity.EntityName.ShortName;
+            _tokens["EntityName2"] = entity.EntityName.ShortName;
+            _tokens["BaseName"] = entity.Base?.EntityName.ShortName ?? TypeFullName.DefaultBase.ShortName;
+            _tokens["BaseNameSpace"] = entity.Base?.EntityName.NameSpace ?? TypeFullName.DefaultBase.NameSpace;
+            _tokens["BaseFullName"] = entity.Base?.EntityName.FullName ?? TypeFullName.DefaultBase.FullName;
+            _tokens["ClassHeight"] = entity.GetClassHeight();
 
-            _variables["DerivedEntityCount"] = _entity.DerivedEntities.Length;
+            _tokens["DerivedEntityCount"] = _entity.DerivedEntities.Length;
         }
 
         private static bool IsDerivedFrom(TargetEntity candidate, TargetEntity parent)

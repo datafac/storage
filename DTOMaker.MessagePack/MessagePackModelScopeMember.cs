@@ -17,20 +17,20 @@ namespace DTOMaker.MessagePack
                 memberKeyOffset = (classHeight - 1) * 100;
             }
             int memberKey = memberKeyOffset + member.Sequence;
-            _variables["MemberKey"] = memberKey;
-            _variables["ScalarMemberKey"] = memberKey;
+            _tokens["MemberKey"] = memberKey;
+            _tokens["ScalarMemberKey"] = memberKey;
             if (member.MemberIsNullable)
-                _variables["ScalarNullableMemberKey"] = memberKey;
+                _tokens["ScalarNullableMemberKey"] = memberKey;
             else
-                _variables["ScalarRequiredMemberKey"] = memberKey;
+                _tokens["ScalarRequiredMemberKey"] = memberKey;
             if (member.MemberIsVector)
-                _variables["VectorMemberKey"] = memberKey;
+                _tokens["VectorMemberKey"] = memberKey;
             if (member.MemberIsEntity)
             {
                 if (member.MemberIsNullable)
-                    _variables["NullableEntityMemberKey"] = memberKey;
+                    _tokens["NullableEntityMemberKey"] = memberKey;
                 else
-                    _variables["RequiredEntityMemberKey"] = memberKey;
+                    _tokens["RequiredEntityMemberKey"] = memberKey;
             }
         }
     }

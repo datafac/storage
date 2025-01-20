@@ -8,7 +8,7 @@ namespace DTOMaker.Gentime
         private static readonly ModelScopeEmpty _instance = new ModelScopeEmpty();
         public static ModelScopeEmpty Instance => _instance;
 
-        public IDictionary<string, object?> Variables { get; } = new Dictionary<string, object?>();
+        public IReadOnlyDictionary<string, object?> Tokens { get; } = new Dictionary<string, object?>();
 
         private ModelScopeEmpty() { }
 

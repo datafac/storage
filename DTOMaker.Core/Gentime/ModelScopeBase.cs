@@ -7,17 +7,17 @@ namespace DTOMaker.Gentime
         protected readonly IModelScope _parent;
         protected readonly IScopeFactory _factory;
         protected readonly ILanguage _language;
-        protected readonly Dictionary<string, object?> _variables = new Dictionary<string, object?>();
-        public IDictionary<string, object?> Variables => _variables;
+        protected readonly Dictionary<string, object?> _tokens = new Dictionary<string, object?>();
+        public IReadOnlyDictionary<string, object?> Tokens => _tokens;
 
         protected ModelScopeBase(IModelScope parent, IScopeFactory factory, ILanguage language)
         {
             _parent = parent;
             _factory = factory;
             _language = language;
-            foreach (var token in parent.Variables)
+            foreach (var token in parent.Tokens)
             {
-                _variables[token.Key] = token.Value;
+                _tokens[token.Key] = token.Value;
             }
         }
 

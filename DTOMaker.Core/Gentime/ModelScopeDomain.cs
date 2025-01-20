@@ -12,7 +12,7 @@ namespace DTOMaker.Gentime
             : base(parent, factory, language)
         {
             _domain = domain;
-            _variables["DomainName"] = domain.Name;
+            _tokens["DomainName"] = domain.Name;
         }
 
         protected override (bool?, IModelScope[]) OnGetInnerScopes(string iteratorName)

@@ -9,39 +9,39 @@ namespace DTOMaker.Gentime
             : base(parent, factory, language)
         {
             _member = member;
-            _variables["MemberIsObsolete"] = member.IsObsolete;
-            _variables["MemberObsoleteMessage"] = member.ObsoleteMessage;
-            _variables["MemberObsoleteIsError"] = member.ObsoleteIsError;
-            _variables["MemberType"] = _language.GetDataTypeToken(member.MemberType);
-            _variables["MemberTypeName"] = member.MemberType.ShortName;
-            _variables["MemberTypeNameSpace"] = member.MemberType.NameSpace;
-            _variables["MemberIsNullable"] = member.MemberIsNullable;
-            _variables["MemberIsValueType"] = member.MemberIsValueType;
-            _variables["MemberIsReferenceType"] = member.MemberIsReferenceType;
-            _variables["MemberIsVector"] = member.MemberIsVector;
-            _variables["MemberSequence"] = member.Sequence;
-            _variables["ScalarMemberSequence"] = member.Sequence;
+            _tokens["MemberIsObsolete"] = member.IsObsolete;
+            _tokens["MemberObsoleteMessage"] = member.ObsoleteMessage;
+            _tokens["MemberObsoleteIsError"] = member.ObsoleteIsError;
+            _tokens["MemberType"] = _language.GetDataTypeToken(member.MemberType);
+            _tokens["MemberTypeName"] = member.MemberType.ShortName;
+            _tokens["MemberTypeNameSpace"] = member.MemberType.NameSpace;
+            _tokens["MemberIsNullable"] = member.MemberIsNullable;
+            _tokens["MemberIsValueType"] = member.MemberIsValueType;
+            _tokens["MemberIsReferenceType"] = member.MemberIsReferenceType;
+            _tokens["MemberIsVector"] = member.MemberIsVector;
+            _tokens["MemberSequence"] = member.Sequence;
+            _tokens["ScalarMemberSequence"] = member.Sequence;
             if (member.MemberIsNullable)
-                _variables["ScalarNullableMemberSequence"] = member.Sequence;
+                _tokens["ScalarNullableMemberSequence"] = member.Sequence;
             else
-                _variables["ScalarRequiredMemberSequence"] = member.Sequence;
-            _variables["VectorMemberSequence"] = member.Sequence;
-            _variables["MemberName"] = member.Name;
-            _variables["ScalarMemberName"] = member.Name;
+                _tokens["ScalarRequiredMemberSequence"] = member.Sequence;
+            _tokens["VectorMemberSequence"] = member.Sequence;
+            _tokens["MemberName"] = member.Name;
+            _tokens["ScalarMemberName"] = member.Name;
             if (member.MemberIsNullable)
-                _variables["ScalarNullableMemberName"] = member.Name;
+                _tokens["ScalarNullableMemberName"] = member.Name;
             else
-                _variables["ScalarRequiredMemberName"] = member.Name;
-            _variables["VectorMemberName"] = member.Name;
-            _variables["MemberJsonName"] = member.Name.ToCamelCase();
-            _variables["MemberDefaultValue"] = _language.GetDefaultValue(member.MemberType);
-            _variables["MemberIsEntity"] = member.MemberIsEntity;
+                _tokens["ScalarRequiredMemberName"] = member.Name;
+            _tokens["VectorMemberName"] = member.Name;
+            _tokens["MemberJsonName"] = member.Name.ToCamelCase();
+            _tokens["MemberDefaultValue"] = _language.GetDefaultValue(member.MemberType);
+            _tokens["MemberIsEntity"] = member.MemberIsEntity;
             if (member.MemberIsEntity)
             {
                 if (member.MemberIsNullable)
-                    _variables["NullableEntityMemberName"] = member.Name;
+                    _tokens["NullableEntityMemberName"] = member.Name;
                 else
-                    _variables["RequiredEntityMemberName"] = member.Name;
+                    _tokens["RequiredEntityMemberName"] = member.Name;
             }
         }
 

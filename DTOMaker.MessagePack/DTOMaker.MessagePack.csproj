@@ -61,4 +61,8 @@
 		</PackageReference>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\DTOMaker.Core\DTOMaker.Core.csproj" />
+	</ItemGroup>
+
 </Project>

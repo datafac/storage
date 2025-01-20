@@ -4,7 +4,7 @@ namespace DTOMaker.Gentime
 {
     public interface IModelScope
     {
-        IDictionary<string, object?> Variables { get; }
+        IReadOnlyDictionary<string, object?> Tokens { get; }
         (bool?, IModelScope[]) GetInnerScopes(string iteratorName);
     }
 }
