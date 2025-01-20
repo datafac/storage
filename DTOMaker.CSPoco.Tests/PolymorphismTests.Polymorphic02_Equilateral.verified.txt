@@ -17,7 +17,7 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "Equilateral";
 
-        public new static Equilateral CreateFrom(string entityId, MyOrg.Models.CSPoco.IEquilateral source)
+        public new static Equilateral CreateFrom(string entityId, MyOrg.Models.IEquilateral source)
         {
             return entityId switch
             {

@@ -30,10 +30,13 @@ namespace T_MemberTypeNameSpace_.CSPoco
         protected override string OnGetEntityId() => "T_MemberTypeName_";
     }
 }
+namespace T_BaseNameSpace_
+{
+    public interface IT_BaseName_ { }
+}
 namespace T_BaseNameSpace_.CSPoco
 {
     using T_MemberType_ = System.Int32;
-    public interface IT_BaseName_ { }
     public abstract class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
         public T_BaseName_() { }
@@ -56,11 +59,11 @@ namespace T_BaseNameSpace_.CSPoco
     }
 }
 //##}
-namespace T_NameSpace_.CSPoco
+//##if (false) {
+namespace T_NameSpace_
 {
-    //##if (false) {
     using T_MemberType_ = System.Int32;
-    public interface IT_EntityName_ : T_BaseNameSpace_.CSPoco.IT_BaseName_
+    public interface IT_EntityName_ : T_BaseNameSpace_.IT_BaseName_
     {
         T_MemberType_? T_ScalarNullableMemberName_ { get; set; }
         T_MemberType_ T_ScalarRequiredMemberName_ { get; set; }
@@ -68,6 +71,12 @@ namespace T_NameSpace_.CSPoco
         T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberName_ { get; set; }
         T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; set; }
     }
+}
+//##}
+namespace T_NameSpace_.CSPoco
+{
+    //##if (false) {
+    using T_MemberType_ = System.Int32;
     //##}
     public partial class T_EntityName_ : T_BaseNameSpace_.CSPoco.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>
     {
@@ -84,13 +93,13 @@ namespace T_NameSpace_.CSPoco
 
         public new const string EntityId = "T_EntityId_";
 
-        public new static T_EntityName_ CreateFrom(string entityId, T_NameSpace_.CSPoco.IT_EntityName_ source)
+        public new static T_EntityName_ CreateFrom(string entityId, T_NameSpace_.IT_EntityName_ source)
         {
             return entityId switch
             {
                 //##foreach(var derived in entity.DerivedEntities) {
                 //##using var _ = NewScope(derived);
-                T_NameSpace_.CSPoco.T_EntityName_.EntityId => new T_NameSpace_.CSPoco.T_EntityName_(source as T_NameSpace_.CSPoco.IT_EntityName_),
+                T_NameSpace_.CSPoco.T_EntityName_.EntityId => new T_NameSpace_.CSPoco.T_EntityName_(source as T_NameSpace_.IT_EntityName_),
                 //##}
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };

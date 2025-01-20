@@ -38,10 +38,13 @@ Emit("        protected override IFreezable OnPartCopy() => throw new NotImpleme
 Emit("        protected override string OnGetEntityId() => \"T_MemberTypeName_\";");
 Emit("    }");
 Emit("}");
+Emit("namespace T_BaseNameSpace_");
+Emit("{");
+Emit("    public interface IT_BaseName_ { }");
+Emit("}");
 Emit("namespace T_BaseNameSpace_.CSPoco");
 Emit("{");
 Emit("    using T_MemberType_ = System.Int32;");
-Emit("    public interface IT_BaseName_ { }");
 Emit("    public abstract class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>");
 Emit("    {");
 Emit("        public T_BaseName_() { }");
@@ -64,11 +67,11 @@ Emit("        public override int GetHashCode() => base.GetHashCode();");
 Emit("    }");
 Emit("}");
 }
-Emit("namespace T_NameSpace_.CSPoco");
+if (false) {
+Emit("namespace T_NameSpace_");
 Emit("{");
-    if (false) {
 Emit("    using T_MemberType_ = System.Int32;");
-Emit("    public interface IT_EntityName_ : T_BaseNameSpace_.CSPoco.IT_BaseName_");
+Emit("    public interface IT_EntityName_ : T_BaseNameSpace_.IT_BaseName_");
 Emit("    {");
 Emit("        T_MemberType_? T_ScalarNullableMemberName_ { get; set; }");
 Emit("        T_MemberType_ T_ScalarRequiredMemberName_ { get; set; }");
@@ -76,6 +79,12 @@ Emit("        ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }");
 Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberName_ { get; set; }");
 Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; set; }");
 Emit("    }");
+Emit("}");
+}
+Emit("namespace T_NameSpace_.CSPoco");
+Emit("{");
+    if (false) {
+Emit("    using T_MemberType_ = System.Int32;");
     }
 Emit("    public partial class T_EntityName_ : T_BaseNameSpace_.CSPoco.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>");
 Emit("    {");
@@ -92,13 +101,13 @@ Emit("        private const int T_MemberDefaultValue_ = 0;");
 Emit("");
 Emit("        public new const string EntityId = \"T_EntityId_\";");
 Emit("");
-Emit("        public new static T_EntityName_ CreateFrom(string entityId, T_NameSpace_.CSPoco.IT_EntityName_ source)");
+Emit("        public new static T_EntityName_ CreateFrom(string entityId, T_NameSpace_.IT_EntityName_ source)");
 Emit("        {");
 Emit("            return entityId switch");
 Emit("            {");
                 foreach(var derived in entity.DerivedEntities) {
                 using var _ = NewScope(derived);
-Emit("                T_NameSpace_.CSPoco.T_EntityName_.EntityId => new T_NameSpace_.CSPoco.T_EntityName_(source as T_NameSpace_.CSPoco.IT_EntityName_),");
+Emit("                T_NameSpace_.CSPoco.T_EntityName_.EntityId => new T_NameSpace_.CSPoco.T_EntityName_(source as T_NameSpace_.IT_EntityName_),");
                 }
 Emit("                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)");
 Emit("            };");

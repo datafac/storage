@@ -23,16 +23,16 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "Polygon";
 
-        public new static Polygon CreateFrom(string entityId, MyOrg.Models.CSPoco.IPolygon source)
+        public new static Polygon CreateFrom(string entityId, MyOrg.Models.IPolygon source)
         {
             return entityId switch
             {
-                MyOrg.Models.CSPoco.Equilateral.EntityId => new MyOrg.Models.CSPoco.Equilateral(source as MyOrg.Models.CSPoco.IEquilateral),
-                MyOrg.Models.CSPoco.Quadrilateral.EntityId => new MyOrg.Models.CSPoco.Quadrilateral(source as MyOrg.Models.CSPoco.IQuadrilateral),
-                MyOrg.Models.CSPoco.Rectangle.EntityId => new MyOrg.Models.CSPoco.Rectangle(source as MyOrg.Models.CSPoco.IRectangle),
-                MyOrg.Models.CSPoco.RightTriangle.EntityId => new MyOrg.Models.CSPoco.RightTriangle(source as MyOrg.Models.CSPoco.IRightTriangle),
-                MyOrg.Models.CSPoco.Square.EntityId => new MyOrg.Models.CSPoco.Square(source as MyOrg.Models.CSPoco.ISquare),
-                MyOrg.Models.CSPoco.Triangle.EntityId => new MyOrg.Models.CSPoco.Triangle(source as MyOrg.Models.CSPoco.ITriangle),
+                MyOrg.Models.CSPoco.Equilateral.EntityId => new MyOrg.Models.CSPoco.Equilateral(source as MyOrg.Models.IEquilateral),
+                MyOrg.Models.CSPoco.Quadrilateral.EntityId => new MyOrg.Models.CSPoco.Quadrilateral(source as MyOrg.Models.IQuadrilateral),
+                MyOrg.Models.CSPoco.Rectangle.EntityId => new MyOrg.Models.CSPoco.Rectangle(source as MyOrg.Models.IRectangle),
+                MyOrg.Models.CSPoco.RightTriangle.EntityId => new MyOrg.Models.CSPoco.RightTriangle(source as MyOrg.Models.IRightTriangle),
+                MyOrg.Models.CSPoco.Square.EntityId => new MyOrg.Models.CSPoco.Square(source as MyOrg.Models.ISquare),
+                MyOrg.Models.CSPoco.Triangle.EntityId => new MyOrg.Models.CSPoco.Triangle(source as MyOrg.Models.ITriangle),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }

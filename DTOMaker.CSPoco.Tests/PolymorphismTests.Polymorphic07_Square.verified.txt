@@ -17,7 +17,7 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "Square";
 
-        public new static Square CreateFrom(string entityId, MyOrg.Models.CSPoco.ISquare source)
+        public new static Square CreateFrom(string entityId, MyOrg.Models.ISquare source)
         {
             return entityId switch
             {

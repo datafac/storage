@@ -17,7 +17,7 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "MyOrg.Models.MyOtherDTO";
 
-        public new static MyOtherDTO CreateFrom(string entityId, MyOrg.Models.CSPoco.IMyOtherDTO source)
+        public new static MyOtherDTO CreateFrom(string entityId, MyOrg.Models.IMyOtherDTO source)
         {
             return entityId switch
             {

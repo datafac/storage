@@ -17,7 +17,7 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "Rectangle";
 
-        public new static Rectangle CreateFrom(string entityId, MyOrg.Models.CSPoco.IRectangle source)
+        public new static Rectangle CreateFrom(string entityId, MyOrg.Models.IRectangle source)
         {
             return entityId switch
             {
