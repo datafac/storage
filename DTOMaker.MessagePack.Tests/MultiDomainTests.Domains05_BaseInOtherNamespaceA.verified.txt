@@ -22,7 +22,7 @@ namespace MyOrg.DomainA.MessagePack
 
         public new const int EntityKey = 1;
 
-        public new static MyBase Create(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static MyBase CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
         {
             return entityKey switch
             {
@@ -30,6 +30,8 @@ namespace MyOrg.DomainA.MessagePack
                 _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }
+
+        protected override string OnGetEntityId() => EntityKey.ToString();
 
         protected override void OnFreeze()
         {

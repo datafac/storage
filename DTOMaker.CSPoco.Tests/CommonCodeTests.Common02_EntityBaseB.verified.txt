@@ -16,10 +16,25 @@ namespace MyOrg.Models.CSPoco
         // Derived entities: 1
         // - MyDTO
 
+        public new const string EntityId = "MyOrg.Models.MyBase";
+
+        public new static MyBase CreateFrom(string entityId, MyOrg.Models.CSPoco.IMyBase source)
+        {
+            return entityId switch
+            {
+                MyOrg.Models.CSPoco.MyDTO.EntityId => new MyOrg.Models.CSPoco.MyDTO(source as MyOrg.Models.CSPoco.IMyDTO),
+                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
+            };
+        }
+
+        protected override string OnGetEntityId() => EntityId;
+
         protected override void OnFreeze()
         {
             base.OnFreeze();
         }
+
+        protected override IFreezable OnPartCopy() => new MyBase(this);
 
         public MyBase() { }
         public MyBase(IMyBase source) : base(source)

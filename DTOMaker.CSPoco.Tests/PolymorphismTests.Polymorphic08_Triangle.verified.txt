@@ -17,10 +17,26 @@ namespace MyOrg.Models.CSPoco
         // - Equilateral
         // - RightTriangle
 
+        public new const string EntityId = "Triangle";
+
+        public new static Triangle CreateFrom(string entityId, MyOrg.Models.CSPoco.ITriangle source)
+        {
+            return entityId switch
+            {
+                MyOrg.Models.CSPoco.Equilateral.EntityId => new MyOrg.Models.CSPoco.Equilateral(source as MyOrg.Models.CSPoco.IEquilateral),
+                MyOrg.Models.CSPoco.RightTriangle.EntityId => new MyOrg.Models.CSPoco.RightTriangle(source as MyOrg.Models.CSPoco.IRightTriangle),
+                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
+            };
+        }
+
+        protected override string OnGetEntityId() => EntityId;
+
         protected override void OnFreeze()
         {
             base.OnFreeze();
         }
+
+        protected override IFreezable OnPartCopy() => new Triangle(this);
 
         public Triangle() { }
         public Triangle(ITriangle source) : base(source)

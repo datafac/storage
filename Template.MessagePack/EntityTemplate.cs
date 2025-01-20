@@ -28,6 +28,7 @@ namespace T_MemberTypeNameSpace_.MessagePack
         public T_MemberTypeName_() { }
         public T_MemberTypeName_(IT_MemberTypeName_ source) { }
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
+        protected override string OnGetEntityId() => "T_MemberTypeName_";
     }
 }
 namespace T_BaseNameSpace_.MessagePack
@@ -105,7 +106,7 @@ namespace T_NameSpace_.MessagePack
 
         public new const int EntityKey = T_EntityKey_;
 
-        public new static T_EntityName_ Create(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static T_EntityName_ CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
         {
             return entityKey switch
             {
@@ -118,6 +119,8 @@ namespace T_NameSpace_.MessagePack
                 _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }
+
+        protected override string OnGetEntityId() => EntityKey.ToString();
 
         protected override void OnFreeze()
         {

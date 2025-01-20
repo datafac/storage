@@ -30,7 +30,6 @@ namespace DTOMaker.MemBlocks.Tests
         public void AttributeNamesMatch()
         {
             nameof(DTOMaker.MemBlocks.LayoutAttribute).Should().Be(nameof(DTOMaker.Models.MemBlocks.LayoutAttribute));
-            nameof(DTOMaker.MemBlocks.IdAttribute).Should().Be(nameof(DTOMaker.Models.MemBlocks.IdAttribute));
             nameof(DTOMaker.MemBlocks.OffsetAttribute).Should().Be(nameof(DTOMaker.Models.MemBlocks.OffsetAttribute));
             nameof(DTOMaker.MemBlocks.EndianAttribute).Should().Be(nameof(DTOMaker.Models.MemBlocks.EndianAttribute));
             nameof(DTOMaker.MemBlocks.StrLenAttribute).Should().Be(nameof(DTOMaker.Models.MemBlocks.StrLenAttribute));

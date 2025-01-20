@@ -15,6 +15,18 @@ namespace MyOrg.DomainA.CSPoco
     {
         // Derived entities: 0
 
+        public new const string EntityId = "MyOrg.DomainA.MyDTO";
+
+        public new static MyDTO CreateFrom(string entityId, MyOrg.DomainA.CSPoco.IMyDTO source)
+        {
+            return entityId switch
+            {
+                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
+            };
+        }
+
+        protected override string OnGetEntityId() => EntityId;
+
         protected override void OnFreeze()
         {
             base.OnFreeze();

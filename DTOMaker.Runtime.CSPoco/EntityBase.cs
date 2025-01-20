@@ -3,8 +3,11 @@ using System.Runtime.CompilerServices;
 
 namespace DTOMaker.Runtime.CSPoco
 {
-    public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
+    public abstract class EntityBase : IHasEntityId, IFreezable, IEquatable<EntityBase>
     {
+        protected abstract string OnGetEntityId();
+        public string GetEntityId() => OnGetEntityId();
+
         public EntityBase() { }
         public EntityBase(object? notUsed) { }
         private volatile bool _frozen;

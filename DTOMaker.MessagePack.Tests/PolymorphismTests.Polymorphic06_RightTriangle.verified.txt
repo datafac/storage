@@ -19,13 +19,15 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 4;
 
-        public new static RightTriangle Create(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static RightTriangle CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
         {
             return entityKey switch
             {
                 _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }
+
+        protected override string OnGetEntityId() => EntityKey.ToString();
 
         protected override void OnFreeze()
         {

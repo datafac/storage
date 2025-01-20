@@ -10,7 +10,6 @@ namespace DTOMaker.MemBlocks
         public bool HasEntityLayoutAttribute { get; set; }
         public LayoutMethod LayoutMethod { get; set; }
         public int BlockLength { get; set; }
-        public string EntityId { get; set; } = "_undefined_entity_id_";
 
         public MemBlockEntity(TargetDomain domain, string nameSpace, string name, Location location) : base(domain, nameSpace, name, location) { }
 

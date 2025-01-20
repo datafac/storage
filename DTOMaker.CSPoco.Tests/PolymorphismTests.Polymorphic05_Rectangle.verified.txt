@@ -15,6 +15,18 @@ namespace MyOrg.Models.CSPoco
     {
         // Derived entities: 0
 
+        public new const string EntityId = "Rectangle";
+
+        public new static Rectangle CreateFrom(string entityId, MyOrg.Models.CSPoco.IRectangle source)
+        {
+            return entityId switch
+            {
+                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
+            };
+        }
+
+        protected override string OnGetEntityId() => EntityId;
+
         protected override void OnFreeze()
         {
             base.OnFreeze();

@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace DTOMaker.MemBlocks
 {
-    public readonly struct IdAttribute { }
     public readonly struct LayoutAttribute { }
     public readonly struct OffsetAttribute { }
     public readonly struct EndianAttribute { }
@@ -22,17 +21,6 @@ namespace DTOMaker.MemBlocks
         {
             if (baseEntity is MemBlockEntity entity)
             {
-                entity.EntityId = entity.EntityName.FullName;
-                if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(IdAttribute)) is AttributeData idAttr)
-                {
-                    // found entity id attribute
-                    entity.HasEntityLayoutAttribute = true;
-                    var attributeArguments = idAttr.ConstructorArguments;
-                    if (CheckAttributeArguments(nameof(IdAttribute), attributeArguments, 1, entity, location))
-                    {
-                        TryGetAttributeArgumentValue<string>(entity, location, attributeArguments, 0, (value) => { entity.EntityId = value; });
-                    }
-                }
                 if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(LayoutAttribute)) is AttributeData entityLayoutAttr)
                 {
                     // found entity layout attribute

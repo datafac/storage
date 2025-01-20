@@ -35,6 +35,7 @@ Emit("        public static T_MemberTypeName_ Empty => _empty;");
 Emit("        public T_MemberTypeName_() { }");
 Emit("        public T_MemberTypeName_(IT_MemberTypeName_ source) { }");
 Emit("        protected override IFreezable OnPartCopy() => throw new NotImplementedException();");
+Emit("        protected override string OnGetEntityId() => \"T_MemberTypeName_\";");
 Emit("    }");
 Emit("}");
 Emit("namespace T_BaseNameSpace_.CSPoco");
@@ -89,6 +90,22 @@ Emit("        private const bool T_MemberObsoleteIsError_ = false;");
 Emit("        private const int T_MemberDefaultValue_ = 0;");
         }
 Emit("");
+Emit("        public new const string EntityId = \"T_EntityId_\";");
+Emit("");
+Emit("        public new static T_EntityName_ CreateFrom(string entityId, T_NameSpace_.CSPoco.IT_EntityName_ source)");
+Emit("        {");
+Emit("            return entityId switch");
+Emit("            {");
+                foreach(var derived in entity.DerivedEntities) {
+                using var _ = NewScope(derived);
+Emit("                T_NameSpace_.CSPoco.T_EntityName_.EntityId => new T_NameSpace_.CSPoco.T_EntityName_(source as T_NameSpace_.CSPoco.IT_EntityName_),");
+                }
+Emit("                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)");
+Emit("            };");
+Emit("        }");
+Emit("");
+Emit("        protected override string OnGetEntityId() => EntityId;");
+Emit("");
 Emit("        protected override void OnFreeze()");
 Emit("        {");
 Emit("            base.OnFreeze();");
@@ -104,10 +121,8 @@ Emit("            _T_RequiredEntityMemberName_.Freeze();");
             }
 Emit("        }");
 Emit("");
-        if (entity.DerivedEntityCount == 0) {
 Emit("        protected override IFreezable OnPartCopy() => new T_EntityName_(this);");
 Emit("");
-        }
 Emit("        public T_EntityName_() { }");
 Emit("        public T_EntityName_(IT_EntityName_ source) : base(source)");
 Emit("        {");

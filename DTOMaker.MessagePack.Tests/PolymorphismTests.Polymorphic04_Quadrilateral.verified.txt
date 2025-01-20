@@ -24,7 +24,7 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 5;
 
-        public new static Quadrilateral Create(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static Quadrilateral CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
         {
             return entityKey switch
             {
@@ -33,6 +33,8 @@ namespace MyOrg.Models.MessagePack
                 _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
             };
         }
+
+        protected override string OnGetEntityId() => EntityKey.ToString();
 
         protected override void OnFreeze()
         {

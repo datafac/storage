@@ -3,9 +3,11 @@ using System.Runtime.CompilerServices;
 
 namespace DTOMaker.Runtime.MemBlocks
 {
-    public abstract class EntityBase : IMemBlocksEntity, IFreezable, IEquatable<EntityBase>
+    public abstract class EntityBase : IHasEntityId, IMemBlocksEntity, IFreezable, IEquatable<EntityBase>
     {
         public const string EntityId = "EntityBase";
+        protected abstract string OnGetEntityId();
+        public string GetEntityId() => OnGetEntityId();
 
         public EntityBase() { }
         public EntityBase(object? notUsed, bool frozen)
@@ -26,8 +28,6 @@ namespace DTOMaker.Runtime.MemBlocks
             OnFreeze();
         }
 
-        protected abstract string OnGetEntityId();
-        public string GetEntityId() => OnGetEntityId();
         protected abstract int OnGetClassHeight();
         protected virtual void OnGetBuffers(ReadOnlyMemory<byte>[] buffers) { }
         public ReadOnlyMemory<ReadOnlyMemory<byte>> GetBuffers()

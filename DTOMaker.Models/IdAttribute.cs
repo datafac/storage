@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DTOMaker.Models.MemBlocks
+namespace DTOMaker.Models
 {
     [AttributeUsage(AttributeTargets.Interface, AllowMultiple = false)]
     public class IdAttribute : Attribute

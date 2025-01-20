@@ -17,10 +17,26 @@ namespace MyOrg.Models.CSPoco
         // - Rectangle
         // - Square
 
+        public new const string EntityId = "Quadrilateral";
+
+        public new static Quadrilateral CreateFrom(string entityId, MyOrg.Models.CSPoco.IQuadrilateral source)
+        {
+            return entityId switch
+            {
+                MyOrg.Models.CSPoco.Rectangle.EntityId => new MyOrg.Models.CSPoco.Rectangle(source as MyOrg.Models.CSPoco.IRectangle),
+                MyOrg.Models.CSPoco.Square.EntityId => new MyOrg.Models.CSPoco.Square(source as MyOrg.Models.CSPoco.ISquare),
+                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
+            };
+        }
+
+        protected override string OnGetEntityId() => EntityId;
+
         protected override void OnFreeze()
         {
             base.OnFreeze();
         }
+
+        protected override IFreezable OnPartCopy() => new Quadrilateral(this);
 
         public Quadrilateral() { }
         public Quadrilateral(IQuadrilateral source) : base(source)

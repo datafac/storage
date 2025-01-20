@@ -112,8 +112,17 @@ namespace DTOMaker.Gentime
                             }
                             else
                             {
-                                // todo base namespace may be different!
                                 entity.BaseName = new TypeFullName(baseNameSpace, baseName.Substring(1));
+                            }
+                        }
+                        entity.EntityId = entity.EntityName.FullName;
+                        if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(IdAttribute)) is AttributeData idAttr)
+                        {
+                            // found entity id attribute
+                            var attributeArguments = idAttr.ConstructorArguments;
+                            if (CheckAttributeArguments(nameof(IdAttribute), attributeArguments, 1, entity, idsLocation))
+                            {
+                                TryGetAttributeArgumentValue<string>(entity, idsLocation, attributeArguments, 0, (value) => { entity.EntityId = value; });
                             }
                         }
                         //var attributeArguments = entityAttr.ConstructorArguments;

@@ -15,6 +15,7 @@ namespace DTOMaker.Gentime
             _tokens["NameSpace"] = entity.EntityName.NameSpace;
             _tokens["EntityName"] = entity.EntityName.ShortName;
             _tokens["EntityName2"] = entity.EntityName.ShortName;
+            _tokens["EntityId"] = entity.EntityId;
             _tokens["BaseName"] = entity.Base?.EntityName.ShortName ?? TypeFullName.DefaultBase.ShortName;
             _tokens["BaseNameSpace"] = entity.Base?.EntityName.NameSpace ?? TypeFullName.DefaultBase.NameSpace;
             _tokens["BaseFullName"] = entity.Base?.EntityName.FullName ?? TypeFullName.DefaultBase.FullName;

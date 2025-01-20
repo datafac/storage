@@ -27,6 +27,7 @@ namespace T_MemberTypeNameSpace_.CSPoco
         public T_MemberTypeName_() { }
         public T_MemberTypeName_(IT_MemberTypeName_ source) { }
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
+        protected override string OnGetEntityId() => "T_MemberTypeName_";
     }
 }
 namespace T_BaseNameSpace_.CSPoco
@@ -80,6 +81,22 @@ namespace T_NameSpace_.CSPoco
         private const bool T_MemberObsoleteIsError_ = false;
         private const int T_MemberDefaultValue_ = 0;
         //##}
+
+        public new const string EntityId = "T_EntityId_";
+
+        public new static T_EntityName_ CreateFrom(string entityId, T_NameSpace_.CSPoco.IT_EntityName_ source)
+        {
+            return entityId switch
+            {
+                //##foreach(var derived in entity.DerivedEntities) {
+                //##using var _ = NewScope(derived);
+                T_NameSpace_.CSPoco.T_EntityName_.EntityId => new T_NameSpace_.CSPoco.T_EntityName_(source as T_NameSpace_.CSPoco.IT_EntityName_),
+                //##}
+                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
+            };
+        }
+
+        protected override string OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {

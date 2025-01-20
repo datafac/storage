@@ -12,7 +12,6 @@ namespace DTOMaker.MemBlocks
                 ?? throw new ArgumentException("Expected baseEntity to be a MemBlocksEntity", nameof(baseEntity));
 
             _tokens["BlockLength"] = entity.BlockLength;
-            _tokens["EntityId"] = entity.EntityId;
         }
     }
 }
