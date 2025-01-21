@@ -18,11 +18,11 @@ namespace MyOrg.DomainA.CSPoco
 
         public new const string EntityId = "MyOrg.DomainA.MyBase";
 
-        public new static MyBase CreateFrom(string entityId, MyOrg.DomainA.IMyBase source)
+        public new static MyBase? CreateFrom(string entityId, MyOrg.DomainA.IMyBase source)
         {
             return entityId switch
             {
-                MyOrg.DomainB.CSPoco.MyDTO.EntityId => new MyOrg.DomainB.CSPoco.MyDTO(source as MyOrg.DomainB.IMyDTO),
+                MyOrg.DomainB.CSPoco.MyDTO.EntityId => source is MyOrg.DomainB.IMyDTO source2 ? new MyOrg.DomainB.CSPoco.MyDTO(source2) : null,
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }

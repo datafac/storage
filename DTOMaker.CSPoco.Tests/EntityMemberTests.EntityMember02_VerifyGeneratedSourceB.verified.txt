@@ -17,7 +17,7 @@ namespace MyOrg.DomainB.CSPoco
 
         public new const string EntityId = "MyOrg.DomainB.MyDTO1";
 
-        public new static MyDTO1 CreateFrom(string entityId, MyOrg.DomainB.IMyDTO1 source)
+        public new static MyDTO1? CreateFrom(string entityId, MyOrg.DomainB.IMyDTO1 source)
         {
             return entityId switch
             {

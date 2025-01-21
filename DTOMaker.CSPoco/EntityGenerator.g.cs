@@ -101,13 +101,13 @@ Emit("        private const int T_MemberDefaultValue_ = 0;");
 Emit("");
 Emit("        public new const string EntityId = \"T_EntityId_\";");
 Emit("");
-Emit("        public new static T_EntityName_ CreateFrom(string entityId, T_NameSpace_.IT_EntityName_ source)");
+Emit("        public new static T_EntityName_? CreateFrom(string entityId, T_NameSpace_.IT_EntityName_ source)");
 Emit("        {");
 Emit("            return entityId switch");
 Emit("            {");
                 foreach(var derived in entity.DerivedEntities) {
                 using var _ = NewScope(derived);
-Emit("                T_NameSpace_.CSPoco.T_EntityName_.EntityId => new T_NameSpace_.CSPoco.T_EntityName_(source as T_NameSpace_.IT_EntityName_),");
+Emit("                T_NameSpace_.CSPoco.T_EntityName_.EntityId => source is T_NameSpace_.IT_EntityName_ source2 ? new T_NameSpace_.CSPoco.T_EntityName_(source2) : null,");
                 }
 Emit("                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)");
 Emit("            };");

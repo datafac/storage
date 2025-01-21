@@ -93,13 +93,13 @@ namespace T_NameSpace_.CSPoco
 
         public new const string EntityId = "T_EntityId_";
 
-        public new static T_EntityName_ CreateFrom(string entityId, T_NameSpace_.IT_EntityName_ source)
+        public new static T_EntityName_? CreateFrom(string entityId, T_NameSpace_.IT_EntityName_ source)
         {
             return entityId switch
             {
                 //##foreach(var derived in entity.DerivedEntities) {
                 //##using var _ = NewScope(derived);
-                T_NameSpace_.CSPoco.T_EntityName_.EntityId => new T_NameSpace_.CSPoco.T_EntityName_(source as T_NameSpace_.IT_EntityName_),
+                T_NameSpace_.CSPoco.T_EntityName_.EntityId => source is T_NameSpace_.IT_EntityName_ source2 ? new T_NameSpace_.CSPoco.T_EntityName_(source2) : null,
                 //##}
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
