@@ -19,6 +19,14 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 7;
 
+        public new static Rectangle CreateFrom(MyOrg.Models.IRectangle source)
+        {
+            return source switch
+            {
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+            };
+        }
+
         public new static Rectangle CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
         {
             return entityKey switch

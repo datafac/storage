@@ -22,6 +22,7 @@ Emit("using DTOMaker.Runtime.CSPoco;");
 Emit("using System;");
 Emit("");
 if (false) {
+Emit("using T_MemberType_ = System.Int32;");
 Emit("namespace T_MemberTypeNameSpace_");
 Emit("{");
 Emit("    public interface IT_MemberTypeName_ { }");
@@ -44,7 +45,6 @@ Emit("    public interface IT_BaseName_ { }");
 Emit("}");
 Emit("namespace T_BaseNameSpace_.CSPoco");
 Emit("{");
-Emit("    using T_MemberType_ = System.Int32;");
 Emit("    public abstract class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>");
 Emit("    {");
 Emit("        public T_BaseName_() { }");
@@ -66,11 +66,8 @@ Emit("        public override bool Equals(object? obj) => obj is T_BaseName_ oth
 Emit("        public override int GetHashCode() => base.GetHashCode();");
 Emit("    }");
 Emit("}");
-}
-if (false) {
 Emit("namespace T_NameSpace_");
 Emit("{");
-Emit("    using T_MemberType_ = System.Int32;");
 Emit("    public interface IT_EntityName_ : T_BaseNameSpace_.IT_BaseName_");
 Emit("    {");
 Emit("        T_MemberType_? T_NullableScalarMemberName_ { get; set; }");
@@ -84,7 +81,6 @@ Emit("}");
 Emit("namespace T_NameSpace_.CSPoco");
 Emit("{");
     if (false) {
-Emit("    using T_MemberType_ = System.Int32;");
     }
 Emit("    public partial class T_EntityName_ : T_BaseNameSpace_.CSPoco.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>");
 Emit("    {");
@@ -101,15 +97,15 @@ Emit("        private const int T_MemberDefaultValue_ = 0;");
 Emit("");
 Emit("        public new const string EntityId = \"T_EntityId_\";");
 Emit("");
-Emit("        public new static T_EntityName_? CreateFrom(string entityId, T_NameSpace_.IT_EntityName_ source)");
+Emit("        public new static T_EntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)");
 Emit("        {");
-Emit("            return entityId switch");
+Emit("            return source switch");
 Emit("            {");
                 foreach(var derived in entity.DerivedEntities) {
                 using var _ = NewScope(derived);
-Emit("                T_NameSpace_.CSPoco.T_EntityName_.EntityId => source is T_NameSpace_.IT_EntityName_ source2 ? new T_NameSpace_.CSPoco.T_EntityName_(source2) : null,");
+Emit("                T_NameSpace_.IT_EntityName_ source2 => new T_NameSpace_.CSPoco.T_EntityName_(source2),");
                 }
-Emit("                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)");
+Emit("                _ => throw new ArgumentException($\"Unexpected type: {source.GetType().Name}\", nameof(source))");
 Emit("            };");
 Emit("        }");
 Emit("");

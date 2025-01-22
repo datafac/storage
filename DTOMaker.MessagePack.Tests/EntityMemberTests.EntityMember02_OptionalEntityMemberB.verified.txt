@@ -19,6 +19,14 @@ namespace MyOrg.DomainB.MessagePack
 
         public new const int EntityKey = 2;
 
+        public new static MyDTO2 CreateFrom(MyOrg.DomainB.IMyDTO2 source)
+        {
+            return source switch
+            {
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+            };
+        }
+
         public new static MyDTO2 CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
         {
             return entityKey switch

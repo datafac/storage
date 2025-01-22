@@ -132,16 +132,17 @@ Emit("        public override bool Equals(object? obj) => obj is T_BaseName_ oth
 Emit("        public override int GetHashCode() => base.GetHashCode();");
 Emit("    }");
 Emit("}");
-}
-Emit("namespace T_NameSpace_.MemBlocks");
+Emit("namespace T_NameSpace_");
 Emit("{");
-    if(false) {
 Emit("    public interface IT_EntityName_ : T_BaseNameSpace_.MemBlocks.IT_BaseName_");
 Emit("    {");
 Emit("        T_MemberType_ T_ScalarMemberName_ { get; set; }");
 Emit("        ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }");
 Emit("    }");
-    }
+Emit("}");
+}
+Emit("namespace T_NameSpace_.MemBlocks");
+Emit("{");
 Emit("    public partial class T_EntityName_ : T_BaseNameSpace_.MemBlocks.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>");
 Emit("    {");
 Emit("        // Derived entities: T_DerivedEntityCount_");
@@ -161,6 +162,18 @@ Emit("        private readonly Memory<byte> _writableBlock;");
 Emit("        private readonly ReadOnlyMemory<byte> _readonlyBlock;");
 Emit("");
 Emit("        public new const string EntityId = \"T_EntityId_\";");
+Emit("");
+Emit("        public new static T_EntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)");
+Emit("        {");
+Emit("            return source switch");
+Emit("            {");
+                foreach(var derived in entity.DerivedEntities) {
+                using var _ = NewScope(derived);
+Emit("                T_NameSpace_.IT_EntityName_ source2 => new T_NameSpace_.MemBlocks.T_EntityName_(source2),");
+                }
+Emit("                _ => throw new ArgumentException($\"Unexpected type: {source.GetType().Name}\", nameof(source))");
+Emit("            };");
+Emit("        }");
 Emit("");
 Emit("        public new static T_EntityName_ CreateFrom(string entityId, ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)");
 Emit("        {");

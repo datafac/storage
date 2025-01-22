@@ -19,6 +19,14 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 4;
 
+        public new static RightTriangle CreateFrom(MyOrg.Models.IRightTriangle source)
+        {
+            return source switch
+            {
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+            };
+        }
+
         public new static RightTriangle CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
         {
             return entityKey switch

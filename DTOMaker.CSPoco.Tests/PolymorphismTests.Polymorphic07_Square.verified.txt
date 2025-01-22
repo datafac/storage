@@ -17,11 +17,11 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "Square";
 
-        public new static Square? CreateFrom(string entityId, MyOrg.Models.ISquare source)
+        public new static Square CreateFrom(MyOrg.Models.ISquare source)
         {
-            return entityId switch
+            return source switch
             {
-                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
             };
         }
 

@@ -23,6 +23,14 @@ namespace MyOrg.DomainB.MemBlocks
 
         public new const string EntityId = "MyOrg.DomainB.MyDTO";
 
+        public new static MyDTO CreateFrom(MyOrg.DomainB.IMyDTO source)
+        {
+            return source switch
+            {
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+            };
+        }
+
         public new static MyDTO CreateFrom(string entityId, ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
         {
             return entityId switch

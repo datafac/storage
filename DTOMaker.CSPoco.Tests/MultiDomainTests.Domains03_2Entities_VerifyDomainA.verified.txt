@@ -17,11 +17,11 @@ namespace MyOrg.DomainA.CSPoco
 
         public new const string EntityId = "MyOrg.DomainA.MyDTO";
 
-        public new static MyDTO? CreateFrom(string entityId, MyOrg.DomainA.IMyDTO source)
+        public new static MyDTO CreateFrom(MyOrg.DomainA.IMyDTO source)
         {
-            return entityId switch
+            return source switch
             {
-                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
             };
         }
 

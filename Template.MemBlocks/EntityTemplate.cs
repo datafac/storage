@@ -124,16 +124,17 @@ namespace T_BaseNameSpace_.MemBlocks
         public override int GetHashCode() => base.GetHashCode();
     }
 }
-//##}
-namespace T_NameSpace_.MemBlocks
+namespace T_NameSpace_
 {
-    //##if(false) {
     public interface IT_EntityName_ : T_BaseNameSpace_.MemBlocks.IT_BaseName_
     {
         T_MemberType_ T_ScalarMemberName_ { get; set; }
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
     }
-    //##}
+}
+//##}
+namespace T_NameSpace_.MemBlocks
+{
     public partial class T_EntityName_ : T_BaseNameSpace_.MemBlocks.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>
     {
         // Derived entities: T_DerivedEntityCount_
@@ -153,6 +154,18 @@ namespace T_NameSpace_.MemBlocks
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
         public new const string EntityId = "T_EntityId_";
+
+        public new static T_EntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)
+        {
+            return source switch
+            {
+                //##foreach(var derived in entity.DerivedEntities) {
+                //##using var _ = NewScope(derived);
+                T_NameSpace_.IT_EntityName_ source2 => new T_NameSpace_.MemBlocks.T_EntityName_(source2),
+                //##}
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+            };
+        }
 
         public new static T_EntityName_ CreateFrom(string entityId, ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
         {

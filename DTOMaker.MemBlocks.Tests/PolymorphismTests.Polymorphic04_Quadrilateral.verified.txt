@@ -25,6 +25,16 @@ namespace MyOrg.Models.MemBlocks
 
         public new const string EntityId = "Quadrilateral";
 
+        public new static Quadrilateral CreateFrom(MyOrg.Models.IQuadrilateral source)
+        {
+            return source switch
+            {
+                MyOrg.Models.IRectangle source2 => new MyOrg.Models.MemBlocks.Rectangle(source2),
+                MyOrg.Models.ISquare source2 => new MyOrg.Models.MemBlocks.Square(source2),
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+            };
+        }
+
         public new static Quadrilateral CreateFrom(string entityId, ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
         {
             return entityId switch

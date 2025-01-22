@@ -19,13 +19,13 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "Quadrilateral";
 
-        public new static Quadrilateral? CreateFrom(string entityId, MyOrg.Models.IQuadrilateral source)
+        public new static Quadrilateral CreateFrom(MyOrg.Models.IQuadrilateral source)
         {
-            return entityId switch
+            return source switch
             {
-                MyOrg.Models.CSPoco.Rectangle.EntityId => source is MyOrg.Models.IRectangle source2 ? new MyOrg.Models.CSPoco.Rectangle(source2) : null,
-                MyOrg.Models.CSPoco.Square.EntityId => source is MyOrg.Models.ISquare source2 ? new MyOrg.Models.CSPoco.Square(source2) : null,
-                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
+                MyOrg.Models.IRectangle source2 => new MyOrg.Models.CSPoco.Rectangle(source2),
+                MyOrg.Models.ISquare source2 => new MyOrg.Models.CSPoco.Square(source2),
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
             };
         }
 

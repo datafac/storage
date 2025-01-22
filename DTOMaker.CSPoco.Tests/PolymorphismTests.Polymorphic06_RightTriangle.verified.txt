@@ -17,11 +17,11 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "RightTriangle";
 
-        public new static RightTriangle? CreateFrom(string entityId, MyOrg.Models.IRightTriangle source)
+        public new static RightTriangle CreateFrom(MyOrg.Models.IRightTriangle source)
         {
-            return entityId switch
+            return source switch
             {
-                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
             };
         }
 

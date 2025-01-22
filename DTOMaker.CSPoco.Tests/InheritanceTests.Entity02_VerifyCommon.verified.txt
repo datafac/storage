@@ -18,12 +18,12 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "MyOrg.Models.MyBase";
 
-        public new static MyBase? CreateFrom(string entityId, MyOrg.Models.IMyBase source)
+        public new static MyBase CreateFrom(MyOrg.Models.IMyBase source)
         {
-            return entityId switch
+            return source switch
             {
-                MyOrg.Models.CSPoco.MyDTO.EntityId => source is MyOrg.Models.IMyDTO source2 ? new MyOrg.Models.CSPoco.MyDTO(source2) : null,
-                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
+                MyOrg.Models.IMyDTO source2 => new MyOrg.Models.CSPoco.MyDTO(source2),
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
             };
         }
 

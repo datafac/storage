@@ -15,6 +15,7 @@ using MessagePack;
 using System;
 
 //##if (false) {
+using T_MemberType_ = System.Int32;
 namespace T_MemberTypeNameSpace_
 {
     public interface IT_MemberTypeName_ { }
@@ -33,7 +34,6 @@ namespace T_MemberTypeNameSpace_.MessagePack
 }
 namespace T_BaseNameSpace_.MessagePack
 {
-    using T_MemberType_ = System.Int32;
     public interface IT_BaseName_ { }
     [MessagePackObject]
     [Union(T_NameSpace_.MessagePack.T_EntityName_.EntityKey, typeof(T_NameSpace_.MessagePack.T_EntityName_))]
@@ -60,11 +60,8 @@ namespace T_BaseNameSpace_.MessagePack
         public override int GetHashCode() => base.GetHashCode();
     }
 }
-//##}
-namespace T_NameSpace_.MessagePack
+namespace T_NameSpace_
 {
-    //##if (false) {
-    using T_MemberType_ = System.Int32;
     public interface IT_EntityName_ : T_BaseNameSpace_.MessagePack.IT_BaseName_
     {
         T_MemberType_? T_NullableScalarMemberName_ { get; set; }
@@ -73,7 +70,10 @@ namespace T_NameSpace_.MessagePack
         T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberName_ { get; set; }
         T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; set; }
     }
-    //##}
+}
+//##}
+namespace T_NameSpace_.MessagePack
+{
     [MessagePackObject]
     //##foreach (var derived in entity.DerivedEntities) {
     //##using var _ = NewScope(derived);
@@ -105,6 +105,18 @@ namespace T_NameSpace_.MessagePack
         //##}
 
         public new const int EntityKey = T_EntityKey_;
+
+        public new static T_EntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)
+        {
+            return source switch
+            {
+                //##foreach(var derived in entity.DerivedEntities) {
+                //##using var _ = NewScope(derived);
+                T_NameSpace_.IT_EntityName_ source2 => new T_NameSpace_.MessagePack.T_EntityName_(source2),
+                //##}
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+            };
+        }
 
         public new static T_EntityName_ CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
         {

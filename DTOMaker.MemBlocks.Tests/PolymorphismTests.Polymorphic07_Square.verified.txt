@@ -23,6 +23,14 @@ namespace MyOrg.Models.MemBlocks
 
         public new const string EntityId = "Square";
 
+        public new static Square CreateFrom(MyOrg.Models.ISquare source)
+        {
+            return source switch
+            {
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+            };
+        }
+
         public new static Square CreateFrom(string entityId, ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
         {
             return entityId switch
