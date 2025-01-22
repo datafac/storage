@@ -110,7 +110,7 @@ namespace T_NameSpace_.MessagePack
         {
             return source switch
             {
-                //##foreach(var derived in entity.DerivedEntities) {
+                //##foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
                 //##using var _ = NewScope(derived);
                 T_NameSpace_.IT_EntityName_ source2 => new T_NameSpace_.MessagePack.T_EntityName_(source2),
                 //##}

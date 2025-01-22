@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using DTOMaker.Gentime;
 namespace DTOMaker.CSPoco;
 #pragma warning disable CS0162 // Unreachable code detected
@@ -101,7 +103,7 @@ Emit("        public new static T_EntityName_ CreateFrom(T_NameSpace_.IT_EntityN
 Emit("        {");
 Emit("            return source switch");
 Emit("            {");
-                foreach(var derived in entity.DerivedEntities) {
+                foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
                 using var _ = NewScope(derived);
 Emit("                T_NameSpace_.IT_EntityName_ source2 => new T_NameSpace_.CSPoco.T_EntityName_(source2),");
                 }

@@ -47,6 +47,8 @@ namespace DTOMaker.CLI
 
         private static readonly string Header =
             """
+            using System;
+            using System.Linq;
             using DTOMaker.Gentime;
             namespace _targetNamespace_;
             #pragma warning disable CS0162 // Unreachable code detected
