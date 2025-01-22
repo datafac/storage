@@ -7,10 +7,15 @@ namespace DTOMaker.Gentime
     public abstract class ModelScopeEntity : ModelScopeBase
     {
         protected readonly TargetEntity _entity;
+        public readonly int DerivedEntityCount;
+        public readonly int ClassHeight;
 
         public ModelScopeEntity(IModelScope parent, IScopeFactory factory, ILanguage language, TargetEntity entity)
             : base(parent, factory, language)
         {
+            DerivedEntityCount = entity.DerivedEntities.Length;
+            ClassHeight = entity.GetClassHeight();
+
             _entity = entity;
             _tokens["NameSpace"] = entity.EntityName.NameSpace;
             _tokens["EntityName"] = entity.EntityName.ShortName;
@@ -19,9 +24,8 @@ namespace DTOMaker.Gentime
             _tokens["BaseName"] = entity.Base?.EntityName.ShortName ?? TypeFullName.DefaultBase.ShortName;
             _tokens["BaseNameSpace"] = entity.Base?.EntityName.NameSpace ?? TypeFullName.DefaultBase.NameSpace;
             _tokens["BaseFullName"] = entity.Base?.EntityName.FullName ?? TypeFullName.DefaultBase.FullName;
-            _tokens["ClassHeight"] = entity.GetClassHeight();
-
-            _tokens["DerivedEntityCount"] = _entity.DerivedEntities.Length;
+            _tokens["ClassHeight"] = ClassHeight;
+            _tokens["DerivedEntityCount"] = DerivedEntityCount;
         }
 
         private static bool IsDerivedFrom(TargetEntity candidate, TargetEntity parent)
@@ -31,8 +35,6 @@ namespace DTOMaker.Gentime
             if (candidate.Base.EntityName.Equals(parent.EntityName)) return true;
             return IsDerivedFrom(candidate.Base, parent);
         }
-
-        public int DerivedEntityCount => _entity.DerivedEntities.Length;
 
         public ModelScopeMember[] Members
         {
