@@ -99,7 +99,11 @@ Emit("    {");
 Emit("        // Derived entities: T_DerivedEntityCount_");
         foreach (var derived in entity.DerivedEntities) {
         using var _ = NewScope(derived);
+        if (derived.DerivedEntityCount == 0) {
 Emit("        // - T_EntityName_");
+        } else {
+Emit("        // - T_EntityName_ (abstract)");
+        }
         }
         if (false) {
 Emit("        private const string T_MemberObsoleteMessage_ = null;");
@@ -122,7 +126,9 @@ Emit("            return source switch");
 Emit("            {");
                 foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
                 using var _ = NewScope(derived);
+                if (derived.DerivedEntityCount == 0) {
 Emit("                T_NameSpace_.IT_EntityName_ source2 => new T_NameSpace_.MessagePack.T_EntityName_(source2),");
+                }
                 }
 Emit("                _ => throw new ArgumentException($\"Unexpected type: {source.GetType().Name}\", nameof(source))");
 Emit("            };");

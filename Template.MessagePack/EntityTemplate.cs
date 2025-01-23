@@ -89,7 +89,11 @@ namespace T_NameSpace_.MessagePack
         // Derived entities: T_DerivedEntityCount_
         //##foreach (var derived in entity.DerivedEntities) {
         //##using var _ = NewScope(derived);
+        //##if (derived.DerivedEntityCount == 0) {
         // - T_EntityName_
+        //##} else {
+        // - T_EntityName_ (abstract)
+        //##}
         //##}
         //##if (false) {
         private const string T_MemberObsoleteMessage_ = null;
@@ -112,7 +116,9 @@ namespace T_NameSpace_.MessagePack
             {
                 //##foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
                 //##using var _ = NewScope(derived);
+                //##if (derived.DerivedEntityCount == 0) {
                 T_NameSpace_.IT_EntityName_ source2 => new T_NameSpace_.MessagePack.T_EntityName_(source2),
+                //##}
                 //##}
                 _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
             };
