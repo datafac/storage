@@ -24,6 +24,7 @@ namespace MyOrg.Models.MessagePack
 
         public new static MyBase CreateFrom(MyOrg.Models.IMyBase source)
         {
+            if (source is MyBase concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 MyOrg.Models.IMyDTO source2 => new MyOrg.Models.MessagePack.MyDTO(source2),
@@ -48,6 +49,9 @@ namespace MyOrg.Models.MessagePack
         }
 
         public MyBase() { }
+        public MyBase(MyBase source) : base(source)
+        {
+        }
         public MyBase(IMyBase source) : base(source)
         {
         }

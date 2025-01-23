@@ -13,6 +13,7 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
+    public sealed partial class Equilateral { }
     public partial class Equilateral : MyOrg.Models.MessagePack.Triangle, IEquilateral, IEquatable<Equilateral>
     {
         // Derived entities: 0
@@ -21,6 +22,7 @@ namespace MyOrg.Models.MessagePack
 
         public new static Equilateral CreateFrom(MyOrg.Models.IEquilateral source)
         {
+            if (source is Equilateral concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
@@ -45,6 +47,10 @@ namespace MyOrg.Models.MessagePack
         protected override IFreezable OnPartCopy() => new Equilateral(this);
 
         public Equilateral() { }
+        public Equilateral(Equilateral source) : base(source)
+        {
+            _Length = source._Length;
+        }
         public Equilateral(IEquilateral source) : base(source)
         {
             _Length = source.Length;

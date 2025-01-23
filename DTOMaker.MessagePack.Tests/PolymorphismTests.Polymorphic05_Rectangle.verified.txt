@@ -13,6 +13,7 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
+    public sealed partial class Rectangle { }
     public partial class Rectangle : MyOrg.Models.MessagePack.Quadrilateral, IRectangle, IEquatable<Rectangle>
     {
         // Derived entities: 0
@@ -21,6 +22,7 @@ namespace MyOrg.Models.MessagePack
 
         public new static Rectangle CreateFrom(MyOrg.Models.IRectangle source)
         {
+            if (source is Rectangle concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
@@ -45,6 +47,11 @@ namespace MyOrg.Models.MessagePack
         protected override IFreezable OnPartCopy() => new Rectangle(this);
 
         public Rectangle() { }
+        public Rectangle(Rectangle source) : base(source)
+        {
+            _Length = source._Length;
+            _Height = source._Height;
+        }
         public Rectangle(IRectangle source) : base(source)
         {
             _Length = source.Length;

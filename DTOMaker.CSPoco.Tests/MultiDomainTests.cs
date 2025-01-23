@@ -69,11 +69,11 @@ namespace DTOMaker.CSPoco.Tests
                 using DTOMaker.Models.MessagePack;
                 namespace MyOrg.DomainA
                 {
-                    [Entity] [EntityKey(1)] public interface IMyBase { }
+                    [Entity] public interface IMyBase { }
                 }
                 namespace MyOrg.DomainB
                 {
-                    [Entity] [EntityKey(2)] public interface IMyDTO : MyOrg.DomainA.IMyBase { }
+                    [Entity] public interface IMyDTO : MyOrg.DomainA.IMyBase { }
                 }
                 """;
 

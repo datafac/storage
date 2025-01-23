@@ -24,6 +24,7 @@ namespace MyOrg.DomainA.MessagePack
 
         public new static MyBase CreateFrom(MyOrg.DomainA.IMyBase source)
         {
+            if (source is MyBase concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 MyOrg.DomainB.IMyDTO source2 => new MyOrg.DomainB.MessagePack.MyDTO(source2),
@@ -48,6 +49,9 @@ namespace MyOrg.DomainA.MessagePack
         }
 
         public MyBase() { }
+        public MyBase(MyBase source) : base(source)
+        {
+        }
         public MyBase(IMyBase source) : base(source)
         {
         }

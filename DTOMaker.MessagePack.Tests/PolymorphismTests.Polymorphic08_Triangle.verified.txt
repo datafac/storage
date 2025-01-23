@@ -26,6 +26,7 @@ namespace MyOrg.Models.MessagePack
 
         public new static Triangle CreateFrom(MyOrg.Models.ITriangle source)
         {
+            if (source is Triangle concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 MyOrg.Models.IEquilateral source2 => new MyOrg.Models.MessagePack.Equilateral(source2),
@@ -52,6 +53,9 @@ namespace MyOrg.Models.MessagePack
         }
 
         public Triangle() { }
+        public Triangle(Triangle source) : base(source)
+        {
+        }
         public Triangle(ITriangle source) : base(source)
         {
         }

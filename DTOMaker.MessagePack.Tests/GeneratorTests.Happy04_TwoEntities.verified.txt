@@ -13,6 +13,7 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
+    public sealed partial class MyOtherDTO { }
     public partial class MyOtherDTO : DTOMaker.Runtime.MessagePack.EntityBase, IMyOtherDTO, IEquatable<MyOtherDTO>
     {
         // Derived entities: 0
@@ -21,6 +22,7 @@ namespace MyOrg.Models.MessagePack
 
         public new static MyOtherDTO CreateFrom(MyOrg.Models.IMyOtherDTO source)
         {
+            if (source is MyOtherDTO concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
@@ -45,6 +47,10 @@ namespace MyOrg.Models.MessagePack
         protected override IFreezable OnPartCopy() => new MyOtherDTO(this);
 
         public MyOtherDTO() { }
+        public MyOtherDTO(MyOtherDTO source) : base(source)
+        {
+            _Field1 = source._Field1;
+        }
         public MyOtherDTO(IMyOtherDTO source) : base(source)
         {
             _Field1 = source.Field1;

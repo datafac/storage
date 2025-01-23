@@ -26,6 +26,7 @@ namespace T_MemberTypeNameSpace_.MessagePack
     {
         private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();
         public static T_MemberTypeName_ Empty => _empty;
+        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source) => throw new NotImplementedException();
         public T_MemberTypeName_() { }
         public T_MemberTypeName_(IT_MemberTypeName_ source) { }
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
@@ -83,6 +84,8 @@ namespace T_NameSpace_.MessagePack
     //##}
     //##if (entity.DerivedEntityCount > 0) {
     public abstract partial class T_EntityName2_ { }
+    //##} else {
+    public sealed partial class T_EntityName3_ { }
     //##}
     public partial class T_EntityName_ : T_BaseNameSpace_.MessagePack.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>
     {
@@ -112,6 +115,7 @@ namespace T_NameSpace_.MessagePack
 
         public new static T_EntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)
         {
+            if (source is T_EntityName_ concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 //##foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
@@ -160,6 +164,27 @@ namespace T_NameSpace_.MessagePack
 
         //##}
         public T_EntityName_() { }
+        public T_EntityName_(T_EntityName_ source) : base(source)
+        {
+            //##foreach (var member in entity.Members) {
+            //##using var _ = NewScope(member);
+            //##if (member.IsVector) {
+            _T_VectorMemberName_ = source._T_VectorMemberName_;
+            //##} else if (member.IsEntity) {
+            //##if (member.IsNullable) {
+            _T_NullableEntityMemberName_ = source._T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source._T_NullableEntityMemberName_);
+            //##} else {
+            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source._T_RequiredEntityMemberName_);
+            //##}
+            //##} else {
+            //##if (member.IsNullable) {
+            _T_NullableScalarMemberName_ = source._T_NullableScalarMemberName_;
+            //##} else {
+            _T_RequiredScalarMemberName_ = source._T_RequiredScalarMemberName_;
+            //##}
+            //##}
+            //##}
+        }
         public T_EntityName_(IT_EntityName_ source) : base(source)
         {
             //##foreach (var member in entity.Members) {
@@ -168,9 +193,9 @@ namespace T_NameSpace_.MessagePack
             _T_VectorMemberName_ = source.T_VectorMemberName_;
             //##} else if (member.IsEntity) {
             //##if (member.IsNullable) {
-            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : new T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_(source.T_NullableEntityMemberName_);
+            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);
             //##} else {
-            _T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_(source.T_RequiredEntityMemberName_);
+            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);
             //##}
             //##} else {
             //##if (member.IsNullable) {
@@ -212,7 +237,7 @@ namespace T_NameSpace_.MessagePack
             set
             {
                 ThrowIfFrozen();
-                _T_NullableEntityMemberName_ = value is null ? null : new T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_(value);
+                _T_NullableEntityMemberName_ = value is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(value);
             }
         }
         //##} else {
@@ -230,7 +255,7 @@ namespace T_NameSpace_.MessagePack
             set
             {
                 ThrowIfFrozen();
-                _T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_(value);
+                _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(value);
             }
         }
         //##}

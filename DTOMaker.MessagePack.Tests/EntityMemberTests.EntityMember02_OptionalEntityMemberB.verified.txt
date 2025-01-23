@@ -13,6 +13,7 @@ using System;
 namespace MyOrg.DomainB.MessagePack
 {
     [MessagePackObject]
+    public sealed partial class MyDTO2 { }
     public partial class MyDTO2 : DTOMaker.Runtime.MessagePack.EntityBase, IMyDTO2, IEquatable<MyDTO2>
     {
         // Derived entities: 0
@@ -21,6 +22,7 @@ namespace MyOrg.DomainB.MessagePack
 
         public new static MyDTO2 CreateFrom(MyOrg.DomainB.IMyDTO2 source)
         {
+            if (source is MyDTO2 concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
@@ -46,9 +48,13 @@ namespace MyOrg.DomainB.MessagePack
         protected override IFreezable OnPartCopy() => new MyDTO2(this);
 
         public MyDTO2() { }
+        public MyDTO2(MyDTO2 source) : base(source)
+        {
+            _Member1 = source._Member1 is null ? null : MyOrg.DomainA.MessagePack.MyDTO1.CreateFrom(source._Member1);
+        }
         public MyDTO2(IMyDTO2 source) : base(source)
         {
-            _Member1 = source.Member1 is null ? null : new MyOrg.DomainA.MessagePack.MyDTO1(source.Member1);
+            _Member1 = source.Member1 is null ? null : MyOrg.DomainA.MessagePack.MyDTO1.CreateFrom(source.Member1);
         }
 
         [IgnoreMember]
@@ -65,7 +71,7 @@ namespace MyOrg.DomainB.MessagePack
             set
             {
                 ThrowIfFrozen();
-                _Member1 = value is null ? null : new MyOrg.DomainA.MessagePack.MyDTO1(value);
+                _Member1 = value is null ? null : MyOrg.DomainA.MessagePack.MyDTO1.CreateFrom(value);
             }
         }
 

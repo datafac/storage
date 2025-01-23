@@ -32,6 +32,7 @@ namespace MyOrg.Models.MessagePack
 
         public new static Polygon CreateFrom(MyOrg.Models.IPolygon source)
         {
+            if (source is Polygon concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 MyOrg.Models.IEquilateral source2 => new MyOrg.Models.MessagePack.Equilateral(source2),
@@ -62,6 +63,9 @@ namespace MyOrg.Models.MessagePack
         }
 
         public Polygon() { }
+        public Polygon(Polygon source) : base(source)
+        {
+        }
         public Polygon(IPolygon source) : base(source)
         {
         }

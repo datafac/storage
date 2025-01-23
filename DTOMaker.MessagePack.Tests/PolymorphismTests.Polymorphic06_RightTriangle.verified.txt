@@ -13,6 +13,7 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
+    public sealed partial class RightTriangle { }
     public partial class RightTriangle : MyOrg.Models.MessagePack.Triangle, IRightTriangle, IEquatable<RightTriangle>
     {
         // Derived entities: 0
@@ -21,6 +22,7 @@ namespace MyOrg.Models.MessagePack
 
         public new static RightTriangle CreateFrom(MyOrg.Models.IRightTriangle source)
         {
+            if (source is RightTriangle concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
@@ -45,6 +47,11 @@ namespace MyOrg.Models.MessagePack
         protected override IFreezable OnPartCopy() => new RightTriangle(this);
 
         public RightTriangle() { }
+        public RightTriangle(RightTriangle source) : base(source)
+        {
+            _Length = source._Length;
+            _Height = source._Height;
+        }
         public RightTriangle(IRightTriangle source) : base(source)
         {
             _Length = source.Length;

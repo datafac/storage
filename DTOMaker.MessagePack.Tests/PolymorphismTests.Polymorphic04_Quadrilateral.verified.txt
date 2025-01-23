@@ -26,6 +26,7 @@ namespace MyOrg.Models.MessagePack
 
         public new static Quadrilateral CreateFrom(MyOrg.Models.IQuadrilateral source)
         {
+            if (source is Quadrilateral concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 MyOrg.Models.IRectangle source2 => new MyOrg.Models.MessagePack.Rectangle(source2),
@@ -52,6 +53,9 @@ namespace MyOrg.Models.MessagePack
         }
 
         public Quadrilateral() { }
+        public Quadrilateral(Quadrilateral source) : base(source)
+        {
+        }
         public Quadrilateral(IQuadrilateral source) : base(source)
         {
         }
