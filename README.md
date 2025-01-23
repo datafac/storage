@@ -1,32 +1,40 @@
 # DTOMaker
 
-Types and source generators for building DTOs (Data Transport Objects) 
-and related POCOs (Plain Old C# Objects).
+Supports model-first development of DTOs (Data Transport Objects) 
+and related POCOs (Plain Old C# Objects). Models are defined as C# interfaces with
+additional attributes.
 
-todo build badge
+[![Build-Deploy](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml)
 
 *Warning: This is pre-release software under active development. Breaking changes may occur.*
+
+This repo includes the following packages:
 
 ## DTOMaker.Models
 Attributes for defining simple data models as interfaces in C#.
 
-## DTOMaker.Models.MemBlocks
-Additional attributes used by the DTOMaker.MemBlocks source generator, to 
-manage entity and member memory layout.
-
+## DTOMaker.MessagePack
+A source generator that creates MessagePack DTOs (Data Transport Objects).
+See https://github.com/MessagePack-CSharp/MessagePack-CSharp.
 ## DTOMaker.Models.MessagePack
 Additional attributes used by the DTOMaker.MessagePack source generator, to manage
 MessagePack entity and member keys.
 
-## DTOMaker.Core
-Core types used by source generators at compile-time, including a common syntax receiver, and a powerful template processor.
+## DTOMaker.MemBlocks
+Generates DTOs whose internal data is a single memory block (Memory\<byte\>). Property getters and setters decode and encode
+values directly to the block with explicit byte ordering (little-endian or big-endian).
+## DTOMaker.Models.MemBlocks
+Additional attributes used by the DTOMaker.MemBlocks source generator, to 
+manage entity and member memory layout.
 
-## Features
+## DTOMaker.CSPoco
+Generates basic POCOs (Plain Old C# Objects) that implement the model interfaces.
 
-Features implemented:
-- DTOMaker.MessagePack source generator
-- DTOMaker.MemBlocks source generator
-- DTOMaker.CSPoco source generator
+## DTOMaker.Runtime
+Common types used at runtime by DTOMaker generated entities.
+
+## Other Features
+
 - Member value types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
 - String member types:
   - Required or nullable strings for CSPoco and MessagePack
@@ -37,24 +45,24 @@ Features implemented:
 - Fixed length arrays of above value types.
 - polymorphic types
 
-Features not implemented:
-- Nullable types. T? can be implemented with a pair of fields (Boolean, T).
-- Enum data types. Enums can be implemented with an underlying integer property and a cast.
+## In progress:
+- embedded entity members (MessagePack)
+- embedded/external entity members (MemBlocks)
 
-In progress:
-- multi-namespace models
-- entity members
-
-Coming soon:
+## Coming soon:
 - reservation (hidden members)
 - Json (NewtonSoft) generator
 - Json (System.Text) generator
 - Orleans generator
 - ProtobufNet 3.0 generator
 - NetStrux generator
-- compact layout method
+- MemBlocks compact layout method
+- Enum data types. Workaround - enums can be implemented with an underlying 
+  integer property and a cast.
+- MemBlocks nullable types. Workaround - T? can be implemented with a pair
+  of members (Boolean, T).
 
-Coming later:
+## Coming later:
 - C# records generator
 - Google Protobuf .proto generation
 - model.json generation
@@ -62,12 +70,6 @@ Coming later:
 - generic patterns: lists, trees, unions, etc.
 - variable length arrays
 - logical value equality
-
-These models are consumed by the following source generators to emit DTO classes that implement the 
-model interfaces.
-
-## DTOMaker.Runtime
-Common types used at runtime by DTOMaker entities.
 
 ## Benchmarks
 
