@@ -4,22 +4,6 @@ namespace DTOMaker.Gentime
 {
     internal static class InternalExtensions
     {
-        public static string ToCamelCase(this string value)
-        {
-            ReadOnlySpan<char> input = value.AsSpan();
-            Span<char> output = stackalloc char[input.Length];
-            input.CopyTo(output);
-            for (int i = 0; i < output.Length; i++)
-            {
-                if (Char.IsLetter(output[i]))
-                {
-                    output[i] = Char.ToLower(output[i]);
-                    return new string(output.ToArray());
-                }
-            }
-            return new string(output.ToArray());
-        }
-
         public static ReadOnlyMemory<char> TrimStart(this ReadOnlyMemory<char> memory)
         {
             var span = memory.Span;
