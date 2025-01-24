@@ -156,8 +156,10 @@ namespace T_NameSpace_.MessagePack
         }
 
         protected T_AbstractEntityName_() { }
+
         protected T_AbstractEntityName_(T_AbstractEntityName_ source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
             //##if (member.IsVector) {
@@ -177,8 +179,10 @@ namespace T_NameSpace_.MessagePack
             //##}
             //##}
         }
+
         public T_AbstractEntityName_(IT_EntityName_ source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
             //##if (member.IsVector) {
@@ -392,9 +396,12 @@ namespace T_NameSpace_.MessagePack
 
         protected override IFreezable OnPartCopy() => new T_ConcreteEntityName_(this);
 
+        [SerializationConstructor]
         public T_ConcreteEntityName_() { }
+
         public T_ConcreteEntityName_(T_ConcreteEntityName_ source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
             //##if (member.IsVector) {
@@ -414,8 +421,10 @@ namespace T_NameSpace_.MessagePack
             //##}
             //##}
         }
+
         public T_ConcreteEntityName_(IT_EntityName_ source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
             //##if (member.IsVector) {

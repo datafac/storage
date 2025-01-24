@@ -43,13 +43,18 @@ namespace MyOrg.Models.MessagePack
 
         protected override IFreezable OnPartCopy() => new Int64Node(this);
 
+        [SerializationConstructor]
         public Int64Node() { }
+
         public Int64Node(Int64Node source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             _Value = source._Value;
         }
+
         public Int64Node(IInt64Node source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             _Value = source.Value;
         }
 

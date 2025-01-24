@@ -43,14 +43,19 @@ namespace MyOrg.Models.MessagePack
 
         protected override IFreezable OnPartCopy() => new RightTriangle(this);
 
+        [SerializationConstructor]
         public RightTriangle() { }
+
         public RightTriangle(RightTriangle source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             _Length = source._Length;
             _Height = source._Height;
         }
+
         public RightTriangle(IRightTriangle source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             _Length = source.Length;
             _Height = source.Height;
         }

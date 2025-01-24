@@ -61,12 +61,16 @@ namespace MyOrg.Models.MessagePack
         }
 
         protected Node() { }
+
         protected Node(Node source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             _Key = source._Key;
         }
+
         public Node(INode source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             _Key = source.Key;
         }
 

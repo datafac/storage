@@ -43,13 +43,18 @@ namespace MyOrg.Models.MessagePack
 
         protected override IFreezable OnPartCopy() => new DoubleNode(this);
 
+        [SerializationConstructor]
         public DoubleNode() { }
+
         public DoubleNode(DoubleNode source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             _Value = source._Value;
         }
+
         public DoubleNode(IDoubleNode source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             _Value = source.Value;
         }
 

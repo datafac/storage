@@ -52,11 +52,15 @@ namespace MyOrg.Models.MessagePack
         }
 
         protected Triangle() { }
+
         protected Triangle(Triangle source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
         }
+
         public Triangle(ITriangle source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
         }
 
 

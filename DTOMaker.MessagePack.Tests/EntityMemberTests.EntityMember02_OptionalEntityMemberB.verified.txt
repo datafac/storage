@@ -44,13 +44,18 @@ namespace MyOrg.DomainB.MessagePack
 
         protected override IFreezable OnPartCopy() => new MyDTO2(this);
 
+        [SerializationConstructor]
         public MyDTO2() { }
+
         public MyDTO2(MyDTO2 source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             _Member1 = source._Member1 is null ? null : MyOrg.DomainA.MessagePack.MyDTO1.CreateFrom(source._Member1);
         }
+
         public MyDTO2(IMyDTO2 source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             _Member1 = source.Member1 is null ? null : MyOrg.DomainA.MessagePack.MyDTO1.CreateFrom(source.Member1);
         }
 

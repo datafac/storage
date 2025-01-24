@@ -46,15 +46,20 @@ namespace MyOrg.Models.MessagePack
 
         protected override IFreezable OnPartCopy() => new Tree(this);
 
+        [SerializationConstructor]
         public Tree() { }
+
         public Tree(Tree source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             _Left = source._Left is null ? null : MyOrg.Models.MessagePack.Tree.CreateFrom(source._Left);
             _Right = source._Right is null ? null : MyOrg.Models.MessagePack.Tree.CreateFrom(source._Right);
             _Node = source._Node is null ? null : MyOrg.Models.MessagePack.Node.CreateFrom(source._Node);
         }
+
         public Tree(ITree source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             _Left = source.Left is null ? null : MyOrg.Models.MessagePack.Tree.CreateFrom(source.Left);
             _Right = source.Right is null ? null : MyOrg.Models.MessagePack.Tree.CreateFrom(source.Right);
             _Node = source.Node is null ? null : MyOrg.Models.MessagePack.Node.CreateFrom(source.Node);

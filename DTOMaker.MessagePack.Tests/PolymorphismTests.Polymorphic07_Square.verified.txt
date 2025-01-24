@@ -43,13 +43,18 @@ namespace MyOrg.Models.MessagePack
 
         protected override IFreezable OnPartCopy() => new Square(this);
 
+        [SerializationConstructor]
         public Square() { }
+
         public Square(Square source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             _Length = source._Length;
         }
+
         public Square(ISquare source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             _Length = source.Length;
         }
 

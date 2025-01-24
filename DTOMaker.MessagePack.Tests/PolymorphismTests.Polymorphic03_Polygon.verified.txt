@@ -62,11 +62,15 @@ namespace MyOrg.Models.MessagePack
         }
 
         protected Polygon() { }
+
         protected Polygon(Polygon source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
         }
+
         public Polygon(IPolygon source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
         }
 
 

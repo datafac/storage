@@ -52,11 +52,15 @@ namespace MyOrg.Models.MessagePack
         }
 
         protected NumericNode() { }
+
         protected NumericNode(NumericNode source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
         }
+
         public NumericNode(INumericNode source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
         }
 
 

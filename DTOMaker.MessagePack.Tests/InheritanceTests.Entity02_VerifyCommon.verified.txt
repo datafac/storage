@@ -48,11 +48,15 @@ namespace MyOrg.Models.MessagePack
         }
 
         protected MyBase() { }
+
         protected MyBase(MyBase source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
         }
+
         public MyBase(IMyBase source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
         }
 
 

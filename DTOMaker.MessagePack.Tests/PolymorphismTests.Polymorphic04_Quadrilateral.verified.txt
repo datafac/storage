@@ -52,11 +52,15 @@ namespace MyOrg.Models.MessagePack
         }
 
         protected Quadrilateral() { }
+
         protected Quadrilateral(Quadrilateral source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
         }
+
         public Quadrilateral(IQuadrilateral source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
         }
 
 

@@ -43,13 +43,18 @@ namespace MyOrg.Models.MessagePack
 
         protected override IFreezable OnPartCopy() => new Equilateral(this);
 
+        [SerializationConstructor]
         public Equilateral() { }
+
         public Equilateral(Equilateral source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             _Length = source._Length;
         }
+
         public Equilateral(IEquilateral source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             _Length = source.Length;
         }
 

@@ -43,13 +43,18 @@ namespace MyOrg.Models.MessagePack
 
         protected override IFreezable OnPartCopy() => new MyDTO(this);
 
+        [SerializationConstructor]
         public MyDTO() { }
+
         public MyDTO(MyDTO source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             _DTOField1 = source._DTOField1;
         }
+
         public MyDTO(IMyDTO source) : base(source)
         {
+            if (source is null) throw new ArgumentNullException(nameof(source));
             _DTOField1 = source.DTOField1;
         }
 

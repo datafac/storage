@@ -166,8 +166,10 @@ Emit("            _T_RequiredEntityMemberName_.Freeze();");
 Emit("        }");
 Emit("");
 Emit("        protected T_AbstractEntityName_() { }");
+Emit("");
 Emit("        protected T_AbstractEntityName_(T_AbstractEntityName_ source) : base(source)");
 Emit("        {");
+Emit("            if (source is null) throw new ArgumentNullException(nameof(source));");
             foreach (var member in entity.Members) {
             using var _ = NewScope(member);
             if (member.IsVector) {
@@ -187,8 +189,10 @@ Emit("            _T_RequiredScalarMemberName_ = source._T_RequiredScalarMemberN
             }
             }
 Emit("        }");
+Emit("");
 Emit("        public T_AbstractEntityName_(IT_EntityName_ source) : base(source)");
 Emit("        {");
+Emit("            if (source is null) throw new ArgumentNullException(nameof(source));");
             foreach (var member in entity.Members) {
             using var _ = NewScope(member);
             if (member.IsVector) {
@@ -402,9 +406,12 @@ Emit("        }");
 Emit("");
 Emit("        protected override IFreezable OnPartCopy() => new T_ConcreteEntityName_(this);");
 Emit("");
+Emit("        [SerializationConstructor]");
 Emit("        public T_ConcreteEntityName_() { }");
+Emit("");
 Emit("        public T_ConcreteEntityName_(T_ConcreteEntityName_ source) : base(source)");
 Emit("        {");
+Emit("            if (source is null) throw new ArgumentNullException(nameof(source));");
             foreach (var member in entity.Members) {
             using var _ = NewScope(member);
             if (member.IsVector) {
@@ -424,8 +431,10 @@ Emit("            _T_RequiredScalarMemberName_ = source._T_RequiredScalarMemberN
             }
             }
 Emit("        }");
+Emit("");
 Emit("        public T_ConcreteEntityName_(IT_EntityName_ source) : base(source)");
 Emit("        {");
+Emit("            if (source is null) throw new ArgumentNullException(nameof(source));");
             foreach (var member in entity.Members) {
             using var _ = NewScope(member);
             if (member.IsVector) {
