@@ -9,6 +9,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
+using DTOMaker.Runtime;
 using DTOMaker.Runtime.MemBlocks;
 namespace MyOrg.Models.MemBlocks
 {
@@ -17,11 +18,20 @@ namespace MyOrg.Models.MemBlocks
         // Derived entities: 0
 
         private const int ClassHeight = 1;
-        private const int BlockLength = 0;
+        private const int BlockLength = 256;
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
         public new const string EntityId = "MyOrg.Models.Tree";
+
+        public new static Tree CreateFrom(Tree source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                _ => new MyOrg.Models.MemBlocks.Tree(source)
+            };
+        }
 
         public new static Tree CreateFrom(MyOrg.Models.ITree source)
         {
@@ -65,9 +75,9 @@ namespace MyOrg.Models.MemBlocks
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
         //  ----  ----  ----  ----  ------- ----  -------
-        //     1     0     0        Tree    LE    Left
-        //     2     0     0        Tree    LE    Right
-        //     3     0     0        Node    LE    Node
+        //     1     0    64        Tree    LE    Left
+        //     2    64    64        Tree    LE    Right
+        //     3   128    64        Node    LE    Node
         // ------------------------------------------------------------
 
         public Tree()
@@ -75,13 +85,13 @@ namespace MyOrg.Models.MemBlocks
             _readonlyBlock = _writableBlock = new byte[BlockLength];
         }
 
-        public Tree(Tree source, bool frozen = false) : base(source, frozen)
+        public Tree(Tree source) : base(source)
         {
-            _writableBlock = source._writableBlock.ToArray();
+            _writableBlock = source._readonlyBlock.ToArray();
             _readonlyBlock = _writableBlock;
         }
 
-        public Tree(ITree source, bool frozen = false) : base(source, frozen)
+        public Tree(ITree source) : base(source)
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
             this.Left = source.Left;
@@ -106,48 +116,63 @@ namespace MyOrg.Models.MemBlocks
             _writableBlock = Memory<byte>.Empty;
         }
 
-        public Tree Left
+        private MyOrg.Models.MemBlocks.Tree? _Left;
+        public MyOrg.Models.MemBlocks.Tree? Left
         {
-            get
-            {
-                return (Tree)Codec_Tree_LE.ReadFromSpan(_readonlyBlock.Slice(0, 0).Span);
-            }
-
+            get => _Left;
             set
             {
-                ThrowExceptionIfFrozen();
-                Codec_Tree_LE.WriteToSpan(_writableBlock.Slice(0, 0).Span, value);
+                ThrowIfFrozen();
+                _Left = value;
             }
         }
-
-        public Tree Right
+        MyOrg.Models.ITree? ITree.Left
         {
-            get
-            {
-                return (Tree)Codec_Tree_LE.ReadFromSpan(_readonlyBlock.Slice(0, 0).Span);
-            }
-
+            get => _Left;
             set
             {
-                ThrowExceptionIfFrozen();
-                Codec_Tree_LE.WriteToSpan(_writableBlock.Slice(0, 0).Span, value);
+                ThrowIfFrozen();
+                _Left = value is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(value);
             }
         }
-
-        public Node Node
+        private MyOrg.Models.MemBlocks.Tree? _Right;
+        public MyOrg.Models.MemBlocks.Tree? Right
         {
-            get
-            {
-                return (Node)Codec_Node_LE.ReadFromSpan(_readonlyBlock.Slice(0, 0).Span);
-            }
-
+            get => _Right;
             set
             {
-                ThrowExceptionIfFrozen();
-                Codec_Node_LE.WriteToSpan(_writableBlock.Slice(0, 0).Span, value);
+                ThrowIfFrozen();
+                _Right = value;
             }
         }
-
+        MyOrg.Models.ITree? ITree.Right
+        {
+            get => _Right;
+            set
+            {
+                ThrowIfFrozen();
+                _Right = value is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(value);
+            }
+        }
+        private MyOrg.Models.MemBlocks.Node? _Node;
+        public MyOrg.Models.MemBlocks.Node? Node
+        {
+            get => _Node;
+            set
+            {
+                ThrowIfFrozen();
+                _Node = value;
+            }
+        }
+        MyOrg.Models.INode? ITree.Node
+        {
+            get => _Node;
+            set
+            {
+                ThrowIfFrozen();
+                _Node = value is null ? null : MyOrg.Models.MemBlocks.Node.CreateFrom(value);
+            }
+        }
 
         public bool Equals(Tree? other)
         {

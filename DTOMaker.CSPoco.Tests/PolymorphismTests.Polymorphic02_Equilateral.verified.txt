@@ -17,6 +17,15 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "Equilateral";
 
+        public new static Equilateral CreateFrom(Equilateral source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                _ => new MyOrg.Models.CSPoco.Equilateral(source)
+            };
+        }
+
         public new static Equilateral CreateFrom(MyOrg.Models.IEquilateral source)
         {
             if (source is Equilateral concrete && concrete.IsFrozen) return concrete;

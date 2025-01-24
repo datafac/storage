@@ -9,6 +9,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
+using DTOMaker.Runtime;
 using DTOMaker.Runtime.MemBlocks;
 namespace MyOrg.Models.MemBlocks
 {
@@ -24,6 +25,17 @@ namespace MyOrg.Models.MemBlocks
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
         public new const string EntityId = "MyOrg.Models.NumericNode";
+
+        public new static NumericNode CreateFrom(NumericNode source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                MyOrg.Models.MemBlocks.DoubleNode source2 => new MyOrg.Models.MemBlocks.DoubleNode(source2),
+                MyOrg.Models.MemBlocks.Int64Node source2 => new MyOrg.Models.MemBlocks.Int64Node(source2),
+                _ => new MyOrg.Models.MemBlocks.NumericNode(source)
+            };
+        }
 
         public new static NumericNode CreateFrom(MyOrg.Models.INumericNode source)
         {
@@ -78,13 +90,13 @@ namespace MyOrg.Models.MemBlocks
             _readonlyBlock = _writableBlock = new byte[BlockLength];
         }
 
-        public NumericNode(NumericNode source, bool frozen = false) : base(source, frozen)
+        public NumericNode(NumericNode source) : base(source)
         {
-            _writableBlock = source._writableBlock.ToArray();
+            _writableBlock = source._readonlyBlock.ToArray();
             _readonlyBlock = _writableBlock;
         }
 
-        public NumericNode(INumericNode source, bool frozen = false) : base(source, frozen)
+        public NumericNode(INumericNode source) : base(source)
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
         }

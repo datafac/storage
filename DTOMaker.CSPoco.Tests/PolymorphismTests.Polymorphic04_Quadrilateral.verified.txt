@@ -19,6 +19,17 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "Quadrilateral";
 
+        public new static Quadrilateral CreateFrom(Quadrilateral source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                MyOrg.Models.CSPoco.Rectangle source2 => new MyOrg.Models.CSPoco.Rectangle(source2),
+                MyOrg.Models.CSPoco.Square source2 => new MyOrg.Models.CSPoco.Square(source2),
+                _ => new MyOrg.Models.CSPoco.Quadrilateral(source)
+            };
+        }
+
         public new static Quadrilateral CreateFrom(MyOrg.Models.IQuadrilateral source)
         {
             if (source is Quadrilateral concrete && concrete.IsFrozen) return concrete;

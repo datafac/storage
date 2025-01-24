@@ -18,6 +18,14 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 10;
 
+        public new static Tree CreateFrom(Tree source)
+        {
+            if (source.IsFrozen)
+                return source;
+            else
+                return new Tree(source);
+        }
+
         public new static Tree CreateFrom(MyOrg.Models.ITree source)
         {
             if (source is Tree concrete && concrete.IsFrozen)

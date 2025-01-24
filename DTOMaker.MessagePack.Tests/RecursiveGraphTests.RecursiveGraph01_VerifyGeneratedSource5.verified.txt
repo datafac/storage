@@ -18,6 +18,14 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 2;
 
+        public new static StringNode CreateFrom(StringNode source)
+        {
+            if (source.IsFrozen)
+                return source;
+            else
+                return new StringNode(source);
+        }
+
         public new static StringNode CreateFrom(MyOrg.Models.IStringNode source)
         {
             if (source is StringNode concrete && concrete.IsFrozen)

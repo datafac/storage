@@ -18,6 +18,16 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "MyOrg.Models.MyBase";
 
+        public new static MyBase CreateFrom(MyBase source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                MyOrg.Models.CSPoco.MyDTO source2 => new MyOrg.Models.CSPoco.MyDTO(source2),
+                _ => new MyOrg.Models.CSPoco.MyBase(source)
+            };
+        }
+
         public new static MyBase CreateFrom(MyOrg.Models.IMyBase source)
         {
             if (source is MyBase concrete && concrete.IsFrozen) return concrete;

@@ -17,6 +17,15 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "MyOrg.Models.Tree";
 
+        public new static Tree CreateFrom(Tree source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                _ => new MyOrg.Models.CSPoco.Tree(source)
+            };
+        }
+
         public new static Tree CreateFrom(MyOrg.Models.ITree source)
         {
             if (source is Tree concrete && concrete.IsFrozen) return concrete;
@@ -33,7 +42,7 @@ namespace MyOrg.Models.CSPoco
             base.OnFreeze();
             _Left?.Freeze();
             _Right?.Freeze();
-            _Node.Freeze();
+            _Node?.Freeze();
         }
 
         protected override IFreezable OnPartCopy() => new Tree(this);
@@ -41,9 +50,9 @@ namespace MyOrg.Models.CSPoco
         public Tree() { }
         public Tree(ITree source) : base(source)
         {
-            _Left = source.Left is null ? null : new MyOrg.Models.CSPoco.Tree(source.Left);
-            _Right = source.Right is null ? null : new MyOrg.Models.CSPoco.Tree(source.Right);
-            _Node = new MyOrg.Models.CSPoco.Node(source.Node);
+            _Left = source.Left is null ? null : MyOrg.Models.CSPoco.Tree.CreateFrom(source.Left);
+            _Right = source.Right is null ? null : MyOrg.Models.CSPoco.Tree.CreateFrom(source.Right);
+            _Node = source.Node is null ? null : MyOrg.Models.CSPoco.Node.CreateFrom(source.Node);
         }
 
         private MyOrg.Models.CSPoco.Tree? _Left;
@@ -58,7 +67,7 @@ namespace MyOrg.Models.CSPoco
             set
             {
                 ThrowIfFrozen();
-                _Left = value is null ? null : new MyOrg.Models.CSPoco.Tree(value);
+                _Left = value is null ? null : MyOrg.Models.CSPoco.Tree.CreateFrom(value);
             }
         }
 
@@ -74,23 +83,23 @@ namespace MyOrg.Models.CSPoco
             set
             {
                 ThrowIfFrozen();
-                _Right = value is null ? null : new MyOrg.Models.CSPoco.Tree(value);
+                _Right = value is null ? null : MyOrg.Models.CSPoco.Tree.CreateFrom(value);
             }
         }
 
-        private MyOrg.Models.CSPoco.Node _Node = MyOrg.Models.CSPoco.Node.Empty;
-        public MyOrg.Models.CSPoco.Node Node
+        private MyOrg.Models.CSPoco.Node? _Node;
+        public MyOrg.Models.CSPoco.Node? Node
         {
             get => _Node;
             set => _Node = IfNotFrozen(ref value);
         }
-        MyOrg.Models.INode ITree.Node
+        MyOrg.Models.INode? ITree.Node
         {
             get => _Node;
             set
             {
                 ThrowIfFrozen();
-                _Node = new MyOrg.Models.CSPoco.Node(value);
+                _Node = value is null ? null : MyOrg.Models.CSPoco.Node.CreateFrom(value);
             }
         }
 

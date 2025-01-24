@@ -9,6 +9,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
+using DTOMaker.Runtime;
 using DTOMaker.Runtime.MemBlocks;
 namespace MyOrg.Models.MemBlocks
 {
@@ -17,11 +18,20 @@ namespace MyOrg.Models.MemBlocks
         // Derived entities: 0
 
         private const int ClassHeight = 2;
-        private const int BlockLength = 64;
+        private const int BlockLength = 256;
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
         public new const string EntityId = "MyOrg.Models.StringNode";
+
+        public new static StringNode CreateFrom(StringNode source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                _ => new MyOrg.Models.MemBlocks.StringNode(source)
+            };
+        }
 
         public new static StringNode CreateFrom(MyOrg.Models.IStringNode source)
         {
@@ -65,7 +75,7 @@ namespace MyOrg.Models.MemBlocks
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
         //  ----  ----  ----  ----  ------- ----  -------
-        //     1     0    64        String  LE    Value
+        //     1     0   256        String  LE    Value
         // ------------------------------------------------------------
 
         public StringNode()
@@ -73,13 +83,13 @@ namespace MyOrg.Models.MemBlocks
             _readonlyBlock = _writableBlock = new byte[BlockLength];
         }
 
-        public StringNode(StringNode source, bool frozen = false) : base(source, frozen)
+        public StringNode(StringNode source) : base(source)
         {
-            _writableBlock = source._writableBlock.ToArray();
+            _writableBlock = source._readonlyBlock.ToArray();
             _readonlyBlock = _writableBlock;
         }
 
-        public StringNode(IStringNode source, bool frozen = false) : base(source, frozen)
+        public StringNode(IStringNode source) : base(source)
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
             this.Value = source.Value;
@@ -106,13 +116,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (String)Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(0, 64).Span);
+                return Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(0, 256).Span);
             }
 
             set
             {
-                ThrowExceptionIfFrozen();
-                Codec_String_LE.WriteToSpan(_writableBlock.Slice(0, 64).Span, value);
+                ThrowIfFrozen();
+                Codec_String_LE.WriteToSpan(_writableBlock.Slice(0, 256).Span, value);
             }
         }
 

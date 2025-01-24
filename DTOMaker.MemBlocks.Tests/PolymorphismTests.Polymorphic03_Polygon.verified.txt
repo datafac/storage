@@ -9,6 +9,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
+using DTOMaker.Runtime;
 using DTOMaker.Runtime.MemBlocks;
 namespace MyOrg.Models.MemBlocks
 {
@@ -28,6 +29,21 @@ namespace MyOrg.Models.MemBlocks
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
         public new const string EntityId = "Polygon";
+
+        public new static Polygon CreateFrom(Polygon source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                MyOrg.Models.MemBlocks.Equilateral source2 => new MyOrg.Models.MemBlocks.Equilateral(source2),
+                MyOrg.Models.MemBlocks.Rectangle source2 => new MyOrg.Models.MemBlocks.Rectangle(source2),
+                MyOrg.Models.MemBlocks.RightTriangle source2 => new MyOrg.Models.MemBlocks.RightTriangle(source2),
+                MyOrg.Models.MemBlocks.Square source2 => new MyOrg.Models.MemBlocks.Square(source2),
+                MyOrg.Models.MemBlocks.Quadrilateral source2 => new MyOrg.Models.MemBlocks.Quadrilateral(source2),
+                MyOrg.Models.MemBlocks.Triangle source2 => new MyOrg.Models.MemBlocks.Triangle(source2),
+                _ => new MyOrg.Models.MemBlocks.Polygon(source)
+            };
+        }
 
         public new static Polygon CreateFrom(MyOrg.Models.IPolygon source)
         {
@@ -90,13 +106,13 @@ namespace MyOrg.Models.MemBlocks
             _readonlyBlock = _writableBlock = new byte[BlockLength];
         }
 
-        public Polygon(Polygon source, bool frozen = false) : base(source, frozen)
+        public Polygon(Polygon source) : base(source)
         {
-            _writableBlock = source._writableBlock.ToArray();
+            _writableBlock = source._readonlyBlock.ToArray();
             _readonlyBlock = _writableBlock;
         }
 
-        public Polygon(IPolygon source, bool frozen = false) : base(source, frozen)
+        public Polygon(IPolygon source) : base(source)
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
         }

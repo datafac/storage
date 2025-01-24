@@ -17,6 +17,15 @@ namespace MyOrg.DomainB.CSPoco
 
         public new const string EntityId = "MyOrg.DomainB.MyDTO";
 
+        public new static MyDTO CreateFrom(MyDTO source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                _ => new MyOrg.DomainB.CSPoco.MyDTO(source)
+            };
+        }
+
         public new static MyDTO CreateFrom(MyOrg.DomainB.IMyDTO source)
         {
             if (source is MyDTO concrete && concrete.IsFrozen) return concrete;

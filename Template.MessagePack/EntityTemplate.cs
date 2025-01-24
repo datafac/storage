@@ -109,6 +109,21 @@ namespace T_NameSpace_.MessagePack
 
         public new const int EntityKey = T_EntityKey_;
 
+        public new static T_ConcreteEntityName_ CreateFrom(T_ConcreteEntityName_ source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                //##foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
+                //##using var _ = NewScope(derived);
+                //##if (derived.DerivedEntityCount == 0) {
+                T_NameSpace_.MessagePack.T_ConcreteEntityName_ source2 => new T_NameSpace_.MessagePack.T_ConcreteEntityName_(source2),
+                //##}
+                //##}
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+            };
+        }
+
         public new static T_ConcreteEntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)
         {
             if (source is T_ConcreteEntityName_ concrete && concrete.IsFrozen) return concrete;
@@ -360,6 +375,14 @@ namespace T_NameSpace_.MessagePack
         //##}
 
         public new const int EntityKey = T_EntityKey_;
+
+        public new static T_ConcreteEntityName_ CreateFrom(T_ConcreteEntityName_ source)
+        {
+            if (source.IsFrozen)
+                return source;
+            else
+                return new T_ConcreteEntityName_(source);
+        }
 
         public new static T_ConcreteEntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)
         {

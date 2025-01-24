@@ -20,6 +20,7 @@ namespace DTOMaker.MemBlocks
 
         private SyntaxDiagnostic? CheckMemberType()
         {
+            if (MemberIsEntity) return null;
             return MemberType.FullName switch
             {
                 "System.Boolean" => null,
@@ -48,6 +49,7 @@ namespace DTOMaker.MemBlocks
 
         private SyntaxDiagnostic? CheckMemberIsNotNullable()
         {
+            if (MemberIsEntity) return null;
             if (!MemberIsNullable) return null;
 
             return new SyntaxDiagnostic(

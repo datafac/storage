@@ -18,6 +18,14 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 4;
 
+        public new static RightTriangle CreateFrom(RightTriangle source)
+        {
+            if (source.IsFrozen)
+                return source;
+            else
+                return new RightTriangle(source);
+        }
+
         public new static RightTriangle CreateFrom(MyOrg.Models.IRightTriangle source)
         {
             if (source is RightTriangle concrete && concrete.IsFrozen)

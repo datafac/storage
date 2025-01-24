@@ -22,13 +22,13 @@ namespace DTOMaker.MemBlocks.Tests
                 [Entity][Layout(LayoutMethod.Linear)]
                 public interface INode
                 {
-                    [Member(1)] String Key { get; set; }
+                    [Member(1)][StrLen(16)] String Key { get; set; }
                 }
 
                 [Entity][Layout(LayoutMethod.Linear)]
                 public interface IStringNode : INode
                 {
-                    [Member(1)][StrLen(64)] String Value { get; set; }
+                    [Member(1)][StrLen(256)] String Value { get; set; }
                 }
 
                 [Entity][Layout(LayoutMethod.Linear)]
@@ -59,32 +59,31 @@ namespace DTOMaker.MemBlocks.Tests
                 {
                     [Member(1)] ITree? Left { get; set; }
                     [Member(2)] ITree? Right { get; set; }
-                    [Member(3)] INode Node { get; set; }
+                    [Member(3)] INode? Node { get; set; }
                 }
             }
             
             """;
 
-        // todo
-        //[Fact]
-        //public void RecursiveGraph00_GeneratedSourcesLengthShouldBe7()
-        //{
-        //    var generatorResult = GeneratorTestHelper.RunSourceGenerator(models, LanguageVersion.LatestMajor);
-        //    generatorResult.Exception.Should().BeNull();
-        //    generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-        //    generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-        //    generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
+        [Fact]
+        public void RecursiveGraph00_GeneratedSourcesLengthShouldBe7()
+        {
+            var generatorResult = GeneratorTestHelper.RunSourceGenerator(models, LanguageVersion.LatestMajor);
+            generatorResult.Exception.Should().BeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
 
-        //    // custom generation checks
-        //    generatorResult.GeneratedSources.Length.Should().Be(7);
-        //    generatorResult.GeneratedSources[0].HintName.Should().Be("MyOrg.Models.BooleanNode.MemBlocks.g.cs");
-        //    generatorResult.GeneratedSources[1].HintName.Should().Be("MyOrg.Models.DoubleNode.MemBlocks.g.cs");
-        //    generatorResult.GeneratedSources[2].HintName.Should().Be("MyOrg.Models.Int64Node.MemBlocks.g.cs");
-        //    generatorResult.GeneratedSources[3].HintName.Should().Be("MyOrg.Models.Node.MemBlocks.g.cs");
-        //    generatorResult.GeneratedSources[4].HintName.Should().Be("MyOrg.Models.NumericNode.MemBlocks.g.cs");
-        //    generatorResult.GeneratedSources[5].HintName.Should().Be("MyOrg.Models.StringNode.MemBlocks.g.cs");
-        //    generatorResult.GeneratedSources[6].HintName.Should().Be("MyOrg.Models.Tree.MemBlocks.g.cs");
-        //}
+            // custom generation checks
+            generatorResult.GeneratedSources.Length.Should().Be(7);
+            generatorResult.GeneratedSources[0].HintName.Should().Be("MyOrg.Models.BooleanNode.MemBlocks.g.cs");
+            generatorResult.GeneratedSources[1].HintName.Should().Be("MyOrg.Models.DoubleNode.MemBlocks.g.cs");
+            generatorResult.GeneratedSources[2].HintName.Should().Be("MyOrg.Models.Int64Node.MemBlocks.g.cs");
+            generatorResult.GeneratedSources[3].HintName.Should().Be("MyOrg.Models.Node.MemBlocks.g.cs");
+            generatorResult.GeneratedSources[4].HintName.Should().Be("MyOrg.Models.NumericNode.MemBlocks.g.cs");
+            generatorResult.GeneratedSources[5].HintName.Should().Be("MyOrg.Models.StringNode.MemBlocks.g.cs");
+            generatorResult.GeneratedSources[6].HintName.Should().Be("MyOrg.Models.Tree.MemBlocks.g.cs");
+        }
 
         [Fact]
         public async Task RecursiveGraph01_VerifyGeneratedSource0()

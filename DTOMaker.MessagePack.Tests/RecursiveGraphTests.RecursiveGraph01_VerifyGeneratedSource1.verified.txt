@@ -18,6 +18,14 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 5;
 
+        public new static DoubleNode CreateFrom(DoubleNode source)
+        {
+            if (source.IsFrozen)
+                return source;
+            else
+                return new DoubleNode(source);
+        }
+
         public new static DoubleNode CreateFrom(MyOrg.Models.IDoubleNode source)
         {
             if (source is DoubleNode concrete && concrete.IsFrozen)

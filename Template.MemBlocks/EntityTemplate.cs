@@ -13,6 +13,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
+using DTOMaker.Runtime;
 using DTOMaker.Runtime.MemBlocks;
 //##if(false) {
 using T_MemberType_ = System.Int32;
@@ -22,6 +23,24 @@ namespace DataFac.Memory
     {
         public static T_MemberType_ ReadFromSpan(ReadOnlySpan<byte> source) => Codec_Int32_LE.ReadFromSpan(source);
         public static void WriteToSpan(Span<byte> source, T_MemberType_ value) => Codec_Int32_LE.WriteToSpan(source, value);
+    }
+}
+namespace T_MemberTypeNameSpace_
+{
+    public interface IT_MemberTypeName_ { }
+}
+namespace T_MemberTypeNameSpace_.MemBlocks
+{
+    public class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_
+    {
+        private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();
+        public static T_MemberTypeName_ Empty => _empty;
+        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source) => throw new NotImplementedException();
+        public T_MemberTypeName_() { }
+        public T_MemberTypeName_(IT_MemberTypeName_ source) { }
+        protected override IFreezable OnPartCopy() => throw new NotImplementedException();
+        protected override string OnGetEntityId() => "T_MemberTypeName_";
+        protected override int OnGetClassHeight() => throw new NotImplementedException();
     }
 }
 namespace T_BaseNameSpace_.MemBlocks
@@ -66,13 +85,13 @@ namespace T_BaseNameSpace_.MemBlocks
             _readonlyBlock = _writableBlock = new byte[BlockLength];
         }
 
-        public T_BaseName_(T_BaseName_ source, bool frozen = false) : base(source, frozen)
+        public T_BaseName_(T_BaseName_ source) : base(source)
         {
             _writableBlock = source._writableBlock.ToArray();
             _readonlyBlock = _writableBlock;
         }
 
-        public T_BaseName_(IT_BaseName_ source, bool frozen = false) : base(source, frozen)
+        public T_BaseName_(IT_BaseName_ source) : base(source)
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
             this.BaseField1 = source.BaseField1;
@@ -107,7 +126,7 @@ namespace T_BaseNameSpace_.MemBlocks
 
             set
             {
-                ThrowExceptionIfFrozen();
+                ThrowIfFrozen();
                 Codec_T_MemberType__T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, T_FieldLength_).Span, value);
             }
         }
@@ -130,6 +149,8 @@ namespace T_NameSpace_
     {
         T_MemberType_ T_ScalarMemberName_ { get; set; }
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
+        T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberName_ { get; set; }
+        T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; set; }
     }
 }
 //##}
@@ -154,6 +175,19 @@ namespace T_NameSpace_.MemBlocks
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
         public new const string EntityId = "T_EntityId_";
+
+        public new static T_EntityName_ CreateFrom(T_EntityName_ source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                //##foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
+                //##using var _ = NewScope(derived);
+                T_NameSpace_.MemBlocks.T_EntityName_ source2 => new T_NameSpace_.MemBlocks.T_EntityName_(source2),
+                //##}
+                _ => new T_NameSpace_.MemBlocks.T_EntityName_(source)
+            };
+        }
 
         public new static T_EntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)
         {
@@ -216,13 +250,13 @@ namespace T_NameSpace_.MemBlocks
             _readonlyBlock = _writableBlock = new byte[BlockLength];
         }
 
-        public T_EntityName_(T_EntityName_ source, bool frozen = false) : base(source, frozen)
+        public T_EntityName_(T_EntityName_ source) : base(source)
         {
-            _writableBlock = source._writableBlock.ToArray();
+            _writableBlock = source._readonlyBlock.ToArray();
             _readonlyBlock = _writableBlock;
         }
 
-        public T_EntityName_(IT_EntityName_ source, bool frozen = false) : base(source, frozen)
+        public T_EntityName_(IT_EntityName_ source) : base(source)
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
             //##foreach(var member in entity.Members) {
@@ -271,7 +305,7 @@ namespace T_NameSpace_.MemBlocks
                 var sourceSpan = _readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_ * T_ArrayLength_).Span;
                 //##if(member.FieldLength == 1) {
                 return MemoryMarshal.Cast<byte, T_MemberType_>(sourceSpan).ToArray(); // todo alloc!
-                                                                                      //##} else {
+                //##} else {
                 if (BitConverter.IsLittleEndian != T_IsBigEndian_)
                 {
                     // endian match
@@ -289,12 +323,12 @@ namespace T_NameSpace_.MemBlocks
                     }
                     return target;
                 }
-                              //##}
+                //##}
             }
 
             set
             {
-                ThrowExceptionIfFrozen();
+                ThrowIfFrozen();
                 var targetSpan = _writableBlock.Slice(T_FieldOffset_, T_FieldLength_ * T_ArrayLength_).Span;
                 targetSpan.Clear();
                 //##if(member.FieldLength == 1) {
@@ -319,17 +353,59 @@ namespace T_NameSpace_.MemBlocks
             }
         }
 
+        //##} else if (member.IsEntity) {
+        //##if (member.IsNullable) {
+        private T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_? _T_NullableEntityMemberName_;
+        public T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_? T_NullableEntityMemberName_
+        {
+            get => _T_NullableEntityMemberName_;
+            set
+            {
+                ThrowIfFrozen();
+                _T_NullableEntityMemberName_ = value;
+            }
+        }
+        T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityName_.T_NullableEntityMemberName_
+        {
+            get => _T_NullableEntityMemberName_;
+            set
+            {
+                ThrowIfFrozen();
+                _T_NullableEntityMemberName_ = value is null ? null : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(value);
+            }
+        }
+        //##} else {
+        private T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.Empty;
+        public T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_ T_RequiredEntityMemberName_
+        {
+            get => _T_RequiredEntityMemberName_;
+            set
+            {
+                ThrowIfFrozen();
+                _T_RequiredEntityMemberName_ = value;
+            }
+        }
+        T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityName_.T_RequiredEntityMemberName_
+        {
+            get => _T_RequiredEntityMemberName_;
+            set
+            {
+                ThrowIfFrozen();
+                _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(value);
+            }
+        }
+        //##}
         //##} else {
         public T_MemberType_ T_ScalarMemberName_
         {
             get
             {
-                return (T_MemberType_)Codec_T_MemberType__T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_).Span);
+                return Codec_T_MemberType__T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_).Span);
             }
 
             set
             {
-                ThrowExceptionIfFrozen();
+                ThrowIfFrozen();
                 Codec_T_MemberType__T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, T_FieldLength_).Span, value);
             }
         }

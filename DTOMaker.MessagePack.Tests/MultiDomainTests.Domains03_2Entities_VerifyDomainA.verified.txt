@@ -18,6 +18,14 @@ namespace MyOrg.DomainA.MessagePack
 
         public new const int EntityKey = 1;
 
+        public new static MyDTO CreateFrom(MyDTO source)
+        {
+            if (source.IsFrozen)
+                return source;
+            else
+                return new MyDTO(source);
+        }
+
         public new static MyDTO CreateFrom(MyOrg.DomainA.IMyDTO source)
         {
             if (source is MyDTO concrete && concrete.IsFrozen)

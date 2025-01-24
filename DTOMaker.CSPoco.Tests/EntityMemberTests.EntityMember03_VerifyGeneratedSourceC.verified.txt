@@ -17,6 +17,15 @@ namespace MyOrg.DomainC.CSPoco
 
         public new const string EntityId = "MyOrg.DomainC.MyDTO2";
 
+        public new static MyDTO2 CreateFrom(MyDTO2 source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                _ => new MyOrg.DomainC.CSPoco.MyDTO2(source)
+            };
+        }
+
         public new static MyDTO2 CreateFrom(MyOrg.DomainC.IMyDTO2 source)
         {
             if (source is MyDTO2 concrete && concrete.IsFrozen) return concrete;
@@ -40,8 +49,8 @@ namespace MyOrg.DomainC.CSPoco
         public MyDTO2() { }
         public MyDTO2(IMyDTO2 source) : base(source)
         {
-            _Member1 = source.Member1 is null ? null : new MyOrg.DomainA.CSPoco.MyDTO1(source.Member1);
-            _Member2 = new MyOrg.DomainB.CSPoco.MyDTO1(source.Member2);
+            _Member1 = source.Member1 is null ? null : MyOrg.DomainA.CSPoco.MyDTO1.CreateFrom(source.Member1);
+            _Member2 = MyOrg.DomainB.CSPoco.MyDTO1.CreateFrom(source.Member2);
         }
 
         private MyOrg.DomainA.CSPoco.MyDTO1? _Member1;
@@ -56,7 +65,7 @@ namespace MyOrg.DomainC.CSPoco
             set
             {
                 ThrowIfFrozen();
-                _Member1 = value is null ? null : new MyOrg.DomainA.CSPoco.MyDTO1(value);
+                _Member1 = value is null ? null : MyOrg.DomainA.CSPoco.MyDTO1.CreateFrom(value);
             }
         }
 
@@ -72,7 +81,7 @@ namespace MyOrg.DomainC.CSPoco
             set
             {
                 ThrowIfFrozen();
-                _Member2 = new MyOrg.DomainB.CSPoco.MyDTO1(value);
+                _Member2 = MyOrg.DomainB.CSPoco.MyDTO1.CreateFrom(value);
             }
         }
 

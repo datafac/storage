@@ -17,6 +17,15 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "MyOrg.Models.StringNode";
 
+        public new static StringNode CreateFrom(StringNode source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                _ => new MyOrg.Models.CSPoco.StringNode(source)
+            };
+        }
+
         public new static StringNode CreateFrom(MyOrg.Models.IStringNode source)
         {
             if (source is StringNode concrete && concrete.IsFrozen) return concrete;

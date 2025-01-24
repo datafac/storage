@@ -17,6 +17,15 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "MyOrg.Models.BooleanNode";
 
+        public new static BooleanNode CreateFrom(BooleanNode source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                _ => new MyOrg.Models.CSPoco.BooleanNode(source)
+            };
+        }
+
         public new static BooleanNode CreateFrom(MyOrg.Models.IBooleanNode source)
         {
             if (source is BooleanNode concrete && concrete.IsFrozen) return concrete;

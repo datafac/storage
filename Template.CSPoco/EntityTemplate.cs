@@ -25,6 +25,7 @@ namespace T_MemberTypeNameSpace_.CSPoco
     {
         private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();
         public static T_MemberTypeName_ Empty => _empty;
+        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source) => throw new NotImplementedException();
         public T_MemberTypeName_() { }
         public T_MemberTypeName_(IT_MemberTypeName_ source) { }
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
@@ -89,6 +90,19 @@ namespace T_NameSpace_.CSPoco
 
         public new const string EntityId = "T_EntityId_";
 
+        public new static T_EntityName_ CreateFrom(T_EntityName_ source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                //##foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
+                //##using var _ = NewScope(derived);
+                T_NameSpace_.CSPoco.T_EntityName_ source2 => new T_NameSpace_.CSPoco.T_EntityName_(source2),
+                //##}
+                _ => new T_NameSpace_.CSPoco.T_EntityName_(source)
+            };
+        }
+
         public new static T_EntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)
         {
             if (source is T_EntityName_ concrete && concrete.IsFrozen) return concrete;
@@ -130,9 +144,9 @@ namespace T_NameSpace_.CSPoco
             _T_VectorMemberName_ = source.T_VectorMemberName_;
             //##} else if (member.IsEntity) {
             //##if (member.IsNullable) {
-            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : new T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_(source.T_NullableEntityMemberName_);
+            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);
             //##} else {
-            _T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_(source.T_RequiredEntityMemberName_);
+            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);
             //##}
             //##} else {
             //##if (member.IsNullable) {
@@ -170,7 +184,7 @@ namespace T_NameSpace_.CSPoco
             set
             {
                 ThrowIfFrozen();
-                _T_NullableEntityMemberName_ = value is null ? null : new T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_(value);
+                _T_NullableEntityMemberName_ = value is null ? null : T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_.CreateFrom(value);
             }
         }
         //##} else {
@@ -186,7 +200,7 @@ namespace T_NameSpace_.CSPoco
             set
             {
                 ThrowIfFrozen();
-                _T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_(value);
+                _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_.CreateFrom(value);
             }
         }
         //##}

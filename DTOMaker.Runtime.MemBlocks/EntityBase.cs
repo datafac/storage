@@ -10,9 +10,8 @@ namespace DTOMaker.Runtime.MemBlocks
         public string GetEntityId() => OnGetEntityId();
 
         public EntityBase() { }
-        public EntityBase(object? notUsed, bool frozen)
+        public EntityBase(object? notUsed)
         {
-            _frozen = frozen;
         }
         public EntityBase(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
         {
@@ -40,7 +39,7 @@ namespace DTOMaker.Runtime.MemBlocks
         protected virtual void OnLoadBuffers(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers) { }
         public void LoadBuffers(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
         {
-            ThrowExceptionIfFrozen();
+            ThrowIfFrozen();
             OnLoadBuffers(buffers);
         }
 
@@ -51,7 +50,7 @@ namespace DTOMaker.Runtime.MemBlocks
         private void ThrowIsFrozenException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} when frozen.");
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void ThrowExceptionIfFrozen([CallerMemberName] string? methodName = null)
+        protected void ThrowIfFrozen([CallerMemberName] string? methodName = null)
         {
             if (_frozen) ThrowIsFrozenException(methodName);
         }
@@ -59,5 +58,16 @@ namespace DTOMaker.Runtime.MemBlocks
         public bool Equals(EntityBase? other) => true;
         public override bool Equals(object? obj) => obj is EntityBase;
         public override int GetHashCode() => HashCode.Combine<Type>(typeof(EntityBase));
+
+        public void PackBeforeFreeze()
+        {
+            if (_frozen) return;
+            throw new NotImplementedException();
+        }
+
+        public void UnpackAfterLoad()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

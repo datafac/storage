@@ -23,6 +23,21 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "Polygon";
 
+        public new static Polygon CreateFrom(Polygon source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                MyOrg.Models.CSPoco.Equilateral source2 => new MyOrg.Models.CSPoco.Equilateral(source2),
+                MyOrg.Models.CSPoco.Rectangle source2 => new MyOrg.Models.CSPoco.Rectangle(source2),
+                MyOrg.Models.CSPoco.RightTriangle source2 => new MyOrg.Models.CSPoco.RightTriangle(source2),
+                MyOrg.Models.CSPoco.Square source2 => new MyOrg.Models.CSPoco.Square(source2),
+                MyOrg.Models.CSPoco.Quadrilateral source2 => new MyOrg.Models.CSPoco.Quadrilateral(source2),
+                MyOrg.Models.CSPoco.Triangle source2 => new MyOrg.Models.CSPoco.Triangle(source2),
+                _ => new MyOrg.Models.CSPoco.Polygon(source)
+            };
+        }
+
         public new static Polygon CreateFrom(MyOrg.Models.IPolygon source)
         {
             if (source is Polygon concrete && concrete.IsFrozen) return concrete;

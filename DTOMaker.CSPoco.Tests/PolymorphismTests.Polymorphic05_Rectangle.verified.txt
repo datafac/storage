@@ -17,6 +17,15 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "Rectangle";
 
+        public new static Rectangle CreateFrom(Rectangle source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                _ => new MyOrg.Models.CSPoco.Rectangle(source)
+            };
+        }
+
         public new static Rectangle CreateFrom(MyOrg.Models.IRectangle source)
         {
             if (source is Rectangle concrete && concrete.IsFrozen) return concrete;

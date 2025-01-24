@@ -9,6 +9,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
+using DTOMaker.Runtime;
 using DTOMaker.Runtime.MemBlocks;
 namespace MyOrg.DomainB.MemBlocks
 {
@@ -22,6 +23,15 @@ namespace MyOrg.DomainB.MemBlocks
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
         public new const string EntityId = "MyOrg.DomainB.MyDTO";
+
+        public new static MyDTO CreateFrom(MyDTO source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                _ => new MyOrg.DomainB.MemBlocks.MyDTO(source)
+            };
+        }
 
         public new static MyDTO CreateFrom(MyOrg.DomainB.IMyDTO source)
         {
@@ -72,13 +82,13 @@ namespace MyOrg.DomainB.MemBlocks
             _readonlyBlock = _writableBlock = new byte[BlockLength];
         }
 
-        public MyDTO(MyDTO source, bool frozen = false) : base(source, frozen)
+        public MyDTO(MyDTO source) : base(source)
         {
-            _writableBlock = source._writableBlock.ToArray();
+            _writableBlock = source._readonlyBlock.ToArray();
             _readonlyBlock = _writableBlock;
         }
 
-        public MyDTO(IMyDTO source, bool frozen = false) : base(source, frozen)
+        public MyDTO(IMyDTO source) : base(source)
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
         }

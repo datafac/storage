@@ -119,6 +119,21 @@ Emit("        private const int T_MemberDefaultValue_ = 0;");
 Emit("");
 Emit("        public new const int EntityKey = T_EntityKey_;");
 Emit("");
+Emit("        public new static T_ConcreteEntityName_ CreateFrom(T_ConcreteEntityName_ source)");
+Emit("        {");
+Emit("            if (source.IsFrozen) return source;");
+Emit("            return source switch");
+Emit("            {");
+                foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
+                using var _ = NewScope(derived);
+                if (derived.DerivedEntityCount == 0) {
+Emit("                T_NameSpace_.MessagePack.T_ConcreteEntityName_ source2 => new T_NameSpace_.MessagePack.T_ConcreteEntityName_(source2),");
+                }
+                }
+Emit("                _ => throw new ArgumentException($\"Unexpected type: {source.GetType().Name}\", nameof(source))");
+Emit("            };");
+Emit("        }");
+Emit("");
 Emit("        public new static T_ConcreteEntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)");
 Emit("        {");
 Emit("            if (source is T_ConcreteEntityName_ concrete && concrete.IsFrozen) return concrete;");
@@ -370,6 +385,14 @@ Emit("        private const int T_MemberDefaultValue_ = 0;");
         }
 Emit("");
 Emit("        public new const int EntityKey = T_EntityKey_;");
+Emit("");
+Emit("        public new static T_ConcreteEntityName_ CreateFrom(T_ConcreteEntityName_ source)");
+Emit("        {");
+Emit("            if (source.IsFrozen)");
+Emit("                return source;");
+Emit("            else");
+Emit("                return new T_ConcreteEntityName_(source);");
+Emit("        }");
 Emit("");
 Emit("        public new static T_ConcreteEntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)");
 Emit("        {");

@@ -18,6 +18,14 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 7;
 
+        public new static Rectangle CreateFrom(Rectangle source)
+        {
+            if (source.IsFrozen)
+                return source;
+            else
+                return new Rectangle(source);
+        }
+
         public new static Rectangle CreateFrom(MyOrg.Models.IRectangle source)
         {
             if (source is Rectangle concrete && concrete.IsFrozen)

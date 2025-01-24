@@ -9,6 +9,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
+using DTOMaker.Runtime;
 using DTOMaker.Runtime.MemBlocks;
 namespace MyOrg.Models.MemBlocks
 {
@@ -22,6 +23,15 @@ namespace MyOrg.Models.MemBlocks
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
         public new const string EntityId = "MyOrg.Models.BooleanNode";
+
+        public new static BooleanNode CreateFrom(BooleanNode source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                _ => new MyOrg.Models.MemBlocks.BooleanNode(source)
+            };
+        }
 
         public new static BooleanNode CreateFrom(MyOrg.Models.IBooleanNode source)
         {
@@ -73,13 +83,13 @@ namespace MyOrg.Models.MemBlocks
             _readonlyBlock = _writableBlock = new byte[BlockLength];
         }
 
-        public BooleanNode(BooleanNode source, bool frozen = false) : base(source, frozen)
+        public BooleanNode(BooleanNode source) : base(source)
         {
-            _writableBlock = source._writableBlock.ToArray();
+            _writableBlock = source._readonlyBlock.ToArray();
             _readonlyBlock = _writableBlock;
         }
 
-        public BooleanNode(IBooleanNode source, bool frozen = false) : base(source, frozen)
+        public BooleanNode(IBooleanNode source) : base(source)
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
             this.Value = source.Value;
@@ -106,12 +116,12 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Boolean)Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(0, 1).Span);
+                return Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(0, 1).Span);
             }
 
             set
             {
-                ThrowExceptionIfFrozen();
+                ThrowIfFrozen();
                 Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(0, 1).Span, value);
             }
         }

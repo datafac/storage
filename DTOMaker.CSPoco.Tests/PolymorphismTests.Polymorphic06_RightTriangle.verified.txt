@@ -17,6 +17,15 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "RightTriangle";
 
+        public new static RightTriangle CreateFrom(RightTriangle source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                _ => new MyOrg.Models.CSPoco.RightTriangle(source)
+            };
+        }
+
         public new static RightTriangle CreateFrom(MyOrg.Models.IRightTriangle source)
         {
             if (source is RightTriangle concrete && concrete.IsFrozen) return concrete;

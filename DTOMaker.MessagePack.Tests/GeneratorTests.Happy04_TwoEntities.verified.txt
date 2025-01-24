@@ -18,6 +18,14 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 2;
 
+        public new static MyOtherDTO CreateFrom(MyOtherDTO source)
+        {
+            if (source.IsFrozen)
+                return source;
+            else
+                return new MyOtherDTO(source);
+        }
+
         public new static MyOtherDTO CreateFrom(MyOrg.Models.IMyOtherDTO source)
         {
             if (source is MyOtherDTO concrete && concrete.IsFrozen)

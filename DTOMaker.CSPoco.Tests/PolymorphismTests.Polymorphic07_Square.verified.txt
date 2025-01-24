@@ -17,6 +17,15 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "Square";
 
+        public new static Square CreateFrom(Square source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                _ => new MyOrg.Models.CSPoco.Square(source)
+            };
+        }
+
         public new static Square CreateFrom(MyOrg.Models.ISquare source)
         {
             if (source is Square concrete && concrete.IsFrozen) return concrete;

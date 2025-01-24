@@ -18,6 +18,14 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 3;
 
+        public new static Equilateral CreateFrom(Equilateral source)
+        {
+            if (source.IsFrozen)
+                return source;
+            else
+                return new Equilateral(source);
+        }
+
         public new static Equilateral CreateFrom(MyOrg.Models.IEquilateral source)
         {
             if (source is Equilateral concrete && concrete.IsFrozen)

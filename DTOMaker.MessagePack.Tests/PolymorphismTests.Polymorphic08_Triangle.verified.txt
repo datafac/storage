@@ -23,6 +23,17 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 2;
 
+        public new static Triangle CreateFrom(Triangle source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                MyOrg.Models.MessagePack.Equilateral source2 => new MyOrg.Models.MessagePack.Equilateral(source2),
+                MyOrg.Models.MessagePack.RightTriangle source2 => new MyOrg.Models.MessagePack.RightTriangle(source2),
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+            };
+        }
+
         public new static Triangle CreateFrom(MyOrg.Models.ITriangle source)
         {
             if (source is Triangle concrete && concrete.IsFrozen) return concrete;

@@ -9,6 +9,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
+using DTOMaker.Runtime;
 using DTOMaker.Runtime.MemBlocks;
 namespace MyOrg.Models.MemBlocks
 {
@@ -22,11 +23,25 @@ namespace MyOrg.Models.MemBlocks
         // - StringNode
 
         private const int ClassHeight = 1;
-        private const int BlockLength = 0;
+        private const int BlockLength = 16;
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
         public new const string EntityId = "MyOrg.Models.Node";
+
+        public new static Node CreateFrom(Node source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                MyOrg.Models.MemBlocks.DoubleNode source2 => new MyOrg.Models.MemBlocks.DoubleNode(source2),
+                MyOrg.Models.MemBlocks.Int64Node source2 => new MyOrg.Models.MemBlocks.Int64Node(source2),
+                MyOrg.Models.MemBlocks.BooleanNode source2 => new MyOrg.Models.MemBlocks.BooleanNode(source2),
+                MyOrg.Models.MemBlocks.NumericNode source2 => new MyOrg.Models.MemBlocks.NumericNode(source2),
+                MyOrg.Models.MemBlocks.StringNode source2 => new MyOrg.Models.MemBlocks.StringNode(source2),
+                _ => new MyOrg.Models.MemBlocks.Node(source)
+            };
+        }
 
         public new static Node CreateFrom(MyOrg.Models.INode source)
         {
@@ -80,7 +95,7 @@ namespace MyOrg.Models.MemBlocks
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
         //  ----  ----  ----  ----  ------- ----  -------
-        //     1     0     0        String  LE    Key
+        //     1     0    16        String  LE    Key
         // ------------------------------------------------------------
 
         public Node()
@@ -88,13 +103,13 @@ namespace MyOrg.Models.MemBlocks
             _readonlyBlock = _writableBlock = new byte[BlockLength];
         }
 
-        public Node(Node source, bool frozen = false) : base(source, frozen)
+        public Node(Node source) : base(source)
         {
-            _writableBlock = source._writableBlock.ToArray();
+            _writableBlock = source._readonlyBlock.ToArray();
             _readonlyBlock = _writableBlock;
         }
 
-        public Node(INode source, bool frozen = false) : base(source, frozen)
+        public Node(INode source) : base(source)
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
             this.Key = source.Key;
@@ -121,13 +136,13 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (String)Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(0, 0).Span);
+                return Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(0, 16).Span);
             }
 
             set
             {
-                ThrowExceptionIfFrozen();
-                Codec_String_LE.WriteToSpan(_writableBlock.Slice(0, 0).Span, value);
+                ThrowIfFrozen();
+                Codec_String_LE.WriteToSpan(_writableBlock.Slice(0, 16).Span, value);
             }
         }
 

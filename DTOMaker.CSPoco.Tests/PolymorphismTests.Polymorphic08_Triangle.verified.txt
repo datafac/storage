@@ -19,6 +19,17 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "Triangle";
 
+        public new static Triangle CreateFrom(Triangle source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                MyOrg.Models.CSPoco.Equilateral source2 => new MyOrg.Models.CSPoco.Equilateral(source2),
+                MyOrg.Models.CSPoco.RightTriangle source2 => new MyOrg.Models.CSPoco.RightTriangle(source2),
+                _ => new MyOrg.Models.CSPoco.Triangle(source)
+            };
+        }
+
         public new static Triangle CreateFrom(MyOrg.Models.ITriangle source)
         {
             if (source is Triangle concrete && concrete.IsFrozen) return concrete;

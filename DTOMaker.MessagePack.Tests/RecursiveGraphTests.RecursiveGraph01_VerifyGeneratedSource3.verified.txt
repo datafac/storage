@@ -28,6 +28,19 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 1;
 
+        public new static Node CreateFrom(Node source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                MyOrg.Models.MessagePack.DoubleNode source2 => new MyOrg.Models.MessagePack.DoubleNode(source2),
+                MyOrg.Models.MessagePack.Int64Node source2 => new MyOrg.Models.MessagePack.Int64Node(source2),
+                MyOrg.Models.MessagePack.BooleanNode source2 => new MyOrg.Models.MessagePack.BooleanNode(source2),
+                MyOrg.Models.MessagePack.StringNode source2 => new MyOrg.Models.MessagePack.StringNode(source2),
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+            };
+        }
+
         public new static Node CreateFrom(MyOrg.Models.INode source)
         {
             if (source is Node concrete && concrete.IsFrozen) return concrete;

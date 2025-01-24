@@ -19,6 +19,17 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "MyOrg.Models.NumericNode";
 
+        public new static NumericNode CreateFrom(NumericNode source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                MyOrg.Models.CSPoco.DoubleNode source2 => new MyOrg.Models.CSPoco.DoubleNode(source2),
+                MyOrg.Models.CSPoco.Int64Node source2 => new MyOrg.Models.CSPoco.Int64Node(source2),
+                _ => new MyOrg.Models.CSPoco.NumericNode(source)
+            };
+        }
+
         public new static NumericNode CreateFrom(MyOrg.Models.INumericNode source)
         {
             if (source is NumericNode concrete && concrete.IsFrozen) return concrete;

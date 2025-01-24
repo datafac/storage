@@ -9,6 +9,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DataFac.Memory;
+using DTOMaker.Runtime;
 using DTOMaker.Runtime.MemBlocks;
 namespace MyOrg.Models.MemBlocks
 {
@@ -22,6 +23,15 @@ namespace MyOrg.Models.MemBlocks
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
         public new const string EntityId = "MyOtherDTO";
+
+        public new static MyOtherDTO CreateFrom(MyOtherDTO source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                _ => new MyOrg.Models.MemBlocks.MyOtherDTO(source)
+            };
+        }
 
         public new static MyOtherDTO CreateFrom(MyOrg.Models.IMyOtherDTO source)
         {
@@ -73,13 +83,13 @@ namespace MyOrg.Models.MemBlocks
             _readonlyBlock = _writableBlock = new byte[BlockLength];
         }
 
-        public MyOtherDTO(MyOtherDTO source, bool frozen = false) : base(source, frozen)
+        public MyOtherDTO(MyOtherDTO source) : base(source)
         {
-            _writableBlock = source._writableBlock.ToArray();
+            _writableBlock = source._readonlyBlock.ToArray();
             _readonlyBlock = _writableBlock;
         }
 
-        public MyOtherDTO(IMyOtherDTO source, bool frozen = false) : base(source, frozen)
+        public MyOtherDTO(IMyOtherDTO source) : base(source)
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
             this.Field1 = source.Field1;
@@ -106,12 +116,12 @@ namespace MyOrg.Models.MemBlocks
         {
             get
             {
-                return (Int64)Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
+                return Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
             }
 
             set
             {
-                ThrowExceptionIfFrozen();
+                ThrowIfFrozen();
                 Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, value);
             }
         }

@@ -66,6 +66,8 @@ namespace DTOMaker.MemBlocks
                 case "System.String":
                     // encoded as UTF8
                     return 1;
+                // todo case "DataFac.Octets":
+                //    return 1;
                 default:
                     return 0;
             }
@@ -134,6 +136,10 @@ namespace DTOMaker.MemBlocks
                 if(member.MemberType.FullName == "System.String")
                 {
                     fieldLength = member.StringLength;
+                }
+                else if (member.MemberIsEntity)
+                {
+                    fieldLength = 64; // todo get sizeof BlobId
                 }
 
                 member.FieldLength = fieldLength;

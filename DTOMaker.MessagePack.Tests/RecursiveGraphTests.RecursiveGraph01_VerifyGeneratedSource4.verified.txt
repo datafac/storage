@@ -23,6 +23,17 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 3;
 
+        public new static NumericNode CreateFrom(NumericNode source)
+        {
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                MyOrg.Models.MessagePack.DoubleNode source2 => new MyOrg.Models.MessagePack.DoubleNode(source2),
+                MyOrg.Models.MessagePack.Int64Node source2 => new MyOrg.Models.MessagePack.Int64Node(source2),
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+            };
+        }
+
         public new static NumericNode CreateFrom(MyOrg.Models.INumericNode source)
         {
             if (source is NumericNode concrete && concrete.IsFrozen) return concrete;

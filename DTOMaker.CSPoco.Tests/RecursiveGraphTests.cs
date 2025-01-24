@@ -59,7 +59,7 @@ namespace DTOMaker.CSPoco.Tests
                 {
                     [Member(1)] ITree? Left { get; set; }
                     [Member(2)] ITree? Right { get; set; }
-                    [Member(3)] INode Node { get; set; }
+                    [Member(3)] INode? Node { get; set; }
                 }
             }
             

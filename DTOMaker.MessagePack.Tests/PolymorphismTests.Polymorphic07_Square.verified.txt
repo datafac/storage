@@ -18,6 +18,14 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 6;
 
+        public new static Square CreateFrom(Square source)
+        {
+            if (source.IsFrozen)
+                return source;
+            else
+                return new Square(source);
+        }
+
         public new static Square CreateFrom(MyOrg.Models.ISquare source)
         {
             if (source is Square concrete && concrete.IsFrozen)

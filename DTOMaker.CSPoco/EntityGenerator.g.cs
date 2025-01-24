@@ -35,6 +35,7 @@ Emit("    public class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_");
 Emit("    {");
 Emit("        private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();");
 Emit("        public static T_MemberTypeName_ Empty => _empty;");
+Emit("        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source) => throw new NotImplementedException();");
 Emit("        public T_MemberTypeName_() { }");
 Emit("        public T_MemberTypeName_(IT_MemberTypeName_ source) { }");
 Emit("        protected override IFreezable OnPartCopy() => throw new NotImplementedException();");
@@ -99,6 +100,19 @@ Emit("        private const int T_MemberDefaultValue_ = 0;");
 Emit("");
 Emit("        public new const string EntityId = \"T_EntityId_\";");
 Emit("");
+Emit("        public new static T_EntityName_ CreateFrom(T_EntityName_ source)");
+Emit("        {");
+Emit("            if (source.IsFrozen) return source;");
+Emit("            return source switch");
+Emit("            {");
+                foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
+                using var _ = NewScope(derived);
+Emit("                T_NameSpace_.CSPoco.T_EntityName_ source2 => new T_NameSpace_.CSPoco.T_EntityName_(source2),");
+                }
+Emit("                _ => new T_NameSpace_.CSPoco.T_EntityName_(source)");
+Emit("            };");
+Emit("        }");
+Emit("");
 Emit("        public new static T_EntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)");
 Emit("        {");
 Emit("            if (source is T_EntityName_ concrete && concrete.IsFrozen) return concrete;");
@@ -140,9 +154,9 @@ Emit("        {");
 Emit("            _T_VectorMemberName_ = source.T_VectorMemberName_;");
             } else if (member.IsEntity) {
             if (member.IsNullable) {
-Emit("            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : new T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_(source.T_NullableEntityMemberName_);");
+Emit("            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);");
             } else {
-Emit("            _T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_(source.T_RequiredEntityMemberName_);");
+Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);");
             }
             } else {
             if (member.IsNullable) {
@@ -180,7 +194,7 @@ Emit("            get => _T_NullableEntityMemberName_;");
 Emit("            set");
 Emit("            {");
 Emit("                ThrowIfFrozen();");
-Emit("                _T_NullableEntityMemberName_ = value is null ? null : new T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_(value);");
+Emit("                _T_NullableEntityMemberName_ = value is null ? null : T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_.CreateFrom(value);");
 Emit("            }");
 Emit("        }");
         } else {
@@ -196,7 +210,7 @@ Emit("            get => _T_RequiredEntityMemberName_;");
 Emit("            set");
 Emit("            {");
 Emit("                ThrowIfFrozen();");
-Emit("                _T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_(value);");
+Emit("                _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_.CreateFrom(value);");
 Emit("            }");
 Emit("        }");
         }

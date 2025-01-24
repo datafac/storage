@@ -18,6 +18,14 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 4;
 
+        public new static Int64Node CreateFrom(Int64Node source)
+        {
+            if (source.IsFrozen)
+                return source;
+            else
+                return new Int64Node(source);
+        }
+
         public new static Int64Node CreateFrom(MyOrg.Models.IInt64Node source)
         {
             if (source is Int64Node concrete && concrete.IsFrozen)
