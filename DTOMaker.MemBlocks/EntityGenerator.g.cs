@@ -167,13 +167,14 @@ Emit("        public new const string EntityId = \"T_EntityId_\";");
 Emit("");
 Emit("        public new static T_EntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)");
 Emit("        {");
+Emit("            if (source is T_EntityName_ concrete && concrete.IsFrozen) return concrete;");
 Emit("            return source switch");
 Emit("            {");
                 foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
                 using var _ = NewScope(derived);
 Emit("                T_NameSpace_.IT_EntityName_ source2 => new T_NameSpace_.MemBlocks.T_EntityName_(source2),");
                 }
-Emit("                _ => throw new ArgumentException($\"Unexpected type: {source.GetType().Name}\", nameof(source))");
+Emit("                _ => new T_NameSpace_.MemBlocks.T_EntityName_(source)");
 Emit("            };");
 Emit("        }");
 Emit("");

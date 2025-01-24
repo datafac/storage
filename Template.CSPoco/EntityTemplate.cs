@@ -91,13 +91,14 @@ namespace T_NameSpace_.CSPoco
 
         public new static T_EntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)
         {
+            if (source is T_EntityName_ concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 //##foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
                 //##using var _ = NewScope(derived);
                 T_NameSpace_.IT_EntityName_ source2 => new T_NameSpace_.CSPoco.T_EntityName_(source2),
                 //##}
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+                _ => new T_NameSpace_.CSPoco.T_EntityName_(source)
             };
         }
 

@@ -19,9 +19,10 @@ namespace MyOrg.DomainB.CSPoco
 
         public new static MyDTO CreateFrom(MyOrg.DomainB.IMyDTO source)
         {
+            if (source is MyDTO concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+                _ => new MyOrg.DomainB.CSPoco.MyDTO(source)
             };
         }
 

@@ -21,11 +21,12 @@ namespace MyOrg.Models.CSPoco
 
         public new static Triangle CreateFrom(MyOrg.Models.ITriangle source)
         {
+            if (source is Triangle concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 MyOrg.Models.IEquilateral source2 => new MyOrg.Models.CSPoco.Equilateral(source2),
                 MyOrg.Models.IRightTriangle source2 => new MyOrg.Models.CSPoco.RightTriangle(source2),
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+                _ => new MyOrg.Models.CSPoco.Triangle(source)
             };
         }
 

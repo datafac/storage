@@ -25,9 +25,10 @@ namespace MyOrg.Models.MemBlocks
 
         public new static Int64Node CreateFrom(MyOrg.Models.IInt64Node source)
         {
+            if (source is Int64Node concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+                _ => new MyOrg.Models.MemBlocks.Int64Node(source)
             };
         }
 

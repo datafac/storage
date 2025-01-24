@@ -30,6 +30,7 @@ namespace MyOrg.Models.MemBlocks
 
         public new static Node CreateFrom(MyOrg.Models.INode source)
         {
+            if (source is Node concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 MyOrg.Models.IDoubleNode source2 => new MyOrg.Models.MemBlocks.DoubleNode(source2),
@@ -37,7 +38,7 @@ namespace MyOrg.Models.MemBlocks
                 MyOrg.Models.IBooleanNode source2 => new MyOrg.Models.MemBlocks.BooleanNode(source2),
                 MyOrg.Models.INumericNode source2 => new MyOrg.Models.MemBlocks.NumericNode(source2),
                 MyOrg.Models.IStringNode source2 => new MyOrg.Models.MemBlocks.StringNode(source2),
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+                _ => new MyOrg.Models.MemBlocks.Node(source)
             };
         }
 

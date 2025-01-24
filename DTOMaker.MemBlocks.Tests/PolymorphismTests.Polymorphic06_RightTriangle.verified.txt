@@ -25,9 +25,10 @@ namespace MyOrg.Models.MemBlocks
 
         public new static RightTriangle CreateFrom(MyOrg.Models.IRightTriangle source)
         {
+            if (source is RightTriangle concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+                _ => new MyOrg.Models.MemBlocks.RightTriangle(source)
             };
         }
 

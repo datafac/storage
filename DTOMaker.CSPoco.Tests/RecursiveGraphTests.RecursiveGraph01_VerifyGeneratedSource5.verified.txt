@@ -19,9 +19,10 @@ namespace MyOrg.Models.CSPoco
 
         public new static StringNode CreateFrom(MyOrg.Models.IStringNode source)
         {
+            if (source is StringNode concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+                _ => new MyOrg.Models.CSPoco.StringNode(source)
             };
         }
 

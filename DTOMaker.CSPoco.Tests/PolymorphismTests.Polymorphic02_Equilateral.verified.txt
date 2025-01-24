@@ -19,9 +19,10 @@ namespace MyOrg.Models.CSPoco
 
         public new static Equilateral CreateFrom(MyOrg.Models.IEquilateral source)
         {
+            if (source is Equilateral concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+                _ => new MyOrg.Models.CSPoco.Equilateral(source)
             };
         }
 

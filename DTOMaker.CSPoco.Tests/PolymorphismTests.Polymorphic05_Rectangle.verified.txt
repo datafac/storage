@@ -19,9 +19,10 @@ namespace MyOrg.Models.CSPoco
 
         public new static Rectangle CreateFrom(MyOrg.Models.IRectangle source)
         {
+            if (source is Rectangle concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+                _ => new MyOrg.Models.CSPoco.Rectangle(source)
             };
         }
 

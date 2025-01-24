@@ -21,11 +21,12 @@ namespace MyOrg.Models.CSPoco
 
         public new static Quadrilateral CreateFrom(MyOrg.Models.IQuadrilateral source)
         {
+            if (source is Quadrilateral concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 MyOrg.Models.IRectangle source2 => new MyOrg.Models.CSPoco.Rectangle(source2),
                 MyOrg.Models.ISquare source2 => new MyOrg.Models.CSPoco.Square(source2),
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+                _ => new MyOrg.Models.CSPoco.Quadrilateral(source)
             };
         }
 

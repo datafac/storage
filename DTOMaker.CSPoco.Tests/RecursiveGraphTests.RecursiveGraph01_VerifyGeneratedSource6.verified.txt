@@ -19,9 +19,10 @@ namespace MyOrg.Models.CSPoco
 
         public new static Tree CreateFrom(MyOrg.Models.ITree source)
         {
+            if (source is Tree concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+                _ => new MyOrg.Models.CSPoco.Tree(source)
             };
         }
 

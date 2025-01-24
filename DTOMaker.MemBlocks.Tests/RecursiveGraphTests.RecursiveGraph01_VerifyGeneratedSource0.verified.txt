@@ -25,9 +25,10 @@ namespace MyOrg.Models.MemBlocks
 
         public new static BooleanNode CreateFrom(MyOrg.Models.IBooleanNode source)
         {
+            if (source is BooleanNode concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+                _ => new MyOrg.Models.MemBlocks.BooleanNode(source)
             };
         }
 

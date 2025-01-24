@@ -21,11 +21,12 @@ namespace MyOrg.Models.CSPoco
 
         public new static NumericNode CreateFrom(MyOrg.Models.INumericNode source)
         {
+            if (source is NumericNode concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 MyOrg.Models.IDoubleNode source2 => new MyOrg.Models.CSPoco.DoubleNode(source2),
                 MyOrg.Models.IInt64Node source2 => new MyOrg.Models.CSPoco.Int64Node(source2),
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+                _ => new MyOrg.Models.CSPoco.NumericNode(source)
             };
         }
 

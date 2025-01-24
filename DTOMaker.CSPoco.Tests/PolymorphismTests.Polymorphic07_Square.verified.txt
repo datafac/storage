@@ -19,9 +19,10 @@ namespace MyOrg.Models.CSPoco
 
         public new static Square CreateFrom(MyOrg.Models.ISquare source)
         {
+            if (source is Square concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+                _ => new MyOrg.Models.CSPoco.Square(source)
             };
         }
 
