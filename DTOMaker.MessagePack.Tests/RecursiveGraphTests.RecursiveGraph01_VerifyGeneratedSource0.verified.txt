@@ -13,28 +13,25 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    public sealed partial class BooleanNode { }
-    public partial class BooleanNode : MyOrg.Models.MessagePack.Node, IBooleanNode, IEquatable<BooleanNode>
+    public sealed partial class BooleanNode : MyOrg.Models.MessagePack.Node, IBooleanNode, IEquatable<BooleanNode>
     {
-        // Derived entities: 0
 
         public new const int EntityKey = 6;
 
         public new static BooleanNode CreateFrom(MyOrg.Models.IBooleanNode source)
         {
-            if (source is BooleanNode concrete && concrete.IsFrozen) return concrete;
-            return source switch
-            {
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
-            };
+            if (source is BooleanNode concrete && concrete.IsFrozen)
+                return concrete;
+            else
+                return new BooleanNode(source);
         }
 
         public new static BooleanNode CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
         {
-            return entityKey switch
-            {
-                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
-            };
+            if (entityKey == MyOrg.Models.MessagePack.BooleanNode.EntityKey)
+                return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.BooleanNode>(buffer, out var _);
+            else
+                throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);
         }
 
         protected override string OnGetEntityId() => EntityKey.ToString();

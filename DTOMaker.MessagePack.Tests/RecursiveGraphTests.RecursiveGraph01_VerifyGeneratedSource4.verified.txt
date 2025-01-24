@@ -15,8 +15,7 @@ namespace MyOrg.Models.MessagePack
     [MessagePackObject]
     [Union(DoubleNode.EntityKey, typeof(DoubleNode))]
     [Union(Int64Node.EntityKey, typeof(Int64Node))]
-    public abstract partial class NumericNode { }
-    public partial class NumericNode : MyOrg.Models.MessagePack.Node, INumericNode, IEquatable<NumericNode>
+    public abstract partial class NumericNode : MyOrg.Models.MessagePack.Node, INumericNode, IEquatable<NumericNode>
     {
         // Derived entities: 2
         // - DoubleNode
@@ -52,8 +51,8 @@ namespace MyOrg.Models.MessagePack
             base.OnFreeze();
         }
 
-        public NumericNode() { }
-        public NumericNode(NumericNode source) : base(source)
+        protected NumericNode() { }
+        protected NumericNode(NumericNode source) : base(source)
         {
         }
         public NumericNode(INumericNode source) : base(source)

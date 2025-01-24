@@ -13,28 +13,25 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    public sealed partial class RightTriangle { }
-    public partial class RightTriangle : MyOrg.Models.MessagePack.Triangle, IRightTriangle, IEquatable<RightTriangle>
+    public sealed partial class RightTriangle : MyOrg.Models.MessagePack.Triangle, IRightTriangle, IEquatable<RightTriangle>
     {
-        // Derived entities: 0
 
         public new const int EntityKey = 4;
 
         public new static RightTriangle CreateFrom(MyOrg.Models.IRightTriangle source)
         {
-            if (source is RightTriangle concrete && concrete.IsFrozen) return concrete;
-            return source switch
-            {
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
-            };
+            if (source is RightTriangle concrete && concrete.IsFrozen)
+                return concrete;
+            else
+                return new RightTriangle(source);
         }
 
         public new static RightTriangle CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
         {
-            return entityKey switch
-            {
-                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
-            };
+            if (entityKey == MyOrg.Models.MessagePack.RightTriangle.EntityKey)
+                return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.RightTriangle>(buffer, out var _);
+            else
+                throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);
         }
 
         protected override string OnGetEntityId() => EntityKey.ToString();

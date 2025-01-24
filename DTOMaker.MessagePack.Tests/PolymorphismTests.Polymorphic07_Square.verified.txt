@@ -13,28 +13,25 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    public sealed partial class Square { }
-    public partial class Square : MyOrg.Models.MessagePack.Quadrilateral, ISquare, IEquatable<Square>
+    public sealed partial class Square : MyOrg.Models.MessagePack.Quadrilateral, ISquare, IEquatable<Square>
     {
-        // Derived entities: 0
 
         public new const int EntityKey = 6;
 
         public new static Square CreateFrom(MyOrg.Models.ISquare source)
         {
-            if (source is Square concrete && concrete.IsFrozen) return concrete;
-            return source switch
-            {
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
-            };
+            if (source is Square concrete && concrete.IsFrozen)
+                return concrete;
+            else
+                return new Square(source);
         }
 
         public new static Square CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
         {
-            return entityKey switch
-            {
-                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
-            };
+            if (entityKey == MyOrg.Models.MessagePack.Square.EntityKey)
+                return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Square>(buffer, out var _);
+            else
+                throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);
         }
 
         protected override string OnGetEntityId() => EntityKey.ToString();

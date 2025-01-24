@@ -13,28 +13,25 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    public sealed partial class StringNode { }
-    public partial class StringNode : MyOrg.Models.MessagePack.Node, IStringNode, IEquatable<StringNode>
+    public sealed partial class StringNode : MyOrg.Models.MessagePack.Node, IStringNode, IEquatable<StringNode>
     {
-        // Derived entities: 0
 
         public new const int EntityKey = 2;
 
         public new static StringNode CreateFrom(MyOrg.Models.IStringNode source)
         {
-            if (source is StringNode concrete && concrete.IsFrozen) return concrete;
-            return source switch
-            {
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
-            };
+            if (source is StringNode concrete && concrete.IsFrozen)
+                return concrete;
+            else
+                return new StringNode(source);
         }
 
         public new static StringNode CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
         {
-            return entityKey switch
-            {
-                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
-            };
+            if (entityKey == MyOrg.Models.MessagePack.StringNode.EntityKey)
+                return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.StringNode>(buffer, out var _);
+            else
+                throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);
         }
 
         protected override string OnGetEntityId() => EntityKey.ToString();

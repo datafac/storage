@@ -15,8 +15,7 @@ namespace MyOrg.Models.MessagePack
     [MessagePackObject]
     [Union(Rectangle.EntityKey, typeof(Rectangle))]
     [Union(Square.EntityKey, typeof(Square))]
-    public abstract partial class Quadrilateral { }
-    public partial class Quadrilateral : MyOrg.Models.MessagePack.Polygon, IQuadrilateral, IEquatable<Quadrilateral>
+    public abstract partial class Quadrilateral : MyOrg.Models.MessagePack.Polygon, IQuadrilateral, IEquatable<Quadrilateral>
     {
         // Derived entities: 2
         // - Rectangle
@@ -52,8 +51,8 @@ namespace MyOrg.Models.MessagePack
             base.OnFreeze();
         }
 
-        public Quadrilateral() { }
-        public Quadrilateral(Quadrilateral source) : base(source)
+        protected Quadrilateral() { }
+        protected Quadrilateral(Quadrilateral source) : base(source)
         {
         }
         public Quadrilateral(IQuadrilateral source) : base(source)

@@ -17,8 +17,7 @@ namespace MyOrg.Models.MessagePack
     [Union(DoubleNode.EntityKey, typeof(DoubleNode))]
     [Union(Int64Node.EntityKey, typeof(Int64Node))]
     [Union(StringNode.EntityKey, typeof(StringNode))]
-    public abstract partial class Node { }
-    public partial class Node : DTOMaker.Runtime.MessagePack.EntityBase, INode, IEquatable<Node>
+    public abstract partial class Node : DTOMaker.Runtime.MessagePack.EntityBase, INode, IEquatable<Node>
     {
         // Derived entities: 5
         // - BooleanNode
@@ -61,8 +60,8 @@ namespace MyOrg.Models.MessagePack
             base.OnFreeze();
         }
 
-        public Node() { }
-        public Node(Node source) : base(source)
+        protected Node() { }
+        protected Node(Node source) : base(source)
         {
             _Key = source._Key;
         }

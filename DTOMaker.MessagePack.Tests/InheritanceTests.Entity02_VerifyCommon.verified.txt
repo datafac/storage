@@ -14,8 +14,7 @@ namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
     [Union(MyDTO.EntityKey, typeof(MyDTO))]
-    public abstract partial class MyBase { }
-    public partial class MyBase : DTOMaker.Runtime.MessagePack.EntityBase, IMyBase, IEquatable<MyBase>
+    public abstract partial class MyBase : DTOMaker.Runtime.MessagePack.EntityBase, IMyBase, IEquatable<MyBase>
     {
         // Derived entities: 1
         // - MyDTO
@@ -48,8 +47,8 @@ namespace MyOrg.Models.MessagePack
             base.OnFreeze();
         }
 
-        public MyBase() { }
-        public MyBase(MyBase source) : base(source)
+        protected MyBase() { }
+        protected MyBase(MyBase source) : base(source)
         {
         }
         public MyBase(IMyBase source) : base(source)

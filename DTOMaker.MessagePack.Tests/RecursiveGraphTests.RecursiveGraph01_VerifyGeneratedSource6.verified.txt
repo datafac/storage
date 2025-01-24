@@ -13,28 +13,25 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    public sealed partial class Tree { }
-    public partial class Tree : DTOMaker.Runtime.MessagePack.EntityBase, ITree, IEquatable<Tree>
+    public sealed partial class Tree : DTOMaker.Runtime.MessagePack.EntityBase, ITree, IEquatable<Tree>
     {
-        // Derived entities: 0
 
         public new const int EntityKey = 10;
 
         public new static Tree CreateFrom(MyOrg.Models.ITree source)
         {
-            if (source is Tree concrete && concrete.IsFrozen) return concrete;
-            return source switch
-            {
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
-            };
+            if (source is Tree concrete && concrete.IsFrozen)
+                return concrete;
+            else
+                return new Tree(source);
         }
 
         public new static Tree CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
         {
-            return entityKey switch
-            {
-                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
-            };
+            if (entityKey == MyOrg.Models.MessagePack.Tree.EntityKey)
+                return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Tree>(buffer, out var _);
+            else
+                throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);
         }
 
         protected override string OnGetEntityId() => EntityKey.ToString();

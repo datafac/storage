@@ -13,28 +13,25 @@ using System;
 namespace MyOrg.DomainA.MessagePack
 {
     [MessagePackObject]
-    public sealed partial class MyDTO1 { }
-    public partial class MyDTO1 : DTOMaker.Runtime.MessagePack.EntityBase, IMyDTO1, IEquatable<MyDTO1>
+    public sealed partial class MyDTO1 : DTOMaker.Runtime.MessagePack.EntityBase, IMyDTO1, IEquatable<MyDTO1>
     {
-        // Derived entities: 0
 
         public new const int EntityKey = 1;
 
         public new static MyDTO1 CreateFrom(MyOrg.DomainA.IMyDTO1 source)
         {
-            if (source is MyDTO1 concrete && concrete.IsFrozen) return concrete;
-            return source switch
-            {
-                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
-            };
+            if (source is MyDTO1 concrete && concrete.IsFrozen)
+                return concrete;
+            else
+                return new MyDTO1(source);
         }
 
         public new static MyDTO1 CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
         {
-            return entityKey switch
-            {
-                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
-            };
+            if (entityKey == MyOrg.DomainA.MessagePack.MyDTO1.EntityKey)
+                return MessagePackSerializer.Deserialize<MyOrg.DomainA.MessagePack.MyDTO1>(buffer, out var _);
+            else
+                throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);
         }
 
         protected override string OnGetEntityId() => EntityKey.ToString();

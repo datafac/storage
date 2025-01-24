@@ -14,14 +14,14 @@ namespace Template_MessagePack.Tests
         [Fact]
         public void Roundtrip01AsEntity()
         {
-            var orig = new T_EntityName_();
+            var orig = new T_ConcreteEntityName_();
             orig.BaseField1 = 321;
             orig.T_RequiredScalarMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
             orig.Freeze();
 
-            ReadOnlyMemory<byte> buffer = MessagePackSerializer.Serialize<T_EntityName_>(orig);
-            var copy = MessagePackSerializer.Deserialize<T_EntityName_>(buffer, out int bytesRead);
+            ReadOnlyMemory<byte> buffer = MessagePackSerializer.Serialize<T_ConcreteEntityName_>(orig);
+            var copy = MessagePackSerializer.Deserialize<T_ConcreteEntityName_>(buffer, out int bytesRead);
             bytesRead.Should().Be(buffer.Length);
 
             copy.Freeze();
@@ -34,7 +34,7 @@ namespace Template_MessagePack.Tests
         [Fact]
         public void Roundtrip03AsBase()
         {
-            var orig = new T_EntityName_();
+            var orig = new T_ConcreteEntityName_();
             orig.BaseField1 = 321;
             orig.T_RequiredScalarMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
@@ -44,9 +44,9 @@ namespace Template_MessagePack.Tests
             var recd = MessagePackSerializer.Deserialize<T_BaseNameSpace_.MessagePack.T_BaseName_>(buffer, out int bytesRead);
             bytesRead.Should().Be(buffer.Length);
             recd.Should().NotBeNull();
-            recd.Should().BeOfType<T_EntityName_>();
+            recd.Should().BeOfType<T_ConcreteEntityName_>();
             recd.Freeze();
-            var copy = recd as T_EntityName_;
+            var copy = recd as T_ConcreteEntityName_;
             copy.Should().NotBeNull();
             copy!.IsFrozen.Should().BeTrue();
             copy.BaseField1!.Should().Be(orig.BaseField1);
