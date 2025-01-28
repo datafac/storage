@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Inventory.Store;
+using System;
+using System.Threading.Tasks;
 
 namespace DTOMaker.Runtime.MemBlocks
 {
     public interface IMemBlocksEntity
     {
-        void PackBeforeFreeze();
-        ReadOnlyMemory<ReadOnlyMemory<byte>> GetBuffers();
-        void LoadBuffers(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers);
-        void UnpackAfterLoad();
+        ValueTask Pack(IDataStore dataStore);
+        ReadOnlyMemory<byte> GetBuffer();
+        void LoadBuffer(ReadOnlyMemory<byte> buffer);
+        void Unpack();
     }
 }

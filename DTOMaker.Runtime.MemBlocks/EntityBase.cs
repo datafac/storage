@@ -1,5 +1,10 @@
-﻿using System;
+﻿using DataFac.Memory;
+using Inventory.Store;
+using System;
+using System.Buffers;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace DTOMaker.Runtime.MemBlocks
 {
@@ -29,17 +34,19 @@ namespace DTOMaker.Runtime.MemBlocks
 
         protected abstract int OnGetClassHeight();
         protected virtual void OnGetBuffers(ReadOnlyMemory<byte>[] buffers) { }
-        public ReadOnlyMemory<ReadOnlyMemory<byte>> GetBuffers()
+        public ReadOnlyMemory<byte> GetBuffer()
         {
             int height = OnGetClassHeight();
             ReadOnlyMemory<byte>[] buffers = new ReadOnlyMemory<byte>[height];
             OnGetBuffers(buffers);
-            return buffers;
+            return DataFac.MemBlocks.Protocol.CombineBuffers(buffers);
         }
-        protected virtual void OnLoadBuffers(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers) { }
-        public void LoadBuffers(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
+
+        protected virtual void OnLoadBuffers(ReadOnlyMemory<byte>[] buffers) { }
+        public void LoadBuffer(ReadOnlyMemory<byte> buffer)
         {
             ThrowIfFrozen();
+            ReadOnlyMemory<byte>[] buffers = DataFac.MemBlocks.Protocol.SplitBuffers(buffer);
             OnLoadBuffers(buffers);
         }
 
@@ -55,19 +62,30 @@ namespace DTOMaker.Runtime.MemBlocks
             if (_frozen) ThrowIsFrozenException(methodName);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ThrowIsNotPackedException(string? methodName) => throw new InvalidOperationException($"Cannot freeze before packing: {methodName}.");
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void ThrowIfNotPacked(bool packed, [CallerMemberName] string? methodName = null)
+        {
+            if (!packed) ThrowIsNotPackedException(methodName);
+        }
+
         public bool Equals(EntityBase? other) => true;
         public override bool Equals(object? obj) => obj is EntityBase;
         public override int GetHashCode() => HashCode.Combine<Type>(typeof(EntityBase));
 
-        public void PackBeforeFreeze()
+        protected virtual ValueTask OnPack(IDataStore dataStore) => default;
+        public async ValueTask Pack(IDataStore dataStore)
         {
             if (_frozen) return;
-            throw new NotImplementedException();
+            await OnPack(dataStore);
         }
 
-        public void UnpackAfterLoad()
+        protected virtual void OnUnpack() { }
+        public void Unpack()
         {
-            throw new NotImplementedException();
+            OnUnpack();
         }
     }
 }

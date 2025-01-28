@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -32,18 +33,24 @@ namespace Template.MemBlocks.Tests
     public class UnitTest1
     {
         [Fact]
-        public void Test1()
+
+        public async Task RoundtripDTO()
         {
+            using var dataStore = new Inventory.Store.Testing.TestDataStore();
+
             var orig = new T_NameSpace_.MemBlocks.T_EntityName_();
             orig.BaseField1 = 789;
             orig.T_ScalarMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
+            await orig.Pack(dataStore);
             orig.Freeze();
 
-            var buffers = orig.GetBuffers();
+            var entityId = orig.GetEntityId();
+            var buffer = orig.GetBuffer();
 
-            var copy = new T_NameSpace_.MemBlocks.T_EntityName_(buffers);
+            var copy = T_NameSpace_.MemBlocks.T_EntityName_.CreateFrom(entityId,  buffer);
             copy.IsFrozen.Should().BeTrue();
+            copy.Unpack();
             copy.BaseField1.Should().Be(orig.BaseField1);
             copy.T_ScalarMemberName_.Should().Be(orig.T_ScalarMemberName_);
             copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).Should().BeTrue();

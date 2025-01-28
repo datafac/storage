@@ -12,10 +12,12 @@
 		<Company>DataFac</Company>
 		<Product>DTOMaker</Product>
 		<Authors>DataFac Contributors</Authors>
-		<Title>DTOMaker Core</Title>
-		<Description>Runtime types for DTOMaker.MemBlocks entities</Description>
+		<Title>DataFac Storage</Title>
+		<Description>Storage interfaces, types and helpers.</Description>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<EnableNETAnalyzers>True</EnableNETAnalyzers>
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>..\SigningKey.snk</AssemblyOriginatorKeyFile>
@@ -29,7 +31,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DataFac.Memory" Version="0.7.6-dev" />
 		<PackageReference Include="Microsoft.Bcl.HashCode" Version="6.0.0" />
 		<PackageReference Include="Nerdbank.GitVersioning" Version="3.7.115">
 			<PrivateAssets>all</PrivateAssets>
@@ -40,9 +41,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\DataFac.MemBlocks\DataFac.MemBlocks.csproj" />
-	  <ProjectReference Include="..\DataFac.Storage\DataFac.Storage.csproj" />
-	  <ProjectReference Include="..\DTOMaker.Runtime\DTOMaker.Runtime.csproj" />
-	</ItemGroup>
+    <ProjectReference Include="..\DataFac.Storage\DataFac.Storage.csproj" />
+  </ItemGroup>
 
 </Project>

@@ -69,6 +69,16 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DTOMaker.Core.Shared", "DTO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox", "Sandbox\Sandbox.csproj", "{5B1DC408-7BD0-4C01-9CFC-80C71DC72467}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataFac.MemBlocks", "DataFac.MemBlocks\DataFac.MemBlocks.csproj", "{A99DEAB5-42A8-4794-BA17-2F169A551D4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataFac.Storage", "DataFac.Storage\DataFac.Storage.csproj", "{4E8B7D2E-9EF7-4720-BEBD-C39B6B584CA4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataFac.Storage.Testing", "DataFac.Storage.Testing\DataFac.Storage.Testing.csproj", "{2CE21912-F59F-4130-A418-39B553E430C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataFac.Storage.RocksDb", "DataFac.Storage.RocksDb\DataFac.Storage.RocksDb.csproj", "{057FFC95-043F-4A1F-A1BB-DB8FD71EE806}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataFac.Storage.Tests", "DataFac.Storage.Tests\DataFac.Storage.Tests.csproj", "{A760F8C8-BC1F-471A-BBB3-122DD576ABF1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -167,6 +177,26 @@ Global
 		{5B1DC408-7BD0-4C01-9CFC-80C71DC72467}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B1DC408-7BD0-4C01-9CFC-80C71DC72467}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B1DC408-7BD0-4C01-9CFC-80C71DC72467}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A99DEAB5-42A8-4794-BA17-2F169A551D4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A99DEAB5-42A8-4794-BA17-2F169A551D4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A99DEAB5-42A8-4794-BA17-2F169A551D4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A99DEAB5-42A8-4794-BA17-2F169A551D4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E8B7D2E-9EF7-4720-BEBD-C39B6B584CA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E8B7D2E-9EF7-4720-BEBD-C39B6B584CA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E8B7D2E-9EF7-4720-BEBD-C39B6B584CA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E8B7D2E-9EF7-4720-BEBD-C39B6B584CA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CE21912-F59F-4130-A418-39B553E430C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CE21912-F59F-4130-A418-39B553E430C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CE21912-F59F-4130-A418-39B553E430C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CE21912-F59F-4130-A418-39B553E430C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{057FFC95-043F-4A1F-A1BB-DB8FD71EE806}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{057FFC95-043F-4A1F-A1BB-DB8FD71EE806}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{057FFC95-043F-4A1F-A1BB-DB8FD71EE806}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{057FFC95-043F-4A1F-A1BB-DB8FD71EE806}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A760F8C8-BC1F-471A-BBB3-122DD576ABF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A760F8C8-BC1F-471A-BBB3-122DD576ABF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A760F8C8-BC1F-471A-BBB3-122DD576ABF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A760F8C8-BC1F-471A-BBB3-122DD576ABF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
