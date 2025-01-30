@@ -45,8 +45,16 @@ namespace T_MemberTypeNameSpace_.MemBlocks
         private const int BlockLength = 8;
         private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();
         public static T_MemberTypeName_ Empty => _empty;
-        public static T_MemberTypeName_ CreateFrom(T_MemberTypeName_ source) => throw new NotImplementedException();
-        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source) => throw new NotImplementedException();
+        public static T_MemberTypeName_ CreateFrom(T_MemberTypeName_ source)
+        {
+            if (source.IsFrozen) return source;
+            return new T_MemberTypeName_(source);
+        }
+        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source)
+        {
+            if (source is T_MemberTypeName_ concrete && concrete.IsFrozen) return concrete;
+            return new T_MemberTypeName_(source);
+        }
         public static T_MemberTypeName_ CreateFrom(string entityId, ReadOnlyMemory<byte> buffer)
         {
             var buffers = DataFac.MemBlocks.Protocol.SplitBuffers(buffer);
@@ -88,8 +96,8 @@ namespace T_MemberTypeNameSpace_.MemBlocks
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
         protected override string OnGetEntityId() => "T_MemberTypeName_";
         protected override int OnGetClassHeight() => ClassHeight;
-        protected override ValueTask OnPack(IDataStore dataStore) => throw new NotImplementedException();
-        protected override ValueTask OnUnpack(IDataStore dataStore) => throw new NotImplementedException();
+        protected override ValueTask OnPack(IDataStore dataStore) => default;
+        protected override ValueTask OnUnpack(IDataStore dataStore) => default;
         protected override void OnGetBuffers(ReadOnlyMemory<byte>[] buffers)
         {
             base.OnGetBuffers(buffers);
@@ -516,6 +524,7 @@ namespace T_NameSpace_.MemBlocks
             BlobIdV1 blobId = default;
             if (_T_NullableEntityMemberName_ is not null)
             {
+                await _T_NullableEntityMemberName_.Pack(dataStore);
                 var buffer = _T_NullableEntityMemberName_.GetBuffer();
                 var blob = BlobData.UnsafeWrap(buffer);
                 blobId = await dataStore.PutBlob(blob, false);
@@ -568,13 +577,10 @@ namespace T_NameSpace_.MemBlocks
         private async ValueTask T_RequiredEntityMemberName__Pack(IDataStore dataStore)
         {
             if (_T_RequiredEntityMemberName__isPacked) return;
-            BlobIdV1 blobId = default;
-            if (_T_RequiredEntityMemberName_ is not null)
-            {
-                var buffer = _T_RequiredEntityMemberName_.GetBuffer();
-                var blob = BlobData.UnsafeWrap(buffer);
-                blobId = await dataStore.PutBlob(blob, false);
-            }
+            await _T_RequiredEntityMemberName_.Pack(dataStore);
+            var buffer = _T_RequiredEntityMemberName_.GetBuffer();
+            var blob = BlobData.UnsafeWrap(buffer);
+            BlobIdV1 blobId = await dataStore.PutBlob(blob, false);
             Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, 64).Span, blobId);
             _T_RequiredEntityMemberName__isPacked = true;
         }

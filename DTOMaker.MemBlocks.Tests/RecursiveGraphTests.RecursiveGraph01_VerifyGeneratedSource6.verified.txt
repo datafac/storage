@@ -160,6 +160,7 @@ namespace MyOrg.Models.MemBlocks
             BlobIdV1 blobId = default;
             if (_Left is not null)
             {
+                await _Left.Pack(dataStore);
                 var buffer = _Left.GetBuffer();
                 var blob = BlobData.UnsafeWrap(buffer);
                 blobId = await dataStore.PutBlob(blob, false);
@@ -214,6 +215,7 @@ namespace MyOrg.Models.MemBlocks
             BlobIdV1 blobId = default;
             if (_Right is not null)
             {
+                await _Right.Pack(dataStore);
                 var buffer = _Right.GetBuffer();
                 var blob = BlobData.UnsafeWrap(buffer);
                 blobId = await dataStore.PutBlob(blob, false);
@@ -268,6 +270,7 @@ namespace MyOrg.Models.MemBlocks
             BlobIdV1 blobId = default;
             if (_Node is not null)
             {
+                await _Node.Pack(dataStore);
                 var buffer = _Node.GetBuffer();
                 var blob = BlobData.UnsafeWrap(buffer);
                 blobId = await dataStore.PutBlob(blob, false);

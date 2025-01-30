@@ -86,11 +86,7 @@ namespace DTOMaker.Runtime.MemBlocks
         public override int GetHashCode() => HashCode.Combine<Type>(typeof(EntityBase));
 
         protected virtual ValueTask OnPack(IDataStore dataStore) => default;
-        public ValueTask Pack(IDataStore dataStore)
-        {
-            ThrowIfFrozen();
-            return OnPack(dataStore);
-        }
+        public ValueTask Pack(IDataStore dataStore) => _frozen ? default : OnPack(dataStore);
 
         protected virtual ValueTask OnUnpack(IDataStore dataStore) => default;
         public ValueTask Unpack(IDataStore dataStore)
