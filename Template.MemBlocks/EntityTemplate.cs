@@ -37,29 +37,97 @@ namespace DataFac.Memory
 }
 namespace T_MemberTypeNameSpace_
 {
-    public interface IT_MemberTypeName_ : IMemBlocksEntity { }
+    public interface IT_MemberTypeName_ : IMemBlocksEntity
+    {
+        Int64 Field1 { get; set; }
+    }
 }
 namespace T_MemberTypeNameSpace_.MemBlocks
 {
     public class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_
     {
+        private const int ClassHeight = 1;
+        private const int BlockLength = 8;
         private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();
         public static T_MemberTypeName_ Empty => _empty;
         public static T_MemberTypeName_ CreateFrom(T_MemberTypeName_ source) => throw new NotImplementedException();
         public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source) => throw new NotImplementedException();
         public static T_MemberTypeName_ CreateFrom(string entityId, ReadOnlyMemory<byte> buffer)
         {
-            var member = new T_MemberTypeName_();
-            member.Freeze();
-            return member;
+            var buffers = DataFac.MemBlocks.Protocol.SplitBuffers(buffer);
+            return new T_MemberTypeName_(buffers);
         }
-        public T_MemberTypeName_() { }
-        public T_MemberTypeName_(IT_MemberTypeName_ source) { }
+        private readonly Memory<byte> _writableBlock;
+        private readonly ReadOnlyMemory<byte> _readonlyBlock;
+        public T_MemberTypeName_()
+        {
+            _readonlyBlock = _writableBlock = new byte[BlockLength];
+        }
+        public T_MemberTypeName_(T_MemberTypeName_ source) : base(source)
+        {
+            _writableBlock = source._readonlyBlock.ToArray();
+            _readonlyBlock = _writableBlock;
+        }
+        public T_MemberTypeName_(IT_MemberTypeName_ source) : base(source)
+        {
+            _readonlyBlock = _writableBlock = new byte[BlockLength];
+            this.Field1 = source.Field1;
+        }
+        public T_MemberTypeName_(ReadOnlyMemory<byte>[] buffers) : base(buffers)
+        {
+            ReadOnlyMemory<byte> source = buffers[ClassHeight - 1];
+            if (source.Length >= BlockLength)
+            {
+                _readonlyBlock = source;
+            }
+            else
+            {
+                // forced copy as source is too short
+                Memory<byte> memory = new byte[BlockLength];
+                source.CopyTo(memory);
+                _readonlyBlock = memory;
+            }
+            _writableBlock = Memory<byte>.Empty;
+        }
+
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
         protected override string OnGetEntityId() => "T_MemberTypeName_";
-        protected override int OnGetClassHeight() => 1;
+        protected override int OnGetClassHeight() => ClassHeight;
         protected override ValueTask OnPack(IDataStore dataStore) => throw new NotImplementedException();
         protected override ValueTask OnUnpack(IDataStore dataStore) => throw new NotImplementedException();
+        protected override void OnGetBuffers(ReadOnlyMemory<byte>[] buffers)
+        {
+            base.OnGetBuffers(buffers);
+            var block = IsFrozen ? _readonlyBlock : _writableBlock.ToArray();
+            buffers[ClassHeight - 1] = block;
+        }
+        protected override void OnLoadBuffers(ReadOnlyMemory<byte>[] buffers)
+        {
+            base.OnLoadBuffers(buffers);
+            ReadOnlyMemory<byte> source = buffers[ClassHeight - 1];
+            if (source.Length > BlockLength)
+            {
+                source.Slice(0, BlockLength).CopyTo(_writableBlock);
+            }
+            else
+            {
+                source.CopyTo(_writableBlock);
+            }
+        }
+
+        public Int64 Field1
+        {
+            get
+            {
+                return Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
+            }
+
+            set
+            {
+                ThrowIfFrozen();
+                Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, value);
+            }
+        }
     }
 }
 namespace T_BaseNameSpace_.MemBlocks

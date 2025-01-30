@@ -42,18 +42,23 @@ namespace Template.MemBlocks.Tests
             orig.BaseField1 = 789;
             orig.T_ScalarMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
+            var origMember = new T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_() { Field1 = 123 }; ;
+            origMember.Freeze();
+            orig.T_RequiredEntityMemberName_ = origMember;
             await orig.Pack(dataStore);
             orig.Freeze();
 
             var entityId = orig.GetEntityId();
             var buffer = orig.GetBuffer();
 
-            var copy = T_NameSpace_.MemBlocks.T_EntityName_.CreateFrom(entityId,  buffer);
+            var copy = T_NameSpace_.MemBlocks.T_EntityName_.CreateFrom(entityId, buffer);
             copy.IsFrozen.Should().BeTrue();
             await copy.Unpack(dataStore);
             copy.BaseField1.Should().Be(orig.BaseField1);
             copy.T_ScalarMemberName_.Should().Be(orig.T_ScalarMemberName_);
             copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).Should().BeTrue();
+            copy.T_RequiredEntityMemberName_.Should().NotBeNull();
+            copy.T_RequiredEntityMemberName_!.Field1.Should().Be(orig.T_RequiredEntityMemberName_.Field1);
         }
     }
 }
