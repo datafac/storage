@@ -129,9 +129,9 @@ namespace MyOrg.Models.MemBlocks
         public Tree(ITree source) : base(source)
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
-            this.Left = source.Left;
-            this.Right = source.Right;
-            this.Node = source.Node;
+            _Left = source.Left is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(source.Left);
+            _Right = source.Right is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(source.Right);
+            _Node = source.Node is null ? null : MyOrg.Models.MemBlocks.Node.CreateFrom(source.Node);
         }
 
         public Tree(ReadOnlyMemory<byte>[] buffers) : base(buffers)
@@ -164,13 +164,13 @@ namespace MyOrg.Models.MemBlocks
                 var blob = BlobData.UnsafeWrap(buffer);
                 blobId = await dataStore.PutBlob(blob, false);
             }
-            Codec_BlobId_LE.WriteToSpan(_writableBlock.Slice(0, 64).Span, blobId);
+            Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(0, 64).Span, blobId);
             _Left_isPacked = true;
         }
         private async ValueTask Left_Unpack(IDataStore dataStore)
         {
             if (_Left_isUnpacked) return;
-            BlobIdV1 blobId = Codec_BlobId_LE.ReadFromSpan(_readonlyBlock.Slice(0, 64).Span);
+            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(0, 64).Span);
             if (blobId.IsEmpty)
             {
                 _Left = null;
@@ -218,13 +218,13 @@ namespace MyOrg.Models.MemBlocks
                 var blob = BlobData.UnsafeWrap(buffer);
                 blobId = await dataStore.PutBlob(blob, false);
             }
-            Codec_BlobId_LE.WriteToSpan(_writableBlock.Slice(64, 64).Span, blobId);
+            Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(64, 64).Span, blobId);
             _Right_isPacked = true;
         }
         private async ValueTask Right_Unpack(IDataStore dataStore)
         {
             if (_Right_isUnpacked) return;
-            BlobIdV1 blobId = Codec_BlobId_LE.ReadFromSpan(_readonlyBlock.Slice(64, 64).Span);
+            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(64, 64).Span);
             if (blobId.IsEmpty)
             {
                 _Right = null;
@@ -272,13 +272,13 @@ namespace MyOrg.Models.MemBlocks
                 var blob = BlobData.UnsafeWrap(buffer);
                 blobId = await dataStore.PutBlob(blob, false);
             }
-            Codec_BlobId_LE.WriteToSpan(_writableBlock.Slice(128, 64).Span, blobId);
+            Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(128, 64).Span, blobId);
             _Node_isPacked = true;
         }
         private async ValueTask Node_Unpack(IDataStore dataStore)
         {
             if (_Node_isUnpacked) return;
-            BlobIdV1 blobId = Codec_BlobId_LE.ReadFromSpan(_readonlyBlock.Slice(128, 64).Span);
+            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(128, 64).Span);
             if (blobId.IsEmpty)
             {
                 _Node = null;

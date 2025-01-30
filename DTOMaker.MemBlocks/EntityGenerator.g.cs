@@ -39,11 +39,6 @@ Emit("    {");
 Emit("        public static T_MemberType_ ReadFromSpan(ReadOnlySpan<byte> source) => Codec_Int32_LE.ReadFromSpan(source);");
 Emit("        public static void WriteToSpan(Span<byte> source, T_MemberType_ value) => Codec_Int32_LE.WriteToSpan(source, value);");
 Emit("    }");
-Emit("    public static class Codec_BlobId_T_MemberBELE_");
-Emit("    {");
-Emit("        public static BlobIdV1 ReadFromSpan(ReadOnlySpan<byte> source) => new BlobIdV1(source);");
-Emit("        public static void WriteToSpan(Span<byte> target, BlobIdV1 value) => value.WriteTo(target);");
-Emit("    }");
 Emit("}");
 Emit("namespace T_MemberTypeNameSpace_");
 Emit("{");
@@ -424,6 +419,12 @@ Emit("            _readonlyBlock = _writableBlock = new byte[BlockLength];");
             using var _ = NewScope(member);
             if(member.IsVector) {
 Emit("            this.T_VectorMemberName_ = source.T_VectorMemberName_;");
+            } else if (member.IsEntity) {
+            if (member.IsNullable) {
+Emit("            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);");
+            } else {
+Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);");
+            }
             } else {
 Emit("            this.T_ScalarMemberName_ = source.T_ScalarMemberName_;");
             }
@@ -529,13 +530,13 @@ Emit("                var buffer = _T_NullableEntityMemberName_.GetBuffer();");
 Emit("                var blob = BlobData.UnsafeWrap(buffer);");
 Emit("                blobId = await dataStore.PutBlob(blob, false);");
 Emit("            }");
-Emit("            Codec_BlobId_T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, 64).Span, blobId);");
+Emit("            Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, 64).Span, blobId);");
 Emit("            _T_NullableEntityMemberName__isPacked = true;");
 Emit("        }");
 Emit("        private async ValueTask T_NullableEntityMemberName__Unpack(IDataStore dataStore)");
 Emit("        {");
 Emit("            if (_T_NullableEntityMemberName__isUnpacked) return;");
-Emit("            BlobIdV1 blobId = Codec_BlobId_T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, 64).Span);");
+Emit("            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, 64).Span);");
 Emit("            if (blobId.IsEmpty)");
 Emit("            {");
 Emit("                _T_NullableEntityMemberName_ = null;");
@@ -584,13 +585,13 @@ Emit("                var buffer = _T_RequiredEntityMemberName_.GetBuffer();");
 Emit("                var blob = BlobData.UnsafeWrap(buffer);");
 Emit("                blobId = await dataStore.PutBlob(blob, false);");
 Emit("            }");
-Emit("            Codec_BlobId_T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, 64).Span, blobId);");
+Emit("            Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, 64).Span, blobId);");
 Emit("            _T_RequiredEntityMemberName__isPacked = true;");
 Emit("        }");
 Emit("        private async ValueTask T_RequiredEntityMemberName__Unpack(IDataStore dataStore)");
 Emit("        {");
 Emit("            if (_T_RequiredEntityMemberName__isUnpacked) return;");
-Emit("            BlobIdV1 blobId = Codec_BlobId_T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, 64).Span);");
+Emit("            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, 64).Span);");
 Emit("            if (blobId.IsEmpty)");
 Emit("            {");
 Emit("                _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.Empty;");

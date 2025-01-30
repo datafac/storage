@@ -29,11 +29,6 @@ namespace DataFac.Memory
         public static T_MemberType_ ReadFromSpan(ReadOnlySpan<byte> source) => Codec_Int32_LE.ReadFromSpan(source);
         public static void WriteToSpan(Span<byte> source, T_MemberType_ value) => Codec_Int32_LE.WriteToSpan(source, value);
     }
-    public static class Codec_BlobId_T_MemberBELE_
-    {
-        public static BlobIdV1 ReadFromSpan(ReadOnlySpan<byte> source) => new BlobIdV1(source);
-        public static void WriteToSpan(Span<byte> target, BlobIdV1 value) => value.WriteTo(target);
-    }
 }
 namespace T_MemberTypeNameSpace_
 {
@@ -414,6 +409,12 @@ namespace T_NameSpace_.MemBlocks
             //##using var _ = NewScope(member);
             //##if(member.IsVector) {
             this.T_VectorMemberName_ = source.T_VectorMemberName_;
+            //##} else if (member.IsEntity) {
+            //##if (member.IsNullable) {
+            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);
+            //##} else {
+            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);
+            //##}
             //##} else {
             this.T_ScalarMemberName_ = source.T_ScalarMemberName_;
             //##}
@@ -519,13 +520,13 @@ namespace T_NameSpace_.MemBlocks
                 var blob = BlobData.UnsafeWrap(buffer);
                 blobId = await dataStore.PutBlob(blob, false);
             }
-            Codec_BlobId_T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, 64).Span, blobId);
+            Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, 64).Span, blobId);
             _T_NullableEntityMemberName__isPacked = true;
         }
         private async ValueTask T_NullableEntityMemberName__Unpack(IDataStore dataStore)
         {
             if (_T_NullableEntityMemberName__isUnpacked) return;
-            BlobIdV1 blobId = Codec_BlobId_T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, 64).Span);
+            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, 64).Span);
             if (blobId.IsEmpty)
             {
                 _T_NullableEntityMemberName_ = null;
@@ -574,13 +575,13 @@ namespace T_NameSpace_.MemBlocks
                 var blob = BlobData.UnsafeWrap(buffer);
                 blobId = await dataStore.PutBlob(blob, false);
             }
-            Codec_BlobId_T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, 64).Span, blobId);
+            Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, 64).Span, blobId);
             _T_RequiredEntityMemberName__isPacked = true;
         }
         private async ValueTask T_RequiredEntityMemberName__Unpack(IDataStore dataStore)
         {
             if (_T_RequiredEntityMemberName__isUnpacked) return;
-            BlobIdV1 blobId = Codec_BlobId_T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, 64).Span);
+            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, 64).Span);
             if (blobId.IsEmpty)
             {
                 _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.Empty;
