@@ -1,4 +1,4 @@
-﻿namespace Inventory.Tests;
+﻿namespace DataFac.Storage.Tests;
 
 public enum StoreKind
 {

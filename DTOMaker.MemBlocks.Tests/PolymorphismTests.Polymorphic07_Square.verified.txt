@@ -6,11 +6,16 @@
 #pragma warning disable CS0109 // Member does not hide an inherited member; new keyword is not required
 #nullable enable
 using System;
+using System.Buffers;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using DataFac.Memory;
 using DTOMaker.Runtime;
 using DTOMaker.Runtime.MemBlocks;
+using DataFac.Storage;
+
 namespace MyOrg.Models.MemBlocks
 {
     public partial class Square : MyOrg.Models.MemBlocks.Quadrilateral, ISquare, IEquatable<Square>
@@ -42,11 +47,12 @@ namespace MyOrg.Models.MemBlocks
             };
         }
 
-        public new static Square CreateFrom(string entityId, ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
+        public new static Square CreateFrom(string entityId, ReadOnlyMemory<byte> buffer)
         {
+            var buffers = DataFac.MemBlocks.Protocol.SplitBuffers(buffer);
             return entityId switch
             {
-                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
+                _ => new MyOrg.Models.MemBlocks.Square(buffers)
             };
         }
 
@@ -58,10 +64,10 @@ namespace MyOrg.Models.MemBlocks
             var block = IsFrozen ? _readonlyBlock : _writableBlock.ToArray();
             buffers[ClassHeight - 1] = block;
         }
-        protected override void OnLoadBuffers(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
+        protected override void OnLoadBuffers(ReadOnlyMemory<byte>[] buffers)
         {
             base.OnLoadBuffers(buffers);
-            ReadOnlyMemory<byte> source = buffers.Span[ClassHeight - 1];
+            ReadOnlyMemory<byte> source = buffers[ClassHeight - 1];
             if (source.Length > BlockLength)
             {
                 source.Slice(0, BlockLength).CopyTo(_writableBlock);
@@ -70,6 +76,23 @@ namespace MyOrg.Models.MemBlocks
             {
                 source.CopyTo(_writableBlock);
             }
+        }
+
+        protected override IFreezable OnPartCopy() => new Square(this);
+
+        protected override void OnFreeze()
+        {
+            base.OnFreeze();
+        }
+
+        protected override async ValueTask OnPack(IDataStore dataStore)
+        {
+            await base.OnPack(dataStore);
+        }
+
+        protected override async ValueTask OnUnpack(IDataStore dataStore)
+        {
+            await base.OnUnpack(dataStore);
         }
 
         // -------------------- field map -----------------------------
@@ -95,18 +118,18 @@ namespace MyOrg.Models.MemBlocks
             this.Length = source.Length;
         }
 
-        public Square(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers) : base(buffers)
+        public Square(ReadOnlyMemory<byte>[] buffers) : base(buffers)
         {
-            ReadOnlyMemory<byte> source = buffers.Span[ClassHeight - 1];
+            ReadOnlyMemory<byte> source = buffers[ClassHeight - 1];
             if (source.Length >= BlockLength)
             {
-                _readonlyBlock = source.Slice(0, BlockLength);
+                _readonlyBlock = source; // todo? keep extra?
             }
             else
             {
                 // forced copy as source is too short
                 Memory<byte> memory = new byte[BlockLength];
-                source.Span.CopyTo(memory.Span);
+                source.CopyTo(memory);
                 _readonlyBlock = memory;
             }
             _writableBlock = Memory<byte>.Empty;
@@ -144,11 +167,11 @@ namespace MyOrg.Models.MemBlocks
         {
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
+            result.Add(_readonlyBlock.Length);
 #if NET8_0_OR_GREATER
             result.AddBytes(_readonlyBlock.Span);
 #else
             var byteSpan = _readonlyBlock.Span;
-            result.Add(byteSpan.Length);
             for (int i = 0; i < byteSpan.Length; i++)
             {
                 result.Add(byteSpan[i]);

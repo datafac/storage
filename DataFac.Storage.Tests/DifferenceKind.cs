@@ -1,4 +1,4 @@
-﻿namespace Inventory.Tests;
+﻿namespace DataFac.Storage.Tests;
 
 internal enum DifferenceKind
 {

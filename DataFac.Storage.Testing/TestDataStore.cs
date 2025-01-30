@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace Inventory.Store.Testing;
+namespace DataFac.Storage.Testing;
 
 /// <summary>
 /// Implements an in-memory data store. Useful for unit testing.
 /// </summary>
 public sealed class TestDataStore : IDataStore
 {
-    private readonly ConcurrentDictionary<string, BlobId> _nameStore = new ConcurrentDictionary<string, BlobId>();
-    private readonly ConcurrentDictionary<BlobId, BlobData> _blobStore = new ConcurrentDictionary<BlobId, BlobData>();
+    private readonly ConcurrentDictionary<string, BlobIdV1> _nameStore = new ConcurrentDictionary<string, BlobIdV1>();
+    private readonly ConcurrentDictionary<BlobIdV1, BlobData> _blobStore = new ConcurrentDictionary<BlobIdV1, BlobData>();
 
     public TestDataStore()
     {
@@ -34,9 +34,9 @@ public sealed class TestDataStore : IDataStore
         throw new ArgumentException("Must not be empty", name);
     }
 
-    public KeyValuePair<string, BlobId>[] GetNames() => _nameStore.ToArray();
+    public KeyValuePair<string, BlobIdV1>[] GetNames() => _nameStore.ToArray();
 
-    public BlobId? GetName(string key)
+    public BlobIdV1? GetName(string key)
     {
         if (string.IsNullOrEmpty(key)) ThrowMustNotBeEmpty(nameof(key));
 
@@ -58,7 +58,7 @@ public sealed class TestDataStore : IDataStore
         }
     }
 
-    public bool PutName(string key, in BlobId id)
+    public bool PutName(string key, in BlobIdV1 id)
     {
         if (string.IsNullOrEmpty(key)) ThrowMustNotBeEmpty(nameof(key));
 
@@ -72,11 +72,11 @@ public sealed class TestDataStore : IDataStore
         return added;
     }
 
-    public KeyValuePair<BlobId, BlobData>[] GetCachedBlobs() => _blobStore.ToArray();
+    public KeyValuePair<BlobIdV1, BlobData>[] GetCachedBlobs() => _blobStore.ToArray();
 
-    public KeyValuePair<BlobId, BlobData>[] GetStoredBlobs() => _blobStore.ToArray();
+    public KeyValuePair<BlobIdV1, BlobData>[] GetStoredBlobs() => _blobStore.ToArray();
 
-    public ValueTask<BlobData?> GetBlob(BlobId id)
+    public ValueTask<BlobData?> GetBlob(BlobIdV1 id)
     {
         if (id.IsEmpty) ThrowMustNotBeEmpty(nameof(id));
         Interlocked.Increment(ref _counters.BlobGetCount);
@@ -92,7 +92,7 @@ public sealed class TestDataStore : IDataStore
         }
     }
 
-    public ValueTask<BlobData?> RemoveBlob(BlobId id, bool withSync)
+    public ValueTask<BlobData?> RemoveBlob(BlobIdV1 id, bool withSync)
     {
         if (_blobStore.TryRemove(id, out var data))
         {
@@ -104,7 +104,7 @@ public sealed class TestDataStore : IDataStore
         }
     }
 
-    public ValueTask RemoveBlobs(IEnumerable<BlobId> ids, bool withSync)
+    public ValueTask RemoveBlobs(IEnumerable<BlobIdV1> ids, bool withSync)
     {
         if (ids is null) throw new ArgumentNullException(nameof(ids));
 
@@ -116,9 +116,9 @@ public sealed class TestDataStore : IDataStore
         return default;
     }
 
-    public ValueTask<BlobId> PutBlob(BlobData data, bool withSync)
+    public ValueTask<BlobIdV1> PutBlob(BlobData data, bool withSync)
     {
-        var id = data.GetBlobId();
+        var id = data.Memory.Span.GetBlobId();
         Interlocked.Increment(ref _counters.BlobPutCount);
         if (_blobStore.TryAdd(id, data))
         {
@@ -130,7 +130,7 @@ public sealed class TestDataStore : IDataStore
             Interlocked.Increment(ref _counters.BlobPutSkips);
         }
 
-        return new ValueTask<BlobId>(id);
+        return new ValueTask<BlobIdV1>(id);
     }
 
     public ValueTask Sync() => default;

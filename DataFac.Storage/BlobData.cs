@@ -1,7 +1,10 @@
 ﻿using System;
 
-namespace Inventory.Store;
+namespace DataFac.Storage;
 
+/// <summary>
+/// todo drop this type in favour of Octets
+/// </summary>
 public readonly struct BlobData : IEquatable<BlobData>
 {
     public static BlobData UnsafeWrap(ReadOnlyMemory<byte> data) => new BlobData(data);

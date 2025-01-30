@@ -36,7 +36,7 @@ namespace Template.MemBlocks.Tests
 
         public async Task RoundtripDTO()
         {
-            using var dataStore = new Inventory.Store.Testing.TestDataStore();
+            using var dataStore = new DataFac.Storage.Testing.TestDataStore();
 
             var orig = new T_NameSpace_.MemBlocks.T_EntityName_();
             orig.BaseField1 = 789;
@@ -50,7 +50,7 @@ namespace Template.MemBlocks.Tests
 
             var copy = T_NameSpace_.MemBlocks.T_EntityName_.CreateFrom(entityId,  buffer);
             copy.IsFrozen.Should().BeTrue();
-            copy.Unpack();
+            await copy.Unpack(dataStore);
             copy.BaseField1.Should().Be(orig.BaseField1);
             copy.T_ScalarMemberName_.Should().Be(orig.T_ScalarMemberName_);
             copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).Should().BeTrue();

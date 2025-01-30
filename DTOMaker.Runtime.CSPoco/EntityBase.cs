@@ -16,8 +16,8 @@ namespace DTOMaker.Runtime.CSPoco
         public void Freeze()
         {
             if (_frozen) return;
-            _frozen = true;
             OnFreeze();
+            _frozen = true;
         }
         protected virtual IFreezable OnPartCopy() => throw new NotImplementedException();
         public IFreezable PartCopy() => OnPartCopy();

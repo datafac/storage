@@ -1,5 +1,5 @@
 ﻿using DataFac.Memory;
-using Inventory.Store;
+using DataFac.Storage;
 using System;
 using System.Buffers;
 using System.Runtime.CompilerServices;
@@ -28,25 +28,26 @@ namespace DTOMaker.Runtime.MemBlocks
         public void Freeze()
         {
             if (_frozen) return;
-            _frozen = true;
             OnFreeze();
+            _frozen = true;
         }
 
         protected abstract int OnGetClassHeight();
         protected virtual void OnGetBuffers(ReadOnlyMemory<byte>[] buffers) { }
         public ReadOnlyMemory<byte> GetBuffer()
         {
+            string entityId = OnGetEntityId();
             int height = OnGetClassHeight();
-            ReadOnlyMemory<byte>[] buffers = new ReadOnlyMemory<byte>[height];
+            var buffers = new ReadOnlyMemory<byte>[height];
             OnGetBuffers(buffers);
-            return DataFac.MemBlocks.Protocol.CombineBuffers(buffers);
+            return DataFac.MemBlocks.Protocol.CombineBuffers(entityId, buffers);
         }
 
         protected virtual void OnLoadBuffers(ReadOnlyMemory<byte>[] buffers) { }
         public void LoadBuffer(ReadOnlyMemory<byte> buffer)
         {
             ThrowIfFrozen();
-            ReadOnlyMemory<byte>[] buffers = DataFac.MemBlocks.Protocol.SplitBuffers(buffer);
+            var buffers = DataFac.MemBlocks.Protocol.SplitBuffers(buffer);
             OnLoadBuffers(buffers);
         }
 
@@ -63,6 +64,15 @@ namespace DTOMaker.Runtime.MemBlocks
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ThrowIsNotFrozenException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} when not frozen.");
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void ThrowIfNotFrozen([CallerMemberName] string? methodName = null)
+        {
+            if (!_frozen) ThrowIsNotFrozenException(methodName);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private void ThrowIsNotPackedException(string? methodName) => throw new InvalidOperationException($"Cannot freeze before packing: {methodName}.");
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -76,16 +86,17 @@ namespace DTOMaker.Runtime.MemBlocks
         public override int GetHashCode() => HashCode.Combine<Type>(typeof(EntityBase));
 
         protected virtual ValueTask OnPack(IDataStore dataStore) => default;
-        public async ValueTask Pack(IDataStore dataStore)
+        public ValueTask Pack(IDataStore dataStore)
         {
-            if (_frozen) return;
-            await OnPack(dataStore);
+            ThrowIfFrozen();
+            return OnPack(dataStore);
         }
 
-        protected virtual void OnUnpack() { }
-        public void Unpack()
+        protected virtual ValueTask OnUnpack(IDataStore dataStore) => default;
+        public ValueTask Unpack(IDataStore dataStore)
         {
-            OnUnpack();
+            ThrowIfNotFrozen();
+            return OnUnpack(dataStore);
         }
     }
 }

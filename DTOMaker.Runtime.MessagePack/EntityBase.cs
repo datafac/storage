@@ -22,8 +22,8 @@ namespace DTOMaker.Runtime.MessagePack
         public void Freeze()
         {
             if (_frozen) return;
-            _frozen = true;
             OnFreeze();
+            _frozen = true;
         }
         protected abstract IFreezable OnPartCopy();
         public IFreezable PartCopy() => OnPartCopy();

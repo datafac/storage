@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.Linq;
-using Inventory.Store;
-using Inventory.Store.Testing;
-using Inventory.Store.RocksDbStore;
+using DataFac.Storage;
+using DataFac.Storage.Testing;
+using DataFac.Storage.RocksDbStore;
 
 #pragma warning disable CA1707 // Identifiers should not contain underscores
 
-namespace Inventory.Tests;
+namespace DataFac.Storage.Tests;
 
 internal static class TestHelpers
 {

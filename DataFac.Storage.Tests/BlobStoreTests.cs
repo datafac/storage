@@ -3,12 +3,12 @@ using System;
 using Xunit;
 using FluentAssertions;
 using System.Linq;
-using Inventory.Store;
+using DataFac.Storage;
 
 #pragma warning disable CA1707 // Identifiers should not contain underscores
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
 
-namespace Inventory.Tests;
+namespace DataFac.Storage.Tests;
 
 public class BlobStoreTests
 {
@@ -16,7 +16,9 @@ public class BlobStoreTests
 
     [Theory]
     [InlineData(StoreKind.Testing)]
+#if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
+#endif
     public void Store01Create(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
@@ -31,7 +33,9 @@ public class BlobStoreTests
 
     [Theory]
     [InlineData(StoreKind.Testing)]
+#if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
+#endif
     public async Task Store02GetEmptyIdFails(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
@@ -46,14 +50,16 @@ public class BlobStoreTests
 
     [Theory]
     [InlineData(StoreKind.Testing)]
+#if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
+#endif
     public async Task Store03GetInvalidId(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         BlobData data = new BlobData(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobId id = data.GetBlobId();
+        BlobIdV1 id = data.GetId();
         var result = await dataStore.GetBlob(id);
         result.Should().BeNull();
         var counters = dataStore.GetCounters();
@@ -64,7 +70,9 @@ public class BlobStoreTests
 
     [Theory]
     [InlineData(StoreKind.Testing)]
+#if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
+#endif
     public async Task Store05PutEmpty(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
@@ -81,7 +89,9 @@ public class BlobStoreTests
 
     [Theory]
     [InlineData(StoreKind.Testing)]
+#if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
+#endif
     public async Task Store06PutNonEmpty(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
@@ -98,14 +108,16 @@ public class BlobStoreTests
 
     [Theory]
     [InlineData(StoreKind.Testing)]
+#if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
+#endif
     public async Task Store08Get(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         BlobData data = new BlobData(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobId id = data.GetBlobId();
+        BlobIdV1 id = data.GetId();
         await dataStore.PutBlob(data, true);
 
         var data2 = await dataStore.GetBlob(id);
@@ -123,7 +135,9 @@ public class BlobStoreTests
 
     [Theory]
     [InlineData(StoreKind.Testing)]
+#if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
+#endif
     public async Task Store09PutAgain(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
@@ -132,7 +146,7 @@ public class BlobStoreTests
         BlobData data = new BlobData(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
 
         // put first
-        BlobId id0 = data.GetBlobId();
+        BlobIdV1 id0 = data.GetId();
         await dataStore.PutBlob(data, true);
         var counters1 = dataStore.GetCounters();
         counters1.BlobPutCount.Should().Be(1);
@@ -141,7 +155,7 @@ public class BlobStoreTests
         counters1.ByteDelta.Should().Be(256);
 
         // put again
-        BlobId id1 = data.GetBlobId();
+        BlobIdV1 id1 = data.GetId();
         id1.Equals(id0).Should().BeTrue();
         await dataStore.PutBlob(data, true);
         var counters2 = dataStore.GetCounters();

@@ -139,7 +139,7 @@ namespace DTOMaker.MemBlocks
                 }
                 else if (member.MemberIsEntity)
                 {
-                    fieldLength = 64; // todo get sizeof BlobId
+                    fieldLength = 64; // todo get sizeof BlobIdV0
                 }
 
                 member.FieldLength = fieldLength;

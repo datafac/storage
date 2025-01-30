@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Inventory.Tests;
+namespace DataFac.Storage.Tests;
 
 internal readonly struct Difference<T> where T : class, IEquatable<T>
 {

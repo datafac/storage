@@ -1,9 +1,9 @@
-﻿namespace Inventory.Store.RocksDbStore;
+﻿namespace DataFac.Storage.RocksDbStore;
 
 internal enum AsyncOpKind
 {
     Sync,
     Get,
-    Putqqq,
+    Put,
     Del,
 }

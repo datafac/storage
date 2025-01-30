@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Inventory.Tests;
+namespace DataFac.Storage.Tests;
 
 internal sealed class TestRecord : IEquatable<TestRecord>
 {

@@ -6,11 +6,16 @@
 #pragma warning disable CS0109 // Member does not hide an inherited member; new keyword is not required
 #nullable enable
 using System;
+using System.Buffers;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using DataFac.Memory;
 using DTOMaker.Runtime;
 using DTOMaker.Runtime.MemBlocks;
+using DataFac.Storage;
+
 namespace MyOrg.Models.MemBlocks
 {
     public partial class Tree : DTOMaker.Runtime.MemBlocks.EntityBase, ITree, IEquatable<Tree>
@@ -42,11 +47,12 @@ namespace MyOrg.Models.MemBlocks
             };
         }
 
-        public new static Tree CreateFrom(string entityId, ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
+        public new static Tree CreateFrom(string entityId, ReadOnlyMemory<byte> buffer)
         {
+            var buffers = DataFac.MemBlocks.Protocol.SplitBuffers(buffer);
             return entityId switch
             {
-                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
+                _ => new MyOrg.Models.MemBlocks.Tree(buffers)
             };
         }
 
@@ -58,10 +64,10 @@ namespace MyOrg.Models.MemBlocks
             var block = IsFrozen ? _readonlyBlock : _writableBlock.ToArray();
             buffers[ClassHeight - 1] = block;
         }
-        protected override void OnLoadBuffers(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers)
+        protected override void OnLoadBuffers(ReadOnlyMemory<byte>[] buffers)
         {
             base.OnLoadBuffers(buffers);
-            ReadOnlyMemory<byte> source = buffers.Span[ClassHeight - 1];
+            ReadOnlyMemory<byte> source = buffers[ClassHeight - 1];
             if (source.Length > BlockLength)
             {
                 source.Slice(0, BlockLength).CopyTo(_writableBlock);
@@ -70,6 +76,35 @@ namespace MyOrg.Models.MemBlocks
             {
                 source.CopyTo(_writableBlock);
             }
+        }
+
+        protected override IFreezable OnPartCopy() => new Tree(this);
+
+        protected override void OnFreeze()
+        {
+            base.OnFreeze();
+            Left_CheckIsPacked();
+            _Left?.Freeze();
+            Right_CheckIsPacked();
+            _Right?.Freeze();
+            Node_CheckIsPacked();
+            _Node?.Freeze();
+        }
+
+        protected override async ValueTask OnPack(IDataStore dataStore)
+        {
+            await base.OnPack(dataStore);
+            await Left_Pack(dataStore);
+            await Right_Pack(dataStore);
+            await Node_Pack(dataStore);
+        }
+
+        protected override async ValueTask OnUnpack(IDataStore dataStore)
+        {
+            await base.OnUnpack(dataStore);
+            await Left_Unpack(dataStore);
+            await Right_Unpack(dataStore);
+            await Node_Unpack(dataStore);
         }
 
         // -------------------- field map -----------------------------
@@ -99,23 +134,56 @@ namespace MyOrg.Models.MemBlocks
             this.Node = source.Node;
         }
 
-        public Tree(ReadOnlyMemory<ReadOnlyMemory<byte>> buffers) : base(buffers)
+        public Tree(ReadOnlyMemory<byte>[] buffers) : base(buffers)
         {
-            ReadOnlyMemory<byte> source = buffers.Span[ClassHeight - 1];
+            ReadOnlyMemory<byte> source = buffers[ClassHeight - 1];
             if (source.Length >= BlockLength)
             {
-                _readonlyBlock = source.Slice(0, BlockLength);
+                _readonlyBlock = source; // todo? keep extra?
             }
             else
             {
                 // forced copy as source is too short
                 Memory<byte> memory = new byte[BlockLength];
-                source.Span.CopyTo(memory.Span);
+                source.CopyTo(memory);
                 _readonlyBlock = memory;
             }
             _writableBlock = Memory<byte>.Empty;
         }
 
+        private volatile bool _Left_isPacked = false;
+        private volatile bool _Left_isUnpacked = false;
+        private void Left_CheckIsPacked() => ThrowIfNotPacked(_Left_isPacked);
+        private async ValueTask Left_Pack(IDataStore dataStore)
+        {
+            if (_Left_isPacked) return;
+            BlobIdV1 blobId = default;
+            if (_Left is not null)
+            {
+                var buffer = _Left.GetBuffer();
+                var blob = BlobData.UnsafeWrap(buffer);
+                blobId = await dataStore.PutBlob(blob, false);
+            }
+            Codec_BlobId_LE.WriteToSpan(_writableBlock.Slice(0, 64).Span, blobId);
+            _Left_isPacked = true;
+        }
+        private async ValueTask Left_Unpack(IDataStore dataStore)
+        {
+            if (_Left_isUnpacked) return;
+            BlobIdV1 blobId = Codec_BlobId_LE.ReadFromSpan(_readonlyBlock.Slice(0, 64).Span);
+            if (blobId.IsEmpty)
+            {
+                _Left = null;
+            }
+            else
+            {
+                BlobData? blob = await dataStore.GetBlob(blobId);
+                if (blob is null) throw new InvalidDataException($"BlobIdV0 '{blobId}' not found!");
+                string entityId = DataFac.MemBlocks.Protocol.ParseEntityId(blob.Value.Memory);
+                _Left = MyOrg.Models.MemBlocks.Tree.CreateFrom(entityId, blob.Value.Memory);
+            }
+            _Left_isUnpacked = true;
+        }
         private MyOrg.Models.MemBlocks.Tree? _Left;
         public MyOrg.Models.MemBlocks.Tree? Left
         {
@@ -123,7 +191,8 @@ namespace MyOrg.Models.MemBlocks
             set
             {
                 ThrowIfFrozen();
-                _Left = value;
+                _Left = value is null ? null : value.IsFrozen ? value : MyOrg.Models.MemBlocks.Tree.CreateFrom(value);
+                _Left_isPacked = false;
             }
         }
         MyOrg.Models.ITree? ITree.Left
@@ -133,7 +202,41 @@ namespace MyOrg.Models.MemBlocks
             {
                 ThrowIfFrozen();
                 _Left = value is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(value);
+                _Left_isPacked = false;
             }
+        }
+        private volatile bool _Right_isPacked = false;
+        private volatile bool _Right_isUnpacked = false;
+        private void Right_CheckIsPacked() => ThrowIfNotPacked(_Right_isPacked);
+        private async ValueTask Right_Pack(IDataStore dataStore)
+        {
+            if (_Right_isPacked) return;
+            BlobIdV1 blobId = default;
+            if (_Right is not null)
+            {
+                var buffer = _Right.GetBuffer();
+                var blob = BlobData.UnsafeWrap(buffer);
+                blobId = await dataStore.PutBlob(blob, false);
+            }
+            Codec_BlobId_LE.WriteToSpan(_writableBlock.Slice(64, 64).Span, blobId);
+            _Right_isPacked = true;
+        }
+        private async ValueTask Right_Unpack(IDataStore dataStore)
+        {
+            if (_Right_isUnpacked) return;
+            BlobIdV1 blobId = Codec_BlobId_LE.ReadFromSpan(_readonlyBlock.Slice(64, 64).Span);
+            if (blobId.IsEmpty)
+            {
+                _Right = null;
+            }
+            else
+            {
+                BlobData? blob = await dataStore.GetBlob(blobId);
+                if (blob is null) throw new InvalidDataException($"BlobIdV0 '{blobId}' not found!");
+                string entityId = DataFac.MemBlocks.Protocol.ParseEntityId(blob.Value.Memory);
+                _Right = MyOrg.Models.MemBlocks.Tree.CreateFrom(entityId, blob.Value.Memory);
+            }
+            _Right_isUnpacked = true;
         }
         private MyOrg.Models.MemBlocks.Tree? _Right;
         public MyOrg.Models.MemBlocks.Tree? Right
@@ -142,7 +245,8 @@ namespace MyOrg.Models.MemBlocks
             set
             {
                 ThrowIfFrozen();
-                _Right = value;
+                _Right = value is null ? null : value.IsFrozen ? value : MyOrg.Models.MemBlocks.Tree.CreateFrom(value);
+                _Right_isPacked = false;
             }
         }
         MyOrg.Models.ITree? ITree.Right
@@ -152,7 +256,41 @@ namespace MyOrg.Models.MemBlocks
             {
                 ThrowIfFrozen();
                 _Right = value is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(value);
+                _Right_isPacked = false;
             }
+        }
+        private volatile bool _Node_isPacked = false;
+        private volatile bool _Node_isUnpacked = false;
+        private void Node_CheckIsPacked() => ThrowIfNotPacked(_Node_isPacked);
+        private async ValueTask Node_Pack(IDataStore dataStore)
+        {
+            if (_Node_isPacked) return;
+            BlobIdV1 blobId = default;
+            if (_Node is not null)
+            {
+                var buffer = _Node.GetBuffer();
+                var blob = BlobData.UnsafeWrap(buffer);
+                blobId = await dataStore.PutBlob(blob, false);
+            }
+            Codec_BlobId_LE.WriteToSpan(_writableBlock.Slice(128, 64).Span, blobId);
+            _Node_isPacked = true;
+        }
+        private async ValueTask Node_Unpack(IDataStore dataStore)
+        {
+            if (_Node_isUnpacked) return;
+            BlobIdV1 blobId = Codec_BlobId_LE.ReadFromSpan(_readonlyBlock.Slice(128, 64).Span);
+            if (blobId.IsEmpty)
+            {
+                _Node = null;
+            }
+            else
+            {
+                BlobData? blob = await dataStore.GetBlob(blobId);
+                if (blob is null) throw new InvalidDataException($"BlobIdV0 '{blobId}' not found!");
+                string entityId = DataFac.MemBlocks.Protocol.ParseEntityId(blob.Value.Memory);
+                _Node = MyOrg.Models.MemBlocks.Node.CreateFrom(entityId, blob.Value.Memory);
+            }
+            _Node_isUnpacked = true;
         }
         private MyOrg.Models.MemBlocks.Node? _Node;
         public MyOrg.Models.MemBlocks.Node? Node
@@ -161,7 +299,8 @@ namespace MyOrg.Models.MemBlocks
             set
             {
                 ThrowIfFrozen();
-                _Node = value;
+                _Node = value is null ? null : value.IsFrozen ? value : MyOrg.Models.MemBlocks.Node.CreateFrom(value);
+                _Node_isPacked = false;
             }
         }
         MyOrg.Models.INode? ITree.Node
@@ -171,6 +310,7 @@ namespace MyOrg.Models.MemBlocks
             {
                 ThrowIfFrozen();
                 _Node = value is null ? null : MyOrg.Models.MemBlocks.Node.CreateFrom(value);
+                _Node_isPacked = false;
             }
         }
 
@@ -191,11 +331,11 @@ namespace MyOrg.Models.MemBlocks
         {
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
+            result.Add(_readonlyBlock.Length);
 #if NET8_0_OR_GREATER
             result.AddBytes(_readonlyBlock.Span);
 #else
             var byteSpan = _readonlyBlock.Span;
-            result.Add(byteSpan.Length);
             for (int i = 0; i < byteSpan.Length; i++)
             {
                 result.Add(byteSpan[i]);

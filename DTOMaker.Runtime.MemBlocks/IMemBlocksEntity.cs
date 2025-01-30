@@ -1,4 +1,4 @@
-﻿using Inventory.Store;
+﻿using DataFac.Storage;
 using System;
 using System.Threading.Tasks;
 
@@ -9,6 +9,6 @@ namespace DTOMaker.Runtime.MemBlocks
         ValueTask Pack(IDataStore dataStore);
         ReadOnlyMemory<byte> GetBuffer();
         void LoadBuffer(ReadOnlyMemory<byte> buffer);
-        void Unpack();
+        ValueTask Unpack(IDataStore dataStore);
     }
 }

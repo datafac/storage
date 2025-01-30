@@ -1,9 +1,9 @@
 ﻿using Xunit;
 using FluentAssertions;
 using System.Linq;
-using Inventory.Store;
+using DataFac.Storage;
 
-namespace Inventory.Tests;
+namespace DataFac.Storage.Tests;
 
 public class BlobHashTests
 {
@@ -11,15 +11,15 @@ public class BlobHashTests
     public void BlobHash01Empty()
     {
         BlobData orig = default;
-        BlobId id = orig.GetBlobId();
-        id.ToString().Should().Be("V1/E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855");
+        BlobIdV1 id = orig.GetId();
+        id.ToString().Should().Be("V1.0:0:0:0:1:47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=");
     }
 
     [Fact]
     public void BlobHash02NonEmpty()
     {
         BlobData orig = new BlobData(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobId id = orig.GetBlobId();
-        id.ToString().Should().Be("V1/40AFF2E9D2D8922E47AFD4648E6967497158785FBD1DA870E7110266BF944880");
+        BlobIdV1 id = orig.GetId();
+        id.ToString().Should().Be("V1.0:256:0:0:1:QK/y6dLYki5Hr9RkjmlnSXFYeF+9Hahw5xECZr+USIA=");
     }
 }

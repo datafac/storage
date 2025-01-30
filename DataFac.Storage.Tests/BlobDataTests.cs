@@ -1,9 +1,9 @@
 ﻿using Xunit;
 using FluentAssertions;
 using System.Linq;
-using Inventory.Store;
+using DataFac.Storage;
 
-namespace Inventory.Tests;
+namespace DataFac.Storage.Tests;
 
 public class BlobDataTests
 {

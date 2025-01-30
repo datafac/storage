@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace Inventory.Store;
+namespace DataFac.Storage;
 
 public interface ILazyLoad
 {
