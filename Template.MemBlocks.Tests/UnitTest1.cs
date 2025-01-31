@@ -51,7 +51,7 @@ namespace Template.MemBlocks.Tests
 
             var copy = T_NameSpace_.MemBlocks.T_EntityName_.CreateFrom(entityId, buffer);
             copy.IsFrozen.Should().BeTrue();
-            await copy.Unpack(dataStore);
+            await copy.Unpack(dataStore, 0);
             copy.BaseField1.Should().Be(orig.BaseField1);
             copy.T_ScalarMemberName_.Should().Be(orig.T_ScalarMemberName_);
             copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).Should().BeTrue();

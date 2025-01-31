@@ -97,7 +97,7 @@ namespace T_MemberTypeNameSpace_.MemBlocks
         protected override string OnGetEntityId() => "T_MemberTypeName_";
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ValueTask OnPack(IDataStore dataStore) => default;
-        protected override ValueTask OnUnpack(IDataStore dataStore) => default;
+        protected override ValueTask OnUnpack(IDataStore dataStore, int depth) => default;
         protected override void OnGetBuffers(ReadOnlyMemory<byte>[] buffers)
         {
             base.OnGetBuffers(buffers);
@@ -180,9 +180,9 @@ namespace T_BaseNameSpace_.MemBlocks
             return base.OnPack(dataStore);
         }
 
-        protected override ValueTask OnUnpack(IDataStore dataStore)
+        protected override ValueTask OnUnpack(IDataStore dataStore, int depth)
         {
-            return base.OnUnpack(dataStore);
+            return base.OnUnpack(dataStore, depth);
         }
         public T_BaseName_()
         {
@@ -375,16 +375,16 @@ namespace T_NameSpace_.MemBlocks
             //##}
         }
 
-        protected override async ValueTask OnUnpack(IDataStore dataStore)
+        protected override async ValueTask OnUnpack(IDataStore dataStore, int depth)
         {
-            await base.OnUnpack(dataStore);
+            await base.OnUnpack(dataStore, depth);
             //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
             //##if (member.IsEntity) {
             //##if (member.IsNullable) {
-            await T_NullableEntityMemberName__Unpack(dataStore);
+            await T_NullableEntityMemberName__Unpack(dataStore, depth);
             //##} else {
-            await T_RequiredEntityMemberName__Unpack(dataStore);
+            await T_RequiredEntityMemberName__Unpack(dataStore, depth);
             //##}
             //##}
             //##}
@@ -532,7 +532,7 @@ namespace T_NameSpace_.MemBlocks
             Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, 64).Span, blobId);
             _T_NullableEntityMemberName__isPacked = true;
         }
-        private async ValueTask T_NullableEntityMemberName__Unpack(IDataStore dataStore)
+        private async ValueTask T_NullableEntityMemberName__Unpack(IDataStore dataStore, int depth)
         {
             if (_T_NullableEntityMemberName__isUnpacked) return;
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, 64).Span);
@@ -546,28 +546,41 @@ namespace T_NameSpace_.MemBlocks
                 if (blob is null) throw new InvalidDataException($"BlobIdV0 '{blobId}' not found!");
                 string entityId = DataFac.MemBlocks.Protocol.ParseEntityId(blob.Value.Memory);
                 _T_NullableEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(entityId, blob.Value.Memory);
+                await _T_NullableEntityMemberName_.Unpack(dataStore, depth - 1);
             }
             _T_NullableEntityMemberName__isUnpacked = true;
         }
         private T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_? _T_NullableEntityMemberName_;
         public T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_? T_NullableEntityMemberName_
         {
-            get => _T_NullableEntityMemberName_;
+            get
+            {
+                ThrowIfNotUnpacked(_T_NullableEntityMemberName__isUnpacked);
+                return _T_NullableEntityMemberName_;
+            }
+
             set
             {
                 ThrowIfFrozen();
                 _T_NullableEntityMemberName_ = value is null ? null : value.IsFrozen ? value : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(value);
                 _T_NullableEntityMemberName__isPacked = false;
+                _T_NullableEntityMemberName__isUnpacked = true;
             }
         }
         T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityName_.T_NullableEntityMemberName_
         {
-            get => _T_NullableEntityMemberName_;
+            get
+            {
+                ThrowIfNotUnpacked(_T_NullableEntityMemberName__isUnpacked);
+                return _T_NullableEntityMemberName_;
+            }
+
             set
             {
                 ThrowIfFrozen();
                 _T_NullableEntityMemberName_ = value is null ? null : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(value);
                 _T_NullableEntityMemberName__isPacked = false;
+                _T_NullableEntityMemberName__isUnpacked = true;
             }
         }
         //##} else {
@@ -584,7 +597,7 @@ namespace T_NameSpace_.MemBlocks
             Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, 64).Span, blobId);
             _T_RequiredEntityMemberName__isPacked = true;
         }
-        private async ValueTask T_RequiredEntityMemberName__Unpack(IDataStore dataStore)
+        private async ValueTask T_RequiredEntityMemberName__Unpack(IDataStore dataStore, int depth)
         {
             if (_T_RequiredEntityMemberName__isUnpacked) return;
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, 64).Span);
@@ -598,28 +611,39 @@ namespace T_NameSpace_.MemBlocks
                 if (blob is null) throw new InvalidDataException($"BlobIdV0 '{blobId}' not found!");
                 string entityId = DataFac.MemBlocks.Protocol.ParseEntityId(blob.Value.Memory);
                 _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(entityId, blob.Value.Memory);
+                await _T_RequiredEntityMemberName_.Unpack(dataStore, depth - 1);
             }
             _T_RequiredEntityMemberName__isUnpacked = true;
         }
         private T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.Empty;
         public T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_ T_RequiredEntityMemberName_
         {
-            get => _T_RequiredEntityMemberName_;
+            get
+            {
+                ThrowIfNotUnpacked(_T_RequiredEntityMemberName__isUnpacked);
+                return _T_RequiredEntityMemberName_;
+            }
             set
             {
                 ThrowIfFrozen();
                 _T_RequiredEntityMemberName_ = value.IsFrozen ? value : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(value);
                 _T_RequiredEntityMemberName__isPacked = false;
+                _T_RequiredEntityMemberName__isUnpacked = true;
             }
         }
         T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityName_.T_RequiredEntityMemberName_
         {
-            get => _T_RequiredEntityMemberName_;
+            get
+            {
+                ThrowIfNotUnpacked(_T_RequiredEntityMemberName__isUnpacked);
+                return _T_RequiredEntityMemberName_;
+            }
             set
             {
                 ThrowIfFrozen();
                 _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(value);
                 _T_RequiredEntityMemberName__isPacked = false;
+                _T_RequiredEntityMemberName__isUnpacked = true;
             }
         }
         //##}

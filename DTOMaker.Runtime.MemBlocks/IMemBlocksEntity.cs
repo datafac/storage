@@ -9,7 +9,8 @@ namespace DTOMaker.Runtime.MemBlocks
         ValueTask Pack(IDataStore dataStore);
         ReadOnlyMemory<byte> GetBuffer();
         void LoadBuffer(ReadOnlyMemory<byte> buffer);
-        ValueTask Unpack(IDataStore dataStore); // todo int depth
+        ValueTask Unpack(IDataStore dataStore, int depth = 0);
+        ValueTask UnpackAll(IDataStore dataStore);
     }
     public static class Codec_BlobId_NE
     {

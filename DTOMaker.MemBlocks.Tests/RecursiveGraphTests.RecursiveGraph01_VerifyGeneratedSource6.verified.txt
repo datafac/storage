@@ -99,12 +99,12 @@ namespace MyOrg.Models.MemBlocks
             await Node_Pack(dataStore);
         }
 
-        protected override async ValueTask OnUnpack(IDataStore dataStore)
+        protected override async ValueTask OnUnpack(IDataStore dataStore, int depth)
         {
-            await base.OnUnpack(dataStore);
-            await Left_Unpack(dataStore);
-            await Right_Unpack(dataStore);
-            await Node_Unpack(dataStore);
+            await base.OnUnpack(dataStore, depth);
+            await Left_Unpack(dataStore, depth);
+            await Right_Unpack(dataStore, depth);
+            await Node_Unpack(dataStore, depth);
         }
 
         // -------------------- field map -----------------------------
@@ -168,7 +168,7 @@ namespace MyOrg.Models.MemBlocks
             Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(0, 64).Span, blobId);
             _Left_isPacked = true;
         }
-        private async ValueTask Left_Unpack(IDataStore dataStore)
+        private async ValueTask Left_Unpack(IDataStore dataStore, int depth)
         {
             if (_Left_isUnpacked) return;
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(0, 64).Span);
@@ -182,28 +182,41 @@ namespace MyOrg.Models.MemBlocks
                 if (blob is null) throw new InvalidDataException($"BlobIdV0 '{blobId}' not found!");
                 string entityId = DataFac.MemBlocks.Protocol.ParseEntityId(blob.Value.Memory);
                 _Left = MyOrg.Models.MemBlocks.Tree.CreateFrom(entityId, blob.Value.Memory);
+                await _Left.Unpack(dataStore, depth - 1);
             }
             _Left_isUnpacked = true;
         }
         private MyOrg.Models.MemBlocks.Tree? _Left;
         public MyOrg.Models.MemBlocks.Tree? Left
         {
-            get => _Left;
+            get
+            {
+                ThrowIfNotUnpacked(_Left_isUnpacked);
+                return _Left;
+            }
+
             set
             {
                 ThrowIfFrozen();
                 _Left = value is null ? null : value.IsFrozen ? value : MyOrg.Models.MemBlocks.Tree.CreateFrom(value);
                 _Left_isPacked = false;
+                _Left_isUnpacked = true;
             }
         }
         MyOrg.Models.ITree? ITree.Left
         {
-            get => _Left;
+            get
+            {
+                ThrowIfNotUnpacked(_Left_isUnpacked);
+                return _Left;
+            }
+
             set
             {
                 ThrowIfFrozen();
                 _Left = value is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(value);
                 _Left_isPacked = false;
+                _Left_isUnpacked = true;
             }
         }
         private volatile bool _Right_isPacked = false;
@@ -223,7 +236,7 @@ namespace MyOrg.Models.MemBlocks
             Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(64, 64).Span, blobId);
             _Right_isPacked = true;
         }
-        private async ValueTask Right_Unpack(IDataStore dataStore)
+        private async ValueTask Right_Unpack(IDataStore dataStore, int depth)
         {
             if (_Right_isUnpacked) return;
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(64, 64).Span);
@@ -237,28 +250,41 @@ namespace MyOrg.Models.MemBlocks
                 if (blob is null) throw new InvalidDataException($"BlobIdV0 '{blobId}' not found!");
                 string entityId = DataFac.MemBlocks.Protocol.ParseEntityId(blob.Value.Memory);
                 _Right = MyOrg.Models.MemBlocks.Tree.CreateFrom(entityId, blob.Value.Memory);
+                await _Right.Unpack(dataStore, depth - 1);
             }
             _Right_isUnpacked = true;
         }
         private MyOrg.Models.MemBlocks.Tree? _Right;
         public MyOrg.Models.MemBlocks.Tree? Right
         {
-            get => _Right;
+            get
+            {
+                ThrowIfNotUnpacked(_Right_isUnpacked);
+                return _Right;
+            }
+
             set
             {
                 ThrowIfFrozen();
                 _Right = value is null ? null : value.IsFrozen ? value : MyOrg.Models.MemBlocks.Tree.CreateFrom(value);
                 _Right_isPacked = false;
+                _Right_isUnpacked = true;
             }
         }
         MyOrg.Models.ITree? ITree.Right
         {
-            get => _Right;
+            get
+            {
+                ThrowIfNotUnpacked(_Right_isUnpacked);
+                return _Right;
+            }
+
             set
             {
                 ThrowIfFrozen();
                 _Right = value is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(value);
                 _Right_isPacked = false;
+                _Right_isUnpacked = true;
             }
         }
         private volatile bool _Node_isPacked = false;
@@ -278,7 +304,7 @@ namespace MyOrg.Models.MemBlocks
             Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(128, 64).Span, blobId);
             _Node_isPacked = true;
         }
-        private async ValueTask Node_Unpack(IDataStore dataStore)
+        private async ValueTask Node_Unpack(IDataStore dataStore, int depth)
         {
             if (_Node_isUnpacked) return;
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(128, 64).Span);
@@ -292,28 +318,41 @@ namespace MyOrg.Models.MemBlocks
                 if (blob is null) throw new InvalidDataException($"BlobIdV0 '{blobId}' not found!");
                 string entityId = DataFac.MemBlocks.Protocol.ParseEntityId(blob.Value.Memory);
                 _Node = MyOrg.Models.MemBlocks.Node.CreateFrom(entityId, blob.Value.Memory);
+                await _Node.Unpack(dataStore, depth - 1);
             }
             _Node_isUnpacked = true;
         }
         private MyOrg.Models.MemBlocks.Node? _Node;
         public MyOrg.Models.MemBlocks.Node? Node
         {
-            get => _Node;
+            get
+            {
+                ThrowIfNotUnpacked(_Node_isUnpacked);
+                return _Node;
+            }
+
             set
             {
                 ThrowIfFrozen();
                 _Node = value is null ? null : value.IsFrozen ? value : MyOrg.Models.MemBlocks.Node.CreateFrom(value);
                 _Node_isPacked = false;
+                _Node_isUnpacked = true;
             }
         }
         MyOrg.Models.INode? ITree.Node
         {
-            get => _Node;
+            get
+            {
+                ThrowIfNotUnpacked(_Node_isUnpacked);
+                return _Node;
+            }
+
             set
             {
                 ThrowIfFrozen();
                 _Node = value is null ? null : MyOrg.Models.MemBlocks.Node.CreateFrom(value);
                 _Node_isPacked = false;
+                _Node_isUnpacked = true;
             }
         }
 

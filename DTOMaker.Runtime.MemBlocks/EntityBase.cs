@@ -81,6 +81,15 @@ namespace DTOMaker.Runtime.MemBlocks
             if (!packed) ThrowIsNotPackedException(methodName);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ThrowIsNotUnpackedException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} before unpacking.");
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void ThrowIfNotUnpacked(bool unpacked, [CallerMemberName] string? methodName = null)
+        {
+            if (_frozen && !unpacked) ThrowIsNotUnpackedException(methodName);
+        }
+
         public bool Equals(EntityBase? other) => true;
         public override bool Equals(object? obj) => obj is EntityBase;
         public override int GetHashCode() => HashCode.Combine<Type>(typeof(EntityBase));
@@ -88,11 +97,17 @@ namespace DTOMaker.Runtime.MemBlocks
         protected virtual ValueTask OnPack(IDataStore dataStore) => default;
         public ValueTask Pack(IDataStore dataStore) => _frozen ? default : OnPack(dataStore);
 
-        protected virtual ValueTask OnUnpack(IDataStore dataStore) => default;
-        public ValueTask Unpack(IDataStore dataStore)
+        protected virtual ValueTask OnUnpack(IDataStore dataStore, int depth) => default;
+        public ValueTask Unpack(IDataStore dataStore, int depth = 0)
+        {
+            if (depth < 0) return default;
+            ThrowIfNotFrozen();
+            return OnUnpack(dataStore, depth);
+        }
+        public ValueTask UnpackAll(IDataStore dataStore)
         {
             ThrowIfNotFrozen();
-            return OnUnpack(dataStore);
+            return OnUnpack(dataStore, int.MaxValue);
         }
     }
 }

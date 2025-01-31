@@ -90,9 +90,9 @@ namespace MyOrg.DomainA.MemBlocks
             await base.OnPack(dataStore);
         }
 
-        protected override async ValueTask OnUnpack(IDataStore dataStore)
+        protected override async ValueTask OnUnpack(IDataStore dataStore, int depth)
         {
-            await base.OnUnpack(dataStore);
+            await base.OnUnpack(dataStore, depth);
         }
 
         // -------------------- field map -----------------------------
