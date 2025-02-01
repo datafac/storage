@@ -2,6 +2,7 @@
 using DataFac.Storage;
 using System;
 using System.Buffers;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -38,6 +39,7 @@ namespace DTOMaker.Runtime.MemBlocks
         public void Freeze()
         {
             if (_frozen) return;
+            if (!_packed) ThrowIsNotPackedException();
             OnFreeze();
             _frozen = true;
         }
@@ -83,21 +85,15 @@ namespace DTOMaker.Runtime.MemBlocks
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private void ThrowIsNotPackedException(string? methodName) => throw new InvalidOperationException($"Cannot freeze before packing: {methodName}.");
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void ThrowIfNotPacked(bool packed, [CallerMemberName] string? methodName = null)
-        {
-            if (!packed) ThrowIsNotPackedException(methodName);
-        }
+        private void ThrowIsNotPackedException() => throw new InvalidOperationException($"Cannot freeze before packing.");
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void ThrowIsNotUnpackedException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} before unpacking.");
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void ThrowIfNotUnpacked(bool unpacked, [CallerMemberName] string? methodName = null)
+        protected void ThrowIfNotUnpacked([CallerMemberName] string? methodName = null)
         {
-            if (_frozen && !unpacked) ThrowIsNotUnpackedException(methodName);
+            if (_frozen && !_unpacked) ThrowIsNotUnpackedException(methodName);
         }
 
         protected static T IfNotNull<T>(T? value, [CallerMemberName] string? methodName = null) where T : class
@@ -110,24 +106,29 @@ namespace DTOMaker.Runtime.MemBlocks
         public override bool Equals(object? obj) => obj is EntityBase;
         public override int GetHashCode() => HashCode.Combine<Type>(typeof(EntityBase));
 
+        private volatile bool _packed = false;
         protected virtual ValueTask OnPack(IDataStore dataStore) => default;
-        public ValueTask Pack(IDataStore dataStore)
+        public async ValueTask Pack(IDataStore dataStore)
         {
-            if (_frozen) return default;
-            return OnPack(dataStore);
+            if (_frozen) return;
+            if (_packed) return;
+            await OnPack(dataStore);
+            _packed = true;
+            OnFreeze();
+            _frozen = true;
+            _unpacked = true;
         }
 
+        private volatile bool _unpacked = false;
         protected virtual ValueTask OnUnpack(IDataStore dataStore, int depth) => default;
-        public ValueTask Unpack(IDataStore dataStore, int depth = 0)
+        public async ValueTask Unpack(IDataStore dataStore, int depth = 0)
         {
-            if (depth < 0) return default;
+            if (depth < 0) return;
+            if (_unpacked) return;
             ThrowIfNotFrozen();
-            return OnUnpack(dataStore, depth);
+            await OnUnpack(dataStore, depth);
+            _unpacked = true;
         }
-        public ValueTask UnpackAll(IDataStore dataStore)
-        {
-            ThrowIfNotFrozen();
-            return OnUnpack(dataStore, int.MaxValue);
-        }
+        public ValueTask UnpackAll(IDataStore dataStore) => Unpack(dataStore, int.MaxValue);
     }
 }

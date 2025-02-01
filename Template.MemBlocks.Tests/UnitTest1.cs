@@ -55,6 +55,7 @@ namespace Template.MemBlocks.Tests
             copy.T_ScalarMemberName_.Should().Be(orig.T_ScalarMemberName_);
             copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).Should().BeTrue();
             copy.T_RequiredEntityMemberName_.Should().NotBeNull();
+            await copy.T_RequiredEntityMemberName_.Unpack(dataStore, 0);
             copy.T_RequiredEntityMemberName_!.Field1.Should().Be(orig.T_RequiredEntityMemberName_.Field1);
         }
     }

@@ -350,10 +350,8 @@ namespace T_NameSpace_.MemBlocks
             //##using var _ = NewScope(member);
             //##if (member.IsEntity) {
             //##if (member.IsNullable) {
-            T_NullableEntityMemberName__CheckIsPacked();
             _T_NullableEntityMemberName_?.Freeze();
             //##} else {
-            T_RequiredEntityMemberName__CheckIsPacked();
             _T_RequiredEntityMemberName_?.Freeze();
             //##}
             //##}
@@ -515,12 +513,8 @@ namespace T_NameSpace_.MemBlocks
 
         //##} else if (member.IsEntity) {
         //##if (member.IsNullable) {
-        private volatile bool _T_NullableEntityMemberName__isPacked = false;
-        private volatile bool _T_NullableEntityMemberName__isUnpacked = false;
-        private void T_NullableEntityMemberName__CheckIsPacked() => ThrowIfNotPacked(_T_NullableEntityMemberName__isPacked);
         private async ValueTask T_NullableEntityMemberName__Pack(IDataStore dataStore)
         {
-            if (_T_NullableEntityMemberName__isPacked) return;
             BlobIdV1 blobId = default;
             if (_T_NullableEntityMemberName_ is not null)
             {
@@ -530,11 +524,9 @@ namespace T_NameSpace_.MemBlocks
                 blobId = await dataStore.PutBlob(blob);
             }
             Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, 64).Span, blobId);
-            _T_NullableEntityMemberName__isPacked = true;
         }
         private async ValueTask T_NullableEntityMemberName__Unpack(IDataStore dataStore, int depth)
         {
-            if (_T_NullableEntityMemberName__isUnpacked) return;
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, 64).Span);
             if (blobId.IsEmpty)
             {
@@ -547,14 +539,13 @@ namespace T_NameSpace_.MemBlocks
                 _T_NullableEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(blob.Value.Memory);
                 await _T_NullableEntityMemberName_.Unpack(dataStore, depth - 1);
             }
-            _T_NullableEntityMemberName__isUnpacked = true;
         }
         private T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_? _T_NullableEntityMemberName_;
         public T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_? T_NullableEntityMemberName_
         {
             get
             {
-                ThrowIfNotUnpacked(_T_NullableEntityMemberName__isUnpacked);
+                ThrowIfNotUnpacked();
                 return _T_NullableEntityMemberName_;
             }
 
@@ -562,15 +553,13 @@ namespace T_NameSpace_.MemBlocks
             {
                 ThrowIfFrozen();
                 _T_NullableEntityMemberName_ = value is null ? null : value.IsFrozen ? value : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(value);
-                _T_NullableEntityMemberName__isPacked = false;
-                _T_NullableEntityMemberName__isUnpacked = true;
             }
         }
         T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityName_.T_NullableEntityMemberName_
         {
             get
             {
-                ThrowIfNotUnpacked(_T_NullableEntityMemberName__isUnpacked);
+                ThrowIfNotUnpacked();
                 return _T_NullableEntityMemberName_;
             }
 
@@ -578,17 +567,11 @@ namespace T_NameSpace_.MemBlocks
             {
                 ThrowIfFrozen();
                 _T_NullableEntityMemberName_ = value is null ? null : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(value);
-                _T_NullableEntityMemberName__isPacked = false;
-                _T_NullableEntityMemberName__isUnpacked = true;
             }
         }
         //##} else {
-        private volatile bool _T_RequiredEntityMemberName__isPacked = false;
-        private volatile bool _T_RequiredEntityMemberName__isUnpacked = false;
-        private void T_RequiredEntityMemberName__CheckIsPacked() => ThrowIfNotPacked(_T_RequiredEntityMemberName__isPacked);
         private async ValueTask T_RequiredEntityMemberName__Pack(IDataStore dataStore)
         {
-            if (_T_RequiredEntityMemberName__isPacked) return;
             BlobIdV1 blobId = default;
             if (_T_RequiredEntityMemberName_ is null)
             {
@@ -602,11 +585,9 @@ namespace T_NameSpace_.MemBlocks
                 blobId = await dataStore.PutBlob(blob);
             }
             Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, 64).Span, blobId);
-            _T_RequiredEntityMemberName__isPacked = true;
         }
         private async ValueTask T_RequiredEntityMemberName__Unpack(IDataStore dataStore, int depth)
         {
-            if (_T_RequiredEntityMemberName__isUnpacked) return;
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, 64).Span);
             if (blobId.IsEmpty)
             {
@@ -619,37 +600,32 @@ namespace T_NameSpace_.MemBlocks
                 _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(blob.Value.Memory);
                 await _T_RequiredEntityMemberName_.Unpack(dataStore, depth - 1);
             }
-            _T_RequiredEntityMemberName__isUnpacked = true;
         }
         private T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_? _T_RequiredEntityMemberName_ = null;
         public T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_ T_RequiredEntityMemberName_
         {
             get
             {
-                ThrowIfNotUnpacked(_T_RequiredEntityMemberName__isUnpacked);
+                ThrowIfNotUnpacked();
                 return IfNotNull(_T_RequiredEntityMemberName_);
             }
             set
             {
                 ThrowIfFrozen();
                 _T_RequiredEntityMemberName_ = value.IsFrozen ? value : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(value);
-                _T_RequiredEntityMemberName__isPacked = false;
-                _T_RequiredEntityMemberName__isUnpacked = true;
             }
         }
         T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityName_.T_RequiredEntityMemberName_
         {
             get
             {
-                ThrowIfNotUnpacked(_T_RequiredEntityMemberName__isUnpacked);
+                ThrowIfNotUnpacked();
                 return IfNotNull(_T_RequiredEntityMemberName_);
             }
             set
             {
                 ThrowIfFrozen();
                 _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(value);
-                _T_RequiredEntityMemberName__isPacked = false;
-                _T_RequiredEntityMemberName__isUnpacked = true;
             }
         }
         //##}
