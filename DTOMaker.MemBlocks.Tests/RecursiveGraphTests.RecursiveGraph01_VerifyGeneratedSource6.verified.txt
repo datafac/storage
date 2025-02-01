@@ -163,15 +163,12 @@ namespace MyOrg.Models.MemBlocks
         }
         private async ValueTask Left_Unpack(IDataStore dataStore, int depth)
         {
+            _Left = null;
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(0, 64).Span);
-            if (blobId.IsEmpty)
-            {
-                _Left = null;
-            }
-            else
+            if (!blobId.IsEmpty)
             {
                 BlobData? blob = await dataStore.GetBlob(blobId);
-                if (blob is null) throw new InvalidDataException($"BlobIdV0 '{blobId}' not found!");
+                if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
                 _Left = MyOrg.Models.MemBlocks.Tree.CreateFrom(blob.Value.Memory);
                 await _Left.Unpack(dataStore, depth - 1);
             }
@@ -219,15 +216,12 @@ namespace MyOrg.Models.MemBlocks
         }
         private async ValueTask Right_Unpack(IDataStore dataStore, int depth)
         {
+            _Right = null;
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(64, 64).Span);
-            if (blobId.IsEmpty)
-            {
-                _Right = null;
-            }
-            else
+            if (!blobId.IsEmpty)
             {
                 BlobData? blob = await dataStore.GetBlob(blobId);
-                if (blob is null) throw new InvalidDataException($"BlobIdV0 '{blobId}' not found!");
+                if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
                 _Right = MyOrg.Models.MemBlocks.Tree.CreateFrom(blob.Value.Memory);
                 await _Right.Unpack(dataStore, depth - 1);
             }
@@ -275,15 +269,12 @@ namespace MyOrg.Models.MemBlocks
         }
         private async ValueTask Node_Unpack(IDataStore dataStore, int depth)
         {
+            _Node = null;
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(128, 64).Span);
-            if (blobId.IsEmpty)
-            {
-                _Node = null;
-            }
-            else
+            if (!blobId.IsEmpty)
             {
                 BlobData? blob = await dataStore.GetBlob(blobId);
-                if (blob is null) throw new InvalidDataException($"BlobIdV0 '{blobId}' not found!");
+                if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
                 _Node = MyOrg.Models.MemBlocks.Node.CreateFrom(blob.Value.Memory);
                 await _Node.Unpack(dataStore, depth - 1);
             }

@@ -527,15 +527,12 @@ namespace T_NameSpace_.MemBlocks
         }
         private async ValueTask T_NullableEntityMemberName__Unpack(IDataStore dataStore, int depth)
         {
+            _T_NullableEntityMemberName_ = null;
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, 64).Span);
-            if (blobId.IsEmpty)
-            {
-                _T_NullableEntityMemberName_ = null;
-            }
-            else
+            if (!blobId.IsEmpty)
             {
                 BlobData? blob = await dataStore.GetBlob(blobId);
-                if (blob is null) throw new InvalidDataException($"BlobIdV0 '{blobId}' not found!");
+                if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
                 _T_NullableEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(blob.Value.Memory);
                 await _T_NullableEntityMemberName_.Unpack(dataStore, depth - 1);
             }
@@ -575,7 +572,7 @@ namespace T_NameSpace_.MemBlocks
             BlobIdV1 blobId = default;
             if (_T_RequiredEntityMemberName_ is null)
             {
-                _T_RequiredEntityMemberName_ = await CreateEmpty< T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_>(dataStore);
+                _T_RequiredEntityMemberName_ = await CreateEmpty<T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_>(dataStore);
             }
             else
             {
@@ -596,7 +593,7 @@ namespace T_NameSpace_.MemBlocks
             else
             {
                 BlobData? blob = await dataStore.GetBlob(blobId);
-                if (blob is null) throw new InvalidDataException($"BlobIdV0 '{blobId}' not found!");
+                if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
                 _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(blob.Value.Memory);
                 await _T_RequiredEntityMemberName_.Unpack(dataStore, depth - 1);
             }
