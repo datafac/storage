@@ -19,6 +19,7 @@ Emit("#pragma warning disable CS0162 // Unreachable code detected");
 }
 Emit("#pragma warning disable CS0109 // Member does not hide an inherited member; new keyword is not required");
 Emit("#nullable enable");
+Emit("using DataFac.Memory;");
 Emit("using DTOMaker.Runtime;");
 Emit("using DTOMaker.Runtime.CSPoco;");
 Emit("using System;");

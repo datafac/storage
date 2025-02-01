@@ -13,30 +13,30 @@ namespace DTOMaker.CSPoco.Tests
     {
         private readonly string inputSource1 =
             """
-                using DTOMaker.Models;
-                namespace MyOrg.DomainA
+            using DTOMaker.Models;
+            namespace MyOrg.DomainA
+            {
+                [Entity] public interface IMyDTO1
                 {
-                    [Entity] public interface IMyDTO1
-                    {
-                        [Member(1)] long Field1 { get; set; }
-                    }
+                    [Member(1)] long Field1 { get; set; }
                 }
-                namespace MyOrg.DomainB
+            }
+            namespace MyOrg.DomainB
+            {
+                [Entity] public interface IMyDTO1
                 {
-                    [Entity] public interface IMyDTO1
-                    {
-                        [Member(1)] double Field1 { get; set; }
-                    }
+                    [Member(1)] double Field1 { get; set; }
                 }
-                namespace MyOrg.DomainC
+            }
+            namespace MyOrg.DomainC
+            {
+                [Entity] public interface IMyDTO2
                 {
-                    [Entity] public interface IMyDTO2
-                    {
-                        [Member(1)] MyOrg.DomainA.IMyDTO1? Member1 { get; set; }
-                        [Member(2)] MyOrg.DomainB.IMyDTO1  Member2 { get; set; }
-                    }
+                    [Member(1)] MyOrg.DomainA.IMyDTO1? Member1 { get; set; }
+                    [Member(2)] MyOrg.DomainB.IMyDTO1  Member2 { get; set; }
                 }
-                """;
+            }
+            """;
 
         [Fact]
         public void EntityMember00_GeneratedSourcesLengthShouldBe3()

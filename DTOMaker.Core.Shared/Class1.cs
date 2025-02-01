@@ -15,61 +15,6 @@ namespace DTOMaker.Gentime
     public readonly struct EntityAttribute { }
     public readonly struct MemberAttribute { }
     public readonly struct IdAttribute { }
-    public static class DiagnosticCategory
-    {
-        public const string Design = "DTOMaker.Design";
-        public const string Naming = "DTOMaker.Naming";
-        public const string Syntax = "DTOMaker.Syntax";
-        public const string Other = "DTOMaker.Other";
-    }
-    public sealed class SyntaxDiagnostic
-    {
-        public readonly string Id;
-        public readonly string Title;
-        public readonly string Category;
-        public readonly Location Location;
-        public readonly DiagnosticSeverity Severity;
-        public readonly string Message;
-        public SyntaxDiagnostic(string id, string title, string category, Location location, DiagnosticSeverity severity, string message)
-        {
-            Id = id;
-            Title = title;
-            Category = category;
-            Location = location;
-            Message = message;
-            Severity = severity;
-        }
-    }
-    public readonly struct TypeFullName : IEquatable<TypeFullName>
-    {
-        private static readonly TypeFullName _defaultBase = new TypeFullName("DTOMaker.Runtime", "EntityBase");
-        public static TypeFullName DefaultBase => _defaultBase;
-
-        private readonly string _nameSpace;
-        private readonly string _shortName;
-        private readonly string _fullName;
-
-        public string NameSpace => _nameSpace;
-        public string ShortName => _shortName;
-        public string FullName => _fullName;
-
-        public TypeFullName(string nameSpace, string name)
-        {
-            _nameSpace = nameSpace;
-            _shortName = name;
-            _fullName = _nameSpace + "." + _shortName;
-        }
-
-        public bool Equals(TypeFullName other) => string.Equals(_fullName, other._fullName, StringComparison.Ordinal);
-        public override bool Equals(object? obj) => obj is TypeFullName other && Equals(other);
-        public override int GetHashCode() => HashCode.Combine(_fullName);
-        public static bool operator ==(TypeFullName left, TypeFullName right) => left.Equals(right);
-        public static bool operator !=(TypeFullName left, TypeFullName right) => !left.Equals(right);
-
-        public override string ToString() => _fullName;
-
-        public TypeFullName WithShortName(Func<string, string> modifier) => new TypeFullName(_nameSpace, modifier(_shortName));
-    }
     public abstract class TargetBase
     {
         public Location Location { get; }
@@ -799,33 +744,6 @@ namespace DTOMaker.Gentime
             return _builder.ToString();
         }
     }
-    internal sealed class TokenStack
-    {
-        private class Disposer : IDisposable
-        {
-            private readonly Stack<ImmutableDictionary<string, object?>> _stack;
-            public Disposer(Stack<ImmutableDictionary<string, object?>> stack) => _stack = stack;
-
-            private volatile bool _disposed;
-            public void Dispose()
-            {
-                if (_disposed) return;
-                _disposed = true;
-                _stack.Pop();
-            }
-        }
-
-        private readonly Stack<ImmutableDictionary<string, object?>> _stack = new Stack<ImmutableDictionary<string, object?>>();
-        public TokenStack() => _stack.Push(ImmutableDictionary<string, object?>.Empty);
-        public ImmutableDictionary<string, object?> Top => _stack.Peek();
-        public IDisposable NewScope(IReadOnlyDictionary<string, object?> tokens)
-        {
-            var oldScope = _stack.Peek();
-            var newScope = oldScope.SetItems(tokens);
-            _stack.Push(newScope);
-            return new Disposer(_stack);
-        }
-    }
     public class Language_CSharp : ILanguage
     {
         private static readonly Language_CSharp _instance = new Language_CSharp();
@@ -866,15 +784,20 @@ namespace DTOMaker.Gentime
 
         public string GetDataTypeToken(TypeFullName typeFullName)
         {
-            return typeFullName.ShortName;
+            return typeFullName.FullName switch
+            {
+                "System.String" => "String",
+                "DataFac.Memory.Octets" => "Octets",
+                _ => typeFullName.ShortName
+            };
         }
 
         public string GetDefaultValue(TypeFullName typeFullName)
         {
-            return typeFullName.ShortName switch
+            return typeFullName.FullName switch
             {
-                "String" => "string.Empty",
-                //todo NativeType.Binary => "Octets.Empty",
+                "System.String" => "string.Empty",
+                "DataFac.Memory.Octets" => "Octets.Empty",
                 _ => $"default"
             };
         }

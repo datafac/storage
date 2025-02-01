@@ -34,7 +34,6 @@ Generates basic POCOs (Plain Old C# Objects) that implement the model interfaces
 Common types used at runtime by DTOMaker generated entities.
 
 ## Other Features
-
 - Member value types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
 - String member types:
   - Required or nullable strings for CSPoco and MessagePack

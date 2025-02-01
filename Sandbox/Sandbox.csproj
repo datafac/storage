@@ -8,6 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="DataFac.Memory" Version="0.7.12" />
 		<PackageReference Include="MessagePack" Version="2.5.192" />
 		<PackageReference Include="Microsoft.Bcl.HashCode" Version="6.0.0" />
 	</ItemGroup>
@@ -15,6 +16,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\DTOMaker.Models.MessagePack\DTOMaker.Models.MessagePack.csproj" />
 		<ProjectReference Include="..\DTOMaker.Models\DTOMaker.Models.csproj" />
+		<ProjectReference Include="..\DTOMaker.Runtime.CSPoco\DTOMaker.Runtime.CSPoco.csproj" />
 		<ProjectReference Include="..\DTOMaker.Runtime.MessagePack\DTOMaker.Runtime.MessagePack.csproj" />
 		<ProjectReference Include="..\DTOMaker.Runtime\DTOMaker.Runtime.csproj" />
 	</ItemGroup>

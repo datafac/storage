@@ -10,13 +10,13 @@ using DTOMaker.Runtime;
 using DTOMaker.Runtime.CSPoco;
 using System;
 
-namespace MyOrg.DomainA.CSPoco
+namespace MyOrg.Models.CSPoco
 {
     public partial class MyDTO : DTOMaker.Runtime.CSPoco.EntityBase, IMyDTO, IEquatable<MyDTO>
     {
         // Derived entities: 0
 
-        public new const string EntityId = "MyOrg.DomainA.MyDTO";
+        public new const string EntityId = "MyOrg.Models.MyDTO";
 
         private static MyDTO CreateEmpty()
         {
@@ -32,16 +32,16 @@ namespace MyOrg.DomainA.CSPoco
             if (source.IsFrozen) return source;
             return source switch
             {
-                _ => new MyOrg.DomainA.CSPoco.MyDTO(source)
+                _ => new MyOrg.Models.CSPoco.MyDTO(source)
             };
         }
 
-        public new static MyDTO CreateFrom(MyOrg.DomainA.IMyDTO source)
+        public new static MyDTO CreateFrom(MyOrg.Models.IMyDTO source)
         {
             if (source is MyDTO concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
-                _ => new MyOrg.DomainA.CSPoco.MyDTO(source)
+                _ => new MyOrg.Models.CSPoco.MyDTO(source)
             };
         }
 
@@ -57,6 +57,14 @@ namespace MyOrg.DomainA.CSPoco
         public MyDTO() { }
         public MyDTO(IMyDTO source) : base(source)
         {
+            _Field1 = source.Field1;
+        }
+
+        private Octets _Field1 = Octets.Empty;
+        public Octets Field1
+        {
+            get => _Field1;
+            set => _Field1 = IfNotFrozen(ref value);
         }
 
 
@@ -65,6 +73,7 @@ namespace MyOrg.DomainA.CSPoco
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
             if (!base.Equals(other)) return false;
+            if (_Field1 != other.Field1) return false;
             return true;
         }
 
@@ -76,6 +85,7 @@ namespace MyOrg.DomainA.CSPoco
         {
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
+            result.Add(_Field1);
             return result.ToHashCode();
         }
 
