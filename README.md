@@ -1,8 +1,8 @@
 # DTOMaker
 
-Supports model-first development of DTOs (Data Transport Objects) 
-and related POCOs (Plain Old C# Objects). Models are defined as C# interfaces with
-additional attributes.
+Supports model-first development of DTOs (Data Transport Objects), DSOs (Data Storage 
+Objects) and related POCOs (Plain Old C# Objects). Models are defined as C# interfaces 
+with additional attributes.
 
 [![Build-Deploy](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml)
 
