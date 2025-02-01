@@ -43,8 +43,6 @@ namespace T_MemberTypeNameSpace_.MemBlocks
     {
         private const int ClassHeight = 1;
         private const int BlockLength = 8;
-        private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();
-        public static T_MemberTypeName_ Empty => _empty;
         public static T_MemberTypeName_ CreateFrom(T_MemberTypeName_ source)
         {
             if (source.IsFrozen) return source;
@@ -55,8 +53,9 @@ namespace T_MemberTypeNameSpace_.MemBlocks
             if (source is T_MemberTypeName_ concrete && concrete.IsFrozen) return concrete;
             return new T_MemberTypeName_(source);
         }
-        public static T_MemberTypeName_ CreateFrom(string entityId, ReadOnlyMemory<byte> buffer)
+        public static T_MemberTypeName_ CreateFrom(ReadOnlyMemory<byte> buffer)
         {
+            var entityId = DataFac.MemBlocks.Protocol.ParseEntityId(buffer);
             var buffers = DataFac.MemBlocks.Protocol.SplitBuffers(buffer);
             return new T_MemberTypeName_(buffers);
         }
@@ -306,8 +305,9 @@ namespace T_NameSpace_.MemBlocks
             };
         }
 
-        public new static T_EntityName_ CreateFrom(string entityId, ReadOnlyMemory<byte> buffer)
+        public new static T_EntityName_ CreateFrom(ReadOnlyMemory<byte> buffer)
         {
+            var entityId = DataFac.MemBlocks.Protocol.ParseEntityId(buffer);
             var buffers = DataFac.MemBlocks.Protocol.SplitBuffers(buffer);
             return entityId switch
             {
@@ -354,7 +354,7 @@ namespace T_NameSpace_.MemBlocks
             _T_NullableEntityMemberName_?.Freeze();
             //##} else {
             T_RequiredEntityMemberName__CheckIsPacked();
-            _T_RequiredEntityMemberName_.Freeze();
+            _T_RequiredEntityMemberName_?.Freeze();
             //##}
             //##}
             //##}
@@ -527,7 +527,7 @@ namespace T_NameSpace_.MemBlocks
                 await _T_NullableEntityMemberName_.Pack(dataStore);
                 var buffer = _T_NullableEntityMemberName_.GetBuffer();
                 var blob = BlobData.UnsafeWrap(buffer);
-                blobId = await dataStore.PutBlob(blob, false);
+                blobId = await dataStore.PutBlob(blob);
             }
             Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, 64).Span, blobId);
             _T_NullableEntityMemberName__isPacked = true;
@@ -544,8 +544,7 @@ namespace T_NameSpace_.MemBlocks
             {
                 BlobData? blob = await dataStore.GetBlob(blobId);
                 if (blob is null) throw new InvalidDataException($"BlobIdV0 '{blobId}' not found!");
-                string entityId = DataFac.MemBlocks.Protocol.ParseEntityId(blob.Value.Memory);
-                _T_NullableEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(entityId, blob.Value.Memory);
+                _T_NullableEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(blob.Value.Memory);
                 await _T_NullableEntityMemberName_.Unpack(dataStore, depth - 1);
             }
             _T_NullableEntityMemberName__isUnpacked = true;
@@ -590,10 +589,18 @@ namespace T_NameSpace_.MemBlocks
         private async ValueTask T_RequiredEntityMemberName__Pack(IDataStore dataStore)
         {
             if (_T_RequiredEntityMemberName__isPacked) return;
-            await _T_RequiredEntityMemberName_.Pack(dataStore);
-            var buffer = _T_RequiredEntityMemberName_.GetBuffer();
-            var blob = BlobData.UnsafeWrap(buffer);
-            BlobIdV1 blobId = await dataStore.PutBlob(blob, false);
+            BlobIdV1 blobId = default;
+            if (_T_RequiredEntityMemberName_ is null)
+            {
+                _T_RequiredEntityMemberName_ = await CreateEmpty< T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_>(dataStore);
+            }
+            else
+            {
+                await _T_RequiredEntityMemberName_.Pack(dataStore);
+                var buffer = _T_RequiredEntityMemberName_.GetBuffer();
+                var blob = BlobData.UnsafeWrap(buffer);
+                blobId = await dataStore.PutBlob(blob);
+            }
             Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, 64).Span, blobId);
             _T_RequiredEntityMemberName__isPacked = true;
         }
@@ -603,25 +610,24 @@ namespace T_NameSpace_.MemBlocks
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, 64).Span);
             if (blobId.IsEmpty)
             {
-                _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.Empty;
+                _T_RequiredEntityMemberName_ = await CreateEmpty<T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_>(dataStore);
             }
             else
             {
                 BlobData? blob = await dataStore.GetBlob(blobId);
                 if (blob is null) throw new InvalidDataException($"BlobIdV0 '{blobId}' not found!");
-                string entityId = DataFac.MemBlocks.Protocol.ParseEntityId(blob.Value.Memory);
-                _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(entityId, blob.Value.Memory);
+                _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(blob.Value.Memory);
                 await _T_RequiredEntityMemberName_.Unpack(dataStore, depth - 1);
             }
             _T_RequiredEntityMemberName__isUnpacked = true;
         }
-        private T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.Empty;
+        private T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_? _T_RequiredEntityMemberName_ = null;
         public T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_ T_RequiredEntityMemberName_
         {
             get
             {
                 ThrowIfNotUnpacked(_T_RequiredEntityMemberName__isUnpacked);
-                return _T_RequiredEntityMemberName_;
+                return IfNotNull(_T_RequiredEntityMemberName_);
             }
             set
             {
@@ -636,7 +642,7 @@ namespace T_NameSpace_.MemBlocks
             get
             {
                 ThrowIfNotUnpacked(_T_RequiredEntityMemberName__isUnpacked);
-                return _T_RequiredEntityMemberName_;
+                return IfNotNull(_T_RequiredEntityMemberName_);
             }
             set
             {

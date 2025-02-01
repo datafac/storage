@@ -43,7 +43,7 @@ public interface IDataStore : IDisposable
     void RemoveNames(IEnumerable<string> keys);
 
     ValueTask<BlobData?> GetBlob(BlobIdV1 id);
-    ValueTask<BlobIdV1> PutBlob(BlobData data, bool withSync);
+    ValueTask<BlobIdV1> PutBlob(BlobData data, bool withSync = false);
 
     KeyValuePair<BlobIdV1, BlobData>[] GetCachedBlobs();
     KeyValuePair<BlobIdV1, BlobData>[] GetStoredBlobs();

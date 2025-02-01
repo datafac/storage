@@ -18,6 +18,15 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "MyOrg.Models.MyBase";
 
+        private static MyBase CreateEmpty()
+        {
+            var empty = new MyBase();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly MyBase _empty = CreateEmpty();
+        public static MyBase Empty => _empty;
+
         public new static MyBase CreateFrom(MyBase source)
         {
             if (source.IsFrozen) return source;

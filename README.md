@@ -44,12 +44,16 @@ Common types used at runtime by DTOMaker generated entities.
 - [Obsolete] members
 - Fixed length arrays of above value types.
 - polymorphic types
+- entity members
+- IEquatable\<T\> support
 
 ## In progress:
-- embedded entity members (MessagePack)
-- embedded/external entity members (MemBlocks)
+- variable-length binary members
+- variable-length string members
+- single block allocation (MemBlocks)
 
 ## Coming soon:
+- auto-embedded entity members (MemBlocks)
 - reservation (hidden members)
 - Json (NewtonSoft) generator
 - Json (System.Text) generator
@@ -70,8 +74,3 @@ Common types used at runtime by DTOMaker generated entities.
 - generic patterns: lists, trees, unions, etc.
 - variable length arrays
 - logical value equality
-
-## Benchmarks
-
-Some benchmarking comparing the serialization and deserialization performance of various generated DTOs can
-be found at: todo

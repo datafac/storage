@@ -17,6 +17,15 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "MyOrg.Models.StringNode";
 
+        private static StringNode CreateEmpty()
+        {
+            var empty = new StringNode();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly StringNode _empty = CreateEmpty();
+        public static StringNode Empty => _empty;
+
         public new static StringNode CreateFrom(StringNode source)
         {
             if (source.IsFrozen) return source;

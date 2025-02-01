@@ -18,6 +18,15 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 2;
 
+        private static MyOtherDTO CreateEmpty()
+        {
+            var empty = new MyOtherDTO();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly MyOtherDTO _empty = CreateEmpty();
+        public static MyOtherDTO Empty => _empty;
+
         public new static MyOtherDTO CreateFrom(MyOtherDTO source)
         {
             if (source.IsFrozen)

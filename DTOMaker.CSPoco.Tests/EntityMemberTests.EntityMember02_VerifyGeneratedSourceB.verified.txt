@@ -17,6 +17,15 @@ namespace MyOrg.DomainB.CSPoco
 
         public new const string EntityId = "MyOrg.DomainB.MyDTO1";
 
+        private static MyDTO1 CreateEmpty()
+        {
+            var empty = new MyDTO1();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly MyDTO1 _empty = CreateEmpty();
+        public static MyDTO1 Empty => _empty;
+
         public new static MyDTO1 CreateFrom(MyDTO1 source)
         {
             if (source.IsFrozen) return source;

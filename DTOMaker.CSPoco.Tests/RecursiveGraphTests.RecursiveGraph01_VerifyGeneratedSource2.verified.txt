@@ -17,6 +17,15 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "MyOrg.Models.Int64Node";
 
+        private static Int64Node CreateEmpty()
+        {
+            var empty = new Int64Node();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly Int64Node _empty = CreateEmpty();
+        public static Int64Node Empty => _empty;
+
         public new static Int64Node CreateFrom(Int64Node source)
         {
             if (source.IsFrozen) return source;

@@ -19,6 +19,15 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "Triangle";
 
+        private static Triangle CreateEmpty()
+        {
+            var empty = new Triangle();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly Triangle _empty = CreateEmpty();
+        public static Triangle Empty => _empty;
+
         public new static Triangle CreateFrom(Triangle source)
         {
             if (source.IsFrozen) return source;

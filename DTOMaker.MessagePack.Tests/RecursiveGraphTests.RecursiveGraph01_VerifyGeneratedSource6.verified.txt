@@ -18,6 +18,15 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 10;
 
+        private static Tree CreateEmpty()
+        {
+            var empty = new Tree();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly Tree _empty = CreateEmpty();
+        public static Tree Empty => _empty;
+
         public new static Tree CreateFrom(Tree source)
         {
             if (source.IsFrozen)

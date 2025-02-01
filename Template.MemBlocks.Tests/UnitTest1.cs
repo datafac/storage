@@ -46,10 +46,9 @@ namespace Template.MemBlocks.Tests
             await orig.Pack(dataStore);
             orig.Freeze();
 
-            var entityId = orig.GetEntityId();
             var buffer = orig.GetBuffer();
 
-            var copy = T_NameSpace_.MemBlocks.T_EntityName_.CreateFrom(entityId, buffer);
+            var copy = T_NameSpace_.MemBlocks.T_EntityName_.CreateFrom(buffer);
             copy.IsFrozen.Should().BeTrue();
             await copy.Unpack(dataStore, 0);
             copy.BaseField1.Should().Be(orig.BaseField1);

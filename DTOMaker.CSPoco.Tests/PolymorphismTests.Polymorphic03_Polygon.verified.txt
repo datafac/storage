@@ -23,6 +23,15 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "Polygon";
 
+        private static Polygon CreateEmpty()
+        {
+            var empty = new Polygon();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly Polygon _empty = CreateEmpty();
+        public static Polygon Empty => _empty;
+
         public new static Polygon CreateFrom(Polygon source)
         {
             if (source.IsFrozen) return source;

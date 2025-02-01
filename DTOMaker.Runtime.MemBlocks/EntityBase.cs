@@ -10,6 +10,16 @@ namespace DTOMaker.Runtime.MemBlocks
 {
     public abstract class EntityBase : IHasEntityId, IMemBlocksEntity, IFreezable, IEquatable<EntityBase>
     {
+        #region Static Helpers
+        public static async ValueTask<T> CreateEmpty<T>(IDataStore dataStore) where T: class, IMemBlocksEntity, IFreezable, new()
+        {
+            var empty = new T();
+            await empty.Pack(dataStore);
+            empty.Freeze();
+            return empty;
+        }
+        #endregion
+
         public const string EntityId = "EntityBase";
         protected abstract string OnGetEntityId();
         public string GetEntityId() => OnGetEntityId();
@@ -90,12 +100,22 @@ namespace DTOMaker.Runtime.MemBlocks
             if (_frozen && !unpacked) ThrowIsNotUnpackedException(methodName);
         }
 
+        protected static T IfNotNull<T>(T? value, [CallerMemberName] string? methodName = null) where T : class
+        {
+            if (value is not null) return value;
+            throw new InvalidOperationException($"Cannot call {methodName} when not set.");
+        }
+
         public bool Equals(EntityBase? other) => true;
         public override bool Equals(object? obj) => obj is EntityBase;
         public override int GetHashCode() => HashCode.Combine<Type>(typeof(EntityBase));
 
         protected virtual ValueTask OnPack(IDataStore dataStore) => default;
-        public ValueTask Pack(IDataStore dataStore) => _frozen ? default : OnPack(dataStore);
+        public ValueTask Pack(IDataStore dataStore)
+        {
+            if (_frozen) return default;
+            return OnPack(dataStore);
+        }
 
         protected virtual ValueTask OnUnpack(IDataStore dataStore, int depth) => default;
         public ValueTask Unpack(IDataStore dataStore, int depth = 0)

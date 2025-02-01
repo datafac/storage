@@ -18,6 +18,15 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 6;
 
+        private static BooleanNode CreateEmpty()
+        {
+            var empty = new BooleanNode();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly BooleanNode _empty = CreateEmpty();
+        public static BooleanNode Empty => _empty;
+
         public new static BooleanNode CreateFrom(BooleanNode source)
         {
             if (source.IsFrozen)

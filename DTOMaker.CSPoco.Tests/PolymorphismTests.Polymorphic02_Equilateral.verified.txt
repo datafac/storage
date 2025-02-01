@@ -17,6 +17,15 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "Equilateral";
 
+        private static Equilateral CreateEmpty()
+        {
+            var empty = new Equilateral();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly Equilateral _empty = CreateEmpty();
+        public static Equilateral Empty => _empty;
+
         public new static Equilateral CreateFrom(Equilateral source)
         {
             if (source.IsFrozen) return source;

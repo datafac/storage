@@ -17,6 +17,15 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "MyOrg.Models.Tree";
 
+        private static Tree CreateEmpty()
+        {
+            var empty = new Tree();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly Tree _empty = CreateEmpty();
+        public static Tree Empty => _empty;
+
         public new static Tree CreateFrom(Tree source)
         {
             if (source.IsFrozen) return source;

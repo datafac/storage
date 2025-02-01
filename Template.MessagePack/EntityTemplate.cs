@@ -376,6 +376,15 @@ namespace T_NameSpace_.MessagePack
 
         public new const int EntityKey = T_EntityKey_;
 
+        private static T_ConcreteEntityName_ CreateEmpty()
+        {
+            var empty = new T_ConcreteEntityName_();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly T_ConcreteEntityName_ _empty = CreateEmpty();
+        public static T_ConcreteEntityName_ Empty => _empty;
+
         public new static T_ConcreteEntityName_ CreateFrom(T_ConcreteEntityName_ source)
         {
             if (source.IsFrozen)

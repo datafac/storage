@@ -17,6 +17,15 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "MyOrg.Models.DoubleNode";
 
+        private static DoubleNode CreateEmpty()
+        {
+            var empty = new DoubleNode();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly DoubleNode _empty = CreateEmpty();
+        public static DoubleNode Empty => _empty;
+
         public new static DoubleNode CreateFrom(DoubleNode source)
         {
             if (source.IsFrozen) return source;

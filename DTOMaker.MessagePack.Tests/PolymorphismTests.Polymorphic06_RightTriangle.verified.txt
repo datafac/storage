@@ -18,6 +18,15 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 4;
 
+        private static RightTriangle CreateEmpty()
+        {
+            var empty = new RightTriangle();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly RightTriangle _empty = CreateEmpty();
+        public static RightTriangle Empty => _empty;
+
         public new static RightTriangle CreateFrom(RightTriangle source)
         {
             if (source.IsFrozen)

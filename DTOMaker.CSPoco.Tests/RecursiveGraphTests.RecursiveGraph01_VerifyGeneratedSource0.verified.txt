@@ -17,6 +17,15 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "MyOrg.Models.BooleanNode";
 
+        private static BooleanNode CreateEmpty()
+        {
+            var empty = new BooleanNode();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly BooleanNode _empty = CreateEmpty();
+        public static BooleanNode Empty => _empty;
+
         public new static BooleanNode CreateFrom(BooleanNode source)
         {
             if (source.IsFrozen) return source;

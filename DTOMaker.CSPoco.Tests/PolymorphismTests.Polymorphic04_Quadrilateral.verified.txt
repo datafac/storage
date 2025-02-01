@@ -19,6 +19,15 @@ namespace MyOrg.Models.CSPoco
 
         public new const string EntityId = "Quadrilateral";
 
+        private static Quadrilateral CreateEmpty()
+        {
+            var empty = new Quadrilateral();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly Quadrilateral _empty = CreateEmpty();
+        public static Quadrilateral Empty => _empty;
+
         public new static Quadrilateral CreateFrom(Quadrilateral source)
         {
             if (source.IsFrozen) return source;

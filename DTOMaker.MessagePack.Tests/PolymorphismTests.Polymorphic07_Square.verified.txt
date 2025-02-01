@@ -18,6 +18,15 @@ namespace MyOrg.Models.MessagePack
 
         public new const int EntityKey = 6;
 
+        private static Square CreateEmpty()
+        {
+            var empty = new Square();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly Square _empty = CreateEmpty();
+        public static Square Empty => _empty;
+
         public new static Square CreateFrom(Square source)
         {
             if (source.IsFrozen)

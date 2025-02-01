@@ -47,8 +47,9 @@ namespace MyOrg.Models.MemBlocks
             };
         }
 
-        public new static StringNode CreateFrom(string entityId, ReadOnlyMemory<byte> buffer)
+        public new static StringNode CreateFrom(ReadOnlyMemory<byte> buffer)
         {
+            var entityId = DataFac.MemBlocks.Protocol.ParseEntityId(buffer);
             var buffers = DataFac.MemBlocks.Protocol.SplitBuffers(buffer);
             return entityId switch
             {

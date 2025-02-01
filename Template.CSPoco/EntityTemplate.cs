@@ -90,6 +90,15 @@ namespace T_NameSpace_.CSPoco
 
         public new const string EntityId = "T_EntityId_";
 
+        private static T_EntityName_ CreateEmpty()
+        {
+            var empty = new T_EntityName_();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly T_EntityName_ _empty = CreateEmpty();
+        public static T_EntityName_ Empty => _empty;
+
         public new static T_EntityName_ CreateFrom(T_EntityName_ source)
         {
             if (source.IsFrozen) return source;
