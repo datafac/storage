@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
@@ -32,11 +32,11 @@ namespace DTOMaker.MemBlocks.Tests
                 """;
 
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Should().HaveCount(1);
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ShouldBeEmpty();
+            generatorResult.GeneratedSources.Length.ShouldBe(1);
             GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
@@ -65,14 +65,14 @@ namespace DTOMaker.MemBlocks.Tests
                 """;
 
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Should().HaveCount(2);
-            errors[0].GetMessage().Should().Be("ArrayCapacity (3) is invalid. ArrayCapacity must be a whole power of 2 between 1 and 1024.");
-            errors[1].GetMessage().Should().Be("Total length (24) is invalid. Total length must be a whole power of 2 between 1 and 1024.");
+            errors.Length.ShouldBe(2);
+            errors[0].GetMessage().ShouldBe("ArrayCapacity (3) is invalid. ArrayCapacity must be a whole power of 2 between 1 and 1024.");
+            errors[1].GetMessage().ShouldBe("Total length (24) is invalid. Total length must be a whole power of 2 between 1 and 1024.");
         }
 
         [Fact]
@@ -96,13 +96,13 @@ namespace DTOMaker.MemBlocks.Tests
                 """;
 
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Should().HaveCount(1);
-            errors[0].GetMessage().Should().Be("Total length (2048) is invalid. Total length must be a whole power of 2 between 1 and 1024.");
+            errors.Length.ShouldBe(1);
+            errors[0].GetMessage().ShouldBe("Total length (2048) is invalid. Total length must be a whole power of 2 between 1 and 1024.");
         }
 
         [Fact]
@@ -126,11 +126,11 @@ namespace DTOMaker.MemBlocks.Tests
                 """;
 
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Should().HaveCount(1);
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ShouldBeEmpty();
+            generatorResult.GeneratedSources.Length.ShouldBe(1);
             GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks

@@ -1,4 +1,4 @@
-using FluentAssertions;
+using Shouldly;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
@@ -15,7 +15,7 @@ namespace DTOMaker.MemBlocks.Tests
         {
             int aOrdinal = (int)a;
             int bOrdinal = (int)b;
-            bOrdinal.Should().Be(aOrdinal);
+            bOrdinal.ShouldBe(aOrdinal);
         }
 
         [Fact]
@@ -29,11 +29,11 @@ namespace DTOMaker.MemBlocks.Tests
         [Fact]
         public void AttributeNamesMatch()
         {
-            nameof(DTOMaker.MemBlocks.LayoutAttribute).Should().Be(nameof(DTOMaker.Models.MemBlocks.LayoutAttribute));
-            nameof(DTOMaker.MemBlocks.OffsetAttribute).Should().Be(nameof(DTOMaker.Models.MemBlocks.OffsetAttribute));
-            nameof(DTOMaker.MemBlocks.EndianAttribute).Should().Be(nameof(DTOMaker.Models.MemBlocks.EndianAttribute));
-            nameof(DTOMaker.MemBlocks.StrLenAttribute).Should().Be(nameof(DTOMaker.Models.MemBlocks.StrLenAttribute));
-            nameof(DTOMaker.MemBlocks.CapacityAttribute).Should().Be(nameof(DTOMaker.Models.MemBlocks.CapacityAttribute));
+            nameof(DTOMaker.MemBlocks.LayoutAttribute).ShouldBe(nameof(DTOMaker.Models.MemBlocks.LayoutAttribute));
+            nameof(DTOMaker.MemBlocks.OffsetAttribute).ShouldBe(nameof(DTOMaker.Models.MemBlocks.OffsetAttribute));
+            nameof(DTOMaker.MemBlocks.EndianAttribute).ShouldBe(nameof(DTOMaker.Models.MemBlocks.EndianAttribute));
+            nameof(DTOMaker.MemBlocks.StrLenAttribute).ShouldBe(nameof(DTOMaker.Models.MemBlocks.StrLenAttribute));
+            nameof(DTOMaker.MemBlocks.CapacityAttribute).ShouldBe(nameof(DTOMaker.Models.MemBlocks.CapacityAttribute));
         }
     }
     public class ExplicitLayoutTests
@@ -56,15 +56,15 @@ namespace DTOMaker.MemBlocks.Tests
                 """;
 
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Should().HaveCount(1);
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ShouldBeEmpty();
+            generatorResult.GeneratedSources.Length.ShouldBe(1);
             GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
-            outputSource.HintName.Should().Be("MyOrg.Models.MyDTO.MemBlocks.g.cs");
+            outputSource.HintName.ShouldBe("MyOrg.Models.MyDTO.MemBlocks.g.cs");
             string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
         }
@@ -90,11 +90,11 @@ namespace DTOMaker.MemBlocks.Tests
                 """;
 
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Should().HaveCount(1);
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ShouldBeEmpty();
+            generatorResult.GeneratedSources.Length.ShouldBe(1);
             GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
@@ -127,11 +127,11 @@ namespace DTOMaker.MemBlocks.Tests
                 """;
 
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
-            generatorResult.GeneratedSources.Should().HaveCount(1);
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ShouldBeEmpty();
+            generatorResult.GeneratedSources.Length.ShouldBe(1);
             GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
 
             // custom generation checks
@@ -169,20 +169,20 @@ namespace DTOMaker.MemBlocks.Tests
                 """;
 
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ShouldBeEmpty();
 
             // custom generation checks
-            generatorResult.GeneratedSources.Length.Should().Be(2);
+            generatorResult.GeneratedSources.Length.ShouldBe(2);
             {
                 GeneratedSourceResult outputSource = generatorResult.GeneratedSources[0];
-                outputSource.HintName.Should().Be("MyOrg.Models.MyFirstDTO.MemBlocks.g.cs");
+                outputSource.HintName.ShouldBe("MyOrg.Models.MyFirstDTO.MemBlocks.g.cs");
             }
             {
                 GeneratedSourceResult outputSource = generatorResult.GeneratedSources[1];
-                outputSource.HintName.Should().Be("MyOrg.Models.MyOtherDTO.MemBlocks.g.cs");
+                outputSource.HintName.ShouldBe("MyOrg.Models.MyOtherDTO.MemBlocks.g.cs");
                 string outputCode = string.Join(Environment.NewLine, outputSource.SourceText.Lines.Select(tl => tl.ToString()));
                 await Verifier.Verify(outputCode);
             }
@@ -206,13 +206,13 @@ namespace DTOMaker.MemBlocks.Tests
                 """;
 
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Should().HaveCount(1);
-            errors[0].GetMessage().Should().StartWith("LayoutMethod is not defined.");
+            errors.Length.ShouldBe(1);
+            errors[0].GetMessage().ShouldStartWith("LayoutMethod is not defined.");
         }
 
         [Fact]
@@ -233,13 +233,13 @@ namespace DTOMaker.MemBlocks.Tests
                 """;
 
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Should().HaveCount(1);
-            errors[0].GetMessage().Should().StartWith("BlockLength (63) is invalid.");
+            errors.Length.ShouldBe(1);
+            errors[0].GetMessage().ShouldStartWith("BlockLength (63) is invalid.");
         }
 
         [Fact]
@@ -262,13 +262,13 @@ namespace DTOMaker.MemBlocks.Tests
                 """;
 
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ShouldBeEmpty();
 
             // custom generation checks
-            generatorResult.GeneratedSources.Length.Should().Be(0);
+            generatorResult.GeneratedSources.Length.ShouldBe(0);
         }
 
         [Fact]
@@ -292,13 +292,13 @@ namespace DTOMaker.MemBlocks.Tests
                 """;
 
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Should().HaveCount(1);
-            errors[0].GetMessage().Should().Be("[Entity] attribute is missing.");
+            errors.Length.ShouldBe(1);
+            errors[0].GetMessage().ShouldBe("[Entity] attribute is missing.");
         }
 
         [Fact]
@@ -322,14 +322,14 @@ namespace DTOMaker.MemBlocks.Tests
                 """;
 
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Should().HaveCount(2);
-            errors[0].GetMessage().Should().Be("[EntityLayout] attribute is missing.");
-            errors[1].GetMessage().Should().Be("FieldLength (0) is invalid. FieldLength must be a whole power of 2 between 1 and 1024.");
+            errors.Length.ShouldBe(2);
+            errors[0].GetMessage().ShouldBe("[EntityLayout] attribute is missing.");
+            errors[1].GetMessage().ShouldBe("FieldLength (0) is invalid. FieldLength must be a whole power of 2 between 1 and 1024.");
         }
 
         [Fact]
@@ -352,14 +352,14 @@ namespace DTOMaker.MemBlocks.Tests
                 """;
 
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Length.Should().Be(2);
-            errors[0].GetMessage().Should().Be("Expected member 'Field1' sequence to be 1, but found 0.");
-            errors[1].GetMessage().Should().Be("[Member] attribute is missing.");
+            errors.Length.ShouldBe(2);
+            errors[0].GetMessage().ShouldBe("Expected member 'Field1' sequence to be 1, but found 0.");
+            errors[1].GetMessage().ShouldBe("[Member] attribute is missing.");
         }
 
         [Fact]
@@ -382,13 +382,13 @@ namespace DTOMaker.MemBlocks.Tests
                 """;
 
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Should().HaveCount(1);
-            errors[0].GetMessage().Should().Be("[Offset] attribute is missing.");
+            errors.Length.ShouldBe(1);
+            errors[0].GetMessage().ShouldBe("[Offset] attribute is missing.");
             // 
         }
 
@@ -413,14 +413,14 @@ namespace DTOMaker.MemBlocks.Tests
                 """;
 
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Length.Should().Be(2);
-            errors[0].GetMessage().Should().Be("This member extends before the start of the block.");
-            errors[1].GetMessage().Should().Be("FieldOffset (-1) must be >= 0");
+            errors.Length.ShouldBe(2);
+            errors[0].GetMessage().ShouldBe("This member extends before the start of the block.");
+            errors[1].GetMessage().ShouldBe("FieldOffset (-1) must be >= 0");
         }
 
         [Fact]
@@ -444,13 +444,13 @@ namespace DTOMaker.MemBlocks.Tests
                 """;
 
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Should().HaveCount(1);
-            errors[0].GetMessage().Should().Be("This member extends beyond the end of the block.");
+            errors.Length.ShouldBe(1);
+            errors[0].GetMessage().ShouldBe("This member extends beyond the end of the block.");
         }
 
         [Fact]
@@ -474,13 +474,13 @@ namespace DTOMaker.MemBlocks.Tests
                 """;
 
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
-            errors.Should().HaveCount(1);
-            errors[0].GetMessage().Should().Be("This member is incorrectly aligned. FieldOffset (4) modulo total length (8) must be 0.");
+            errors.Length.ShouldBe(1);
+            errors[0].GetMessage().ShouldBe("This member is incorrectly aligned. FieldOffset (4) modulo total length (8) must be 0.");
         }
 
     }

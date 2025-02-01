@@ -1,4 +1,4 @@
-using FluentAssertions;
+using Shouldly;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -27,7 +27,7 @@ namespace Template.MemBlocks.Tests
             string copy = string.Join(" ", buffers.Select(b => Encoding.UTF8.GetString(b.ToArray())));
 
             // assert
-            copy.Should().Be(orig);
+            copy.ShouldBe(orig);
         }
     }
     public class UnitTest1
@@ -49,14 +49,14 @@ namespace Template.MemBlocks.Tests
             var buffer = orig.GetBuffer();
 
             var copy = T_NameSpace_.MemBlocks.T_EntityName_.CreateFrom(buffer);
-            copy.IsFrozen.Should().BeTrue();
+            copy.IsFrozen.ShouldBeTrue();
             await copy.Unpack(dataStore, 0);
-            copy.BaseField1.Should().Be(orig.BaseField1);
-            copy.T_ScalarMemberName_.Should().Be(orig.T_ScalarMemberName_);
-            copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).Should().BeTrue();
-            copy.T_RequiredEntityMemberName_.Should().NotBeNull();
+            copy.BaseField1.ShouldBe(orig.BaseField1);
+            copy.T_ScalarMemberName_.ShouldBe(orig.T_ScalarMemberName_);
+            copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).ShouldBeTrue();
+            copy.T_RequiredEntityMemberName_.ShouldNotBeNull();
             await copy.T_RequiredEntityMemberName_.Unpack(dataStore, 0);
-            copy.T_RequiredEntityMemberName_!.Field1.Should().Be(orig.T_RequiredEntityMemberName_.Field1);
+            copy.T_RequiredEntityMemberName_!.Field1.ShouldBe(orig.T_RequiredEntityMemberName_.Field1);
         }
     }
 }

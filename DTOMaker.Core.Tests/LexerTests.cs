@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using System;
 using System.Collections.Generic;
 
@@ -41,8 +41,8 @@ namespace DTOMaker.Gentime.Tests
         public void CheckChar(ExprToken kind, char ch, ushort expectedCode)
         {
             ushort ord = ch;
-            ord.Should().Be(expectedCode, $"hex value of '{ch}' is 0x{ord:X2}");
-            ((ushort)kind).Should().Be(expectedCode);
+            ord.ShouldBe(expectedCode, $"hex value of '{ch}' is 0x{ord:X2}");
+            ((ushort)kind).ShouldBe(expectedCode);
         }
 
         [Fact]
@@ -57,11 +57,11 @@ namespace DTOMaker.Gentime.Tests
             foreach (var result in lexer.GetTokens(source.AsMemory())) { result.Switch(errors.Add, tokens.Add); }
 
             // assert
-            errors.Should().BeEmpty();
-            tokens.Count.Should().Be(1);
-            tokens[0].Kind.Should().Be(ExprToken.Spc);
-            tokens[0].Source.Length.Should().Be(3);
-            string.Join(" ", tokens.ToDisplayStrings()).Should().Be("Spc[   ]");
+            errors.ShouldBeEmpty();
+            tokens.Count.ShouldBe(1);
+            tokens[0].Kind.ShouldBe(ExprToken.Spc);
+            tokens[0].Source.Length.ShouldBe(3);
+            string.Join(" ", tokens.ToDisplayStrings()).ShouldBe("Spc[   ]");
         }
 
         [Fact]
@@ -76,11 +76,11 @@ namespace DTOMaker.Gentime.Tests
             foreach (var result in lexer.GetTokens(source.AsMemory())) { result.Switch(errors.Add, tokens.Add); }
 
             // assert
-            errors.Should().BeEmpty();
-            tokens.Count.Should().Be(1);
-            tokens[0].Kind.Should().Be(ExprToken.Num);
-            tokens[0].Source.Length.Should().Be(10);
-            string.Join(" ", tokens.ToDisplayStrings()).Should().Be("1234567890");
+            errors.ShouldBeEmpty();
+            tokens.Count.ShouldBe(1);
+            tokens[0].Kind.ShouldBe(ExprToken.Num);
+            tokens[0].Source.Length.ShouldBe(10);
+            string.Join(" ", tokens.ToDisplayStrings()).ShouldBe("1234567890");
         }
 
         [Fact]
@@ -98,11 +98,11 @@ namespace DTOMaker.Gentime.Tests
             foreach (var result in lexer.GetTokens(source.AsMemory())) { result.Switch(errors.Add, tokens.Add); }
 
             // assert
-            errors.Should().BeEmpty();
-            tokens.Count.Should().Be(1);
-            tokens[0].Kind.Should().Be(ExprToken.Str);
-            tokens[0].Source.Length.Should().Be(10);
-            string.Join(" ", tokens.ToDisplayStrings()).Should().Be("\"a string\"");
+            errors.ShouldBeEmpty();
+            tokens.Count.ShouldBe(1);
+            tokens[0].Kind.ShouldBe(ExprToken.Str);
+            tokens[0].Source.Length.ShouldBe(10);
+            string.Join(" ", tokens.ToDisplayStrings()).ShouldBe("\"a string\"");
         }
 
         [Fact]
@@ -122,8 +122,8 @@ namespace DTOMaker.Gentime.Tests
             foreach (var result in lexer.GetTokens(source.AsMemory())) { result.Switch(errors.Add, tokens.Add); }
 
             // assert
-            errors.Should().BeEmpty();
-            string.Join(" ", tokens.SelectCodeTokens().ToDisplayStrings()).Should().Be("123456789 \"a string\" [_firstName]");
+            errors.ShouldBeEmpty();
+            string.Join(" ", tokens.SelectCodeTokens().ToDisplayStrings()).ShouldBe("123456789 \"a string\" [_firstName]");
         }
 
         [Fact]
@@ -141,9 +141,9 @@ namespace DTOMaker.Gentime.Tests
             foreach (var result in lexer.GetTokens(source.AsMemory())) { result.Switch(errors.Add, tokens.Add); }
 
             // assert
-            errors.Should().BeEmpty();
-            string.Join(" ", tokens.SelectCodeTokens().ToDisplayStrings()).Should()
-                .Be("[y] := ( [a] * [a] + [b] * [b] ) ** ( 1 / 2 )");
+            errors.ShouldBeEmpty();
+            string.Join(" ", tokens.SelectCodeTokens().ToDisplayStrings())
+                .ShouldBe("[y] := ( [a] * [a] + [b] * [b] ) ** ( 1 / 2 )");
         }
 
         [Fact]
@@ -161,9 +161,9 @@ namespace DTOMaker.Gentime.Tests
             foreach (var result in lexer.GetTokens(source.AsMemory())) { result.Switch(errors.Add, tokens.Add); }
 
             // assert
-            errors.Should().BeEmpty();
-            string.Join(" ", tokens.SelectCodeTokens().ToDisplayStrings()).Should()
-                .Be("[y] := ( [a] * [a] + [b] * [b] ) ** ( 1 / 2 )");
+            errors.ShouldBeEmpty();
+            string.Join(" ", tokens.SelectCodeTokens().ToDisplayStrings())
+                .ShouldBe("[y] := ( [a] * [a] + [b] * [b] ) ** ( 1 / 2 )");
         }
 
         [Fact]
@@ -181,8 +181,8 @@ namespace DTOMaker.Gentime.Tests
             foreach (var result in lexer.GetTokens(source.AsMemory())) { result.Switch(errors.Add, tokens.Add); }
 
             // assert
-            errors.Should().BeEmpty();
-            string.Join(" ", tokens.ToDisplayStrings()).Should().Be("'x' Spc[ ] '\\r'");
+            errors.ShouldBeEmpty();
+            string.Join(" ", tokens.ToDisplayStrings()).ShouldBe("'x' Spc[ ] '\\r'");
         }
 
         [Fact]
@@ -200,8 +200,8 @@ namespace DTOMaker.Gentime.Tests
             foreach (var result in lexer.GetTokens(source.AsMemory())) { result.Switch(errors.Add, tokens.Add); }
 
             // assert
-            errors.Should().BeEmpty();
-            string.Join(" ", tokens.SelectCodeTokens().ToDisplayStrings()).Should().Be("null false true");
+            errors.ShouldBeEmpty();
+            string.Join(" ", tokens.SelectCodeTokens().ToDisplayStrings()).ShouldBe("null false true");
         }
 
     }

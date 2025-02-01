@@ -1,5 +1,5 @@
 ﻿using Xunit;
-using FluentAssertions;
+using Shouldly;
 using DataFac.Storage;
 using System.Linq;
 using System.Diagnostics;
@@ -27,10 +27,10 @@ public class NameStoreTests
         BlobData data = default;
         BlobIdV1 id = data.GetId();
         bool missing = dataStore.PutName("name1", id);
-        missing.Should().BeTrue();
+        missing.ShouldBeTrue();
         var counters = dataStore.GetCounters();
-        counters.NameDelta.Should().Be(1);
-        dataStore.GetNames().Should().HaveCount(1);
+        counters.NameDelta.ShouldBe(1);
+        dataStore.GetNames().Length.ShouldBe(1);
     }
 
     [Theory]
@@ -46,16 +46,16 @@ public class NameStoreTests
         BlobData data = default;
         BlobIdV1 id = data.GetId();
         bool missing = dataStore.PutName("name1", id);
-        missing.Should().BeTrue();
+        missing.ShouldBeTrue();
         var counters1 = dataStore.GetCounters();
-        counters1.NameDelta.Should().Be(1);
-        dataStore.GetNames().Should().HaveCount(1);
+        counters1.NameDelta.ShouldBe(1);
+        dataStore.GetNames().Length.ShouldBe(1);
 
         missing = dataStore.PutName("name1", id);
-        missing.Should().BeFalse();
+        missing.ShouldBeFalse();
         var counters2 = dataStore.GetCounters();
-        counters2.NameDelta.Should().Be(1);
-        dataStore.GetNames().Should().HaveCount(1);
+        counters2.NameDelta.ShouldBe(1);
+        dataStore.GetNames().Length.ShouldBe(1);
     }
 
     [Theory]
@@ -69,7 +69,7 @@ public class NameStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         var names0 = dataStore.GetNames();
-        names0.Length.Should().Be(0);
+        names0.Length.ShouldBe(0);
 
         BlobData data = default;
         BlobIdV1 id = data.GetId();
@@ -78,14 +78,14 @@ public class NameStoreTests
         dataStore.PutName("name2", id);
 
         var names1 = dataStore.GetNames().OrderBy(x => x.Key).Select(x => x.Key).ToArray();
-        names1.Length.Should().Be(2);
-        names1[0].Should().Be("name1");
-        names1[1].Should().Be("name2");
+        names1.Length.ShouldBe(2);
+        names1[0].ShouldBe("name1");
+        names1[1].ShouldBe("name2");
 
         dataStore.RemoveNames(names1);
 
         var names2 = dataStore.GetNames();
-        names2.Length.Should().Be(0);
+        names2.Length.ShouldBe(0);
 
     }
 }

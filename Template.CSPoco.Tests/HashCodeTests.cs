@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Xunit;
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -15,7 +15,7 @@ namespace Template_CSPoco.Tests
 
             sut.Freeze();
             int hc1 = sut.GetHashCode();
-            hc1.Should().Be(hc0);
+            hc1.ShouldBe(hc0);
 
         }
 
@@ -30,9 +30,9 @@ namespace Template_CSPoco.Tests
             copy.Freeze();
             int copyHash = copy.GetHashCode();
 
-            copyHash.Should().Be(origHash);
-            copy.Should().Be(orig);
-            copy.Equals(orig).Should().BeTrue();
+            copyHash.ShouldBe(origHash);
+            copy.ShouldBe(orig);
+            copy.Equals(orig).ShouldBeTrue();
         }
 
         [Fact]
@@ -46,9 +46,9 @@ namespace Template_CSPoco.Tests
             copy.Freeze();
             int copyHash = copy.GetHashCode();
 
-            copyHash.Should().Be(origHash);
-            copy.Should().Be(orig);
-            copy.Equals(orig).Should().BeTrue();
+            copyHash.ShouldBe(origHash);
+            copy.ShouldBe(orig);
+            copy.Equals(orig).ShouldBeTrue();
         }
     }
 }

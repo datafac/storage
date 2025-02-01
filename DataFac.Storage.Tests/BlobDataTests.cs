@@ -1,5 +1,5 @@
 ﻿using Xunit;
-using FluentAssertions;
+using Shouldly;
 using System.Linq;
 using DataFac.Storage;
 
@@ -11,22 +11,22 @@ public class BlobDataTests
     public void BlobData01Default()
     {
         BlobData data = default;
-        data.IsEmpty.Should().BeTrue();
+        data.IsEmpty.ShouldBeTrue();
     }
 
     [Fact]
     public void BlobData02CreateNew()
     {
         BlobData data = new();
-        data.IsEmpty.Should().BeTrue();
+        data.IsEmpty.ShouldBeTrue();
     }
 
     [Fact]
     public void BlobData03CreateWithData()
     {
         BlobData data = new BlobData(Enumerable.Range(0, 32).Select(i => (byte)i).ToArray());
-        data.IsEmpty.Should().BeFalse();
-        data.Equals(default).Should().BeFalse();
+        data.IsEmpty.ShouldBeFalse();
+        data.Equals(default).ShouldBeFalse();
     }
 
     [Fact]
@@ -34,31 +34,31 @@ public class BlobDataTests
     {
         BlobData orig = default;
         BlobData copy = new BlobData(orig);
-        orig.IsEmpty.Should().BeTrue();
-        copy.Should().Be(orig);
-        copy.Equals(orig).Should().BeTrue();
+        orig.IsEmpty.ShouldBeTrue();
+        copy.ShouldBe(orig);
+        copy.Equals(orig).ShouldBeTrue();
     }
 
     [Fact]
     public void BlobData06CopyNonEmpty()
     {
         BlobData orig = new BlobData(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        orig.Memory.Length.Should().Be(256);
+        orig.Memory.Length.ShouldBe(256);
         BlobData copy = new BlobData(orig);
-        copy.IsEmpty.Should().BeFalse();
-        copy.Should().Be(orig);
-        copy.Equals(orig).Should().BeTrue();
+        copy.IsEmpty.ShouldBeFalse();
+        copy.ShouldBe(orig);
+        copy.Equals(orig).ShouldBeTrue();
     }
 
     [Fact]
     public void BlobData07UnsafeWrap()
     {
         BlobData orig = new BlobData(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        orig.Memory.Length.Should().Be(256);
+        orig.Memory.Length.ShouldBe(256);
         BlobData copy = BlobData.UnsafeWrap(orig.Memory);
-        copy.IsEmpty.Should().BeFalse();
-        copy.Should().Be(orig);
-        copy.Equals(orig).Should().BeTrue();
+        copy.IsEmpty.ShouldBeFalse();
+        copy.ShouldBe(orig);
+        copy.Equals(orig).ShouldBeTrue();
     }
 
 }

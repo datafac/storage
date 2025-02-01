@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,8 +26,8 @@ namespace DTOMaker.Gentime.Tests
 
             // assert
             var node = parsed as StringConstantNode;
-            node.Should().NotBeNull();
-            node!.Value.Should().Be(expected);
+            node.ShouldNotBeNull();
+            node!.Value.ShouldBe(expected);
 
             // evaluate
             var vars = new Dictionary<string, object?>();
@@ -57,17 +57,17 @@ namespace DTOMaker.Gentime.Tests
             var node = parser.Parse(source.AsMemory());
 
             // assert
-            node.Should().NotBeNull();
-            (node as NumericConstantNode).Should().NotBeNull();
+            node.ShouldNotBeNull();
+            (node as NumericConstantNode).ShouldNotBeNull();
 
             // evaluate
             var vars = new Dictionary<string, object?>();
             var result = node.Evaluate(vars);
 
             // assert
-            result.Should().NotBeNull();
-            result.Should().BeOfType(et);
-            result.Should().Be(ev);
+            result.ShouldNotBeNull();
+            result.ShouldBeOfType(et);
+            result.ShouldBe(ev);
         }
 
         [Theory]
@@ -117,7 +117,7 @@ namespace DTOMaker.Gentime.Tests
             var node = parser.Parse(source.AsMemory());
 
             // assert
-            node.Should().NotBeNull();
+            node.ShouldNotBeNull();
 
             // evaluate
             var vars = new Dictionary<string, object?>();
@@ -126,13 +126,13 @@ namespace DTOMaker.Gentime.Tests
             // assert
             if (et is not null)
             {
-                result.Should().NotBeNull();
-                result.Should().BeOfType(et);
-                result.Should().Be(ev);
+                result.ShouldNotBeNull();
+                result.ShouldBeOfType(et);
+                result.ShouldBe(ev);
             }
             else
             {
-                result.Should().BeNull();
+                result.ShouldBeNull();
             }
         }
 
@@ -145,18 +145,18 @@ namespace DTOMaker.Gentime.Tests
             var node = parser.Parse(source.AsMemory());
 
             // assert
-            node.Should().NotBeNull();
+            node.ShouldNotBeNull();
 
             // evaluate
             var vars = new Dictionary<string, object?>();
             var result = node.Evaluate(vars);
 
             // assert
-            result.Should().NotBeNull();
-            result.Should().BeOfType<ErrorNode>();
+            result.ShouldNotBeNull();
+            result.ShouldBeOfType<ErrorNode>();
             ErrorNode? error = result as ErrorNode;
-            error.Should().NotBeNull();
-            error!.Message.Should().Be(expectedMessage);
+            error.ShouldNotBeNull();
+            error!.Message.ShouldBe(expectedMessage);
         }
 
         [Theory]
@@ -179,16 +179,16 @@ namespace DTOMaker.Gentime.Tests
             var node = parser.Parse(source.AsMemory());
 
             // assert
-            node.Should().NotBeNull();
+            node.ShouldNotBeNull();
 
             // evaluate
             var vars = new Dictionary<string, object?>();
             var result = node.Evaluate(vars);
 
             // assert
-            result.Should().NotBeNull();
-            result.Should().BeOfType(et);
-            result.Should().Be(ev);
+            result.ShouldNotBeNull();
+            result.ShouldBeOfType(et);
+            result.ShouldBe(ev);
         }
 
         [Theory]
@@ -203,7 +203,7 @@ namespace DTOMaker.Gentime.Tests
             var node = parser.Parse(source.AsMemory());
 
             // assert
-            node.Should().NotBeNull();
+            node.ShouldNotBeNull();
 
             // evaluate
             var vars = new Dictionary<string, object?>();
@@ -212,14 +212,14 @@ namespace DTOMaker.Gentime.Tests
             var result = node.Evaluate(vars);
 
             // assert
-            result.Should().NotBeNull();
-            result.Should().BeOfType(typeof(long));
-            result.Should().Be(expectedOutput);
+            result.ShouldNotBeNull();
+            result.ShouldBeOfType(typeof(long));
+            result.ShouldBe(expectedOutput);
 
             // check output values are set
-            vars.Values.Should().HaveCount(3);
-            vars.Should().ContainKey("Calculated");
-            vars["Calculated"].Should().Be(expectedOutput);
+            vars.Values.Count.ShouldBe(3);
+            vars.ShouldContainKey("Calculated");
+            vars["Calculated"].ShouldBe(expectedOutput);
         }
     }
 }

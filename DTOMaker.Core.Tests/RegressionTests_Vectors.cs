@@ -1,5 +1,5 @@
 ﻿using DataFac.Memory;
-using FluentAssertions;
+using Shouldly;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -22,7 +22,7 @@ namespace DTOMaker.Runtime.Tests
 
                 // copy to buffer
                 Span<long> target = MemoryMarshal.Cast<byte, long>(buffer.Span);
-                target.Length.Should().Be(3);
+                target.Length.ShouldBe(3);
                 if (bigEndian)
                 {
                     // BE encoding
@@ -65,7 +65,7 @@ namespace DTOMaker.Runtime.Tests
                         }
                     }
                 }
-                string.Join("-", buffer.ToArray().Select(b => b.ToString("X2"))).Should().Be(expectedBuffer);
+                string.Join("-", buffer.ToArray().Select(b => b.ToString("X2"))).ShouldBe(expectedBuffer);
             }
 
             // read

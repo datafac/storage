@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
@@ -45,11 +45,11 @@ namespace DTOMaker.MessagePack.Tests
         public async Task Polymorphic02_Equilateral()
         {
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(7);
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.ShouldBeEmpty();
+            generatorResult.GeneratedSources.Length.ShouldBe(7);
             GeneratedSourceResult source = generatorResult.GeneratedSources[0];
-            source.HintName.Should().Be("MyOrg.Models.Equilateral.MessagePack.g.cs");
+            source.HintName.ShouldBe("MyOrg.Models.Equilateral.MessagePack.g.cs");
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
         }
@@ -58,11 +58,11 @@ namespace DTOMaker.MessagePack.Tests
         public async Task Polymorphic03_Polygon()
         {
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(7);
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.ShouldBeEmpty();
+            generatorResult.GeneratedSources.Length.ShouldBe(7);
             GeneratedSourceResult source = generatorResult.GeneratedSources[1];
-            source.HintName.Should().Be("MyOrg.Models.Polygon.MessagePack.g.cs");
+            source.HintName.ShouldBe("MyOrg.Models.Polygon.MessagePack.g.cs");
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
         }
@@ -71,11 +71,11 @@ namespace DTOMaker.MessagePack.Tests
         public async Task Polymorphic04_Quadrilateral()
         {
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(7);
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.ShouldBeEmpty();
+            generatorResult.GeneratedSources.Length.ShouldBe(7);
             GeneratedSourceResult source = generatorResult.GeneratedSources[2];
-            source.HintName.Should().Be("MyOrg.Models.Quadrilateral.MessagePack.g.cs");
+            source.HintName.ShouldBe("MyOrg.Models.Quadrilateral.MessagePack.g.cs");
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
         }
@@ -84,11 +84,11 @@ namespace DTOMaker.MessagePack.Tests
         public async Task Polymorphic05_Rectangle()
         {
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(7);
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.ShouldBeEmpty();
+            generatorResult.GeneratedSources.Length.ShouldBe(7);
             GeneratedSourceResult source = generatorResult.GeneratedSources[3];
-            source.HintName.Should().Be("MyOrg.Models.Rectangle.MessagePack.g.cs");
+            source.HintName.ShouldBe("MyOrg.Models.Rectangle.MessagePack.g.cs");
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
         }
@@ -97,11 +97,11 @@ namespace DTOMaker.MessagePack.Tests
         public async Task Polymorphic06_RightTriangle()
         {
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(7);
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.ShouldBeEmpty();
+            generatorResult.GeneratedSources.Length.ShouldBe(7);
             GeneratedSourceResult source = generatorResult.GeneratedSources[4];
-            source.HintName.Should().Be("MyOrg.Models.RightTriangle.MessagePack.g.cs");
+            source.HintName.ShouldBe("MyOrg.Models.RightTriangle.MessagePack.g.cs");
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
         }
@@ -110,11 +110,11 @@ namespace DTOMaker.MessagePack.Tests
         public async Task Polymorphic07_Square()
         {
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(7);
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.ShouldBeEmpty();
+            generatorResult.GeneratedSources.Length.ShouldBe(7);
             GeneratedSourceResult source = generatorResult.GeneratedSources[5];
-            source.HintName.Should().Be("MyOrg.Models.Square.MessagePack.g.cs");
+            source.HintName.ShouldBe("MyOrg.Models.Square.MessagePack.g.cs");
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
         }
@@ -123,11 +123,11 @@ namespace DTOMaker.MessagePack.Tests
         public async Task Polymorphic08_Triangle()
         {
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Should().BeEmpty();
-            generatorResult.GeneratedSources.Length.Should().Be(7);
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.ShouldBeEmpty();
+            generatorResult.GeneratedSources.Length.ShouldBe(7);
             GeneratedSourceResult source = generatorResult.GeneratedSources[6];
-            source.HintName.Should().Be("MyOrg.Models.Triangle.MessagePack.g.cs");
+            source.HintName.ShouldBe("MyOrg.Models.Triangle.MessagePack.g.cs");
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
             await Verifier.Verify(outputCode);
         }

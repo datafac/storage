@@ -1,4 +1,4 @@
-using FluentAssertions;
+using Shouldly;
 using MessagePack;
 using System;
 using Xunit;
@@ -22,13 +22,13 @@ namespace Template_MessagePack.Tests
 
             ReadOnlyMemory<byte> buffer = MessagePackSerializer.Serialize<T_ConcreteEntityName_>(orig);
             var copy = MessagePackSerializer.Deserialize<T_ConcreteEntityName_>(buffer, out int bytesRead);
-            bytesRead.Should().Be(buffer.Length);
+            bytesRead.ShouldBe(buffer.Length);
 
             copy.Freeze();
-            copy.IsFrozen.Should().BeTrue();
-            copy.BaseField1!.Should().Be(orig.BaseField1);
-            copy.T_RequiredScalarMemberName_.Should().Be(orig.T_RequiredScalarMemberName_);
-            copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).Should().BeTrue();
+            copy.IsFrozen.ShouldBeTrue();
+            copy.BaseField1!.ShouldBe(orig.BaseField1);
+            copy.T_RequiredScalarMemberName_.ShouldBe(orig.T_RequiredScalarMemberName_);
+            copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).ShouldBeTrue();
         }
 
         [Fact]
@@ -42,16 +42,16 @@ namespace Template_MessagePack.Tests
 
             ReadOnlyMemory<byte> buffer = MessagePackSerializer.Serialize<T_BaseNameSpace_.MessagePack.T_BaseName_>(orig);
             var recd = MessagePackSerializer.Deserialize<T_BaseNameSpace_.MessagePack.T_BaseName_>(buffer, out int bytesRead);
-            bytesRead.Should().Be(buffer.Length);
-            recd.Should().NotBeNull();
-            recd.Should().BeOfType<T_ConcreteEntityName_>();
+            bytesRead.ShouldBe(buffer.Length);
+            recd.ShouldNotBeNull();
+            recd.ShouldBeOfType<T_ConcreteEntityName_>();
             recd.Freeze();
             var copy = recd as T_ConcreteEntityName_;
-            copy.Should().NotBeNull();
-            copy!.IsFrozen.Should().BeTrue();
-            copy.BaseField1!.Should().Be(orig.BaseField1);
-            copy.T_RequiredScalarMemberName_.Should().Be(orig.T_RequiredScalarMemberName_);
-            copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).Should().BeTrue();
+            copy.ShouldNotBeNull();
+            copy!.IsFrozen.ShouldBeTrue();
+            copy.BaseField1!.ShouldBe(orig.BaseField1);
+            copy.T_RequiredScalarMemberName_.ShouldBe(orig.T_RequiredScalarMemberName_);
+            copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).ShouldBeTrue();
         }
     }
 }

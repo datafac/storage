@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System;
 using Xunit;
-using FluentAssertions;
+using Shouldly;
 using DataFac.Storage;
 
 #pragma warning disable CA1707 // Identifiers should not contain underscores
@@ -19,8 +19,8 @@ public class SnapshotTests
         var a2 = new TestRecord("a", 1L);
 
         // check equality
-        a2.Equals(a1).Should().BeTrue();
-        a2.IsEqualTo(a1).Should().BeNull();
+        a2.Equals(a1).ShouldBeTrue();
+        a2.IsEqualTo(a1).ShouldBeNull();
     }
 
     [Fact]
@@ -30,8 +30,8 @@ public class SnapshotTests
         var current = new TestRecord("a", 2L);
 
         // check equality
-        current.Equals(initial).Should().BeFalse();
-        current.IsEqualTo(initial).Should().Be("left (Key=a;Value=2) != right (Key=a;Value=1)");
+        current.Equals(initial).ShouldBeFalse();
+        current.IsEqualTo(initial).ShouldBe("left (Key=a;Value=2) != right (Key=a;Value=1)");
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public class SnapshotTests
         TestRecord? current = null;
 
         // check equality
-        current.IsEqualTo(initial).Should().Be("left is null");
+        current.IsEqualTo(initial).ShouldBe("left is null");
     }
 
     [Fact]
@@ -59,11 +59,11 @@ public class SnapshotTests
         };
 
         // check equality
-        snapshot2.IsEqualTo(snapshot1).Should().BeNull();
+        snapshot2.IsEqualTo(snapshot1).ShouldBeNull();
 
         // check differences
         var differences = snapshot1.DifferentTo(snapshot2);
-        differences.Length.Should().Be(0);
+        differences.Length.ShouldBe(0);
     }
 
     [Fact]
@@ -81,14 +81,14 @@ public class SnapshotTests
         };
 
         // check equality
-        snapshot2.IsEqualTo(snapshot1).Should().Be("left[b] (Key=b;Value=3) != right[b] (Key=b;Value=2)");
+        snapshot2.IsEqualTo(snapshot1).ShouldBe("left[b] (Key=b;Value=3) != right[b] (Key=b;Value=2)");
 
         // check differences
         var differences = snapshot1.DifferentTo(snapshot2);
-        differences.Length.Should().Be(1);
-        differences[0].Kind.Should().Be(DifferenceKind.Changed);
-        differences[0].Initial.Should().Be(new TestRecord("b", 2L));
-        differences[0].Current.Should().Be(new TestRecord("b", 3L));
+        differences.Length.ShouldBe(1);
+        differences[0].Kind.ShouldBe(DifferenceKind.Changed);
+        differences[0].Initial.ShouldBe(new TestRecord("b", 2L));
+        differences[0].Current.ShouldBe(new TestRecord("b", 3L));
     }
 
     [Fact]
@@ -107,13 +107,13 @@ public class SnapshotTests
         };
 
         // check equality
-        snapshot2.IsEqualTo(snapshot1).Should().Be("left.Count (3) != right.Count (2)");
+        snapshot2.IsEqualTo(snapshot1).ShouldBe("left.Count (3) != right.Count (2)");
 
         // check differences
         var differences = snapshot1.DifferentTo(snapshot2);
-        differences.Length.Should().Be(1);
-        differences[0].Kind.Should().Be(DifferenceKind.Added);
-        differences[0].Current.Should().Be(new TestRecord("c", 3L));
+        differences.Length.ShouldBe(1);
+        differences[0].Kind.ShouldBe(DifferenceKind.Added);
+        differences[0].Current.ShouldBe(new TestRecord("c", 3L));
     }
 
     [Fact]
@@ -130,13 +130,13 @@ public class SnapshotTests
         };
 
         // check equality
-        snapshot2.IsEqualTo(snapshot1).Should().Be("left.Count (1) != right.Count (2)");
+        snapshot2.IsEqualTo(snapshot1).ShouldBe("left.Count (1) != right.Count (2)");
 
         // check differences
         var differences = snapshot1.DifferentTo(snapshot2);
-        differences.Length.Should().Be(1);
-        differences[0].Kind.Should().Be(DifferenceKind.Removed);
-        differences[0].Initial.Should().Be(new TestRecord("a", 1L));
+        differences.Length.ShouldBe(1);
+        differences[0].Kind.ShouldBe(DifferenceKind.Removed);
+        differences[0].Initial.ShouldBe(new TestRecord("a", 1L));
     }
 
     [Fact]
@@ -154,16 +154,16 @@ public class SnapshotTests
         };
 
         // check equality
-        snapshot2.IsEqualTo(snapshot1).Should().Be("right[c] is missing");
-        snapshot1.IsEqualTo(snapshot2).Should().Be("right[a] is missing");
+        snapshot2.IsEqualTo(snapshot1).ShouldBe("right[c] is missing");
+        snapshot1.IsEqualTo(snapshot2).ShouldBe("right[a] is missing");
 
         // check differences
         var differences = snapshot1.DifferentTo(snapshot2);
-        differences.Length.Should().Be(2);
-        differences[0].Kind.Should().Be(DifferenceKind.Removed);
-        differences[0].Initial.Should().Be(new TestRecord("a", 1L));
-        differences[1].Kind.Should().Be(DifferenceKind.Added);
-        differences[1].Current.Should().Be(new TestRecord("c", 3L));
+        differences.Length.ShouldBe(2);
+        differences[0].Kind.ShouldBe(DifferenceKind.Removed);
+        differences[0].Initial.ShouldBe(new TestRecord("a", 1L));
+        differences[1].Kind.ShouldBe(DifferenceKind.Added);
+        differences[1].Current.ShouldBe(new TestRecord("c", 3L));
     }
 
     private const string databaseName = "InventoryData";

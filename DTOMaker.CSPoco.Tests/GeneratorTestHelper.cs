@@ -59,16 +59,16 @@ namespace DTOMaker.CSPoco.Tests
             driver = driver.RunGeneratorsAndUpdateCompilation(inputCompilation, out var outputCompilation, out var diagnostics);
 
             // We can now assert things about the resulting compilation:
-            //diagnostics.Should().BeEmpty(); // there were no diagnostics created by the generators
-            //outputCompilation.SyntaxTrees.Should().HaveCount(1 + expectedNewTrees); // we have two syntax trees, the original 'user' provided one, and the one added by the generator
-            //outputCompilation.GetDiagnostics().Should().BeEmpty(); // verify the compilation with the added source has no diagnostics
+            //diagnostics.ShouldBeEmpty(); // there were no diagnostics created by the generators
+            //outputCompilation.SyntaxTrees.Count.ShouldBe(1 + expectedNewTrees); // we have two syntax trees, the original 'user' provided one, and the one added by the generator
+            //outputCompilation.GetDiagnostics().ShouldBeEmpty(); // verify the compilation with the added source has no diagnostics
 
             // Or we can look at the results directly:
             GeneratorDriverRunResult runResult = driver.GetRunResult();
 
             // The runResult contains the combined results of all generators passed to the driver
-            //runResult.GeneratedTrees.Length.Should().Be(expectedNewTrees);
-            //runResult.Diagnostics.Should().BeEmpty();
+            //runResult.GeneratedTrees.Length.ShouldBe(expectedNewTrees);
+            //runResult.Diagnostics.ShouldBeEmpty();
 
             var generatorResult = runResult.Results[0];
 

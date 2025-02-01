@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
@@ -36,15 +36,15 @@ namespace DTOMaker.MessagePack.Tests
         public async Task EntityMember01_OptionalEntityMemberA()
         {
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource1, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ShouldBeEmpty();
 
             // custom generation checks
-            generatorResult.GeneratedSources.Length.Should().Be(2);
-            generatorResult.GeneratedSources[0].HintName.Should().Be("MyOrg.DomainA.MyDTO1.MessagePack.g.cs");
-            generatorResult.GeneratedSources[1].HintName.Should().Be("MyOrg.DomainB.MyDTO2.MessagePack.g.cs");
+            generatorResult.GeneratedSources.Length.ShouldBe(2);
+            generatorResult.GeneratedSources[0].HintName.ShouldBe("MyOrg.DomainA.MyDTO1.MessagePack.g.cs");
+            generatorResult.GeneratedSources[1].HintName.ShouldBe("MyOrg.DomainB.MyDTO2.MessagePack.g.cs");
 
             var source = generatorResult.GeneratedSources[0];
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
@@ -56,15 +56,15 @@ namespace DTOMaker.MessagePack.Tests
         public async Task EntityMember02_OptionalEntityMemberB()
         {
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource1, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ShouldBeEmpty();
 
             // custom generation checks
-            generatorResult.GeneratedSources.Length.Should().Be(2);
-            generatorResult.GeneratedSources[0].HintName.Should().Be("MyOrg.DomainA.MyDTO1.MessagePack.g.cs");
-            generatorResult.GeneratedSources[1].HintName.Should().Be("MyOrg.DomainB.MyDTO2.MessagePack.g.cs");
+            generatorResult.GeneratedSources.Length.ShouldBe(2);
+            generatorResult.GeneratedSources[0].HintName.ShouldBe("MyOrg.DomainA.MyDTO1.MessagePack.g.cs");
+            generatorResult.GeneratedSources[1].HintName.ShouldBe("MyOrg.DomainB.MyDTO2.MessagePack.g.cs");
 
             var source = generatorResult.GeneratedSources[1];
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));

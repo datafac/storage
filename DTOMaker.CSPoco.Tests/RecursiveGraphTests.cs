@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
@@ -69,20 +69,20 @@ namespace DTOMaker.CSPoco.Tests
         public void RecursiveGraph00_GeneratedSourcesLengthShouldBe7()
         {
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(models, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ShouldBeEmpty();
 
             // custom generation checks
-            generatorResult.GeneratedSources.Length.Should().Be(7);
-            generatorResult.GeneratedSources[0].HintName.Should().Be("MyOrg.Models.BooleanNode.CSPoco.g.cs");
-            generatorResult.GeneratedSources[1].HintName.Should().Be("MyOrg.Models.DoubleNode.CSPoco.g.cs");
-            generatorResult.GeneratedSources[2].HintName.Should().Be("MyOrg.Models.Int64Node.CSPoco.g.cs");
-            generatorResult.GeneratedSources[3].HintName.Should().Be("MyOrg.Models.Node.CSPoco.g.cs");
-            generatorResult.GeneratedSources[4].HintName.Should().Be("MyOrg.Models.NumericNode.CSPoco.g.cs");
-            generatorResult.GeneratedSources[5].HintName.Should().Be("MyOrg.Models.StringNode.CSPoco.g.cs");
-            generatorResult.GeneratedSources[6].HintName.Should().Be("MyOrg.Models.Tree.CSPoco.g.cs");
+            generatorResult.GeneratedSources.Length.ShouldBe(7);
+            generatorResult.GeneratedSources[0].HintName.ShouldBe("MyOrg.Models.BooleanNode.CSPoco.g.cs");
+            generatorResult.GeneratedSources[1].HintName.ShouldBe("MyOrg.Models.DoubleNode.CSPoco.g.cs");
+            generatorResult.GeneratedSources[2].HintName.ShouldBe("MyOrg.Models.Int64Node.CSPoco.g.cs");
+            generatorResult.GeneratedSources[3].HintName.ShouldBe("MyOrg.Models.Node.CSPoco.g.cs");
+            generatorResult.GeneratedSources[4].HintName.ShouldBe("MyOrg.Models.NumericNode.CSPoco.g.cs");
+            generatorResult.GeneratedSources[5].HintName.ShouldBe("MyOrg.Models.StringNode.CSPoco.g.cs");
+            generatorResult.GeneratedSources[6].HintName.ShouldBe("MyOrg.Models.Tree.CSPoco.g.cs");
         }
 
         [Fact]

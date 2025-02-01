@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
@@ -42,16 +42,16 @@ namespace DTOMaker.CSPoco.Tests
         public void EntityMember00_GeneratedSourcesLengthShouldBe3()
         {
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource1, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ShouldBeEmpty();
 
             // custom generation checks
-            generatorResult.GeneratedSources.Length.Should().Be(3);
-            generatorResult.GeneratedSources[0].HintName.Should().Be("MyOrg.DomainA.MyDTO1.CSPoco.g.cs");
-            generatorResult.GeneratedSources[1].HintName.Should().Be("MyOrg.DomainB.MyDTO1.CSPoco.g.cs");
-            generatorResult.GeneratedSources[2].HintName.Should().Be("MyOrg.DomainC.MyDTO2.CSPoco.g.cs");
+            generatorResult.GeneratedSources.Length.ShouldBe(3);
+            generatorResult.GeneratedSources[0].HintName.ShouldBe("MyOrg.DomainA.MyDTO1.CSPoco.g.cs");
+            generatorResult.GeneratedSources[1].HintName.ShouldBe("MyOrg.DomainB.MyDTO1.CSPoco.g.cs");
+            generatorResult.GeneratedSources[2].HintName.ShouldBe("MyOrg.DomainC.MyDTO2.CSPoco.g.cs");
         }
 
         [Fact]

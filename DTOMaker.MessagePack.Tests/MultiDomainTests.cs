@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System;
@@ -29,15 +29,15 @@ namespace DTOMaker.MessagePack.Tests
         public void Domains01_2Entities_Generates3Outputs()
         {
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource1, LanguageVersion.LatestMajor);
-            generatorResult.Exception.Should().BeNull();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).Should().BeEmpty();
-            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ShouldBeEmpty();
 
             // custom generation checks
-            generatorResult.GeneratedSources.Length.Should().Be(2);
-            generatorResult.GeneratedSources[0].HintName.Should().Be("MyOrg.DomainA.MyDTO.MessagePack.g.cs");
-            generatorResult.GeneratedSources[1].HintName.Should().Be("MyOrg.DomainB.MyDTO.MessagePack.g.cs");
+            generatorResult.GeneratedSources.Length.ShouldBe(2);
+            generatorResult.GeneratedSources[0].HintName.ShouldBe("MyOrg.DomainA.MyDTO.MessagePack.g.cs");
+            generatorResult.GeneratedSources[1].HintName.ShouldBe("MyOrg.DomainB.MyDTO.MessagePack.g.cs");
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace DTOMaker.MessagePack.Tests
         {
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource1, LanguageVersion.LatestMajor);
 
-            generatorResult.GeneratedSources.Length.Should().Be(2);
+            generatorResult.GeneratedSources.Length.ShouldBe(2);
             var source = generatorResult.GeneratedSources[0];
 
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
@@ -57,7 +57,7 @@ namespace DTOMaker.MessagePack.Tests
         {
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource1, LanguageVersion.LatestMajor);
 
-            generatorResult.GeneratedSources.Length.Should().Be(2);
+            generatorResult.GeneratedSources.Length.ShouldBe(2);
             var source = generatorResult.GeneratedSources[1];
 
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
@@ -83,7 +83,7 @@ namespace DTOMaker.MessagePack.Tests
         {
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource2, LanguageVersion.LatestMajor);
 
-            generatorResult.GeneratedSources.Length.Should().Be(2);
+            generatorResult.GeneratedSources.Length.ShouldBe(2);
             var source = generatorResult.GeneratedSources[0];
 
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));
@@ -95,7 +95,7 @@ namespace DTOMaker.MessagePack.Tests
         {
             var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource2, LanguageVersion.LatestMajor);
 
-            generatorResult.GeneratedSources.Length.Should().Be(2);
+            generatorResult.GeneratedSources.Length.ShouldBe(2);
             var source = generatorResult.GeneratedSources[1];
 
             string outputCode = string.Join(Environment.NewLine, source.SourceText.Lines.Select(tl => tl.ToString()));

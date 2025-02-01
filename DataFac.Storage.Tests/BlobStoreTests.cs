@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System;
 using Xunit;
-using FluentAssertions;
+using Shouldly;
 using System.Linq;
 using DataFac.Storage;
 
@@ -25,10 +25,10 @@ public class BlobStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         var counters = dataStore.GetCounters();
-        counters.BlobPutCount.Should().Be(0);
-        counters.BlobPutWrits.Should().Be(0);
-        counters.BlobPutSkips.Should().Be(0);
-        counters.ByteDelta.Should().Be(0);
+        counters.BlobPutCount.ShouldBe(0);
+        counters.BlobPutWrits.ShouldBe(0);
+        counters.BlobPutSkips.ShouldBe(0);
+        counters.ByteDelta.ShouldBe(0);
     }
 
     [Theory]
@@ -45,7 +45,7 @@ public class BlobStoreTests
         {
             var result = await dataStore.GetBlob(default);
         });
-        ex.Message.Should().StartWith("Must not be empty");
+        ex.Message.ShouldStartWith("Must not be empty");
     }
 
     [Theory]
@@ -61,11 +61,11 @@ public class BlobStoreTests
         BlobData data = new BlobData(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
         BlobIdV1 id = data.GetId();
         var result = await dataStore.GetBlob(id);
-        result.Should().BeNull();
+        result.ShouldBeNull();
         var counters = dataStore.GetCounters();
-        counters.BlobGetCount.Should().Be(1);
-        counters.BlobGetReads.Should().Be(1);
-        counters.BlobGetCache.Should().Be(0);
+        counters.BlobGetCount.ShouldBe(1);
+        counters.BlobGetReads.ShouldBe(1);
+        counters.BlobGetCache.ShouldBe(0);
     }
 
     [Theory]
@@ -82,9 +82,9 @@ public class BlobStoreTests
         await dataStore.PutBlob(data, true);
 
         var counters = dataStore.GetCounters();
-        counters.BlobPutCount.Should().Be(1);
-        counters.BlobPutWrits.Should().Be(1);
-        counters.BlobPutSkips.Should().Be(0);
+        counters.BlobPutCount.ShouldBe(1);
+        counters.BlobPutWrits.ShouldBe(1);
+        counters.BlobPutSkips.ShouldBe(0);
     }
 
     [Theory]
@@ -101,9 +101,9 @@ public class BlobStoreTests
         await dataStore.PutBlob(data, true);
 
         var counters = dataStore.GetCounters();
-        counters.BlobPutCount.Should().Be(1);
-        counters.BlobPutWrits.Should().Be(1);
-        counters.BlobPutSkips.Should().Be(0);
+        counters.BlobPutCount.ShouldBe(1);
+        counters.BlobPutWrits.ShouldBe(1);
+        counters.BlobPutSkips.ShouldBe(0);
     }
 
     [Theory]
@@ -121,16 +121,16 @@ public class BlobStoreTests
         await dataStore.PutBlob(data, true);
 
         var data2 = await dataStore.GetBlob(id);
-        data2.Should().NotBeNull();
-        data2.Value.Should().Be(data);
+        data2.ShouldNotBeNull();
+        data2.Value.ShouldBe(data);
 
         var counters = dataStore.GetCounters();
-        counters.BlobPutCount.Should().Be(1);
-        counters.BlobPutWrits.Should().Be(1);
-        counters.BlobPutSkips.Should().Be(0);
-        counters.BlobGetCount.Should().Be(1);
-        counters.BlobGetCache.Should().Be(1);
-        counters.BlobGetReads.Should().Be(0);
+        counters.BlobPutCount.ShouldBe(1);
+        counters.BlobPutWrits.ShouldBe(1);
+        counters.BlobPutSkips.ShouldBe(0);
+        counters.BlobGetCount.ShouldBe(1);
+        counters.BlobGetCache.ShouldBe(1);
+        counters.BlobGetReads.ShouldBe(0);
     }
 
     [Theory]
@@ -149,19 +149,19 @@ public class BlobStoreTests
         BlobIdV1 id0 = data.GetId();
         await dataStore.PutBlob(data, true);
         var counters1 = dataStore.GetCounters();
-        counters1.BlobPutCount.Should().Be(1);
-        counters1.BlobPutWrits.Should().Be(1);
-        counters1.BlobPutSkips.Should().Be(0);
-        counters1.ByteDelta.Should().Be(256);
+        counters1.BlobPutCount.ShouldBe(1);
+        counters1.BlobPutWrits.ShouldBe(1);
+        counters1.BlobPutSkips.ShouldBe(0);
+        counters1.ByteDelta.ShouldBe(256);
 
         // put again
         BlobIdV1 id1 = data.GetId();
-        id1.Equals(id0).Should().BeTrue();
+        id1.Equals(id0).ShouldBeTrue();
         await dataStore.PutBlob(data, true);
         var counters2 = dataStore.GetCounters();
-        counters2.BlobPutCount.Should().Be(2);
-        counters2.BlobPutWrits.Should().Be(1);
-        counters2.BlobPutSkips.Should().Be(1);
-        counters2.ByteDelta.Should().Be(256);
+        counters2.BlobPutCount.ShouldBe(2);
+        counters2.BlobPutWrits.ShouldBe(1);
+        counters2.BlobPutSkips.ShouldBe(1);
+        counters2.ByteDelta.ShouldBe(256);
     }
 }
