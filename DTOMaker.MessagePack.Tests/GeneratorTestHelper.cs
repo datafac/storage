@@ -23,6 +23,7 @@ namespace DTOMaker.MessagePack.Tests
                             MetadataReference.CreateFromFile(typeof(Attribute).GetTypeInfo().Assembly.Location),
                             MetadataReference.CreateFromFile(typeof(Memory<>).GetTypeInfo().Assembly.Location),
                             // types for local tests
+                            MetadataReference.CreateFromFile(typeof(DataFac.Memory.Octets).GetTypeInfo().Assembly.Location),
                             MetadataReference.CreateFromFile(typeof(DTOMaker.Models.EntityAttribute).GetTypeInfo().Assembly.Location),
                             MetadataReference.CreateFromFile(typeof(DTOMaker.Models.MessagePack.EntityKeyAttribute).GetTypeInfo().Assembly.Location),
                         };

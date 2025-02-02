@@ -13,23 +13,23 @@ namespace DTOMaker.MessagePack.Tests
     {
         private readonly string inputSource1 =
             """
-                using DTOMaker.Models;
-                using DTOMaker.Models.MessagePack;
-                namespace MyOrg.DomainA
+            using DTOMaker.Models;
+            using DTOMaker.Models.MessagePack;
+            namespace MyOrg.DomainA
+            {
+                [Entity] [EntityKey(1)] public interface IMyDTO1
                 {
-                    [Entity] [EntityKey(1)] public interface IMyDTO1
-                    {
-                        [Member(1)] long Field1 { get; set; }
-                    }
+                    [Member(1)] long Field1 { get; set; }
                 }
-                namespace MyOrg.DomainB
+            }
+            namespace MyOrg.DomainB
+            {
+                [Entity] [EntityKey(2)] public interface IMyDTO2
                 {
-                    [Entity] [EntityKey(2)] public interface IMyDTO2
-                    {
-                        [Member(1)] MyOrg.DomainA.IMyDTO1? Member1 { get; set; }
-                    }
+                    [Member(1)] MyOrg.DomainA.IMyDTO1? Member1 { get; set; }
                 }
-                """;
+            }
+            """;
 
         [Fact]
 

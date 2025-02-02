@@ -79,6 +79,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataFac.Storage.RocksDb", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataFac.Storage.Tests", "DataFac.Storage.Tests\DataFac.Storage.Tests.csproj", "{A760F8C8-BC1F-471A-BBB3-122DD576ABF1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox.Tests", "Sandbox.Tests\Sandbox.Tests.csproj", "{80AAE055-6B4B-42E4-B9A2-C80B84898EDB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -197,6 +199,10 @@ Global
 		{A760F8C8-BC1F-471A-BBB3-122DD576ABF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A760F8C8-BC1F-471A-BBB3-122DD576ABF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A760F8C8-BC1F-471A-BBB3-122DD576ABF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80AAE055-6B4B-42E4-B9A2-C80B84898EDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80AAE055-6B4B-42E4-B9A2-C80B84898EDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80AAE055-6B4B-42E4-B9A2-C80B84898EDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80AAE055-6B4B-42E4-B9A2-C80B84898EDB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

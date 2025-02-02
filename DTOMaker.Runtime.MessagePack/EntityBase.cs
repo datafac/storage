@@ -32,10 +32,10 @@ namespace DTOMaker.Runtime.MessagePack
         private void ThrowIsFrozenException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} when frozen.");
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected ref T IfNotFrozen<T>(ref T value, [CallerMemberName] string? methodName = null)
+        protected T IfNotFrozen<T>(T value, [CallerMemberName] string? methodName = null)
         {
             if (_frozen) ThrowIsFrozenException(methodName);
-            return ref value;
+            return value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -47,5 +47,13 @@ namespace DTOMaker.Runtime.MessagePack
         public bool Equals(EntityBase? other) => true;
         public override bool Equals(object? obj) => obj is EntityBase;
         public override int GetHashCode() => HashCode.Combine<Type>(typeof(EntityBase));
+
+        protected static bool BinaryValuesAreEqual(ReadOnlyMemory<byte>? left, ReadOnlyMemory<byte>? right)
+        {
+            if (left is null) return (right is null);
+            if (right is null) return false;
+            return left.Value.Span.SequenceEqual(right.Value.Span);
+        }
+
     }
 }

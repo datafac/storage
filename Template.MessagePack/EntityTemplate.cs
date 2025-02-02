@@ -230,7 +230,7 @@ namespace T_NameSpace_.MessagePack
         public ReadOnlyMemory<T_MemberType_> T_VectorMemberName_
         {
             get => _T_VectorMemberName_;
-            set => _T_VectorMemberName_ = IfNotFrozen(ref value);
+            set => _T_VectorMemberName_ = IfNotFrozen(value);
         }
         //##} else if (member.IsEntity) {
         //##if (member.IsNullable) {
@@ -240,7 +240,7 @@ namespace T_NameSpace_.MessagePack
         public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_? T_NullableEntityMemberName_
         {
             get => _T_NullableEntityMemberName_;
-            set => _T_NullableEntityMemberName_ = IfNotFrozen(ref value);
+            set => _T_NullableEntityMemberName_ = IfNotFrozen(value);
         }
         T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityName_.T_NullableEntityMemberName_
         {
@@ -258,7 +258,7 @@ namespace T_NameSpace_.MessagePack
         public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_ T_RequiredEntityMemberName_
         {
             get => _T_RequiredEntityMemberName_;
-            set => _T_RequiredEntityMemberName_ = IfNotFrozen(ref value);
+            set => _T_RequiredEntityMemberName_ = IfNotFrozen(value);
         }
         T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityName_.T_RequiredEntityMemberName_
         {
@@ -286,14 +286,14 @@ namespace T_NameSpace_.MessagePack
         public T_MemberType_? T_NullableScalarMemberName_
         {
             get => _T_NullableScalarMemberName_;
-            set => _T_NullableScalarMemberName_ = IfNotFrozen(ref value);
+            set => _T_NullableScalarMemberName_ = IfNotFrozen(value);
         }
         //##} else {
         [Key(T_RequiredScalarMemberKey_)]
         public T_MemberType_ T_RequiredScalarMemberName_
         {
             get => _T_RequiredScalarMemberName_;
-            set => _T_RequiredScalarMemberName_ = IfNotFrozen(ref value);
+            set => _T_RequiredScalarMemberName_ = IfNotFrozen(value);
         }
         //##}
         //##}
@@ -489,7 +489,7 @@ namespace T_NameSpace_.MessagePack
         public ReadOnlyMemory<T_MemberType_> T_VectorMemberName_
         {
             get => _T_VectorMemberName_;
-            set => _T_VectorMemberName_ = IfNotFrozen(ref value);
+            set => _T_VectorMemberName_ = IfNotFrozen(value);
         }
         //##} else if (member.IsEntity) {
         //##if (member.IsNullable) {
@@ -499,7 +499,7 @@ namespace T_NameSpace_.MessagePack
         public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_? T_NullableEntityMemberName_
         {
             get => _T_NullableEntityMemberName_;
-            set => _T_NullableEntityMemberName_ = IfNotFrozen(ref value);
+            set => _T_NullableEntityMemberName_ = IfNotFrozen(value);
         }
         T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityName_.T_NullableEntityMemberName_
         {
@@ -517,7 +517,7 @@ namespace T_NameSpace_.MessagePack
         public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_ T_RequiredEntityMemberName_
         {
             get => _T_RequiredEntityMemberName_;
-            set => _T_RequiredEntityMemberName_ = IfNotFrozen(ref value);
+            set => _T_RequiredEntityMemberName_ = IfNotFrozen(value);
         }
         T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityName_.T_RequiredEntityMemberName_
         {
@@ -545,14 +545,14 @@ namespace T_NameSpace_.MessagePack
         public T_MemberType_? T_NullableScalarMemberName_
         {
             get => _T_NullableScalarMemberName_;
-            set => _T_NullableScalarMemberName_ = IfNotFrozen(ref value);
+            set => _T_NullableScalarMemberName_ = IfNotFrozen(value);
         }
         //##} else {
         [Key(T_RequiredScalarMemberKey_)]
         public T_MemberType_ T_RequiredScalarMemberName_
         {
             get => _T_RequiredScalarMemberName_;
-            set => _T_RequiredScalarMemberName_ = IfNotFrozen(ref value);
+            set => _T_RequiredScalarMemberName_ = IfNotFrozen(value);
         }
         //##}
         //##}

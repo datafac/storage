@@ -52,6 +52,7 @@ Common types used at runtime by DTOMaker generated entities.
 - single block allocation (MemBlocks)
 
 ## Coming soon:
+- global interface equality comparer
 - auto-embedded entity members (MemBlocks)
 - reservation (hidden members)
 - Json (NewtonSoft) generator

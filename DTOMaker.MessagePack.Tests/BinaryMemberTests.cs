@@ -1,13 +1,13 @@
 ﻿using Shouldly;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using System.Linq;
-using Xunit;
-using System.Threading.Tasks;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using VerifyXunit;
+using Xunit;
 
-namespace DTOMaker.CSPoco.Tests
+namespace DTOMaker.MessagePack.Tests
 {
     public class BinaryMemberTests
     {
@@ -15,9 +15,10 @@ namespace DTOMaker.CSPoco.Tests
             """
             using DataFac.Memory;
             using DTOMaker.Models;
+            using DTOMaker.Models.MessagePack;
             namespace MyOrg.Models
             {
-                [Entity] public interface IMyDTO
+                [Entity] [EntityKey(1)] public interface IMyDTO
                 {
                     [Member(1)] Octets  Field1 { get; set; }
                     [Member(2)] Octets? Field2 { get; set; }
@@ -36,7 +37,7 @@ namespace DTOMaker.CSPoco.Tests
 
             // custom generation checks
             generatorResult.GeneratedSources.Length.ShouldBe(1);
-            generatorResult.GeneratedSources[0].HintName.ShouldBe("MyOrg.Models.MyDTO.CSPoco.g.cs");
+            generatorResult.GeneratedSources[0].HintName.ShouldBe("MyOrg.Models.MyDTO.MessagePack.g.cs");
         }
 
         [Fact]
