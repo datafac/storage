@@ -57,6 +57,7 @@ namespace MyOrg.Models.MessagePack
         protected override void OnFreeze()
         {
             base.OnFreeze();
+            _Other1?.Freeze();
         }
 
         protected override IFreezable OnPartCopy() => new MyDTO(this);
@@ -67,6 +68,7 @@ namespace MyOrg.Models.MessagePack
         public MyDTO(MyDTO source) : base(source)
         {
             if (source is null) throw new ArgumentNullException(nameof(source));
+            _Other1 = source._Other1 is null ? null : MyOrg.Models.MessagePack.Other.CreateFrom(source._Other1);
             _Field1 = source._Field1;
             _Field2 = source._Field2;
         }
@@ -74,50 +76,56 @@ namespace MyOrg.Models.MessagePack
         public MyDTO(IMyDTO source) : base(source)
         {
             if (source is null) throw new ArgumentNullException(nameof(source));
-            _Field1 = source.Field1.Memory;
-            if (source.Field2 is null)
-                _Field2 = null;
-            else
-                _Field2 = source.Field2.Memory;
+            _Other1 = source.Other1 is null ? null : MyOrg.Models.MessagePack.Other.CreateFrom(source.Other1);
+            _Field1 = source.Field1;
+            _Field2 = source.Field2;
         }
 
         [IgnoreMember]
-        private ReadOnlyMemory<byte> _Field1 = ReadOnlyMemory<byte>.Empty;
+        private MyOrg.Models.MessagePack.Other? _Other1;
         [Key(1)]
-        public ReadOnlyMemory<byte> Field1
+        public MyOrg.Models.MessagePack.Other? Other1
+        {
+            get => _Other1;
+            set => _Other1 = IfNotFrozen(value);
+        }
+        MyOrg.Models.IOther? IMyDTO.Other1
+        {
+            get => _Other1;
+            set
+            {
+                ThrowIfFrozen();
+                _Other1 = value is null ? null : MyOrg.Models.MessagePack.Other.CreateFrom(value);
+            }
+        }
+
+        [IgnoreMember]
+        private Octets _Field1 = Octets.Empty;
+        [Key(2)]
+        public Octets Field1
         {
             get => _Field1;
             set => _Field1 = IfNotFrozen(value);
         }
-        [IgnoreMember]
-        Octets IMyDTO.Field1
-        {
-            get => Octets.UnsafeWrap(_Field1);
-            set => _Field1 = IfNotFrozen(value.Memory);
-        }
 
         [IgnoreMember]
-        private ReadOnlyMemory<byte>? _Field2 = ReadOnlyMemory<byte>.Empty;
-        [Key(2)]
-        public ReadOnlyMemory<byte>? Field2
+        private Octets? _Field2;
+        [Key(3)]
+        public Octets? Field2
         {
             get => _Field2;
             set => _Field2 = IfNotFrozen(value);
         }
-        [IgnoreMember]
-        Octets? IMyDTO.Field2
-        {
-            get => _Field2 is null ? null : Octets.UnsafeWrap(_Field2.Value);
-            set => _Field2 = IfNotFrozen(value is null ? null : value.Memory);
-        }
+
 
         public bool Equals(MyDTO? other)
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
             if (!base.Equals(other)) return false;
-            if (!BinaryValuesAreEqual(_Field1, other._Field1)) return false;
-            if (!BinaryValuesAreEqual(_Field2, other._Field2)) return false;
+            if (_Other1 != other.Other1) return false;
+            if (_Field1 != other.Field1) return false;
+            if (_Field2 != other.Field2) return false;
             return true;
         }
 
@@ -129,6 +137,7 @@ namespace MyOrg.Models.MessagePack
         {
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
+            result.Add(_Other1?.GetHashCode() ?? 0);
             result.Add(_Field1);
             result.Add(_Field2);
             return result.ToHashCode();

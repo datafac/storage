@@ -185,7 +185,7 @@ namespace MyOrg.Models.MemBlocks
             set => Codec_Octets_LE.WriteToSpan(_writableBlock.Slice(64, 64).Span, IfNotFrozen(value));
         }
 
-        public Octets Field2
+        public Octets? Field2
         {
             get => Codec_Octets_LE.ReadFromSpan(_readonlyBlock.Slice(128, 64).Span);
             set => Codec_Octets_LE.WriteToSpan(_writableBlock.Slice(128, 64).Span, IfNotFrozen(value));

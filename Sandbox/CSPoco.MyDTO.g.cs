@@ -50,6 +50,7 @@ namespace MyOrg.Models.CSPoco
         protected override void OnFreeze()
         {
             base.OnFreeze();
+            _Other1?.Freeze();
         }
 
         protected override IFreezable OnPartCopy() => new MyDTO(this);
@@ -57,8 +58,25 @@ namespace MyOrg.Models.CSPoco
         public MyDTO() { }
         public MyDTO(IMyDTO source) : base(source)
         {
+            _Other1 = source.Other1 is null ? null : MyOrg.Models.CSPoco.Other.CreateFrom(source.Other1);
             _Field1 = source.Field1;
             _Field2 = source.Field2;
+        }
+
+        private MyOrg.Models.CSPoco.Other? _Other1;
+        public MyOrg.Models.CSPoco.Other? Other1
+        {
+            get => _Other1;
+            set => _Other1 = IfNotFrozen(ref value);
+        }
+        MyOrg.Models.IOther? IMyDTO.Other1
+        {
+            get => _Other1;
+            set
+            {
+                ThrowIfFrozen();
+                _Other1 = value is null ? null : MyOrg.Models.CSPoco.Other.CreateFrom(value);
+            }
         }
 
         private Octets _Field1 = Octets.Empty;
@@ -81,6 +99,7 @@ namespace MyOrg.Models.CSPoco
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
             if (!base.Equals(other)) return false;
+            if (_Other1 != other.Other1) return false;
             if (_Field1 != other.Field1) return false;
             if (_Field2 != other.Field2) return false;
             return true;
@@ -94,6 +113,7 @@ namespace MyOrg.Models.CSPoco
         {
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
+            result.Add(_Other1?.GetHashCode() ?? 0);
             result.Add(_Field1);
             result.Add(_Field2);
             return result.ToHashCode();

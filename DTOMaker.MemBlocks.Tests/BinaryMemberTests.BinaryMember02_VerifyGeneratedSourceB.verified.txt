@@ -18,42 +18,42 @@ using DataFac.Storage;
 
 namespace MyOrg.Models.MemBlocks
 {
-    public partial class MyDTO : DTOMaker.Runtime.MemBlocks.EntityBase, IMyDTO, IEquatable<MyDTO>
+    public partial class Other : DTOMaker.Runtime.MemBlocks.EntityBase, IOther, IEquatable<Other>
     {
         // Derived entities: 0
 
         private const int ClassHeight = 1;
-        private const int BlockLength = 256;
+        private const int BlockLength = 16;
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
-        public new const string EntityId = "MyOrg.Models.MyDTO";
+        public new const string EntityId = "MyOrg.Models.Other";
 
-        public new static MyDTO CreateFrom(MyDTO source)
+        public new static Other CreateFrom(Other source)
         {
             if (source.IsFrozen) return source;
             return source switch
             {
-                _ => new MyOrg.Models.MemBlocks.MyDTO(source)
+                _ => new MyOrg.Models.MemBlocks.Other(source)
             };
         }
 
-        public new static MyDTO CreateFrom(MyOrg.Models.IMyDTO source)
+        public new static Other CreateFrom(MyOrg.Models.IOther source)
         {
-            if (source is MyDTO concrete && concrete.IsFrozen) return concrete;
+            if (source is Other concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
-                _ => new MyOrg.Models.MemBlocks.MyDTO(source)
+                _ => new MyOrg.Models.MemBlocks.Other(source)
             };
         }
 
-        public new static MyDTO CreateFrom(ReadOnlyMemory<byte> buffer)
+        public new static Other CreateFrom(ReadOnlyMemory<byte> buffer)
         {
             var entityId = DataFac.MemBlocks.Protocol.ParseEntityId(buffer);
             var buffers = DataFac.MemBlocks.Protocol.SplitBuffers(buffer);
             return entityId switch
             {
-                _ => new MyOrg.Models.MemBlocks.MyDTO(buffers)
+                _ => new MyOrg.Models.MemBlocks.Other(buffers)
             };
         }
 
@@ -79,54 +79,49 @@ namespace MyOrg.Models.MemBlocks
             }
         }
 
-        protected override IFreezable OnPartCopy() => new MyDTO(this);
+        protected override IFreezable OnPartCopy() => new Other(this);
 
         protected override void OnFreeze()
         {
             base.OnFreeze();
-            _Other1?.Freeze();
         }
 
         protected override async ValueTask OnPack(IDataStore dataStore)
         {
             await base.OnPack(dataStore);
-            await Other1_Pack(dataStore);
         }
 
         protected override async ValueTask OnUnpack(IDataStore dataStore, int depth)
         {
             await base.OnUnpack(dataStore, depth);
-            await Other1_Unpack(dataStore, depth);
         }
 
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
         //  ----  ----  ----  ----  ------- ----  -------
-        //     1     0    64        Other   LE    Other1
-        //     2    64    64        Octets  LE    Field1
-        //     3   128    64        Octets  LE    Field2
+        //     1     0     8        Int64   LE    Value1
+        //     2     8     8        Int64   LE    Value2
         // ------------------------------------------------------------
 
-        public MyDTO()
+        public Other()
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
         }
 
-        public MyDTO(MyDTO source) : base(source)
+        public Other(Other source) : base(source)
         {
             _writableBlock = source._readonlyBlock.ToArray();
             _readonlyBlock = _writableBlock;
         }
 
-        public MyDTO(IMyDTO source) : base(source)
+        public Other(IOther source) : base(source)
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
-            _Other1 = source.Other1 is null ? null : MyOrg.Models.MemBlocks.Other.CreateFrom(source.Other1);
-            this.Field1 = source.Field1;
-            this.Field2 = source.Field2;
+            this.Value1 = source.Value1;
+            this.Value2 = source.Value2;
         }
 
-        public MyDTO(ReadOnlyMemory<byte>[] buffers) : base(buffers)
+        public Other(ReadOnlyMemory<byte>[] buffers) : base(buffers)
         {
             ReadOnlyMemory<byte> source = buffers[ClassHeight - 1];
             if (source.Length >= BlockLength)
@@ -143,56 +138,20 @@ namespace MyOrg.Models.MemBlocks
             _writableBlock = Memory<byte>.Empty;
         }
 
-        private async ValueTask Other1_Pack(IDataStore dataStore)
+        public Int64 Value1
         {
-            BlobIdV1 blobId = default;
-            if (_Other1 is not null)
-            {
-                await _Other1.Pack(dataStore);
-                var buffer = _Other1.GetBuffer();
-                var blob = BlobData.UnsafeWrap(buffer);
-                blobId = await dataStore.PutBlob(blob);
-            }
-            Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(0, 64).Span, blobId);
-        }
-        private async ValueTask Other1_Unpack(IDataStore dataStore, int depth)
-        {
-            _Other1 = null;
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(0, 64).Span);
-            if (!blobId.IsEmpty)
-            {
-                BlobData? blob = await dataStore.GetBlob(blobId);
-                if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
-                _Other1 = MyOrg.Models.MemBlocks.Other.CreateFrom(blob.Value.Memory);
-                await _Other1.Unpack(dataStore, depth - 1);
-            }
-        }
-        private MyOrg.Models.MemBlocks.Other? _Other1;
-        public MyOrg.Models.MemBlocks.Other? Other1
-        {
-            get => IfUnpacked(_Other1);
-            set => _Other1 = IfNotFrozen(value is null ? null : value.IsFrozen ? value : MyOrg.Models.MemBlocks.Other.CreateFrom(value));
-        }
-        MyOrg.Models.IOther? IMyDTO.Other1
-        {
-            get => IfUnpacked(_Other1);
-            set => _Other1 = IfNotFrozen(value is null ? null : MyOrg.Models.MemBlocks.Other.CreateFrom(value));
+            get => Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
+            set => Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, IfNotFrozen(value));
         }
 
-        public Octets Field1
+        public Int64 Value2
         {
-            get => Codec_Octets_LE.ReadFromSpan(_readonlyBlock.Slice(64, 64).Span);
-            set => Codec_Octets_LE.WriteToSpan(_writableBlock.Slice(64, 64).Span, IfNotFrozen(value));
-        }
-
-        public Octets Field2
-        {
-            get => Codec_Octets_LE.ReadFromSpan(_readonlyBlock.Slice(128, 64).Span);
-            set => Codec_Octets_LE.WriteToSpan(_writableBlock.Slice(128, 64).Span, IfNotFrozen(value));
+            get => Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(8, 8).Span);
+            set => Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(8, 8).Span, IfNotFrozen(value));
         }
 
 
-        public bool Equals(MyDTO? other)
+        public bool Equals(Other? other)
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
@@ -201,9 +160,9 @@ namespace MyOrg.Models.MemBlocks
             return true;
         }
 
-        public override bool Equals(object? obj) => obj is MyDTO other && Equals(other);
-        public static bool operator ==(MyDTO? left, MyDTO? right) => left is not null ? left.Equals(right) : (right is null);
-        public static bool operator !=(MyDTO? left, MyDTO? right) => left is not null ? !left.Equals(right) : (right is not null);
+        public override bool Equals(object? obj) => obj is Other other && Equals(other);
+        public static bool operator ==(Other? left, Other? right) => left is not null ? left.Equals(right) : (right is null);
+        public static bool operator !=(Other? left, Other? right) => left is not null ? !left.Equals(right) : (right is not null);
 
         private int CalcHashCode()
         {
