@@ -81,7 +81,7 @@ namespace MyOrg.Models.MessagePack
         public Int64 Value
         {
             get => _Value;
-            set => _Value = IfNotFrozen(ref value);
+            set => _Value = IfNotFrozen(value);
         }
 
 

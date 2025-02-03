@@ -137,13 +137,13 @@ namespace DTOMaker.MemBlocks
                 {
                     fieldLength = member.StringLength;
                 }
-                else if (member.MemberIsEntity)
+                else if (member.Kind == MemberKind.Entity)
                 {
                     fieldLength = 64; // todo get sizeof BlobIdV0
                 }
 
                 member.FieldLength = fieldLength;
-                if (member.MemberIsVector)
+                if (member.Kind == MemberKind.Vector)
                 {
                     member.FieldOffset = Allocate(fieldLength * member.ArrayCapacity);
                 }

@@ -93,7 +93,7 @@ namespace MyOrg.Models.MessagePack
         public String Key
         {
             get => _Key;
-            set => _Key = IfNotFrozen(ref value);
+            set => _Key = IfNotFrozen(value);
         }
 
 

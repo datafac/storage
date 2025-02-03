@@ -114,8 +114,8 @@ namespace MyOrg.DomainC.CSPoco
         {
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
-            result.Add(_Member1);
-            result.Add(_Member2);
+            result.Add(_Member1?.GetHashCode() ?? 0);
+            result.Add(_Member2.GetHashCode());
             return result.ToHashCode();
         }
 

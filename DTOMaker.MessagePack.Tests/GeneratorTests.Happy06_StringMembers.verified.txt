@@ -87,7 +87,7 @@ namespace MyOrg.Models.MessagePack
         public String FamilyName
         {
             get => _FamilyName;
-            set => _FamilyName = IfNotFrozen(ref value);
+            set => _FamilyName = IfNotFrozen(value);
         }
 
         [IgnoreMember]
@@ -96,7 +96,7 @@ namespace MyOrg.Models.MessagePack
         public String GivenName
         {
             get => _GivenName;
-            set => _GivenName = IfNotFrozen(ref value);
+            set => _GivenName = IfNotFrozen(value);
         }
 
         [IgnoreMember]
@@ -105,7 +105,7 @@ namespace MyOrg.Models.MessagePack
         public String OtherNames_Value
         {
             get => _OtherNames_Value;
-            set => _OtherNames_Value = IfNotFrozen(ref value);
+            set => _OtherNames_Value = IfNotFrozen(value);
         }
 
         [IgnoreMember]
@@ -114,7 +114,7 @@ namespace MyOrg.Models.MessagePack
         public Boolean OtherNames_HasValue
         {
             get => _OtherNames_HasValue;
-            set => _OtherNames_HasValue = IfNotFrozen(ref value);
+            set => _OtherNames_HasValue = IfNotFrozen(value);
         }
 
 

@@ -15,12 +15,12 @@ namespace DTOMaker.MemBlocks
         public int StringLength { get; set; }
         public int ArrayCapacity { get; set; }
         public int FieldOffset { get; set; }
-        public int TotalLength => MemberIsVector ? FieldLength * ArrayCapacity : FieldLength;
+        public int TotalLength => (Kind == MemberKind.Vector) ? FieldLength * ArrayCapacity : FieldLength;
         public bool IsBigEndian { get; set; } = false;
 
         private SyntaxDiagnostic? CheckMemberType()
         {
-            if (MemberIsEntity) return null;
+            if (Kind == MemberKind.Entity) return null;
             return MemberType.FullName switch
             {
                 "System.Boolean" => null,
@@ -49,7 +49,7 @@ namespace DTOMaker.MemBlocks
 
         private SyntaxDiagnostic? CheckMemberIsNotNullable()
         {
-            if (MemberIsEntity) return null;
+            if (Kind == MemberKind.Entity) return null;
             if (!MemberIsNullable) return null;
 
             return new SyntaxDiagnostic(
@@ -108,7 +108,7 @@ namespace DTOMaker.MemBlocks
 
         private SyntaxDiagnostic? CheckArrayCapacityIsValid()
         {
-            if (!MemberIsVector) return null;
+            if (Kind != MemberKind.Vector) return null;
             if (IsPowerOf2(ArrayCapacity, 1, 1024)) return null;
             return new SyntaxDiagnostic(
                         DiagnosticId.DMMB0009, "Invalid array capacity", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
@@ -125,7 +125,7 @@ namespace DTOMaker.MemBlocks
 
         private SyntaxDiagnostic? CheckTotalLengthIsValid()
         {
-            if (!MemberIsVector) return null;
+            if (Kind != MemberKind.Vector) return null;
             int totalLength = FieldLength * ArrayCapacity;
             if (IsPowerOf2(totalLength, 1, 1024)) return null;
             return new SyntaxDiagnostic(

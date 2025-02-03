@@ -83,7 +83,7 @@ namespace MyOrg.Models.MessagePack
         public Octets Field1
         {
             get => _Field1;
-            set => _Field1 = IfNotFrozen(ref value);
+            set => _Field1 = IfNotFrozen(value);
         }
 
         [IgnoreMember]
@@ -92,7 +92,7 @@ namespace MyOrg.Models.MessagePack
         public Octets? Field2
         {
             get => _Field2;
-            set => _Field2 = IfNotFrozen(ref value);
+            set => _Field2 = IfNotFrozen(value);
         }
 
 

@@ -110,6 +110,14 @@ namespace DTOMaker.Gentime
             if ((diagnostic = CheckMemberSequenceIsValid()) is not null) yield return diagnostic;
         }
     }
+    public enum MemberKind
+    {
+        Scalar, // todo rename to Native
+        Vector,
+        Entity,
+        Binary,
+        //String,
+    }
     public abstract class TargetMember : TargetBase
     {
         private readonly string _name;
@@ -131,8 +139,7 @@ namespace DTOMaker.Gentime
         public string ObsoleteMessage { get; set; } = "";
         public bool ObsoleteIsError { get; set; }
         public int Sequence { get; set; }
-        public bool MemberIsVector { get; set; }
-        public bool MemberIsEntity { get; set; }
+        public MemberKind Kind { get; set; }
         public int FieldLength { get; set; }
 
         private SyntaxDiagnostic? CheckHasMemberAttribute()
@@ -329,36 +336,37 @@ namespace DTOMaker.Gentime
             _tokens["MemberIsNullable"] = member.MemberIsNullable;
             _tokens["MemberIsValueType"] = member.MemberIsValueType;
             _tokens["MemberIsReferenceType"] = member.MemberIsReferenceType;
-            _tokens["MemberIsVector"] = member.MemberIsVector;
             _tokens["MemberSequence"] = member.Sequence;
-            _tokens["ScalarMemberSequence"] = member.Sequence;
-            if (member.MemberIsNullable)
-                _tokens["NullableScalarMemberSequence"] = member.Sequence;
-            else
-                _tokens["RequiredScalarMemberSequence"] = member.Sequence;
-            _tokens["VectorMemberSequence"] = member.Sequence;
             _tokens["MemberName"] = member.Name;
-            _tokens["ScalarMemberName"] = member.Name;
-            if (member.MemberIsNullable)
-                _tokens["NullableScalarMemberName"] = member.Name;
-            else
-                _tokens["RequiredScalarMemberName"] = member.Name;
-            _tokens["VectorMemberName"] = member.Name;
             _tokens["MemberJsonName"] = member.Name.ToCamelCase();
             _tokens["MemberDefaultValue"] = _language.GetDefaultValue(member.MemberType);
-            _tokens["MemberIsEntity"] = member.MemberIsEntity;
-            if (member.MemberIsEntity)
+            switch (member.Kind)
             {
-                if (member.MemberIsNullable)
-                    _tokens["NullableEntityMemberName"] = member.Name;
-                else
-                    _tokens["RequiredEntityMemberName"] = member.Name;
+                case MemberKind.Scalar:
+                    _tokens["ScalarMemberSequence"] = member.Sequence;
+                    _tokens[(member.MemberIsNullable ? "Nullable" : "Required") + "ScalarMemberSequence"] = member.Sequence;
+                    _tokens["ScalarMemberName"] = member.Name;
+                    _tokens[(member.MemberIsNullable ? "Nullable" : "Required") + "ScalarMemberName"] = member.Name;
+                    break;
+                case MemberKind.Vector:
+                    _tokens["VectorMemberSequence"] = member.Sequence;
+                    _tokens["VectorMemberName"] = member.Name;
+                    break;
+                case MemberKind.Entity:
+                    _tokens[(member.MemberIsNullable ? "Nullable" : "Required") + "EntityMemberName"] = member.Name;
+                    break;
+                //case MemberKind.Binary:
+                //    break;
+                default:
+                    throw new NotImplementedException($"Member.Kind: {member.Kind}");
             }
         }
 
-        public bool IsEntity => _member.MemberIsEntity;
+        public MemberKind Kind => _member.Kind;
+        public bool IsScalar => _member.Kind == MemberKind.Scalar;
+        public bool IsVector => _member.Kind == MemberKind.Vector;
+        public bool IsEntity => _member.Kind == MemberKind.Entity;
         public bool IsNullable => _member.MemberIsNullable;
-        public bool IsVector => _member.MemberIsVector;
         public bool IsObsolete => _member.IsObsolete;
         public int FieldLength => _member.FieldLength;
 
@@ -436,7 +444,7 @@ namespace DTOMaker.Gentime
                     var entity2 = entities.FirstOrDefault(e => e.EntityName.WithShortName(sn => "I" + sn) == member.MemberType);
                     if (entity2 is not null)
                     {
-                        member.MemberIsEntity = true;
+                        member.Kind = MemberKind.Entity;
                         member.MemberType = entity2.EntityName;
                     }
                 }
@@ -597,7 +605,7 @@ namespace DTOMaker.Gentime
                         member.MemberIsReferenceType = pdsSymbolType.IsReferenceType;
                         if (pdsSymbolType.IsGenericType && pdsSymbolType.Name == "ReadOnlyMemory" && pdsSymbolType.TypeArguments.Length == 1)
                         {
-                            member.MemberIsVector = true;
+                            member.Kind = MemberKind.Vector;
                             ITypeSymbol typeArg0 = pdsSymbolType.TypeArguments[0];
                             member.MemberType = new TypeFullName(typeArg0.ContainingNamespace.ToDisplayString(), typeArg0.Name);
                             member.MemberIsValueType = typeArg0.IsValueType;
@@ -767,7 +775,7 @@ namespace DTOMaker.Gentime
             return value switch
             {
                 null => "null",
-                string s => s,
+                string s => s, // todo? identifers vs. literals
                 bool b => b ? "true" : "false",
                 float f => $"{f}F",
                 double d => $"{d}D",
@@ -798,7 +806,7 @@ namespace DTOMaker.Gentime
             {
                 "System.String" => "string.Empty",
                 "DataFac.Memory.Octets" => "Octets.Empty",
-                _ => $"default"
+                _ => "default"
             };
         }
 

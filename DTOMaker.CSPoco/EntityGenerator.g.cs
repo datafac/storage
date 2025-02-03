@@ -160,27 +160,59 @@ Emit("        public T_EntityName_(IT_EntityName_ source) : base(source)");
 Emit("        {");
             foreach (var member in entity.Members) {
             using var _ = NewScope(member);
-            if (member.IsVector) {
-Emit("            _T_VectorMemberName_ = source.T_VectorMemberName_;");
-            } else if (member.IsEntity) {
-            if (member.IsNullable) {
-Emit("            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);");
-            } else {
-Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);");
-            }
-            } else {
+            switch(member.Kind) {
+            case MemberKind.Scalar:
             if (member.IsNullable) {
 Emit("            _T_NullableScalarMemberName_ = source.T_NullableScalarMemberName_;");
             } else {
 Emit("            _T_RequiredScalarMemberName_ = source.T_RequiredScalarMemberName_;");
             }
+            break;
+            case MemberKind.Vector:
+Emit("            _T_VectorMemberName_ = source.T_VectorMemberName_;");
+            break;
+            case MemberKind.Entity:
+            if (member.IsNullable) {
+Emit("            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);");
+            } else {
+Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);");
             }
-            }
+            break;
+            default:
+            Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
+            break;
+            } // switch
+            } // foreach
 Emit("        }");
 Emit("");
         foreach (var member in entity.Members) {
         using var _ = NewScope(member);
-        if (member.IsVector) {
+        //----------
+        switch(member.Kind) {
+        case MemberKind.Scalar:
+        if (member.IsNullable) {
+Emit("        private T_MemberType_? _T_NullableScalarMemberName_;");
+        } else {
+Emit("        private T_MemberType_ _T_RequiredScalarMemberName_ = T_MemberDefaultValue_;");
+        }
+        if (member.IsObsolete) {
+Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
+        }
+        if (member.IsNullable) {
+Emit("        public T_MemberType_? T_NullableScalarMemberName_");
+Emit("        {");
+Emit("            get => _T_NullableScalarMemberName_;");
+Emit("            set => _T_NullableScalarMemberName_ = IfNotFrozen(ref value);");
+Emit("        }");
+        } else {
+Emit("        public T_MemberType_ T_RequiredScalarMemberName_");
+Emit("        {");
+Emit("            get => _T_RequiredScalarMemberName_;");
+Emit("            set => _T_RequiredScalarMemberName_ = IfNotFrozen(ref value);");
+Emit("        }");
+        }
+        break;
+        case MemberKind.Vector:
 Emit("        private ReadOnlyMemory<T_MemberType_> _T_VectorMemberName_;");
         if (member.IsObsolete) {
 Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
@@ -190,7 +222,8 @@ Emit("        {");
 Emit("            get => _T_VectorMemberName_;");
 Emit("            set => _T_VectorMemberName_ = IfNotFrozen(ref value);");
 Emit("        }");
-        } else if (member.IsEntity) {
+        break;
+        case MemberKind.Entity:
         if (member.IsNullable) {
 Emit("        private T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_? _T_NullableEntityMemberName_;");
 Emit("        public T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_? T_NullableEntityMemberName_");
@@ -224,28 +257,15 @@ Emit("                _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSPo
 Emit("            }");
 Emit("        }");
         }
+        break;
+        default:
+        Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
+        break;
+        } // switch
+        //----------
+        if (member.IsVector) {
+        } else if (member.IsEntity) {
         } else {
-        if (member.IsNullable) {
-Emit("        private T_MemberType_? _T_NullableScalarMemberName_;");
-        } else {
-Emit("        private T_MemberType_ _T_RequiredScalarMemberName_ = T_MemberDefaultValue_;");
-        }
-        if (member.IsObsolete) {
-Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
-        }
-        if (member.IsNullable) {
-Emit("        public T_MemberType_? T_NullableScalarMemberName_");
-Emit("        {");
-Emit("            get => _T_NullableScalarMemberName_;");
-Emit("            set => _T_NullableScalarMemberName_ = IfNotFrozen(ref value);");
-Emit("        }");
-        } else {
-Emit("        public T_MemberType_ T_RequiredScalarMemberName_");
-Emit("        {");
-Emit("            get => _T_RequiredScalarMemberName_;");
-Emit("            set => _T_RequiredScalarMemberName_ = IfNotFrozen(ref value);");
-Emit("        }");
-        }
         }
 Emit("");
         }
@@ -257,15 +277,30 @@ Emit("            if (other is null) return false;");
 Emit("            if (!base.Equals(other)) return false;");
             foreach (var member in entity.Members) {
             using var _ = NewScope(member);
-            if (member.IsVector) {
-Emit("            if (!_T_VectorMemberName_.Span.SequenceEqual(other.T_VectorMemberName_.Span)) return false;");
-            } else {
+            //----------
+            switch(member.Kind) {
+            case MemberKind.Scalar:
             if (member.IsNullable) {
 Emit("            if (_T_NullableScalarMemberName_ != other.T_NullableScalarMemberName_) return false;");
             } else {
 Emit("            if (_T_RequiredScalarMemberName_ != other.T_RequiredScalarMemberName_) return false;");
             }
+            break;
+            case MemberKind.Vector:
+Emit("            if (!_T_VectorMemberName_.Span.SequenceEqual(other.T_VectorMemberName_.Span)) return false;");
+            break;
+            case MemberKind.Entity:
+            if (member.IsNullable) {
+Emit("            if (_T_NullableEntityMemberName_ != other.T_NullableEntityMemberName_) return false;");
+            } else {
+Emit("            if (_T_RequiredEntityMemberName_ != other.T_RequiredEntityMemberName_) return false;");
             }
+            break;
+            default:
+            Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
+            break;
+            } // switch
+            //----------
             }
 Emit("            return true;");
 Emit("        }");
@@ -280,19 +315,34 @@ Emit("            HashCode result = new HashCode();");
 Emit("            result.Add(base.GetHashCode());");
             foreach (var member in entity.Members) {
             using var _ = NewScope(member);
-            if (member.IsVector) {
-Emit("            result.Add(_T_VectorMemberName_.Length);");
-Emit("            for (int i = 0; i < _T_VectorMemberName_.Length; i++)");
-Emit("            {");
-Emit("                result.Add(_T_VectorMemberName_.Span[i]);");
-Emit("            }");
-            } else {
+            //----------
+            switch(member.Kind) {
+            case MemberKind.Scalar:
             if (member.IsNullable) {
 Emit("            result.Add(_T_NullableScalarMemberName_);");
             } else {
 Emit("            result.Add(_T_RequiredScalarMemberName_);");
             }
+            break;
+            case MemberKind.Vector:
+Emit("            result.Add(_T_VectorMemberName_.Length);");
+Emit("            for (int i = 0; i < _T_VectorMemberName_.Length; i++)");
+Emit("            {");
+Emit("                result.Add(_T_VectorMemberName_.Span[i]);");
+Emit("            }");
+            break;
+            case MemberKind.Entity:
+            if (member.IsNullable) {
+Emit("            result.Add(_T_NullableEntityMemberName_?.GetHashCode() ?? 0);");
+            } else {
+Emit("            result.Add(_T_RequiredEntityMemberName_.GetHashCode());");
             }
+            break;
+            default:
+            Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
+            break;
+            } // switch
+            //----------
             }
 Emit("            return result.ToHashCode();");
 Emit("        }");

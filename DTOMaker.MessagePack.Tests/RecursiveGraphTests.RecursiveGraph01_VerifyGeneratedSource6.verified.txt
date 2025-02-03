@@ -88,7 +88,7 @@ namespace MyOrg.Models.MessagePack
         public MyOrg.Models.MessagePack.Tree? Left
         {
             get => _Left;
-            set => _Left = IfNotFrozen(ref value);
+            set => _Left = IfNotFrozen(value);
         }
         MyOrg.Models.ITree? ITree.Left
         {
@@ -106,7 +106,7 @@ namespace MyOrg.Models.MessagePack
         public MyOrg.Models.MessagePack.Tree? Right
         {
             get => _Right;
-            set => _Right = IfNotFrozen(ref value);
+            set => _Right = IfNotFrozen(value);
         }
         MyOrg.Models.ITree? ITree.Right
         {
@@ -124,7 +124,7 @@ namespace MyOrg.Models.MessagePack
         public MyOrg.Models.MessagePack.Node? Node
         {
             get => _Node;
-            set => _Node = IfNotFrozen(ref value);
+            set => _Node = IfNotFrozen(value);
         }
         MyOrg.Models.INode? ITree.Node
         {
@@ -156,9 +156,9 @@ namespace MyOrg.Models.MessagePack
         {
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
-            result.Add(_Left);
-            result.Add(_Right);
-            result.Add(_Node);
+            result.Add(_Left?.GetHashCode() ?? 0);
+            result.Add(_Right?.GetHashCode() ?? 0);
+            result.Add(_Node?.GetHashCode() ?? 0);
             return result.ToHashCode();
         }
 
