@@ -119,16 +119,8 @@ namespace T_MemberTypeNameSpace_.MemBlocks
 
         public Int64 Field1
         {
-            get
-            {
-                return Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, value);
-            }
+            get => Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
+            set => Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, IfNotFrozen(value));
         }
     }
 }
@@ -222,16 +214,8 @@ namespace T_BaseNameSpace_.MemBlocks
 
         public T_MemberType_ BaseField1
         {
-            get
-            {
-                return (T_MemberType_)Codec_T_MemberType__T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_T_MemberType__T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, T_FieldLength_).Span, value);
-            }
+            get => (T_MemberType_)Codec_T_MemberType__T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_).Span);
+            set => Codec_T_MemberType__T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, T_FieldLength_).Span, IfNotFrozen(value));
         }
 
         public bool Equals(T_BaseName_? other)
@@ -348,13 +332,23 @@ namespace T_NameSpace_.MemBlocks
             base.OnFreeze();
             //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
-            //##if (member.IsEntity) {
+            //##//----------
+            //##switch(member.Kind) {
+            //##case MemberKind.Scalar:
+            //##break;
+            //##case MemberKind.Vector:
+            //##break;
+            //##case MemberKind.Entity:
             //##if (member.IsNullable) {
             _T_NullableEntityMemberName_?.Freeze();
             //##} else {
             _T_RequiredEntityMemberName_?.Freeze();
             //##}
-            //##}
+            //##break;
+            //##default:
+            //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
+            //##break;
+            //##} // switch
             //##}
         }
 
@@ -363,13 +357,23 @@ namespace T_NameSpace_.MemBlocks
             await base.OnPack(dataStore);
             //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
-            //##if (member.IsEntity) {
+            //##//----------
+            //##switch(member.Kind) {
+            //##case MemberKind.Scalar:
+            //##break;
+            //##case MemberKind.Vector:
+            //##break;
+            //##case MemberKind.Entity:
             //##if (member.IsNullable) {
             await T_NullableEntityMemberName__Pack(dataStore);
             //##} else {
             await T_RequiredEntityMemberName__Pack(dataStore);
             //##}
-            //##}
+            //##break;
+            //##default:
+            //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
+            //##break;
+            //##} // switch
             //##}
         }
 
@@ -378,13 +382,23 @@ namespace T_NameSpace_.MemBlocks
             await base.OnUnpack(dataStore, depth);
             //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
-            //##if (member.IsEntity) {
+            //##//----------
+            //##switch(member.Kind) {
+            //##case MemberKind.Scalar:
+            //##break;
+            //##case MemberKind.Vector:
+            //##break;
+            //##case MemberKind.Entity:
             //##if (member.IsNullable) {
             await T_NullableEntityMemberName__Unpack(dataStore, depth);
             //##} else {
             await T_RequiredEntityMemberName__Unpack(dataStore, depth);
             //##}
-            //##}
+            //##break;
+            //##default:
+            //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
+            //##break;
+            //##} // switch
             //##}
         }
 
@@ -413,17 +427,26 @@ namespace T_NameSpace_.MemBlocks
             _readonlyBlock = _writableBlock = new byte[BlockLength];
             //##foreach(var member in entity.Members) {
             //##using var _ = NewScope(member);
-            //##if(member.IsVector) {
+            //##//----------
+            //##switch(member.Kind) {
+            //##case MemberKind.Scalar:
+            this.T_ScalarMemberName_ = source.T_ScalarMemberName_;
+            //##break;
+            //##case MemberKind.Vector:
             this.T_VectorMemberName_ = source.T_VectorMemberName_;
-            //##} else if (member.IsEntity) {
+            //##break;
+            //##case MemberKind.Entity:
             //##if (member.IsNullable) {
             _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);
             //##} else {
             _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);
             //##}
-            //##} else {
-            this.T_ScalarMemberName_ = source.T_ScalarMemberName_;
-            //##}
+            //##break;
+            //##default:
+            //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
+            //##break;
+            //##} // switch
+            //##//----------
             //##}
         }
 
@@ -452,10 +475,22 @@ namespace T_NameSpace_.MemBlocks
         //##}
         //##foreach(var member in entity.Members) {
         //##using var _ = NewScope(member);
+        //##//----------
+        //##switch(member.Kind) {
+        //##case MemberKind.Scalar:
         //##if(member.IsObsolete) {
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##}
-        //##if(member.IsVector) {
+        public T_MemberType_ T_ScalarMemberName_
+        {
+            get => Codec_T_MemberType__T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_).Span);
+            set => Codec_T_MemberType__T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, T_FieldLength_).Span, IfNotFrozen(value));
+        }
+        //##break;
+        //##case MemberKind.Vector:
+        //##if(member.IsObsolete) {
+        [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
+        //##}
         public ReadOnlyMemory<T_MemberType_> T_VectorMemberName_
         {
             get
@@ -510,8 +545,8 @@ namespace T_NameSpace_.MemBlocks
                 //##}
             }
         }
-
-        //##} else if (member.IsEntity) {
+        //##break;
+        //##case MemberKind.Entity:
         //##if (member.IsNullable) {
         private async ValueTask T_NullableEntityMemberName__Pack(IDataStore dataStore)
         {
@@ -538,33 +573,18 @@ namespace T_NameSpace_.MemBlocks
             }
         }
         private T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_? _T_NullableEntityMemberName_;
+        //##if(member.IsObsolete) {
+        [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
+        //##}
         public T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_? T_NullableEntityMemberName_
         {
-            get
-            {
-                ThrowIfNotUnpacked();
-                return _T_NullableEntityMemberName_;
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                _T_NullableEntityMemberName_ = value is null ? null : value.IsFrozen ? value : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(value);
-            }
+            get => IfUnpacked(_T_NullableEntityMemberName_);
+            set => _T_NullableEntityMemberName_ = IfNotFrozen(value is null ? null : value.IsFrozen ? value : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(value));
         }
         T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityName_.T_NullableEntityMemberName_
         {
-            get
-            {
-                ThrowIfNotUnpacked();
-                return _T_NullableEntityMemberName_;
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                _T_NullableEntityMemberName_ = value is null ? null : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(value);
-            }
+            get => IfUnpacked(_T_NullableEntityMemberName_);
+            set => _T_NullableEntityMemberName_ = IfNotFrozen(value is null ? null : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(value));
         }
         //##} else {
         private async ValueTask T_RequiredEntityMemberName__Pack(IDataStore dataStore)
@@ -599,49 +619,27 @@ namespace T_NameSpace_.MemBlocks
             }
         }
         private T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_? _T_RequiredEntityMemberName_ = null;
+        //##if(member.IsObsolete) {
+        [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
+        //##}
         public T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_ T_RequiredEntityMemberName_
         {
-            get
-            {
-                ThrowIfNotUnpacked();
-                return IfNotNull(_T_RequiredEntityMemberName_);
-            }
-            set
-            {
-                ThrowIfFrozen();
-                _T_RequiredEntityMemberName_ = value.IsFrozen ? value : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(value);
-            }
+            get => IfNotNull(IfUnpacked(_T_RequiredEntityMemberName_));
+            set => _T_RequiredEntityMemberName_ = IfNotFrozen(value.IsFrozen ? value : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(value));
         }
         T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityName_.T_RequiredEntityMemberName_
         {
-            get
-            {
-                ThrowIfNotUnpacked();
-                return IfNotNull(_T_RequiredEntityMemberName_);
-            }
-            set
-            {
-                ThrowIfFrozen();
-                _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(value);
-            }
+            get => IfNotNull(IfUnpacked(_T_RequiredEntityMemberName_));
+            set => _T_RequiredEntityMemberName_ = IfNotFrozen(T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(value));
         }
         //##}
-        //##} else {
-        public T_MemberType_ T_ScalarMemberName_
-        {
-            get
-            {
-                return Codec_T_MemberType__T_MemberBELE_.ReadFromSpan(_readonlyBlock.Slice(T_FieldOffset_, T_FieldLength_).Span);
-            }
+        //##break;
+        //##default:
+        //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
+        //##break;
+        //##} // switch
+        //##//----------
 
-            set
-            {
-                ThrowIfFrozen();
-                Codec_T_MemberType__T_MemberBELE_.WriteToSpan(_writableBlock.Slice(T_FieldOffset_, T_FieldLength_).Span, value);
-            }
-        }
-
-        //##}
         //##}
 
         public bool Equals(T_EntityName_? other)

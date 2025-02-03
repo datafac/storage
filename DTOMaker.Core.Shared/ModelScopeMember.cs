@@ -61,9 +61,6 @@ namespace DTOMaker.Gentime
         }
 
         public MemberKind Kind => _member.Kind;
-        public bool IsScalar => _member.Kind == MemberKind.Scalar;
-        public bool IsVector => _member.Kind == MemberKind.Vector;
-        public bool IsEntity => _member.Kind == MemberKind.Entity;
         public bool IsNullable => _member.MemberIsNullable;
         public bool IsObsolete => _member.IsObsolete;
         public int FieldLength => _member.FieldLength;

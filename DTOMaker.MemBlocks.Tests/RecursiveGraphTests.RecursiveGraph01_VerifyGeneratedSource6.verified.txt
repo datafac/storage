@@ -176,32 +176,15 @@ namespace MyOrg.Models.MemBlocks
         private MyOrg.Models.MemBlocks.Tree? _Left;
         public MyOrg.Models.MemBlocks.Tree? Left
         {
-            get
-            {
-                ThrowIfNotUnpacked();
-                return _Left;
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                _Left = value is null ? null : value.IsFrozen ? value : MyOrg.Models.MemBlocks.Tree.CreateFrom(value);
-            }
+            get => IfUnpacked(_Left);
+            set => _Left = IfNotFrozen(value is null ? null : value.IsFrozen ? value : MyOrg.Models.MemBlocks.Tree.CreateFrom(value));
         }
         MyOrg.Models.ITree? ITree.Left
         {
-            get
-            {
-                ThrowIfNotUnpacked();
-                return _Left;
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                _Left = value is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(value);
-            }
+            get => IfUnpacked(_Left);
+            set => _Left = IfNotFrozen(value is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(value));
         }
+
         private async ValueTask Right_Pack(IDataStore dataStore)
         {
             BlobIdV1 blobId = default;
@@ -229,32 +212,15 @@ namespace MyOrg.Models.MemBlocks
         private MyOrg.Models.MemBlocks.Tree? _Right;
         public MyOrg.Models.MemBlocks.Tree? Right
         {
-            get
-            {
-                ThrowIfNotUnpacked();
-                return _Right;
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                _Right = value is null ? null : value.IsFrozen ? value : MyOrg.Models.MemBlocks.Tree.CreateFrom(value);
-            }
+            get => IfUnpacked(_Right);
+            set => _Right = IfNotFrozen(value is null ? null : value.IsFrozen ? value : MyOrg.Models.MemBlocks.Tree.CreateFrom(value));
         }
         MyOrg.Models.ITree? ITree.Right
         {
-            get
-            {
-                ThrowIfNotUnpacked();
-                return _Right;
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                _Right = value is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(value);
-            }
+            get => IfUnpacked(_Right);
+            set => _Right = IfNotFrozen(value is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(value));
         }
+
         private async ValueTask Node_Pack(IDataStore dataStore)
         {
             BlobIdV1 blobId = default;
@@ -282,32 +248,15 @@ namespace MyOrg.Models.MemBlocks
         private MyOrg.Models.MemBlocks.Node? _Node;
         public MyOrg.Models.MemBlocks.Node? Node
         {
-            get
-            {
-                ThrowIfNotUnpacked();
-                return _Node;
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                _Node = value is null ? null : value.IsFrozen ? value : MyOrg.Models.MemBlocks.Node.CreateFrom(value);
-            }
+            get => IfUnpacked(_Node);
+            set => _Node = IfNotFrozen(value is null ? null : value.IsFrozen ? value : MyOrg.Models.MemBlocks.Node.CreateFrom(value));
         }
         MyOrg.Models.INode? ITree.Node
         {
-            get
-            {
-                ThrowIfNotUnpacked();
-                return _Node;
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                _Node = value is null ? null : MyOrg.Models.MemBlocks.Node.CreateFrom(value);
-            }
+            get => IfUnpacked(_Node);
+            set => _Node = IfNotFrozen(value is null ? null : MyOrg.Models.MemBlocks.Node.CreateFrom(value));
         }
+
 
         public bool Equals(Tree? other)
         {

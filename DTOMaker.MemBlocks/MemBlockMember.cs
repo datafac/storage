@@ -41,6 +41,7 @@ namespace DTOMaker.MemBlocks
                 "System.Decimal" => null,
                 "System.Guid" => null,
                 "System.String" => null,
+                "DataFac.Memory.Octets" => null,
                 _ => new SyntaxDiagnostic(
                     DiagnosticId.DMMB0007, "Unsupported member datatype", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
                     $"MemberType '{MemberType}' not supported")
@@ -51,6 +52,7 @@ namespace DTOMaker.MemBlocks
         {
             if (Kind == MemberKind.Entity) return null;
             if (!MemberIsNullable) return null;
+            if (MemberType.FullName == "DataFac.Memory.Octets") return null;
 
             return new SyntaxDiagnostic(
                         DiagnosticId.DMMB0007, "Unsupported member type", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
@@ -59,14 +61,15 @@ namespace DTOMaker.MemBlocks
 
         private SyntaxDiagnostic? CheckHasOffsetAttribute()
         {
-            if (LayoutMethod == LayoutMethod.Linear)
-                return null;
+            if (LayoutMethod == LayoutMethod.Undefined) return null;
+            if (LayoutMethod == LayoutMethod.Linear) return null;
+            //if (LayoutMethod == LayoutMethod.Compact) return null; //todo
 
             if (HasOffsetAttribute) return null;
 
             return (SyntaxDiagnostic?)new SyntaxDiagnostic(
                      DiagnosticId.DMMB0006, "Missing [Offset] attribute", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                     "[Offset] attribute is missing.");
+                     $"[Offset] attribute is missing. This is required for {LayoutMethod} layout method.");
         }
 
         private SyntaxDiagnostic? CheckFieldOffsetIsValid()

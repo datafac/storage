@@ -133,13 +133,22 @@ namespace T_NameSpace_.CSPoco
             base.OnFreeze();
             //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
-            //##if (member.IsEntity) {
+            //##switch(member.Kind) {
+            //##case MemberKind.Scalar:
+            //##break;
+            //##case MemberKind.Vector:
+            //##break;
+            //##case MemberKind.Entity:
             //##if (member.IsNullable) {
             _T_NullableEntityMemberName_?.Freeze();
             //##} else {
             _T_RequiredEntityMemberName_.Freeze();
             //##}
-            //##}
+            //##break;
+            //##default:
+            //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
+            //##break;
+            //##} // switch
             //##}
         }
 
@@ -177,7 +186,6 @@ namespace T_NameSpace_.CSPoco
 
         //##foreach (var member in entity.Members) {
         //##using var _ = NewScope(member);
-        //##//----------
         //##switch(member.Kind) {
         //##case MemberKind.Scalar:
         //##if (member.IsNullable) {
@@ -252,11 +260,6 @@ namespace T_NameSpace_.CSPoco
         //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
         //##break;
         //##} // switch
-        //##//----------
-        //##if (member.IsVector) {
-        //##} else if (member.IsEntity) {
-        //##} else {
-        //##}
 
         //##}
 
@@ -267,7 +270,6 @@ namespace T_NameSpace_.CSPoco
             if (!base.Equals(other)) return false;
             //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
-            //##//----------
             //##switch(member.Kind) {
             //##case MemberKind.Scalar:
             //##if (member.IsNullable) {
@@ -290,7 +292,6 @@ namespace T_NameSpace_.CSPoco
             //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
             //##break;
             //##} // switch
-            //##//----------
             //##}
             return true;
         }
@@ -305,7 +306,6 @@ namespace T_NameSpace_.CSPoco
             result.Add(base.GetHashCode());
             //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
-            //##//----------
             //##switch(member.Kind) {
             //##case MemberKind.Scalar:
             //##if (member.IsNullable) {
@@ -332,7 +332,6 @@ namespace T_NameSpace_.CSPoco
             //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
             //##break;
             //##} // switch
-            //##//----------
             //##}
             return result.ToHashCode();
         }

@@ -142,44 +142,20 @@ namespace MyOrg.Models.MemBlocks
 
         public Double Field1
         {
-            get
-            {
-                return Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, value);
-            }
+            get => Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
+            set => Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, IfNotFrozen(value));
         }
 
         public Boolean Field2
         {
-            get
-            {
-                return Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(8, 1).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(8, 1).Span, value);
-            }
+            get => Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(8, 1).Span);
+            set => Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(8, 1).Span, IfNotFrozen(value));
         }
 
         public Int64 Field3
         {
-            get
-            {
-                return Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(16, 8).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(16, 8).Span, value);
-            }
+            get => Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(16, 8).Span);
+            set => Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(16, 8).Span, IfNotFrozen(value));
         }
 
 

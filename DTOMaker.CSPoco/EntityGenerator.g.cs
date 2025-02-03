@@ -143,13 +143,22 @@ Emit("        {");
 Emit("            base.OnFreeze();");
             foreach (var member in entity.Members) {
             using var _ = NewScope(member);
-            if (member.IsEntity) {
+            switch(member.Kind) {
+            case MemberKind.Scalar:
+            break;
+            case MemberKind.Vector:
+            break;
+            case MemberKind.Entity:
             if (member.IsNullable) {
 Emit("            _T_NullableEntityMemberName_?.Freeze();");
             } else {
 Emit("            _T_RequiredEntityMemberName_.Freeze();");
             }
-            }
+            break;
+            default:
+            Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
+            break;
+            } // switch
             }
 Emit("        }");
 Emit("");
@@ -187,7 +196,6 @@ Emit("        }");
 Emit("");
         foreach (var member in entity.Members) {
         using var _ = NewScope(member);
-        //----------
         switch(member.Kind) {
         case MemberKind.Scalar:
         if (member.IsNullable) {
@@ -262,11 +270,6 @@ Emit("        }");
         Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
         break;
         } // switch
-        //----------
-        if (member.IsVector) {
-        } else if (member.IsEntity) {
-        } else {
-        }
 Emit("");
         }
 Emit("");
@@ -277,7 +280,6 @@ Emit("            if (other is null) return false;");
 Emit("            if (!base.Equals(other)) return false;");
             foreach (var member in entity.Members) {
             using var _ = NewScope(member);
-            //----------
             switch(member.Kind) {
             case MemberKind.Scalar:
             if (member.IsNullable) {
@@ -300,7 +302,6 @@ Emit("            if (_T_RequiredEntityMemberName_ != other.T_RequiredEntityMemb
             Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
             break;
             } // switch
-            //----------
             }
 Emit("            return true;");
 Emit("        }");
@@ -315,7 +316,6 @@ Emit("            HashCode result = new HashCode();");
 Emit("            result.Add(base.GetHashCode());");
             foreach (var member in entity.Members) {
             using var _ = NewScope(member);
-            //----------
             switch(member.Kind) {
             case MemberKind.Scalar:
             if (member.IsNullable) {
@@ -342,7 +342,6 @@ Emit("            result.Add(_T_RequiredEntityMemberName_.GetHashCode());");
             Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
             break;
             } // switch
-            //----------
             }
 Emit("            return result.ToHashCode();");
 Emit("        }");

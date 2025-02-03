@@ -74,6 +74,12 @@ namespace DTOMaker.Runtime.MemBlocks
         {
             if (_frozen) ThrowIsFrozenException(methodName);
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected T IfNotFrozen<T>(T value, [CallerMemberName] string? methodName = null)
+        {
+            if (_frozen) ThrowIsFrozenException(methodName);
+            return value;
+        }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void ThrowIsNotFrozenException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} when not frozen.");
@@ -94,6 +100,12 @@ namespace DTOMaker.Runtime.MemBlocks
         protected void ThrowIfNotUnpacked([CallerMemberName] string? methodName = null)
         {
             if (_frozen && !_unpacked) ThrowIsNotUnpackedException(methodName);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected T IfUnpacked<T>(T value, [CallerMemberName] string? methodName = null)
+        {
+            if (_frozen && !_unpacked) ThrowIsNotUnpackedException(methodName);
+            return value;
         }
 
         protected static T IfNotNull<T>(T? value, [CallerMemberName] string? methodName = null) where T : class

@@ -160,13 +160,22 @@ namespace T_NameSpace_.MessagePack
             base.OnFreeze();
             //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
-            //##if (member.IsEntity) {
+            //##switch(member.Kind) {
+            //##case MemberKind.Scalar:
+            //##break;
+            //##case MemberKind.Vector:
+            //##break;
+            //##case MemberKind.Entity:
             //##if (member.IsNullable) {
             _T_NullableEntityMemberName_?.Freeze();
             //##} else {
             _T_RequiredEntityMemberName_.Freeze();
             //##}
-            //##}
+            //##break;
+            //##default:
+            //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
+            //##break;
+            //##} // switch
             //##}
         }
 
@@ -463,13 +472,22 @@ namespace T_NameSpace_.MessagePack
             base.OnFreeze();
             //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
-            //##if (member.IsEntity) {
+            //##switch(member.Kind) {
+            //##case MemberKind.Scalar:
+            //##break;
+            //##case MemberKind.Vector:
+            //##break;
+            //##case MemberKind.Entity:
             //##if (member.IsNullable) {
             _T_NullableEntityMemberName_?.Freeze();
             //##} else {
             _T_RequiredEntityMemberName_.Freeze();
             //##}
-            //##}
+            //##break;
+            //##default:
+            //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
+            //##break;
+            //##} // switch
             //##}
         }
 

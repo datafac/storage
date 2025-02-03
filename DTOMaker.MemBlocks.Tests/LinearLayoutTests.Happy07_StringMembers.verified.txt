@@ -144,58 +144,26 @@ namespace MyOrg.Models.MemBlocks
 
         public String FamilyName
         {
-            get
-            {
-                return Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(0, 64).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_String_LE.WriteToSpan(_writableBlock.Slice(0, 64).Span, value);
-            }
+            get => Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(0, 64).Span);
+            set => Codec_String_LE.WriteToSpan(_writableBlock.Slice(0, 64).Span, IfNotFrozen(value));
         }
 
         public String GivenNames
         {
-            get
-            {
-                return Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(64, 64).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_String_LE.WriteToSpan(_writableBlock.Slice(64, 64).Span, value);
-            }
+            get => Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(64, 64).Span);
+            set => Codec_String_LE.WriteToSpan(_writableBlock.Slice(64, 64).Span, IfNotFrozen(value));
         }
 
         public String OtherNames_Value
         {
-            get
-            {
-                return Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(128, 64).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_String_LE.WriteToSpan(_writableBlock.Slice(128, 64).Span, value);
-            }
+            get => Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(128, 64).Span);
+            set => Codec_String_LE.WriteToSpan(_writableBlock.Slice(128, 64).Span, IfNotFrozen(value));
         }
 
         public Boolean OtherNames_HasValue
         {
-            get
-            {
-                return Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(192, 1).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(192, 1).Span, value);
-            }
+            get => Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(192, 1).Span);
+            set => Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(192, 1).Span, IfNotFrozen(value));
         }
 
 

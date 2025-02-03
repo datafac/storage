@@ -138,16 +138,8 @@ namespace MyOrg.Models.MemBlocks
 
         public Boolean Value
         {
-            get
-            {
-                return Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(0, 1).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(0, 1).Span, value);
-            }
+            get => Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(0, 1).Span);
+            set => Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(0, 1).Span, IfNotFrozen(value));
         }
 
 

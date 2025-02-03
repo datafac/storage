@@ -170,240 +170,104 @@ namespace MyOrg.Models.MemBlocks
 
         public Boolean Field1
         {
-            get
-            {
-                return Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(0, 1).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(0, 1).Span, value);
-            }
+            get => Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(0, 1).Span);
+            set => Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(0, 1).Span, IfNotFrozen(value));
         }
 
         public SByte Field2
         {
-            get
-            {
-                return Codec_SByte_LE.ReadFromSpan(_readonlyBlock.Slice(1, 1).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_SByte_LE.WriteToSpan(_writableBlock.Slice(1, 1).Span, value);
-            }
+            get => Codec_SByte_LE.ReadFromSpan(_readonlyBlock.Slice(1, 1).Span);
+            set => Codec_SByte_LE.WriteToSpan(_writableBlock.Slice(1, 1).Span, IfNotFrozen(value));
         }
 
         public Byte Field3
         {
-            get
-            {
-                return Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(2, 1).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(2, 1).Span, value);
-            }
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(2, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(2, 1).Span, IfNotFrozen(value));
         }
 
         public Int16 Field4
         {
-            get
-            {
-                return Codec_Int16_LE.ReadFromSpan(_readonlyBlock.Slice(4, 2).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Int16_LE.WriteToSpan(_writableBlock.Slice(4, 2).Span, value);
-            }
+            get => Codec_Int16_LE.ReadFromSpan(_readonlyBlock.Slice(4, 2).Span);
+            set => Codec_Int16_LE.WriteToSpan(_writableBlock.Slice(4, 2).Span, IfNotFrozen(value));
         }
 
         public UInt16 Field5
         {
-            get
-            {
-                return Codec_UInt16_LE.ReadFromSpan(_readonlyBlock.Slice(6, 2).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_UInt16_LE.WriteToSpan(_writableBlock.Slice(6, 2).Span, value);
-            }
+            get => Codec_UInt16_LE.ReadFromSpan(_readonlyBlock.Slice(6, 2).Span);
+            set => Codec_UInt16_LE.WriteToSpan(_writableBlock.Slice(6, 2).Span, IfNotFrozen(value));
         }
 
         public Char Field6
         {
-            get
-            {
-                return Codec_Char_LE.ReadFromSpan(_readonlyBlock.Slice(8, 2).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Char_LE.WriteToSpan(_writableBlock.Slice(8, 2).Span, value);
-            }
+            get => Codec_Char_LE.ReadFromSpan(_readonlyBlock.Slice(8, 2).Span);
+            set => Codec_Char_LE.WriteToSpan(_writableBlock.Slice(8, 2).Span, IfNotFrozen(value));
         }
 
         public Half Field7
         {
-            get
-            {
-                return Codec_Half_LE.ReadFromSpan(_readonlyBlock.Slice(10, 2).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Half_LE.WriteToSpan(_writableBlock.Slice(10, 2).Span, value);
-            }
+            get => Codec_Half_LE.ReadFromSpan(_readonlyBlock.Slice(10, 2).Span);
+            set => Codec_Half_LE.WriteToSpan(_writableBlock.Slice(10, 2).Span, IfNotFrozen(value));
         }
 
         public Int32 Field8
         {
-            get
-            {
-                return Codec_Int32_LE.ReadFromSpan(_readonlyBlock.Slice(12, 4).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Int32_LE.WriteToSpan(_writableBlock.Slice(12, 4).Span, value);
-            }
+            get => Codec_Int32_LE.ReadFromSpan(_readonlyBlock.Slice(12, 4).Span);
+            set => Codec_Int32_LE.WriteToSpan(_writableBlock.Slice(12, 4).Span, IfNotFrozen(value));
         }
 
         public UInt32 Field9
         {
-            get
-            {
-                return Codec_UInt32_LE.ReadFromSpan(_readonlyBlock.Slice(16, 4).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_UInt32_LE.WriteToSpan(_writableBlock.Slice(16, 4).Span, value);
-            }
+            get => Codec_UInt32_LE.ReadFromSpan(_readonlyBlock.Slice(16, 4).Span);
+            set => Codec_UInt32_LE.WriteToSpan(_writableBlock.Slice(16, 4).Span, IfNotFrozen(value));
         }
 
         public Single Field10
         {
-            get
-            {
-                return Codec_Single_LE.ReadFromSpan(_readonlyBlock.Slice(20, 4).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Single_LE.WriteToSpan(_writableBlock.Slice(20, 4).Span, value);
-            }
+            get => Codec_Single_LE.ReadFromSpan(_readonlyBlock.Slice(20, 4).Span);
+            set => Codec_Single_LE.WriteToSpan(_writableBlock.Slice(20, 4).Span, IfNotFrozen(value));
         }
 
         public Int64 Field11
         {
-            get
-            {
-                return Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(24, 8).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(24, 8).Span, value);
-            }
+            get => Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(24, 8).Span);
+            set => Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(24, 8).Span, IfNotFrozen(value));
         }
 
         public UInt64 Field12
         {
-            get
-            {
-                return Codec_UInt64_LE.ReadFromSpan(_readonlyBlock.Slice(32, 8).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_UInt64_LE.WriteToSpan(_writableBlock.Slice(32, 8).Span, value);
-            }
+            get => Codec_UInt64_LE.ReadFromSpan(_readonlyBlock.Slice(32, 8).Span);
+            set => Codec_UInt64_LE.WriteToSpan(_writableBlock.Slice(32, 8).Span, IfNotFrozen(value));
         }
 
         public Double Field13
         {
-            get
-            {
-                return Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(40, 8).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Double_LE.WriteToSpan(_writableBlock.Slice(40, 8).Span, value);
-            }
+            get => Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(40, 8).Span);
+            set => Codec_Double_LE.WriteToSpan(_writableBlock.Slice(40, 8).Span, IfNotFrozen(value));
         }
 
         public Guid Field14
         {
-            get
-            {
-                return Codec_Guid_LE.ReadFromSpan(_readonlyBlock.Slice(48, 16).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Guid_LE.WriteToSpan(_writableBlock.Slice(48, 16).Span, value);
-            }
+            get => Codec_Guid_LE.ReadFromSpan(_readonlyBlock.Slice(48, 16).Span);
+            set => Codec_Guid_LE.WriteToSpan(_writableBlock.Slice(48, 16).Span, IfNotFrozen(value));
         }
 
         public Int128 Field15
         {
-            get
-            {
-                return Codec_Int128_LE.ReadFromSpan(_readonlyBlock.Slice(64, 16).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Int128_LE.WriteToSpan(_writableBlock.Slice(64, 16).Span, value);
-            }
+            get => Codec_Int128_LE.ReadFromSpan(_readonlyBlock.Slice(64, 16).Span);
+            set => Codec_Int128_LE.WriteToSpan(_writableBlock.Slice(64, 16).Span, IfNotFrozen(value));
         }
 
         public UInt128 Field16
         {
-            get
-            {
-                return Codec_UInt128_LE.ReadFromSpan(_readonlyBlock.Slice(80, 16).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_UInt128_LE.WriteToSpan(_writableBlock.Slice(80, 16).Span, value);
-            }
+            get => Codec_UInt128_LE.ReadFromSpan(_readonlyBlock.Slice(80, 16).Span);
+            set => Codec_UInt128_LE.WriteToSpan(_writableBlock.Slice(80, 16).Span, IfNotFrozen(value));
         }
 
         public Decimal Field17
         {
-            get
-            {
-                return Codec_Decimal_LE.ReadFromSpan(_readonlyBlock.Slice(96, 16).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Decimal_LE.WriteToSpan(_writableBlock.Slice(96, 16).Span, value);
-            }
+            get => Codec_Decimal_LE.ReadFromSpan(_readonlyBlock.Slice(96, 16).Span);
+            set => Codec_Decimal_LE.WriteToSpan(_writableBlock.Slice(96, 16).Span, IfNotFrozen(value));
         }
 
 

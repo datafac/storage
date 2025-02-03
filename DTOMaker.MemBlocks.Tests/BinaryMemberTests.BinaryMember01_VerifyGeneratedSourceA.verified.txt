@@ -18,62 +18,42 @@ using DataFac.Storage;
 
 namespace MyOrg.Models.MemBlocks
 {
-    public partial class Node : DTOMaker.Runtime.MemBlocks.EntityBase, INode, IEquatable<Node>
+    public partial class MyDTO : DTOMaker.Runtime.MemBlocks.EntityBase, IMyDTO, IEquatable<MyDTO>
     {
-        // Derived entities: 5
-        // - BooleanNode
-        // - DoubleNode
-        // - Int64Node
-        // - NumericNode
-        // - StringNode
+        // Derived entities: 0
 
         private const int ClassHeight = 1;
-        private const int BlockLength = 16;
+        private const int BlockLength = 128;
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
-        public new const string EntityId = "MyOrg.Models.Node";
+        public new const string EntityId = "MyOrg.Models.MyDTO";
 
-        public new static Node CreateFrom(Node source)
+        public new static MyDTO CreateFrom(MyDTO source)
         {
             if (source.IsFrozen) return source;
             return source switch
             {
-                MyOrg.Models.MemBlocks.DoubleNode source2 => new MyOrg.Models.MemBlocks.DoubleNode(source2),
-                MyOrg.Models.MemBlocks.Int64Node source2 => new MyOrg.Models.MemBlocks.Int64Node(source2),
-                MyOrg.Models.MemBlocks.BooleanNode source2 => new MyOrg.Models.MemBlocks.BooleanNode(source2),
-                MyOrg.Models.MemBlocks.NumericNode source2 => new MyOrg.Models.MemBlocks.NumericNode(source2),
-                MyOrg.Models.MemBlocks.StringNode source2 => new MyOrg.Models.MemBlocks.StringNode(source2),
-                _ => new MyOrg.Models.MemBlocks.Node(source)
+                _ => new MyOrg.Models.MemBlocks.MyDTO(source)
             };
         }
 
-        public new static Node CreateFrom(MyOrg.Models.INode source)
+        public new static MyDTO CreateFrom(MyOrg.Models.IMyDTO source)
         {
-            if (source is Node concrete && concrete.IsFrozen) return concrete;
+            if (source is MyDTO concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
-                MyOrg.Models.IDoubleNode source2 => new MyOrg.Models.MemBlocks.DoubleNode(source2),
-                MyOrg.Models.IInt64Node source2 => new MyOrg.Models.MemBlocks.Int64Node(source2),
-                MyOrg.Models.IBooleanNode source2 => new MyOrg.Models.MemBlocks.BooleanNode(source2),
-                MyOrg.Models.INumericNode source2 => new MyOrg.Models.MemBlocks.NumericNode(source2),
-                MyOrg.Models.IStringNode source2 => new MyOrg.Models.MemBlocks.StringNode(source2),
-                _ => new MyOrg.Models.MemBlocks.Node(source)
+                _ => new MyOrg.Models.MemBlocks.MyDTO(source)
             };
         }
 
-        public new static Node CreateFrom(ReadOnlyMemory<byte> buffer)
+        public new static MyDTO CreateFrom(ReadOnlyMemory<byte> buffer)
         {
             var entityId = DataFac.MemBlocks.Protocol.ParseEntityId(buffer);
             var buffers = DataFac.MemBlocks.Protocol.SplitBuffers(buffer);
             return entityId switch
             {
-                MyOrg.Models.MemBlocks.BooleanNode.EntityId => new MyOrg.Models.MemBlocks.BooleanNode(buffers),
-                MyOrg.Models.MemBlocks.DoubleNode.EntityId => new MyOrg.Models.MemBlocks.DoubleNode(buffers),
-                MyOrg.Models.MemBlocks.Int64Node.EntityId => new MyOrg.Models.MemBlocks.Int64Node(buffers),
-                MyOrg.Models.MemBlocks.NumericNode.EntityId => new MyOrg.Models.MemBlocks.NumericNode(buffers),
-                MyOrg.Models.MemBlocks.StringNode.EntityId => new MyOrg.Models.MemBlocks.StringNode(buffers),
-                _ => new MyOrg.Models.MemBlocks.Node(buffers)
+                _ => new MyOrg.Models.MemBlocks.MyDTO(buffers)
             };
         }
 
@@ -99,7 +79,7 @@ namespace MyOrg.Models.MemBlocks
             }
         }
 
-        protected override IFreezable OnPartCopy() => new Node(this);
+        protected override IFreezable OnPartCopy() => new MyDTO(this);
 
         protected override void OnFreeze()
         {
@@ -119,27 +99,29 @@ namespace MyOrg.Models.MemBlocks
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
         //  ----  ----  ----  ----  ------- ----  -------
-        //     1     0    16        String  LE    Key
+        //     1     0    64        Octets  LE    Field1
+        //     2    64    64        Octets  LE    Field2
         // ------------------------------------------------------------
 
-        public Node()
+        public MyDTO()
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
         }
 
-        public Node(Node source) : base(source)
+        public MyDTO(MyDTO source) : base(source)
         {
             _writableBlock = source._readonlyBlock.ToArray();
             _readonlyBlock = _writableBlock;
         }
 
-        public Node(INode source) : base(source)
+        public MyDTO(IMyDTO source) : base(source)
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
-            this.Key = source.Key;
+            this.Field1 = source.Field1;
+            this.Field2 = source.Field2;
         }
 
-        public Node(ReadOnlyMemory<byte>[] buffers) : base(buffers)
+        public MyDTO(ReadOnlyMemory<byte>[] buffers) : base(buffers)
         {
             ReadOnlyMemory<byte> source = buffers[ClassHeight - 1];
             if (source.Length >= BlockLength)
@@ -156,14 +138,21 @@ namespace MyOrg.Models.MemBlocks
             _writableBlock = Memory<byte>.Empty;
         }
 
-        public String Key
+        public Octets Field1
         {
-            get => Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(0, 16).Span);
-            set => Codec_String_LE.WriteToSpan(_writableBlock.Slice(0, 16).Span, IfNotFrozen(value));
+            get => Codec_Octets_LE.ReadFromSpan(_readonlyBlock.Slice(0, 64).Span);
+            set => Codec_Octets_LE.WriteToSpan(_writableBlock.Slice(0, 64).Span, IfNotFrozen(value));
+        }
+
+        public Octets? Field2
+        {
+            // todo encode/decode to BlobIdV1
+            get => Codec_Octets_LE.ReadFromSpan(_readonlyBlock.Slice(64, 64).Span);
+            set => Codec_Octets_LE.WriteToSpan(_writableBlock.Slice(64, 64).Span, IfNotFrozen(value));
         }
 
 
-        public bool Equals(Node? other)
+        public bool Equals(MyDTO? other)
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
@@ -172,9 +161,9 @@ namespace MyOrg.Models.MemBlocks
             return true;
         }
 
-        public override bool Equals(object? obj) => obj is Node other && Equals(other);
-        public static bool operator ==(Node? left, Node? right) => left is not null ? left.Equals(right) : (right is null);
-        public static bool operator !=(Node? left, Node? right) => left is not null ? !left.Equals(right) : (right is not null);
+        public override bool Equals(object? obj) => obj is MyDTO other && Equals(other);
+        public static bool operator ==(MyDTO? left, MyDTO? right) => left is not null ? left.Equals(right) : (right is null);
+        public static bool operator !=(MyDTO? left, MyDTO? right) => left is not null ? !left.Equals(right) : (right is not null);
 
         private int CalcHashCode()
         {

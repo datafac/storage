@@ -139,16 +139,8 @@ namespace MyOrg.Models.MemBlocks
         [Obsolete("Removed", true)]
         public Double Field1
         {
-            get
-            {
-                return Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, value);
-            }
+            get => Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
+            set => Codec_Double_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, IfNotFrozen(value));
         }
 
 

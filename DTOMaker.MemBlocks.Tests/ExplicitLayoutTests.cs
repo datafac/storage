@@ -388,7 +388,7 @@ namespace DTOMaker.MemBlocks.Tests
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
             errors.Length.ShouldBe(1);
-            errors[0].GetMessage().ShouldBe("[Offset] attribute is missing.");
+            errors[0].GetMessage().ShouldBe("[Offset] attribute is missing. This is required for Explicit layout method.");
             // 
         }
 

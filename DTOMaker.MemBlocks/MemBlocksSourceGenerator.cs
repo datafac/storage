@@ -66,8 +66,8 @@ namespace DTOMaker.MemBlocks
                 case "System.String":
                     // encoded as UTF8
                     return 1;
-                // todo case "DataFac.Octets":
-                //    return 1;
+                case "DataFac.Memory.Octets":
+                    return 64; // encoded as BlobIdV1
                 default:
                     return 0;
             }
@@ -139,7 +139,7 @@ namespace DTOMaker.MemBlocks
                 }
                 else if (member.Kind == MemberKind.Entity)
                 {
-                    fieldLength = 64; // todo get sizeof BlobIdV0
+                    fieldLength = 64; // encoded as BlobIdV1
                 }
 
                 member.FieldLength = fieldLength;

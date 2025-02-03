@@ -138,16 +138,8 @@ namespace MyOrg.Models.MemBlocks
 
         public String Value
         {
-            get
-            {
-                return Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(0, 256).Span);
-            }
-
-            set
-            {
-                ThrowIfFrozen();
-                Codec_String_LE.WriteToSpan(_writableBlock.Slice(0, 256).Span, value);
-            }
+            get => Codec_String_LE.ReadFromSpan(_readonlyBlock.Slice(0, 256).Span);
+            set => Codec_String_LE.WriteToSpan(_writableBlock.Slice(0, 256).Span, IfNotFrozen(value));
         }
 
 
