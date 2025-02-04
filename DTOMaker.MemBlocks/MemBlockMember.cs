@@ -51,8 +51,8 @@ namespace DTOMaker.MemBlocks
         private SyntaxDiagnostic? CheckMemberIsNotNullable()
         {
             if (Kind == MemberKind.Entity) return null;
+            if (Kind == MemberKind.Binary) return null;
             if (!MemberIsNullable) return null;
-            if (MemberType.FullName == "DataFac.Memory.Octets") return null;
 
             return new SyntaxDiagnostic(
                         DiagnosticId.DMMB0007, "Unsupported member type", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,

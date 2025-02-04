@@ -9,6 +9,7 @@
 //##}
 #pragma warning disable CS0109 // Member does not hide an inherited member; new keyword is not required
 #nullable enable
+using DataFac.Memory;
 using DTOMaker.Runtime;
 using DTOMaker.Runtime.MessagePack;
 using MessagePack;
@@ -70,6 +71,8 @@ namespace T_NameSpace_
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
         T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberName_ { get; set; }
         T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; set; }
+        Octets? T_NullableBinaryMemberName_ { get; set; }
+        Octets T_RequiredBinaryMemberName_ { get; set; }
     }
 }
 //##}
@@ -102,8 +105,10 @@ namespace T_NameSpace_.MessagePack
         private const int T_NullableScalarMemberKey_ = T_MemberKeyOffset_ + 1;
         private const int T_RequiredScalarMemberKey_ = T_MemberKeyOffset_ + 2;
         private const int T_VectorMemberKey_ = T_MemberKeyOffset_ + 3;
-        private const int T_NullableEntityMemberKey_ = T_MemberKeyOffset_ + 4;
-        private const int T_RequiredEntityMemberKey_ = T_MemberKeyOffset_ + 5;
+        private const int T_NullableEntityMemberKey_ = T_MemberKeyOffset_ + 5;
+        private const int T_RequiredEntityMemberKey_ = T_MemberKeyOffset_ + 6;
+        private const int T_NullableBinaryMemberKey_ = T_MemberKeyOffset_ + 7;
+        private const int T_RequiredBinaryMemberKey_ = T_MemberKeyOffset_ + 8;
         private const int T_MemberDefaultValue_ = 0;
         //##}
 
@@ -172,6 +177,8 @@ namespace T_NameSpace_.MessagePack
             _T_RequiredEntityMemberName_.Freeze();
             //##}
             //##break;
+            //##case MemberKind.Binary:
+            //##break;
             //##default:
             //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
             //##break;
@@ -204,6 +211,13 @@ namespace T_NameSpace_.MessagePack
             _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source._T_RequiredEntityMemberName_);
             //##}
             //##break;
+            //##case MemberKind.Binary:
+            //##if (member.IsNullable) {
+            _T_NullableBinaryMemberName_ = source._T_NullableBinaryMemberName_;
+            //##} else {
+            _T_RequiredBinaryMemberName_ = source._T_RequiredBinaryMemberName_;
+            //##}
+            //##break;
             //##default:
             //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
             //##break;
@@ -232,6 +246,16 @@ namespace T_NameSpace_.MessagePack
             _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);
             //##} else {
             _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);
+            //##}
+            //##break;
+            //##case MemberKind.Binary:
+            //##if (member.IsNullable) {
+            if (source.T_NullableBinaryMemberName_ is null)
+                _T_NullableBinaryMemberName_ = null;
+            else
+                _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_.Memory;
+            //##} else {
+            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_.Memory;
             //##}
             //##break;
             //##default:
@@ -288,6 +312,9 @@ namespace T_NameSpace_.MessagePack
         //##if (member.IsNullable) {
         [IgnoreMember]
         private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_? _T_NullableEntityMemberName_;
+        //##if (member.IsObsolete) {
+        [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
+        //##}
         [Key(T_NullableEntityMemberKey_)]
         public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_? T_NullableEntityMemberName_
         {
@@ -306,6 +333,9 @@ namespace T_NameSpace_.MessagePack
         //##} else {
         [IgnoreMember]
         private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.Empty;
+        //##if (member.IsObsolete) {
+        [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
+        //##}
         [Key(T_RequiredEntityMemberKey_)]
         public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_ T_RequiredEntityMemberName_
         {
@@ -320,6 +350,43 @@ namespace T_NameSpace_.MessagePack
                 ThrowIfFrozen();
                 _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(value);
             }
+        }
+        //##}
+        //##break;
+        //##case MemberKind.Binary:
+        //##if (member.IsNullable) {
+        [IgnoreMember]
+        private ReadOnlyMemory<byte>? _T_NullableBinaryMemberName_;
+        //##if (member.IsObsolete) {
+        [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
+        //##}
+        [Key(T_NullableBinaryMemberKey_)]
+        public ReadOnlyMemory<byte>? T_NullableBinaryMemberName_
+        {
+            get => _T_NullableBinaryMemberName_;
+            set => _T_NullableBinaryMemberName_ = IfNotFrozen(value);
+        }
+        Octets? IT_EntityName_.T_NullableBinaryMemberName_
+        {
+            get => _T_NullableBinaryMemberName_ is null ? null : Octets.UnsafeWrap(_T_NullableBinaryMemberName_.Value);
+            set => _T_NullableBinaryMemberName_ = IfNotFrozen(value is null ? null : value.Memory);
+        }
+        //##} else {
+        [IgnoreMember]
+        private ReadOnlyMemory<byte> _T_RequiredBinaryMemberName_ = ReadOnlyMemory<byte>.Empty;
+        //##if (member.IsObsolete) {
+        [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
+        //##}
+        [Key(T_RequiredBinaryMemberKey_)]
+        public ReadOnlyMemory<byte> T_RequiredBinaryMemberName_
+        {
+            get => _T_RequiredBinaryMemberName_;
+            set => _T_RequiredBinaryMemberName_ = IfNotFrozen(value);
+        }
+        Octets IT_EntityName_.T_RequiredBinaryMemberName_
+        {
+            get => Octets.UnsafeWrap(_T_RequiredBinaryMemberName_);
+            set => _T_RequiredBinaryMemberName_ = IfNotFrozen(value.Memory);
         }
         //##}
         //##break;
@@ -353,6 +420,13 @@ namespace T_NameSpace_.MessagePack
             if (_T_NullableEntityMemberName_ != other.T_NullableEntityMemberName_) return false;
             //##} else {
             if (_T_RequiredEntityMemberName_ != other.T_RequiredEntityMemberName_) return false;
+            //##}
+            //##break;
+            //##case MemberKind.Binary:
+            //##if (member.IsNullable) {
+            if (!BinaryValuesAreEqual(_T_NullableBinaryMemberName_, other._T_NullableBinaryMemberName_)) return false;
+            //##} else {
+            if (!BinaryValuesAreEqual(_T_RequiredBinaryMemberName_, other. _T_RequiredBinaryMemberName_)) return false;
             //##}
             //##break;
             //##default:
@@ -395,6 +469,13 @@ namespace T_NameSpace_.MessagePack
             result.Add(_T_RequiredEntityMemberName_.GetHashCode());
             //##}
             //##break;
+            //##case MemberKind.Binary:
+            //##if (member.IsNullable) {
+            result.Add(_T_NullableBinaryMemberName_?.GetHashCode() ?? 0);
+            //##} else {
+            result.Add(_T_RequiredBinaryMemberName_.GetHashCode());
+            //##}
+            //##break;
             //##default:
             //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
             //##break;
@@ -425,8 +506,10 @@ namespace T_NameSpace_.MessagePack
         private const int T_NullableScalarMemberKey_ = T_MemberKeyOffset_ + 1;
         private const int T_RequiredScalarMemberKey_ = T_MemberKeyOffset_ + 2;
         private const int T_VectorMemberKey_ = T_MemberKeyOffset_ + 3;
-        private const int T_NullableEntityMemberKey_ = T_MemberKeyOffset_ + 4;
-        private const int T_RequiredEntityMemberKey_ = T_MemberKeyOffset_ + 5;
+        private const int T_NullableEntityMemberKey_ = T_MemberKeyOffset_ + 5;
+        private const int T_RequiredEntityMemberKey_ = T_MemberKeyOffset_ + 6;
+        private const int T_NullableBinaryMemberKey_ = T_MemberKeyOffset_ + 7;
+        private const int T_RequiredBinaryMemberKey_ = T_MemberKeyOffset_ + 8;
         private const int T_MemberDefaultValue_ = 0;
         //##}
 
@@ -484,6 +567,8 @@ namespace T_NameSpace_.MessagePack
             _T_RequiredEntityMemberName_.Freeze();
             //##}
             //##break;
+            //##case MemberKind.Binary:
+            //##break;
             //##default:
             //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
             //##break;
@@ -519,6 +604,13 @@ namespace T_NameSpace_.MessagePack
             _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source._T_RequiredEntityMemberName_);
             //##}
             //##break;
+            //##case MemberKind.Binary:
+            //##if (member.IsNullable) {
+            _T_NullableBinaryMemberName_ = source._T_NullableBinaryMemberName_;
+            //##} else {
+            _T_RequiredBinaryMemberName_ = source._T_RequiredBinaryMemberName_;
+            //##}
+            //##break;
             //##default:
             //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
             //##break;
@@ -547,6 +639,16 @@ namespace T_NameSpace_.MessagePack
             _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);
             //##} else {
             _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);
+            //##}
+            //##break;
+            //##case MemberKind.Binary:
+            //##if (member.IsNullable) {
+            if (source.T_NullableBinaryMemberName_ is null)
+                _T_NullableBinaryMemberName_ = null;
+            else
+                _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_.Memory;
+            //##} else {
+            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_.Memory;
             //##}
             //##break;
             //##default:
@@ -638,6 +740,43 @@ namespace T_NameSpace_.MessagePack
         }
         //##}
         //##break;
+        //##case MemberKind.Binary:
+        //##if (member.IsNullable) {
+        [IgnoreMember]
+        private ReadOnlyMemory<byte>? _T_NullableBinaryMemberName_;
+        //##if (member.IsObsolete) {
+        [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
+        //##}
+        [Key(T_NullableBinaryMemberKey_)]
+        public ReadOnlyMemory<byte>? T_NullableBinaryMemberName_
+        {
+            get => _T_NullableBinaryMemberName_;
+            set => _T_NullableBinaryMemberName_ = IfNotFrozen(value);
+        }
+        Octets? IT_EntityName_.T_NullableBinaryMemberName_
+        {
+            get => _T_NullableBinaryMemberName_ is null ? null : Octets.UnsafeWrap(_T_NullableBinaryMemberName_.Value);
+            set => _T_NullableBinaryMemberName_ = IfNotFrozen(value is null ? null : value.Memory);
+        }
+        //##} else {
+        [IgnoreMember]
+        private ReadOnlyMemory<byte> _T_RequiredBinaryMemberName_ = ReadOnlyMemory<byte>.Empty;
+        //##if (member.IsObsolete) {
+        [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
+        //##}
+        [Key(T_RequiredBinaryMemberKey_)]
+        public ReadOnlyMemory<byte> T_RequiredBinaryMemberName_
+        {
+            get => _T_RequiredBinaryMemberName_;
+            set => _T_RequiredBinaryMemberName_ = IfNotFrozen(value);
+        }
+        Octets IT_EntityName_.T_RequiredBinaryMemberName_
+        {
+            get => Octets.UnsafeWrap(_T_RequiredBinaryMemberName_);
+            set => _T_RequiredBinaryMemberName_ = IfNotFrozen(value.Memory);
+        }
+        //##}
+        //##break;
         //##default:
         //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
         //##break;
@@ -668,6 +807,13 @@ namespace T_NameSpace_.MessagePack
             if (_T_NullableEntityMemberName_ != other.T_NullableEntityMemberName_) return false;
             //##} else {
             if (_T_RequiredEntityMemberName_ != other.T_RequiredEntityMemberName_) return false;
+            //##}
+            //##break;
+            //##case MemberKind.Binary:
+            //##if (member.IsNullable) {
+            if (!BinaryValuesAreEqual(_T_NullableBinaryMemberName_, other._T_NullableBinaryMemberName_)) return false;
+            //##} else {
+            if (!BinaryValuesAreEqual(_T_RequiredBinaryMemberName_, other._T_RequiredBinaryMemberName_)) return false;
             //##}
             //##break;
             //##default:
@@ -708,6 +854,13 @@ namespace T_NameSpace_.MessagePack
             result.Add(_T_NullableEntityMemberName_?.GetHashCode() ?? 0);
             //##} else {
             result.Add(_T_RequiredEntityMemberName_.GetHashCode());
+            //##}
+            //##break;
+            //##case MemberKind.Binary:
+            //##if (member.IsNullable) {
+            result.Add(_T_NullableBinaryMemberName_?.GetHashCode() ?? 0);
+            //##} else {
+            result.Add(_T_RequiredBinaryMemberName_.GetHashCode());
             //##}
             //##break;
             //##default:

@@ -3,6 +3,7 @@ using MessagePack;
 using MyOrg.Models;
 using Shouldly;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Sandbox.Tests
@@ -37,10 +38,51 @@ namespace Sandbox.Tests
         }
 
         [Fact]
+        public async Task Roundtrip_Octets_MemBlocks()
+        {
+            var orig = new MyOrg.Models.CSPoco.MyDTO()
+            {
+                Other1 = new MyOrg.Models.CSPoco.Other() { Value1 = 1, Value2 = 2 },
+                Field1 = Octets.UnsafeWrap(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }),
+                Field2 = null,
+            };
+            orig.Freeze();
+
+            IMyDTO iorig = orig;
+            iorig.Field1.ShouldNotBeNull();
+            iorig.Field2.ShouldBeNull();
+
+            using var dataStore = new DataFac.Storage.Testing.TestDataStore();
+
+            var send = new MyOrg.Models.MemBlocks.MyDTO(orig);
+            await send.Pack(dataStore);
+
+            var buffer = send.GetBuffer();
+
+            var recv = MyOrg.Models.MemBlocks.MyDTO.CreateFrom(buffer);
+            await recv.UnpackAll(dataStore);
+
+            recv.Equals(send).ShouldBeTrue();
+            (recv.Other1 == send.Other1).ShouldBeTrue();
+            (recv.Field1 == send.Field1).ShouldBeTrue();
+            (recv.Field2 == send.Field2).ShouldBeTrue();
+
+            var copy = new MyOrg.Models.CSPoco.MyDTO(recv);
+            copy.Freeze();
+
+            copy.Equals(orig).ShouldBeTrue();
+            (copy == orig).ShouldBeTrue();
+            (copy.Other1 == orig.Other1).ShouldBeTrue();
+            (copy.Field1 == orig.Field1).ShouldBeTrue();
+            (copy.Field2 == orig.Field2).ShouldBeTrue();
+        }
+
+        [Fact]
         public void Roundtrip_Octets_MessagePack()
         {
             var orig = new MyOrg.Models.CSPoco.MyDTO()
             {
+                Other1 = new MyOrg.Models.CSPoco.Other() { Value1 = 1, Value2 = 2 },
                 Field1 = Octets.UnsafeWrap(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }),
                 Field2 = null,
             };
@@ -74,6 +116,7 @@ namespace Sandbox.Tests
 
             copy.Equals(orig).ShouldBeTrue();
             (copy == orig).ShouldBeTrue();
+            (copy.Other1 == orig.Other1).ShouldBeTrue();
             (copy.Field1 == orig.Field1).ShouldBeTrue();
             (copy.Field2 == orig.Field2).ShouldBeTrue();
         }

@@ -77,8 +77,11 @@ namespace MyOrg.Models.MessagePack
         {
             if (source is null) throw new ArgumentNullException(nameof(source));
             _Other1 = source.Other1 is null ? null : MyOrg.Models.MessagePack.Other.CreateFrom(source.Other1);
-            _Field1 = source.Field1;
-            _Field2 = source.Field2;
+            _Field1 = source.Field1.Memory;
+            if (source.Field2 is null)
+                _Field2 = null;
+            else
+                _Field2 = source.Field2.Memory;
         }
 
         [IgnoreMember]
@@ -100,21 +103,31 @@ namespace MyOrg.Models.MessagePack
         }
 
         [IgnoreMember]
-        private Octets _Field1 = Octets.Empty;
+        private ReadOnlyMemory<byte> _Field1 = ReadOnlyMemory<byte>.Empty;
         [Key(2)]
-        public Octets Field1
+        public ReadOnlyMemory<byte> Field1
         {
             get => _Field1;
             set => _Field1 = IfNotFrozen(value);
         }
+        Octets IMyDTO.Field1
+        {
+            get => Octets.UnsafeWrap(_Field1);
+            set => _Field1 = IfNotFrozen(value.Memory);
+        }
 
         [IgnoreMember]
-        private Octets? _Field2;
+        private ReadOnlyMemory<byte>? _Field2;
         [Key(3)]
-        public Octets? Field2
+        public ReadOnlyMemory<byte>? Field2
         {
             get => _Field2;
             set => _Field2 = IfNotFrozen(value);
+        }
+        Octets? IMyDTO.Field2
+        {
+            get => _Field2 is null ? null : Octets.UnsafeWrap(_Field2.Value);
+            set => _Field2 = IfNotFrozen(value is null ? null : value.Memory);
         }
 
 
@@ -124,8 +137,8 @@ namespace MyOrg.Models.MessagePack
             if (other is null) return false;
             if (!base.Equals(other)) return false;
             if (_Other1 != other.Other1) return false;
-            if (_Field1 != other.Field1) return false;
-            if (_Field2 != other.Field2) return false;
+            if (!BinaryValuesAreEqual(_Field1, other._Field1)) return false;
+            if (!BinaryValuesAreEqual(_Field2, other._Field2)) return false;
             return true;
         }
 
@@ -138,8 +151,8 @@ namespace MyOrg.Models.MessagePack
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
             result.Add(_Other1?.GetHashCode() ?? 0);
-            result.Add(_Field1);
-            result.Add(_Field2);
+            result.Add(_Field1.GetHashCode());
+            result.Add(_Field2?.GetHashCode() ?? 0);
             return result.ToHashCode();
         }
 

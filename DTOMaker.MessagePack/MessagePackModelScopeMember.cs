@@ -17,25 +17,20 @@ namespace DTOMaker.MessagePack
                 memberKeyOffset = (classHeight - 1) * 100;
             }
             int memberKey = memberKeyOffset + member.Sequence;
-            switch(member.Kind)
+            switch (member.Kind)
             {
                 case MemberKind.Scalar:
-                    if (member.MemberIsNullable)
-                        _tokens["NullableScalarMemberKey"] = memberKey;
-                    else
-                        _tokens["RequiredScalarMemberKey"] = memberKey;
+                    _tokens[(member.MemberIsNullable ? "Nullable" : "Required") + "ScalarMemberKey"] = memberKey;
                     break;
                 case MemberKind.Vector:
-                        _tokens["VectorMemberKey"] = memberKey;
-                        break;
-                case MemberKind.Entity:
-                    if (member.MemberIsNullable)
-                        _tokens["NullableEntityMemberKey"] = memberKey;
-                    else
-                        _tokens["RequiredEntityMemberKey"] = memberKey;
+                    _tokens["VectorMemberKey"] = memberKey;
                     break;
-                //case MemberKind.Binary:
-                //    break;
+                case MemberKind.Entity:
+                    _tokens[(member.MemberIsNullable ? "Nullable" : "Required") + "EntityMemberKey"] = memberKey;
+                    break;
+                case MemberKind.Binary:
+                    _tokens[(member.MemberIsNullable ? "Nullable" : "Required") + "BinaryMemberKey"] = memberKey;
+                    break;
                 default:
                     throw new NotImplementedException($"Member.Kind: {member.Kind}");
             }

@@ -157,7 +157,12 @@ namespace DTOMaker.Gentime
                         member.MemberType = new TypeFullName(memberTypeNameSpace, memberTypeName);
                         member.MemberIsValueType = pdsSymbolType.IsValueType;
                         member.MemberIsReferenceType = pdsSymbolType.IsReferenceType;
-                        if (pdsSymbolType.IsGenericType && pdsSymbolType.Name == "ReadOnlyMemory" && pdsSymbolType.TypeArguments.Length == 1)
+                        if(member.MemberType.FullName == "DataFac.Memory.Octets")
+                        {
+                            // binary
+                            member.Kind = MemberKind.Binary;
+                        }
+                        else if (pdsSymbolType.IsGenericType && pdsSymbolType.Name == "ReadOnlyMemory" && pdsSymbolType.TypeArguments.Length == 1)
                         {
                             member.Kind = MemberKind.Vector;
                             ITypeSymbol typeArg0 = pdsSymbolType.TypeArguments[0];
@@ -173,11 +178,13 @@ namespace DTOMaker.Gentime
                             member.MemberIsValueType = typeArg0.IsValueType;
                             member.MemberIsReferenceType = typeArg0.IsReferenceType;
                         }
-                        else if (pdsSymbolType.IsReferenceType && pdsSymbolType.NullableAnnotation == NullableAnnotation.Annotated)
+
+                        if (pdsSymbolType.IsReferenceType && pdsSymbolType.NullableAnnotation == NullableAnnotation.Annotated)
                         {
                             // nullable ref type
                             member.MemberIsNullable = true;
                         }
+
                         ImmutableArray<AttributeData> allAttributes = pdsSymbol.GetAttributes();
                         if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(ObsoleteAttribute)) is AttributeData obsoleteAttr)
                         {

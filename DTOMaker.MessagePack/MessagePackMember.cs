@@ -11,6 +11,7 @@ namespace DTOMaker.MessagePack
         private SyntaxDiagnostic? CheckEntityMemberIsNullable()
         {
             if (Kind != MemberKind.Entity) return null;
+            if (Kind != MemberKind.Binary) return null;
             if (MemberIsNullable) return null;
             // todo allow non-nullable entity members - need to implement Empty for abstract entitites
             return new SyntaxDiagnostic(

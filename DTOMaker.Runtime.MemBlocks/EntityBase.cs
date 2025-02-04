@@ -135,9 +135,9 @@ namespace DTOMaker.Runtime.MemBlocks
         protected virtual ValueTask OnUnpack(IDataStore dataStore, int depth) => default;
         public async ValueTask Unpack(IDataStore dataStore, int depth = 0)
         {
+            ThrowIfNotFrozen();
             if (depth < 0) return;
             if (_unpacked) return;
-            ThrowIfNotFrozen();
             await OnUnpack(dataStore, depth);
             _unpacked = true;
         }

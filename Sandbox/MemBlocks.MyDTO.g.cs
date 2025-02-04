@@ -91,12 +91,16 @@ namespace MyOrg.Models.MemBlocks
         {
             await base.OnPack(dataStore);
             await Other1_Pack(dataStore);
+            await Field1_Pack(dataStore);
+            await Field2_Pack(dataStore);
         }
 
         protected override async ValueTask OnUnpack(IDataStore dataStore, int depth)
         {
             await base.OnUnpack(dataStore, depth);
             await Other1_Unpack(dataStore, depth);
+            await Field1_Unpack(dataStore, depth);
+            await Field2_Unpack(dataStore, depth);
         }
 
         // -------------------- field map -----------------------------
@@ -122,8 +126,8 @@ namespace MyOrg.Models.MemBlocks
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
             _Other1 = source.Other1 is null ? null : MyOrg.Models.MemBlocks.Other.CreateFrom(source.Other1);
-            this.Field1 = source.Field1;
-            this.Field2 = source.Field2;
+            _Field1 = source.Field1;
+            _Field2 = source.Field2;
         }
 
         public MyDTO(ReadOnlyMemory<byte>[] buffers) : base(buffers)
@@ -179,16 +183,59 @@ namespace MyOrg.Models.MemBlocks
             set => _Other1 = IfNotFrozen(value is null ? null : MyOrg.Models.MemBlocks.Other.CreateFrom(value));
         }
 
+        private async ValueTask Field1_Pack(IDataStore dataStore)
+        {
+            BlobIdV1 blobId = default;
+            var buffer = _Field1.Memory;
+            var blob = BlobData.UnsafeWrap(buffer);
+            blobId = await dataStore.PutBlob(blob);
+            Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(64, 64).Span, blobId);
+        }
+        private async ValueTask Field1_Unpack(IDataStore dataStore, int depth)
+        {
+            _Field1 = Octets.Empty;
+            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(64, 64).Span);
+            if (!blobId.IsEmpty)
+            {
+                BlobData? blob = await dataStore.GetBlob(blobId);
+                if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
+                _Field1 = Octets.UnsafeWrap(blob.Value.Memory);
+            }
+        }
+        private Octets _Field1 = Octets.Empty;
         public Octets Field1
         {
-            get => Codec_Octets_LE.ReadFromSpan(_readonlyBlock.Slice(64, 64).Span);
-            set => Codec_Octets_LE.WriteToSpan(_writableBlock.Slice(64, 64).Span, IfNotFrozen(value));
+            get => IfUnpacked(_Field1);
+            set => _Field1 = IfNotFrozen(value);
         }
 
+        private async ValueTask Field2_Pack(IDataStore dataStore)
+        {
+            BlobIdV1 blobId = default;
+            if (_Field2 is not null)
+            {
+                var buffer = _Field2.Memory;
+                var blob = BlobData.UnsafeWrap(buffer);
+                blobId = await dataStore.PutBlob(blob);
+            }
+            Codec_BlobId_NE.WriteToSpan(_writableBlock.Slice(128, 64).Span, blobId);
+        }
+        private async ValueTask Field2_Unpack(IDataStore dataStore, int depth)
+        {
+            _Field2 = null;
+            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyBlock.Slice(128, 64).Span);
+            if (!blobId.IsEmpty)
+            {
+                BlobData? blob = await dataStore.GetBlob(blobId);
+                if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
+                _Field2 = Octets.UnsafeWrap(blob.Value.Memory);
+            }
+        }
+        private Octets? _Field2;
         public Octets? Field2
         {
-            get => Codec_Octets_LE.ReadFromSpan(_readonlyBlock.Slice(128, 64).Span);
-            set => Codec_Octets_LE.WriteToSpan(_writableBlock.Slice(128, 64).Span, IfNotFrozen(value));
+            get => IfUnpacked(_Field2);
+            set => _Field2 = IfNotFrozen(value);
         }
 
 

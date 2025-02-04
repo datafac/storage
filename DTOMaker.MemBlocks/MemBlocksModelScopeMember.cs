@@ -14,7 +14,6 @@ namespace DTOMaker.MemBlocks
                 ?? throw new ArgumentException("Expected member.Entity to be a MemBlocksEntity", nameof(member));
 
             string memberType = _language.GetDataTypeToken(member.MemberType);
-            _tokens["FieldOffset"] = member.FieldOffset;
             _tokens["FieldLength"] = member.FieldLength;
             _tokens["ArrayLength"] = member.ArrayCapacity;
             _tokens["MemberBELE"] = member.IsBigEndian ? "BE" : "LE";
@@ -25,6 +24,23 @@ namespace DTOMaker.MemBlocks
             _tokens["FieldLengthR4"] = member.FieldLength.ToString().PadLeft(4);
             _tokens["ArrayLengthR4"] = member.ArrayCapacity == 0 ? "    " : member.ArrayCapacity.ToString().PadLeft(4);
             _tokens["MemberTypeL7"] = memberType.PadRight(7);
+            switch (member.Kind)
+            {
+                case MemberKind.Scalar:
+                    _tokens["ScalarFieldOffset"] = member.FieldOffset;
+                    break;
+                case MemberKind.Vector:
+                    _tokens["VectorFieldOffset"] = member.FieldOffset;
+                    break;
+                case MemberKind.Entity:
+                    _tokens[(member.MemberIsNullable ? "Nullable" : "Required") + "EntityFieldOffset"] = member.FieldOffset;
+                    break;
+                case MemberKind.Binary:
+                    _tokens[(member.MemberIsNullable ? "Nullable" : "Required") + "BinaryFieldOffset"] = member.FieldOffset;
+                    break;
+                default:
+                    throw new NotImplementedException($"Member.Kind: {member.Kind}");
+            }
         }
     }
 }

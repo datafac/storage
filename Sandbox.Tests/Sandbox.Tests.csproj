@@ -24,6 +24,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\DataFac.Storage.Testing\DataFac.Storage.Testing.csproj" />
 	  <ProjectReference Include="..\Sandbox\Sandbox.csproj" />
 	</ItemGroup>
 

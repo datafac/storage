@@ -5,6 +5,7 @@
 // </auto-generated>
 #pragma warning disable CS0109 // Member does not hide an inherited member; new keyword is not required
 #nullable enable
+using DataFac.Memory;
 using DTOMaker.Runtime;
 using DTOMaker.Runtime.MessagePack;
 using MessagePack;
