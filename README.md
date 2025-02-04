@@ -38,6 +38,9 @@ Common types used at runtime by DTOMaker generated entities.
 - String member types:
   - Required or nullable strings for CSPoco and MessagePack
   - Non-nullable UTF8-encoded fixed length strings for MemBlocks
+- Variable length binary member types:
+  - Octets (model interfaces, CSPoco, MemBlocks)
+  - ReadOnlyMemory\<byte\> (MessagePack)
 - IFreezable support
 - Templates as code, template processing
 - [Obsolete] members
@@ -47,9 +50,8 @@ Common types used at runtime by DTOMaker generated entities.
 - IEquatable\<T\> support
 
 ## In progress:
-- variable-length binary members
-- variable-length string members
 - single block allocation (MemBlocks)
+- variable-length string members
 
 ## Coming soon:
 - global interface equality comparer
