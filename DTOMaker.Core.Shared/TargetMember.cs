@@ -17,8 +17,6 @@ namespace DTOMaker.Gentime
         }
         public bool HasMemberAttribute { get; set; }
         public TypeFullName MemberType { get; set; }
-        public bool MemberIsValueType { get; set; }
-        public bool MemberIsReferenceType { get; set; }
         public bool MemberIsNullable { get; set; }
         public bool IsObsolete { get; set; }
         public string ObsoleteMessage { get; set; } = "";

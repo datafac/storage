@@ -32,8 +32,6 @@ namespace DTOMaker.Gentime
             _tokens["MemberTypeName"] = member.MemberType.ShortName;
             _tokens["MemberTypeNameSpace"] = member.MemberType.NameSpace;
             _tokens["MemberIsNullable"] = member.MemberIsNullable;
-            _tokens["MemberIsValueType"] = member.MemberIsValueType;
-            _tokens["MemberIsReferenceType"] = member.MemberIsReferenceType;
             _tokens["MemberSequence"] = member.Sequence;
             _tokens["MemberName"] = member.Name;
             _tokens["MemberJsonName"] = ToCamelCase(member.Name);

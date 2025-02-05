@@ -155,8 +155,6 @@ namespace DTOMaker.Gentime
                         Location pdsLocation = Location.Create(pds.SyntaxTree, pds.Span);
                         var member = entity.Members.GetOrAdd(pds.Identifier.Text, (n) => _memberFactory(entity, n, pdsLocation));
                         member.MemberType = new TypeFullName(memberTypeNameSpace, memberTypeName);
-                        member.MemberIsValueType = pdsSymbolType.IsValueType;
-                        member.MemberIsReferenceType = pdsSymbolType.IsReferenceType;
                         if(member.MemberType.FullName == "DataFac.Memory.Octets")
                         {
                             // binary
@@ -167,16 +165,12 @@ namespace DTOMaker.Gentime
                             member.Kind = MemberKind.Vector;
                             ITypeSymbol typeArg0 = pdsSymbolType.TypeArguments[0];
                             member.MemberType = new TypeFullName(typeArg0.ContainingNamespace.ToDisplayString(), typeArg0.Name);
-                            member.MemberIsValueType = typeArg0.IsValueType;
-                            member.MemberIsReferenceType = typeArg0.IsReferenceType;
                         }
                         else if (pdsSymbolType.IsGenericType && pdsSymbolType.Name == "Nullable" && pdsSymbolType.TypeArguments.Length == 1)
                         {
                             member.MemberIsNullable = true;
                             ITypeSymbol typeArg0 = pdsSymbolType.TypeArguments[0];
                             member.MemberType = new TypeFullName(typeArg0.ContainingNamespace.ToDisplayString(), typeArg0.Name);
-                            member.MemberIsValueType = typeArg0.IsValueType;
-                            member.MemberIsReferenceType = typeArg0.IsReferenceType;
                         }
 
                         if (pdsSymbolType.IsReferenceType && pdsSymbolType.NullableAnnotation == NullableAnnotation.Annotated)
