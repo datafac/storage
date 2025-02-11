@@ -9,6 +9,11 @@ namespace DTOMaker.Gentime
 {
     public abstract class SyntaxReceiverBase : ISyntaxContextReceiver
     {
+        //private const string DomainAttribute = nameof(DomainAttribute);
+        private const string EntityAttribute = nameof(EntityAttribute);
+        private const string MemberAttribute = nameof(MemberAttribute);
+        private const string IdAttribute = nameof(IdAttribute);
+
         private readonly TargetDomain _domain;
         public TargetDomain Domain => _domain;
 
@@ -84,7 +89,7 @@ namespace DTOMaker.Gentime
                     string entityFullName = entityNamespace + "." + entityName;
                     var entity = Domain.Entities.GetOrAdd(entityFullName, (n) => _entityFactory(Domain, entityNamespace, entityName, idsLocation));
                     ImmutableArray<AttributeData> entityAttributes = idsSymbol.GetAttributes();
-                    if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(EntityAttribute)) is AttributeData entityAttr)
+                    if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == EntityAttribute) is AttributeData entityAttr)
                     {
                         // found entity attribute
                         entity.HasEntityAttribute = true;
@@ -116,11 +121,11 @@ namespace DTOMaker.Gentime
                             }
                         }
                         entity.EntityId = entity.EntityName.FullName;
-                        if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(IdAttribute)) is AttributeData idAttr)
+                        if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == IdAttribute) is AttributeData idAttr)
                         {
                             // found entity id attribute
                             var attributeArguments = idAttr.ConstructorArguments;
-                            if (CheckAttributeArguments(nameof(IdAttribute), attributeArguments, 1, entity, idsLocation))
+                            if (CheckAttributeArguments(IdAttribute, attributeArguments, 1, entity, idsLocation))
                             {
                                 TryGetAttributeArgumentValue<string>(entity, idsLocation, attributeArguments, 0, (value) => { entity.EntityId = value; });
                             }
@@ -155,7 +160,7 @@ namespace DTOMaker.Gentime
                         Location pdsLocation = Location.Create(pds.SyntaxTree, pds.Span);
                         var member = entity.Members.GetOrAdd(pds.Identifier.Text, (n) => _memberFactory(entity, n, pdsLocation));
                         member.MemberType = new TypeFullName(memberTypeNameSpace, memberTypeName);
-                        if(member.MemberType.FullName == "DataFac.Memory.Octets")
+                        if(member.MemberType.FullName == FullTypeName.Octets)
                         {
                             // binary
                             member.Kind = MemberKind.Binary;
@@ -194,11 +199,11 @@ namespace DTOMaker.Gentime
                                 TryGetAttributeArgumentValue<bool>(member, pdsLocation, attributeArguments, 1, (value) => { member.ObsoleteIsError = value; });
                             }
                         }
-                        if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberAttribute)) is AttributeData memberAttr)
+                        if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == MemberAttribute) is AttributeData memberAttr)
                         {
                             member.HasMemberAttribute = true;
                             var attributeArguments = memberAttr.ConstructorArguments;
-                            if (CheckAttributeArguments(nameof(MemberAttribute), attributeArguments, 1, member, pdsLocation))
+                            if (CheckAttributeArguments(MemberAttribute, attributeArguments, 1, member, pdsLocation))
                             {
                                 TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 0, (value) => { member.Sequence = value; });
                             }

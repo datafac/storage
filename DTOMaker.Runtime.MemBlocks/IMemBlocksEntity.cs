@@ -8,7 +8,7 @@ namespace DTOMaker.Runtime.MemBlocks
     {
         ValueTask Pack(IDataStore dataStore);
         ReadOnlyMemory<byte> GetBuffer();
-        void LoadBuffer(ReadOnlyMemory<byte> buffer);
+        //void LoadBuffer(ReadOnlyMemory<byte> buffer); todo? may need factory
         ValueTask Unpack(IDataStore dataStore, int depth = 0);
         ValueTask UnpackAll(IDataStore dataStore);
     }

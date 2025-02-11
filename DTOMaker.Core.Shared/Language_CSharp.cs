@@ -43,7 +43,7 @@
             return typeFullName.FullName switch
             {
                 "System.String" => "String",
-                "DataFac.Memory.Octets" => "Octets",
+                FullTypeName.Octets => "Octets",
                 _ => typeFullName.ShortName
             };
         }
@@ -53,7 +53,7 @@
             return typeFullName.FullName switch
             {
                 "System.String" => "string.Empty",
-                "DataFac.Memory.Octets" => "Octets.Empty",
+                FullTypeName.Octets => "Octets.Empty",
                 _ => "default"
             };
         }

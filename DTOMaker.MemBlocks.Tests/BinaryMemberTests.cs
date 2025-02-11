@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace DTOMaker.MemBlocks.Tests
 {
+
     public class BinaryMemberTests
     {
         private readonly string inputSource1 =
