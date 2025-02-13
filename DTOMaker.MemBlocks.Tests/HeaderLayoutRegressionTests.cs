@@ -18,25 +18,29 @@ namespace DTOMaker.MemBlocks.Tests
             using DTOMaker.Models.MemBlocks;
             namespace MyOrg.Models
             {
-                [Entity] [Layout(LayoutMethod.Linear)] public interface IHeader
+                [Entity] [Layout(LayoutMethod.Linear, 64)]
+                [Id("01234567-89ab-cdef-0123-456789abcdef")]
+                public interface IHeader
                 {
                     [Member(1)]  byte  MarkerByte0 { get; set; } // '|'
                     [Member(2)]  byte  MarkerByte1 { get; set; } // '_'
                     [Member(3)]  byte  HeaderMajorVersion { get; set; }
                     [Member(4)]  byte  HeaderMinorVersion { get; set; }
-                    [Member(5)]  byte  Spare0      { get; set; }
-                    [Member(6)]  byte  Spare1      { get; set; }
-                    [Member(7)]  byte  Spare2      { get; set; }
-                    [Member(8)]  byte  ClassHeight { get; set; }
-                    [Member(9)]  byte  BlockSize1 { get; set; }
-                    [Member(10)] byte  BlockSize2 { get; set; }
-                    [Member(11)] byte  BlockSize3 { get; set; }
-                    [Member(12)] byte  BlockSize4 { get; set; }
-                    [Member(13)] byte  BlockSize5 { get; set; }
-                    [Member(14)] byte  BlockSize6 { get; set; }
-                    [Member(15)] byte  BlockSize7 { get; set; }
-                    [Member(16)] byte  BlockSize8 { get; set; }
+                    [Member(5)]  byte  SpareByte0  { get; set; }
+                    [Member(6)]  byte  SpareByte1  { get; set; }
+                    [Member(7)]  byte  SpareByte2  { get; set; }
+                    [Member(8)]  byte  SpareByte3  { get; set; }
+                    [Member(9)]  byte  ClassHeight { get; set; }
+                    [Member(10)] byte  BlockSize1 { get; set; }
+                    [Member(11)] byte  BlockSize2 { get; set; }
+                    [Member(12)] byte  BlockSize3 { get; set; }
+                    [Member(13)] byte  BlockSize4 { get; set; }
+                    [Member(14)] byte  BlockSize5 { get; set; }
+                    [Member(15)] byte  BlockSize6 { get; set; }
+                    [Member(16)] byte  BlockSize7 { get; set; }
                     [Member(17)] Guid  EntityGuid { get; set; }
+                    [Member(18)] Guid  SpareGuid0 { get; set; }
+                    [Member(19)] Guid  SpareGuid1 { get; set; }
                 }
             }
             """;

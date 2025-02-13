@@ -343,7 +343,7 @@ namespace DTOMaker.Runtime.MemBlocks
         }
 
         private int? _hashCode;
-        public sealed override int GetHashCode()
+        public override int GetHashCode()
         {
             if (_hashCode.HasValue) return _hashCode.Value;
             if (!_frozen) return CalcHashCode();

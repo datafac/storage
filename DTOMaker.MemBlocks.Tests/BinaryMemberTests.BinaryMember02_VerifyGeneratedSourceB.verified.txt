@@ -27,7 +27,7 @@ namespace MyOrg.Models.MemBlocks
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
-        public new const string EntityId = "MyOrg.Models.Other";
+        public new const string EntityId = "46b4cf1e-d1f9-48ac-af8e-4c8b4d40b077";
 
         public new static Other CreateFrom(Other source)
         {

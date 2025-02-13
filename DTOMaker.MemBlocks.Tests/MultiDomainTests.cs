@@ -17,11 +17,15 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.DomainA
                 {
-                    [Entity] [Layout(LayoutMethod.Linear)] public interface IMyDTO { }
+                    [Entity] [Layout(LayoutMethod.Linear)]
+                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
+                    public interface IMyDTO { }
                 }
                 namespace MyOrg.DomainB
                 {
-                    [Entity] [Layout(LayoutMethod.Linear)] public interface IMyDTO { }
+                    [Entity] [Layout(LayoutMethod.Linear)]
+                    [Id("01234567-89ab-cdef-1234-456789abcdef")]
+                    public interface IMyDTO { }
                 }
                 """;
 
@@ -70,11 +74,15 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MessagePack;
                 namespace MyOrg.DomainA
                 {
-                    [Entity] public interface IMyBase { }
+                    [Entity]
+                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
+                    public interface IMyBase { }
                 }
                 namespace MyOrg.DomainB
                 {
-                    [Entity] public interface IMyDTO : MyOrg.DomainA.IMyBase { }
+                    [Entity]
+                    [Id("01234567-89ab-cdef-1234-456789abcdef")]
+                    public interface IMyDTO : MyOrg.DomainA.IMyBase { }
                 }
                 """;
 

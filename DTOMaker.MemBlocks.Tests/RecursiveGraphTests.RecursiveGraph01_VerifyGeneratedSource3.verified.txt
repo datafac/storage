@@ -32,7 +32,7 @@ namespace MyOrg.Models.MemBlocks
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
-        public new const string EntityId = "MyOrg.Models.Node";
+        public new const string EntityId = "01234567-89ab-cdef-0123-456789abcdef";
 
         public new static Node CreateFrom(Node source)
         {

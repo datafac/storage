@@ -47,8 +47,8 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
-                    [Entity]
-                    [Id("MyDTO")][Layout(LayoutMethod.Explicit, 64)]
+                    [Entity][Layout(LayoutMethod.Explicit, 64)]
+                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
                     public interface IMyDTO
                     {
                     }
@@ -78,8 +78,8 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
-                    [Entity]
-                    [Id("MyDTO")][Layout(LayoutMethod.Explicit, 64)]
+                    [Entity] [Layout(LayoutMethod.Explicit, 64)]
+                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
                     public interface IMyDTO
                     {
                         [Member(1)] 
@@ -111,8 +111,8 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
-                    [Entity]
-                    [Id("MyDTO")][Layout(LayoutMethod.Explicit, 64)]
+                    [Entity][Layout(LayoutMethod.Explicit, 64)]
+                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
                     public interface IMyDTO
                     {
                         [Member(1)]
@@ -148,8 +148,8 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
-                    [Entity]
-                    [Id("MyFirstDTO")][Layout(LayoutMethod.Explicit, 64)]
+                    [Entity][Layout(LayoutMethod.Explicit, 64)]
+                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
                     public interface IMyFirstDTO
                     {
                         [Member(1)]
@@ -157,8 +157,8 @@ namespace DTOMaker.MemBlocks.Tests
                         double Field1 { get; set; }
                     }
 
-                    [Entity]
-                    [Id("MyOtherDTO")][Layout(LayoutMethod.Explicit, 64)]
+                    [Entity][Layout(LayoutMethod.Explicit, 64)]
+                    [Id("01234567-89ab-cdef-1234-456789abcdef")]
                     public interface IMyOtherDTO
                     {
                         [Member(1)]
@@ -197,8 +197,8 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
-                    [Entity]
-                    [Id("MyDTO")][Layout(LayoutMethod.Undefined, 64)]
+                    [Entity] [Layout(LayoutMethod.Undefined, 64)]
+                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
                     public interface IMyDTO
                     {
                     }
@@ -224,8 +224,8 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
-                    [Entity]
-                    [Id("MyDTO")][Layout(LayoutMethod.Explicit, 63)]
+                    [Entity] [Layout(LayoutMethod.Explicit, 63)]
+                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
                     public interface IMyDTO
                     {
                     }
@@ -281,7 +281,7 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
-                    [Id("MyDTO")][Layout(LayoutMethod.Explicit, 64)]
+                    [Layout(LayoutMethod.Explicit, 64)]
                     public interface IMyDTO
                     {
                         [Member(1)]
@@ -312,6 +312,7 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
+                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
                     public interface IMyDTO
                     {
                         [Member(1)]
@@ -341,8 +342,8 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
-                    [Entity]
-                    [Id("MyDTO")][Layout(LayoutMethod.Explicit, 64)]
+                    [Entity][Layout(LayoutMethod.Explicit, 64)]
+                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
                     public interface IMyDTO
                     {
                         [Offset(0)]
@@ -371,8 +372,8 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
-                    [Entity]
-                    [Id("MyDTO")][Layout(LayoutMethod.Explicit, 64)]
+                    [Entity][Layout(LayoutMethod.Explicit, 64)]
+                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
                     public interface IMyDTO
                     {
                         [Member(1)]
@@ -401,8 +402,8 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
-                    [Entity]
-                    [Id("MyDTO")][Layout(LayoutMethod.Explicit, 64)]
+                    [Entity][Layout(LayoutMethod.Explicit, 64)]
+                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
                     public interface IMyDTO
                     {
                         [Member(1)] 
@@ -432,8 +433,8 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
-                    [Entity]
-                    [Id("MyDTO")][Layout(LayoutMethod.Explicit, 8)]
+                    [Entity][Layout(LayoutMethod.Explicit, 8)]
+                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
                     public interface IMyDTO
                     {
                         [Member(1)] 
@@ -462,8 +463,8 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
-                    [Entity]
-                    [Id("MyDTO")][Layout(LayoutMethod.Explicit, 16)]
+                    [Entity][Layout(LayoutMethod.Explicit, 16)]
+                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
                     public interface IMyDTO
                     {
                         [Member(1)] 
@@ -481,6 +482,37 @@ namespace DTOMaker.MemBlocks.Tests
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
             errors.Length.ShouldBe(1);
             errors[0].GetMessage().ShouldBe("This member is incorrectly aligned. FieldOffset (4) modulo total length (8) must be 0.");
+        }
+
+        [Fact]
+        public void Fault11_MissingIdAttribute()
+        {
+            // note: [Id] attribute is missing
+            var inputSource =
+                """
+                using DTOMaker.Models;
+                using DTOMaker.Models.MemBlocks;
+                namespace MyOrg.Models
+                {
+                    [Entity]
+                    [Layout(LayoutMethod.Explicit, 64)]
+                    public interface IMyDTO
+                    {
+                        [Member(1)]
+                        [Offset(0)] 
+                        double Field1 { get; set; }
+                    }
+                }
+                """;
+
+            var generatorResult = GeneratorTestHelper.RunSourceGenerator(inputSource, LanguageVersion.LatestMajor);
+            generatorResult.Exception.ShouldBeNull();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
+            generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
+
+            var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
+            errors.Length.ShouldBe(1);
+            errors[0].GetMessage().ShouldBe("Entity identifier must be a GUID. Have you forgotten the entity [Id] attribute?");
         }
 
     }

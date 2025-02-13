@@ -20,13 +20,13 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
-                    [Entity]
-                    [Id("MyBase")][Layout(LayoutMethod.Linear)]
+                    [Entity][Layout(LayoutMethod.Linear)]
+                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
                     public interface IMyBase
                     {
                     }
-                    [Entity]
-                    [Id("MyDTO")][Layout(LayoutMethod.Linear)]
+                    [Entity][Layout(LayoutMethod.Linear)]
+                    [Id("01234567-89ab-cdef-1234-456789abcdef")]
                     public interface IMyDTO : IMyBase
                     {
                     }
@@ -56,13 +56,13 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
-                    [Entity]
-                    [Id("MyBase")][Layout(LayoutMethod.Linear)]
+                    [Entity][Layout(LayoutMethod.Linear)]
+                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
                     public interface IMyBase
                     {
                     }
-                    [Entity]
-                    [Id("MyDTO")][Layout(LayoutMethod.Linear)]
+                    [Entity][Layout(LayoutMethod.Linear)]
+                    [Id("01234567-89ab-cdef-1234-456789abcdef")]
                     public interface IMyDTO : IMyBase
                     {
                     }
@@ -92,14 +92,14 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
-                    [Entity]
-                    [Id("MyBase")][Layout(LayoutMethod.Linear)]
+                    [Entity][Layout(LayoutMethod.Linear)]
+                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
                     public interface IMyBase
                     {
                         [Member(1)] double BaseField1 { get; set; }
                     }
-                    [Entity]
-                    [Id("MyDTO")][Layout(LayoutMethod.Linear)]
+                    [Entity][Layout(LayoutMethod.Linear)]
+                    [Id("01234567-89ab-cdef-1234-456789abcdef")]
                     public interface IMyDTO : IMyBase
                     {
                         [Member(1)] double DTOField1 { get; set; }

@@ -1,5 +1,6 @@
 ﻿using DTOMaker.Gentime;
 using Microsoft.CodeAnalysis;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -119,6 +120,19 @@ namespace DTOMaker.MemBlocks
             return null;
         }
 
+        private SyntaxDiagnostic? CheckEntityIdIsGuid()
+        {
+            if (!HasEntityAttribute) return null;
+
+            if (!Guid.TryParse(this.EntityIdqqq, out Guid entityGuid))
+                return new SyntaxDiagnostic(
+                            DiagnosticId.DMMB0011, "Invalid entity identifier", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+                            $"Entity identifier must be a GUID. Have you forgotten the entity [Id] attribute?");
+
+            return null;
+        }
+
+
         protected override IEnumerable<SyntaxDiagnostic> OnGetValidationDiagnostics()
         {
             foreach (var diagnostic1 in base.OnGetValidationDiagnostics())
@@ -131,6 +145,7 @@ namespace DTOMaker.MemBlocks
             if ((diagnostic2 = CheckLayoutMethodIsSupported()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckBlockSizeIsValid()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckMemberLayoutHasNoOverlaps()) is not null) yield return diagnostic2;
+            if ((diagnostic2 = CheckEntityIdIsGuid()) is not null) yield return diagnostic2;
             // todo check class height <= 8
             // todo check block length >= 64
         }

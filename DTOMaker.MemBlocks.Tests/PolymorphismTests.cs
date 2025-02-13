@@ -17,35 +17,42 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
-                    [Entity] [Id("Polygon")][Layout(LayoutMethod.Linear)]
+                    [Entity][Layout(LayoutMethod.Linear)]
+                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
                     public interface IPolygon { }
 
-                    [Entity] [Id("Triangle")][Layout(LayoutMethod.Linear)] 
+                    [Entity][Layout(LayoutMethod.Linear)] 
+                    [Id("01234567-89ab-cdef-0201-456789abcdef")]
                     public interface ITriangle : IPolygon { }
 
-                    [Entity] [Id("Equilateral")][Layout(LayoutMethod.Linear)] 
+                    [Entity][Layout(LayoutMethod.Linear)] 
+                    [Id("01234567-89ab-cdef-0202-456789abcdef")]
                     public interface IEquilateral : ITriangle
                     {
                         [Member(1)] double Length { get; set; }
                     }
 
-                    [Entity] [Id("RightTriangle")][Layout(LayoutMethod.Linear)] 
+                    [Entity][Layout(LayoutMethod.Linear)] 
+                    [Id("01234567-89ab-cdef-0203-456789abcdef")]
                     public interface IRightTriangle : ITriangle
                     {
                         [Member(1)] double Length { get; set; }
                         [Member(2)] double Height { get; set; }
                     }
 
-                    [Entity] [Id("Quadrilateral")][Layout(LayoutMethod.Linear)] 
+                    [Entity][Layout(LayoutMethod.Linear)] 
+                    [Id("01234567-89ab-cdef-0204-456789abcdef")]
                     public interface IQuadrilateral : IPolygon { }
 
-                    [Entity] [Id("Square")][Layout(LayoutMethod.Linear)] 
+                    [Entity][Layout(LayoutMethod.Linear)] 
+                    [Id("01234567-89ab-cdef-0205-456789abcdef")]
                     public interface ISquare : IQuadrilateral
                     {
                         [Member(1)] double Length { get; set; }
                     }
 
-                    [Entity] [Id("Rectangle")][Layout(LayoutMethod.Linear)] 
+                    [Entity][Layout(LayoutMethod.Linear)] 
+                    [Id("01234567-89ab-cdef-0206-456789abcdef")]
                     public interface IRectangle : IQuadrilateral
                     {
                         [Member(1)] double Length { get; set; }

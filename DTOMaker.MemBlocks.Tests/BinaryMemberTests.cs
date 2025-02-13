@@ -20,12 +20,16 @@ namespace DTOMaker.MemBlocks.Tests
             using DTOMaker.Models.MemBlocks;
             namespace MyOrg.Models
             {
-                [Entity] [Layout(LayoutMethod.Linear)] public interface IOther
+                [Entity] [Layout(LayoutMethod.Linear)]
+                [Id("46b4cf1e-d1f9-48ac-af8e-4c8b4d40b077")]
+                public interface IOther
                 {
                     [Member(1)] Int64  Value1 { get; set; }
                     [Member(2)] Int64  Value2 { get; set; }
                 }
-                [Entity] [Layout(LayoutMethod.Linear)] public interface IMyDTO
+                [Entity] [Layout(LayoutMethod.Linear)]
+                [Id("81bd408d-c10a-4fc2-81e1-4517b4e199bb")]
+                public interface IMyDTO
                 {
                     [Member(1)] IOther? Other1 { get; set; }
                     [Member(2)] Octets  Field1 { get; set; }

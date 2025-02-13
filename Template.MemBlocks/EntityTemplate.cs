@@ -56,8 +56,7 @@ namespace T_MemberTypeNameSpace_.MemBlocks
         }
         public static T_MemberTypeName_ CreateFrom(ReadOnlyMemory<byte> buffer)
         {
-            var entityId = DataFac.MemBlocks.Protocol.ParseEntityId(buffer);
-            //var buffers = DataFac.MemBlocks.Protocol.SplitBuffers(buffer);
+            (long signature, long structure, Guid entityId) = DataFac.MemBlocks.Protocol.ParseHeader(buffer);
             return new T_MemberTypeName_(buffer);
         }
         private readonly Memory<byte> _writableLocalBlock;
@@ -185,6 +184,7 @@ namespace T_BaseNameSpace_.MemBlocks
             return true;
         }
         public override bool Equals(object? obj) => obj is T_BaseName_ other && Equals(other);
+        public override int GetHashCode() => base.GetHashCode();
     }
 }
 namespace T_NameSpace_
@@ -222,8 +222,6 @@ namespace T_NameSpace_.MemBlocks
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        private readonly ulong EncodedBlockLengths = 0x972; // [512, 128]
-
         public new const string EntityId = "T_EntityId_";
 
         public new static T_EntityName_ CreateFrom(T_EntityName_ source)
@@ -254,8 +252,9 @@ namespace T_NameSpace_.MemBlocks
 
         public new static T_EntityName_ CreateFrom(ReadOnlyMemory<byte> buffer)
         {
-            var entityId = DataFac.MemBlocks.Protocol.ParseEntityId(buffer);
-            return entityId switch
+            (long signature, long structure, Guid entityId) = DataFac.MemBlocks.Protocol.ParseHeader(buffer);
+            string entityIdStr = entityId.ToString("D");
+            return entityIdStr switch
             {
                 //##foreach(var derived in entity.DerivedEntities) {
                 //##using var _ = NewScope(derived);
@@ -714,8 +713,8 @@ namespace T_NameSpace_.MemBlocks
             if (!_readonlyTotalBlock.Span.SequenceEqual(other._readonlyTotalBlock.Span)) return false;
             return true;
         }
-
         public override bool Equals(object? obj) => obj is T_EntityName_ other && Equals(other);
+        public override int GetHashCode() => base.GetHashCode();
         public static bool operator ==(T_EntityName_? left, T_EntityName_? right) => left is not null ? left.Equals(right) : (right is null);
         public static bool operator !=(T_EntityName_? left, T_EntityName_? right) => left is not null ? !left.Equals(right) : (right is not null);
 

@@ -27,7 +27,7 @@ namespace MyOrg.DomainB.MemBlocks
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
-        public new const string EntityId = "MyOrg.DomainB.MyDTO";
+        public new const string EntityId = "01234567-89ab-cdef-1234-456789abcdef";
 
         public new static MyDTO CreateFrom(MyDTO source)
         {

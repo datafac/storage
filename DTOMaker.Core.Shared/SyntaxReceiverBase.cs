@@ -120,14 +120,14 @@ namespace DTOMaker.Gentime
                                 entity.BaseName = new TypeFullName(baseNameSpace, baseName.Substring(1));
                             }
                         }
-                        entity.EntityId = entity.EntityName.FullName;
+                        entity.EntityIdqqq = entity.EntityName.FullName;
                         if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == IdAttribute) is AttributeData idAttr)
                         {
                             // found entity id attribute
                             var attributeArguments = idAttr.ConstructorArguments;
                             if (CheckAttributeArguments(IdAttribute, attributeArguments, 1, entity, idsLocation))
                             {
-                                TryGetAttributeArgumentValue<string>(entity, idsLocation, attributeArguments, 0, (value) => { entity.EntityId = value; });
+                                TryGetAttributeArgumentValue<string>(entity, idsLocation, attributeArguments, 0, (value) => { entity.EntityIdqqq = value; });
                             }
                         }
                         //var attributeArguments = entityAttr.ConstructorArguments;

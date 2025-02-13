@@ -27,7 +27,7 @@ namespace MyOrg.Models.MemBlocks
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
-        public new const string EntityId = "MyOrg.Models.Header";
+        public new const string EntityId = "01234567-89ab-cdef-0123-456789abcdef";
 
         public new static Header CreateFrom(Header source)
         {
@@ -99,22 +99,25 @@ namespace MyOrg.Models.MemBlocks
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
         //  ----  ----  ----  ----  ------- ----  -------
-        //     1     0     1        Byte    LE    HeaderMajorVersion
-        //     2     1     1        Byte    LE    HeaderMinorVersion
-        //     3     2     1        Byte    LE    HeaderBlockSize
-        //     4     3     1        Byte    LE    ClassHeight
-        //     5     4     1        Byte    LE    BlockSize1
-        //     6     5     1        Byte    LE    BlockSize2
-        //     7     6     1        Byte    LE    BlockSize3
-        //     8     7     1        Byte    LE    BlockSize4
-        //     9     8     1        Byte    LE    BlockSize5
-        //    10     9     1        Byte    LE    BlockSize6
-        //    11    10     1        Byte    LE    BlockSize7
-        //    12    11     1        Byte    LE    BlockSize8
-        //    13    12     4        Int32   LE    Spare1
-        //    14    16    16        Guid    LE    EntityGuid
-        //    15    32    16        Guid    LE    Spare2
-        //    16    48    16        Guid    LE    Spare3
+        //     1     0     1        Byte    LE    MarkerByte0
+        //     2     1     1        Byte    LE    MarkerByte1
+        //     3     2     1        Byte    LE    HeaderMajorVersion
+        //     4     3     1        Byte    LE    HeaderMinorVersion
+        //     5     4     1        Byte    LE    SpareByte0
+        //     6     5     1        Byte    LE    SpareByte1
+        //     7     6     1        Byte    LE    SpareByte2
+        //     8     7     1        Byte    LE    SpareByte3
+        //     9     8     1        Byte    LE    ClassHeight
+        //    10     9     1        Byte    LE    BlockSize1
+        //    11    10     1        Byte    LE    BlockSize2
+        //    12    11     1        Byte    LE    BlockSize3
+        //    13    12     1        Byte    LE    BlockSize4
+        //    14    13     1        Byte    LE    BlockSize5
+        //    15    14     1        Byte    LE    BlockSize6
+        //    16    15     1        Byte    LE    BlockSize7
+        //    17    16    16        Guid    LE    EntityGuid
+        //    18    32    16        Guid    LE    SpareGuid0
+        //    19    48    16        Guid    LE    SpareGuid1
         // ------------------------------------------------------------
 
         public Header()
@@ -131,9 +134,14 @@ namespace MyOrg.Models.MemBlocks
         public Header(IHeader source) : base(source)
         {
             _readonlyBlock = _writableBlock = new byte[BlockLength];
+            this.MarkerByte0 = source.MarkerByte0;
+            this.MarkerByte1 = source.MarkerByte1;
             this.HeaderMajorVersion = source.HeaderMajorVersion;
             this.HeaderMinorVersion = source.HeaderMinorVersion;
-            this.HeaderBlockSize = source.HeaderBlockSize;
+            this.SpareByte0 = source.SpareByte0;
+            this.SpareByte1 = source.SpareByte1;
+            this.SpareByte2 = source.SpareByte2;
+            this.SpareByte3 = source.SpareByte3;
             this.ClassHeight = source.ClassHeight;
             this.BlockSize1 = source.BlockSize1;
             this.BlockSize2 = source.BlockSize2;
@@ -142,11 +150,9 @@ namespace MyOrg.Models.MemBlocks
             this.BlockSize5 = source.BlockSize5;
             this.BlockSize6 = source.BlockSize6;
             this.BlockSize7 = source.BlockSize7;
-            this.BlockSize8 = source.BlockSize8;
-            this.Spare1 = source.Spare1;
             this.EntityGuid = source.EntityGuid;
-            this.Spare2 = source.Spare2;
-            this.Spare3 = source.Spare3;
+            this.SpareGuid0 = source.SpareGuid0;
+            this.SpareGuid1 = source.SpareGuid1;
         }
 
         public Header(ReadOnlyMemory<byte>[] buffers) : base(buffers)
@@ -166,82 +172,100 @@ namespace MyOrg.Models.MemBlocks
             _writableBlock = Memory<byte>.Empty;
         }
 
-        public Byte HeaderMajorVersion
+        public Byte MarkerByte0
         {
             get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(0, 1).Span);
             set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(0, 1).Span, IfNotFrozen(value));
         }
 
-        public Byte HeaderMinorVersion
+        public Byte MarkerByte1
         {
             get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(1, 1).Span);
             set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(1, 1).Span, IfNotFrozen(value));
         }
 
-        public Byte HeaderBlockSize
+        public Byte HeaderMajorVersion
         {
             get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(2, 1).Span);
             set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(2, 1).Span, IfNotFrozen(value));
         }
 
-        public Byte ClassHeight
+        public Byte HeaderMinorVersion
         {
             get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(3, 1).Span);
             set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(3, 1).Span, IfNotFrozen(value));
         }
 
-        public Byte BlockSize1
+        public Byte SpareByte0
         {
             get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(4, 1).Span);
             set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(4, 1).Span, IfNotFrozen(value));
         }
 
-        public Byte BlockSize2
+        public Byte SpareByte1
         {
             get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(5, 1).Span);
             set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(5, 1).Span, IfNotFrozen(value));
         }
 
-        public Byte BlockSize3
+        public Byte SpareByte2
         {
             get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(6, 1).Span);
             set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(6, 1).Span, IfNotFrozen(value));
         }
 
-        public Byte BlockSize4
+        public Byte SpareByte3
         {
             get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(7, 1).Span);
             set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(7, 1).Span, IfNotFrozen(value));
         }
 
-        public Byte BlockSize5
+        public Byte ClassHeight
         {
             get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(8, 1).Span);
             set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(8, 1).Span, IfNotFrozen(value));
         }
 
-        public Byte BlockSize6
+        public Byte BlockSize1
         {
             get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(9, 1).Span);
             set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(9, 1).Span, IfNotFrozen(value));
         }
 
-        public Byte BlockSize7
+        public Byte BlockSize2
         {
             get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(10, 1).Span);
             set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(10, 1).Span, IfNotFrozen(value));
         }
 
-        public Byte BlockSize8
+        public Byte BlockSize3
         {
             get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(11, 1).Span);
             set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(11, 1).Span, IfNotFrozen(value));
         }
 
-        public Int32 Spare1
+        public Byte BlockSize4
         {
-            get => Codec_Int32_LE.ReadFromSpan(_readonlyBlock.Slice(12, 4).Span);
-            set => Codec_Int32_LE.WriteToSpan(_writableBlock.Slice(12, 4).Span, IfNotFrozen(value));
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(12, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(12, 1).Span, IfNotFrozen(value));
+        }
+
+        public Byte BlockSize5
+        {
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(13, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(13, 1).Span, IfNotFrozen(value));
+        }
+
+        public Byte BlockSize6
+        {
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(14, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(14, 1).Span, IfNotFrozen(value));
+        }
+
+        public Byte BlockSize7
+        {
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(15, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(15, 1).Span, IfNotFrozen(value));
         }
 
         public Guid EntityGuid
@@ -250,13 +274,13 @@ namespace MyOrg.Models.MemBlocks
             set => Codec_Guid_LE.WriteToSpan(_writableBlock.Slice(16, 16).Span, IfNotFrozen(value));
         }
 
-        public Guid Spare2
+        public Guid SpareGuid0
         {
             get => Codec_Guid_LE.ReadFromSpan(_readonlyBlock.Slice(32, 16).Span);
             set => Codec_Guid_LE.WriteToSpan(_writableBlock.Slice(32, 16).Span, IfNotFrozen(value));
         }
 
-        public Guid Spare3
+        public Guid SpareGuid1
         {
             get => Codec_Guid_LE.ReadFromSpan(_readonlyBlock.Slice(48, 16).Span);
             set => Codec_Guid_LE.WriteToSpan(_writableBlock.Slice(48, 16).Span, IfNotFrozen(value));

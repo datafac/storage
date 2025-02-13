@@ -5,19 +5,50 @@ namespace DataFac.MemBlocks
 {
     public static class Protocol
     {
+        public static (long signature, long structure, Guid entityId) ParseHeader(ReadOnlyMemory<byte> inputBuffer)
+        {
+            // header structure (64 bytes)
+            // -------------------- field map -----------------------------
+            //  Seq.  Off.  Len.  N.    Type    End.  Name
+            //  ----  ----  ----  ----  ------- ----  -------
+            //     1     0     1        Byte    LE    MarkerByte0
+            //     2     1     1        Byte    LE    MarkerByte1
+            //     3     2     1        Byte    LE    HeaderMajorVersion
+            //     4     3     1        Byte    LE    HeaderMinorVersion
+            //     5     4     1        Byte    LE    SpareByte0
+            //     6     5     1        Byte    LE    SpareByte1
+            //     7     6     1        Byte    LE    SpareByte2
+            //     8     7     1        Byte    LE    SpareByte3
+            //     9     8     1        Byte    LE    ClassHeight
+            //    10     9     1        Byte    LE    BlockSize1
+            //    11    10     1        Byte    LE    BlockSize2
+            //    12    11     1        Byte    LE    BlockSize3
+            //    13    12     1        Byte    LE    BlockSize4
+            //    14    13     1        Byte    LE    BlockSize5
+            //    15    14     1        Byte    LE    BlockSize6
+            //    16    15     1        Byte    LE    BlockSize7
+            //    17    16    16        Guid    LE    EntityGuid
+            //    18    32    16        Guid    LE    SpareGuid0
+            //    19    48    16        Guid    LE    SpareGuid1
+            // ------------------------------------------------------------
+            var headerSpan = inputBuffer.Slice(0, 64).Span;
+            BlockB064 headerBlock = default;
+            headerBlock.TryRead(headerSpan);
+            long signature = headerBlock.A.A.A.Int64ValueLE;
+            long structure = headerBlock.A.A.B.Int64ValueLE;
+            Guid entityId = headerBlock.A.B.GuidValueLE;
+            return (signature, structure, entityId);
+        }
+
         /// <summary>
         /// Converts an array of buffers into a single memory block, adding a header containing
         /// the entity id and describing the number and lengths of the internal buffers.
         /// </summary>
         /// <param name="buffers"></param>
         /// <returns></returns>
-        public static ReadOnlyMemory<byte> CombineBuffers(string entityId, ReadOnlyMemory<byte>[] buffers)
+        public static ReadOnlyMemory<byte> CombineBuffersOld(string entityId, ReadOnlyMemory<byte>[] buffers)
         {
-            // header structure (128 bytes)
-            // part A (64 bytes) contains the UTF8-encoded entity id string
-            // part B (64 bytes) contains a 16-slot array of 4-byte numbers (Int32LE)
-            // - slot 0 contains the number of buffers
-            // - slots 1-15 contain the lengths of the buffers
+
             BlockB128 headerBlock = default;
             const int HeaderSlots = 16; // 16 * sizeof(int) = 64;
             Span<int> bufferLengths = stackalloc int[HeaderSlots];
@@ -38,16 +69,7 @@ namespace DataFac.MemBlocks
             return builder.Build().Compact();
         }
 
-        public static string ParseEntityId(ReadOnlyMemory<byte> inputBuffer)
-        {
-            // parse header built by CombineBuffers - extract entityId
-            BlockB128 headerBlock = default;
-            headerBlock.TryRead(inputBuffer.Slice(0, 128).Span);
-            string entityId = headerBlock.A.UTF8String;
-            return entityId;
-        }
-
-        public static ReadOnlyMemory<byte>[] SplitBuffers(ReadOnlyMemory<byte> inputBuffer)
+        public static ReadOnlyMemory<byte>[] SplitBuffersOld(ReadOnlyMemory<byte> inputBuffer)
         {
             // parse header built by CombineBuffers - extract buffers
             BlockB128 headerBlock = default;

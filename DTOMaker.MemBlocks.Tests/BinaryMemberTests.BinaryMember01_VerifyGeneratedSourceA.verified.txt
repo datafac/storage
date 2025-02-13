@@ -27,7 +27,7 @@ namespace MyOrg.Models.MemBlocks
         private readonly Memory<byte> _writableBlock;
         private readonly ReadOnlyMemory<byte> _readonlyBlock;
 
-        public new const string EntityId = "MyOrg.Models.MyDTO";
+        public new const string EntityId = "81bd408d-c10a-4fc2-81e1-4517b4e199bb";
 
         public new static MyDTO CreateFrom(MyDTO source)
         {
