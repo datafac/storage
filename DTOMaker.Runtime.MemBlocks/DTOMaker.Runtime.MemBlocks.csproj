@@ -40,7 +40,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\DataFac.MemBlocks\DataFac.MemBlocks.csproj" />
 	  <ProjectReference Include="..\DataFac.Storage\DataFac.Storage.csproj" />
 	  <ProjectReference Include="..\DTOMaker.Runtime\DTOMaker.Runtime.csproj" />
 	</ItemGroup>

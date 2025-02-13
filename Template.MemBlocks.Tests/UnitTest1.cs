@@ -1,3 +1,5 @@
+using DataFac.Memory;
+using DTOMaker.Runtime.MemBlocks;
 using Shouldly;
 using System;
 using System.Buffers;
@@ -12,25 +14,66 @@ using Xunit;
 
 namespace Template.MemBlocks.Tests
 {
-    public class ReadOnlyMemoryTests
+    internal sealed class TestEntity : EntityBase
     {
-        [Fact]
-        public void RoundtripReadOnlySequence()
+        private static readonly Guid _entityGuid = new Guid("8bb1290a-9336-4371-8dad-fccd8d9c4494");
+        private static readonly BlockStructure _structure = new BlockStructure(89980L, 0x61, _entityGuid);
+        protected override int OnGetClassHeight() => 1;
+        protected override string OnGetEntityId() => _entityGuid.ToString("D");
+        public TestEntity() : base(_structure)
         {
-            string orig = "The quick brown fox jumps over the lazy dog.";
-
-            // encode
-            ImmutableArray<ReadOnlyMemory<byte>> buffers = ImmutableArray<ReadOnlyMemory<byte>>.Empty
-                .AddRange(orig.Split(' ').Select(w => new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(w))));
-
-            // decode
-            string copy = string.Join(" ", buffers.Select(b => Encoding.UTF8.GetString(b.ToArray())));
-
-            // assert
-            copy.ShouldBe(orig);
         }
     }
-    public class UnitTest1
+    public class EntityBaseTests
+    {
+        [Fact]
+        public void ParseBlockHeader()
+        {
+            BlockB064 header = default;
+            // signature
+            header.A.A.A.A.A.A.ByteValue = (byte)'|';
+            header.A.A.A.A.A.B.ByteValue = (byte)'_';
+            header.A.A.A.A.B.A.ByteValue = (byte)1;
+            header.A.A.A.A.B.B.ByteValue = (byte)0;
+            // structure
+            header.A.A.B.Int64ValueLE = 0x61;
+            // entityid
+            header.A.B.GuidValueLE = new Guid("aa1e2d7b-fcb5-4739-9624-f6a648815251");
+
+            Span<byte> buffer = stackalloc byte[64];
+            bool written = header.TryWrite(buffer);
+            written.ShouldBeTrue();
+
+            BlockStructure structure = new BlockStructure(buffer);
+            structure.SignatureCode.ShouldBe(89980L);
+            structure.StructureCode.ShouldBe(0x61);
+            structure.EffectiveLength.ShouldBe(128);
+            structure.EntityGuid.ToString("D").ShouldBe("aa1e2d7b-fcb5-4739-9624-f6a648815251");
+        }
+        [Fact]
+        public async Task BlockHeaderIsConstant()
+        {
+            using var dataStore = new DataFac.Storage.Testing.TestDataStore();
+            var orig = new TestEntity();
+            await orig.Pack(dataStore);
+            orig.Freeze();
+            var buffer = orig.GetBuffer().Span;
+            buffer.Length.ShouldBe(128);
+
+            buffer[0].ShouldBe((byte)'|');  // marker byte 0
+            buffer[1].ShouldBe((byte)'_');  // marker byte 1
+            buffer[2].ShouldBe((byte)1);    // major version
+            buffer[3].ShouldBe((byte)0);    // minor version
+
+            BlockStructure structure = new BlockStructure(buffer);
+            structure.SignatureCode.ShouldBe(89980L);
+            structure.StructureCode.ShouldBe(0x61);
+            structure.EffectiveLength.ShouldBe(128);
+            structure.EntityGuid.ToString("D").ShouldBe("8bb1290a-9336-4371-8dad-fccd8d9c4494");
+        }
+    }
+
+    public class RoundtripTests
     {
         [Fact]
 

@@ -2,6 +2,7 @@
 using DataFac.Storage;
 using System;
 using System.Buffers;
+using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -35,8 +36,66 @@ namespace DTOMaker.Runtime.MemBlocks
     /// </summary>
     public readonly struct BlockStructure
     {
-        private readonly BlockB064 _header;
-        private readonly int _totalBlockLength;
+        /// <summary>
+        /// Marker and version bytes
+        /// </summary>
+        public readonly long SignatureCode;
+
+        /// <summary>
+        /// Class height and block size codes
+        /// </summary>
+        public readonly long StructureCode;
+
+        /// <summary>
+        /// Entity identifier
+        /// </summary>
+        public readonly Guid EntityGuid;
+
+        public readonly int EffectiveLength;
+
+        public BlockStructure(long signature, long structure, Guid entityGuid)
+        {
+            SignatureCode = signature;
+            StructureCode = structure;
+            EntityGuid = entityGuid;
+            EffectiveLength = GetEffectiveLength(structure);
+        }
+
+        public BlockStructure(ReadOnlySpan<byte> source)
+        {
+            SignatureCode = Codec_Int64_LE.ReadFromSpan(source.Slice(0, 8));
+            StructureCode = Codec_Int64_LE.ReadFromSpan(source.Slice(8, 8));
+            EntityGuid = Codec_Guid_LE.ReadFromSpan(source.Slice(16, 16));
+            EffectiveLength = GetEffectiveLength(StructureCode);
+        }
+
+        public void WriteTo(Span<byte> target)
+        {
+            Codec_Int64_LE.WriteToSpan(target.Slice(0, 8), SignatureCode);
+            Codec_Int64_LE.WriteToSpan(target.Slice(8, 8), StructureCode);
+            Codec_Guid_LE.WriteToSpan(target.Slice(16, 16), EntityGuid);
+        }
+
+        private static readonly int[] _effectiveBlockSizes = [64, 64, 64, 64, 64, 64, 64, 128, 256, 512, 1024 * 1, 1024 * 2, 1024 * 4, 1024 * 8, 1024 * 16, 1024 * 32];
+        private static int GetEffectiveBlockSize(int code)
+        {
+            if (code < 0 || code >= 16) throw new ArgumentOutOfRangeException(nameof(code), code, null);
+            return _effectiveBlockSizes[code];
+        }
+
+        private static int GetEffectiveLength(long structureCode)
+        {
+            int classHeight = (int)(structureCode & 0x0F);
+            int totalLength = 64;
+            long bits = structureCode;
+            for (int h = 0; h < classHeight && h < 15; h++)
+            {
+                bits = bits >> 4;
+                int blockLength = GetEffectiveBlockSize((int)(bits & 0x0F));
+                totalLength += blockLength;
+            }
+            return totalLength;
+        }
 
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
@@ -58,131 +117,6 @@ namespace DTOMaker.Runtime.MemBlocks
         //    15    32    16        Guid    LE    Spare2
         //    16    48    16        Guid    LE    Spare3
         // ------------------------------------------------------------
-
-        public byte HeaderMajorVersion => _header.A.A.A.A.A.A.ByteValue;
-        public byte HeaderMinorVersion => _header.A.A.A.A.A.A.ByteValue;
-        public ulong Structure => _header.A.A.B.UInt64ValueLE;
-        public byte ClassHeight => _header.A.A.B.A.A.A.ByteValue;
-        public byte BlockSize01 => _header.A.A.B.A.A.B.ByteValue;
-        public byte BlockSize02 => _header.A.A.B.A.B.A.ByteValue;
-        public byte BlockSize03 => _header.A.A.B.A.B.B.ByteValue;
-        public byte BlockSize04 => _header.A.A.B.B.A.A.ByteValue;
-        public byte BlockSize05 => _header.A.A.B.B.A.B.ByteValue;
-        public byte BlockSize06 => _header.A.A.B.B.B.A.ByteValue;
-        public byte BlockSize07 => _header.A.A.B.B.B.B.ByteValue;
-        public int TotalLength => _totalBlockLength;
-
-        private BlockStructure(BlockB064 header, int totalLength)
-        {
-            _header = header;
-            _totalBlockLength = totalLength;
-        }
-
-        private BlockStructure(int ch, int b1, int b2, int b3, int b4, int b5, int b6, int b7)
-        {
-            BlockB064 header = default;
-            header.A.A.A.A.A.A.ByteValue = 1;
-            header.A.A.A.A.A.B.ByteValue = 0;
-            header.A.A.B.A.A.A.ByteValue = (byte)ch;
-            header.A.A.B.A.A.B.ByteValue = (byte)GetBlockSizeCode(b1);
-            header.A.A.B.A.B.A.ByteValue = (byte)GetBlockSizeCode(b2);
-            header.A.A.B.A.B.B.ByteValue = (byte)GetBlockSizeCode(b3);
-            header.A.A.B.B.A.A.ByteValue = (byte)GetBlockSizeCode(b4);
-            header.A.A.B.B.A.B.ByteValue = (byte)GetBlockSizeCode(b5);
-            header.A.A.B.B.B.A.ByteValue = (byte)GetBlockSizeCode(b6);
-            header.A.A.B.B.B.B.ByteValue = (byte)GetBlockSizeCode(b7);
-            _header = header;
-            _totalBlockLength = 64 + b1 + b2 + b3 + b4 + b5 + b6 + b7;
-        }
-
-        public static BlockStructure Create(int classHeight, int blockLength)
-        {
-            BlockB064 header = default;
-            var bc = GetBlockSizeCode(CheckBlockLength(blockLength));
-            switch (classHeight)
-            {
-                case 1: header.A.A.B.A.A.B.ByteValue = (byte)bc; break;
-                case 2: header.A.A.B.A.B.A.ByteValue = (byte)bc; break;
-                case 3: header.A.A.B.A.B.B.ByteValue = (byte)bc; break;
-                case 4: header.A.A.B.B.A.A.ByteValue = (byte)bc; break;
-                case 5: header.A.A.B.B.A.B.ByteValue = (byte)bc; break;
-                case 6: header.A.A.B.B.B.A.ByteValue = (byte)bc; break;
-                case 7: header.A.A.B.B.B.B.ByteValue = (byte)bc; break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(classHeight), classHeight, null);
-            }
-            header.A.A.B.A.A.A.ByteValue = (byte)classHeight;
-            return new BlockStructure(header, 64 + blockLength);
-        }
-
-        public BlockStructure With(int classHeight, int blockLength)
-        {
-            BlockB064 header = _header;
-            var bc = GetBlockSizeCode(CheckBlockLength(blockLength));
-            switch (classHeight)
-            {
-                case 1: header.A.A.B.A.A.B.ByteValue = (byte)bc; break;
-                case 2: header.A.A.B.A.B.A.ByteValue = (byte)bc; break;
-                case 3: header.A.A.B.A.B.B.ByteValue = (byte)bc; break;
-                case 4: header.A.A.B.B.A.A.ByteValue = (byte)bc; break;
-                case 5: header.A.A.B.B.A.B.ByteValue = (byte)bc; break;
-                case 6: header.A.A.B.B.B.A.ByteValue = (byte)bc; break;
-                case 7: header.A.A.B.B.B.B.ByteValue = (byte)bc; break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(classHeight), classHeight, null);
-            }
-            return new BlockStructure(header, TotalLength + blockLength);
-        }
-
-        private static int CheckBlockLength(int blockLength)
-        {
-            // todo? insist blockLength >= 64 (for hardware sympathy)
-            return blockLength switch
-            {
-                //1 => blockLength,
-                //2 => blockLength,
-                //4 => blockLength,
-                //8 => blockLength,
-                //16 => blockLength,
-                //32 => blockLength,
-                64 => blockLength,
-                128 => blockLength,
-                256 => blockLength,
-                512 => blockLength,
-                1 * 1024 => blockLength,
-                2 * 1024 => blockLength,
-                4 * 1024 => blockLength,
-                8 * 1024 => blockLength,
-                _ => throw new ArgumentOutOfRangeException(nameof(blockLength), blockLength, null)
-            };
-        }
-        private static BlockSizeCode GetBlockSizeCode(int blockLength)
-        {
-            return blockLength switch
-            {
-                //1 => BlockSizeCode.B001,
-                //2 => BlockSizeCode.B002,
-                //4 => BlockSizeCode.B004,
-                //8 => BlockSizeCode.B008,
-                //16 => BlockSizeCode.B016,
-                //32 => BlockSizeCode.B032,
-                64 => BlockSizeCode.B064,
-                128 => BlockSizeCode.B128,
-                256 => BlockSizeCode.B256,
-                512 => BlockSizeCode.B512,
-                1 * 1024 => BlockSizeCode.K001,
-                2 * 1024 => BlockSizeCode.K002,
-                4 * 1024 => BlockSizeCode.K004,
-                8 * 1024 => BlockSizeCode.K008,
-                _ => throw new ArgumentOutOfRangeException(nameof(blockLength), blockLength, null)
-            };
-        }
-        private static readonly ReadOnlyMemory<int> blockSizes = new int[]
-        {
-            1, 2, 4, 8, 16, 32, 64, 128, 256, 512,
-            1024 * 1, 1024 * 2, 1024 * 4, 1024 * 8
-        };
-        public static int GetBlockSize(BlockSizeCode code) => blockSizes.Span[(int)code];
 
     }
 
@@ -210,30 +144,54 @@ namespace DTOMaker.Runtime.MemBlocks
         protected abstract string OnGetEntityId();
         public string GetEntityId() => OnGetEntityId();
 
-        protected EntityBase(BlockStructure structure)
+        protected EntityBase(BlockStructure thisStructure)
         {
-            _readonlyTotalBlock = _writableTotalBlock = new byte[structure.TotalLength];
+            _readonlyTotalBlock = _writableTotalBlock = new byte[thisStructure.EffectiveLength];
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            thisStructure.WriteTo(_writableLocalBlock.Span);
         }
-        protected EntityBase(BlockStructure structure, object source)
+        protected static void CheckStructures(BlockStructure thisStructure, BlockStructure thatStructure)
         {
-            if (source is EntityBase concrete)
+            if (thatStructure.SignatureCode != thisStructure.SignatureCode)
             {
-                // todo copy source buffer if frozen and same structure
-                // todo copy slices if source buffer structure not same
-                _writableTotalBlock = new byte[structure.TotalLength];
-                concrete._readonlyTotalBlock.CopyTo(_writableLocalBlock);
-                _readonlyTotalBlock = _writableTotalBlock;
+                // todo support minor version change
+                throw new NotSupportedException($"Cannot read source with unknown signature ({thatStructure.SignatureCode}), expected ({thisStructure.SignatureCode}).");
+            }
+            if (thatStructure.EntityGuid != thisStructure.EntityGuid)
+            {
+                // type mismatch
+                throw new InvalidDataException($"Cannot read source with unknown entity id ({thatStructure.EntityGuid}), expected ({thisStructure.EntityGuid}).");
+            }
+            if (thatStructure.StructureCode != thisStructure.StructureCode)
+            {
+                // todo structure conversion
+                throw new NotSupportedException($"Cannot read source with different structure ({thatStructure.StructureCode}), expected ({thisStructure.StructureCode}).");
+            }
+        }
+        protected EntityBase(BlockStructure thisStructure, object source)
+        {
+            if (source is EntityBase sourceEntity)
+            {
+                _readonlyTotalBlock = _writableTotalBlock = new byte[thisStructure.EffectiveLength];
                 _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+                thisStructure.WriteTo(_writableLocalBlock.Span);
+                BlockStructure thatStructure = new BlockStructure(sourceEntity._readonlyTotalBlock.Span);
+                CheckStructures(thisStructure, thatStructure);
+                sourceEntity._readonlyTotalBlock.CopyTo(_writableTotalBlock);
+                // todo copy source buffer if frozen and same structure (unsafe?)
+                // todo copy slices if source buffer structure not same
             }
             else
             {
-                _readonlyTotalBlock = _writableTotalBlock = new byte[structure.TotalLength];
+                _readonlyTotalBlock = _writableTotalBlock = new byte[thisStructure.EffectiveLength];
                 _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+                thisStructure.WriteTo(_writableLocalBlock.Span);
             }
         }
-        protected EntityBase(BlockStructure structure, ReadOnlyMemory<byte> buffer)
+        protected EntityBase(BlockStructure thisStructure, ReadOnlyMemory<byte> buffer)
         {
+            BlockStructure thatStructure = new BlockStructure(buffer.Span);
+            CheckStructures(thisStructure, thatStructure);
             // todo copy slices if source buffer structure not same
             _readonlyTotalBlock = buffer;
             _writableTotalBlock = Memory<byte>.Empty;
