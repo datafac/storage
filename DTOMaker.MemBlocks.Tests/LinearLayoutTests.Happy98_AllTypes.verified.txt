@@ -22,12 +22,17 @@ namespace MyOrg.Models.MemBlocks
     {
         // Derived entities: 0
 
+        private const long BlockSignatureCode = 89980L;
+        private const long BlockStructureCode = 113L;
         private const int ClassHeight = 1;
+        private const int BlockOffset = 64;
         private const int BlockLength = 128;
-        private readonly Memory<byte> _writableBlock;
-        private readonly ReadOnlyMemory<byte> _readonlyBlock;
+        private readonly Memory<byte> _writableLocalBlock;
+        private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
         public new const string EntityId = "01234567-89ab-cdef-0123-456789abcdef";
+        private static readonly Guid EntityGuid = new Guid("01234567-89ab-cdef-0123-456789abcdef");
+        private static readonly BlockStructure _structure = new BlockStructure(BlockSignatureCode, BlockStructureCode, EntityGuid);
 
         public new static MyDTO CreateFrom(MyDTO source)
         {
@@ -49,35 +54,16 @@ namespace MyOrg.Models.MemBlocks
 
         public new static MyDTO CreateFrom(ReadOnlyMemory<byte> buffer)
         {
-            var entityId = DataFac.MemBlocks.Protocol.ParseEntityId(buffer);
-            var buffers = DataFac.MemBlocks.Protocol.SplitBuffers(buffer);
-            return entityId switch
+            BlockStructure thatStructure = new BlockStructure(buffer.Span);
+            string entityIdStr = thatStructure.EntityGuid.ToString("D");
+            return entityIdStr switch
             {
-                _ => new MyOrg.Models.MemBlocks.MyDTO(buffers)
+                _ => new MyOrg.Models.MemBlocks.MyDTO(buffer)
             };
         }
 
         protected override string OnGetEntityId() => EntityId;
         protected override int OnGetClassHeight() => ClassHeight;
-        protected override void OnGetBuffers(ReadOnlyMemory<byte>[] buffers)
-        {
-            base.OnGetBuffers(buffers);
-            var block = IsFrozen ? _readonlyBlock : _writableBlock.ToArray();
-            buffers[ClassHeight - 1] = block;
-        }
-        protected override void OnLoadBuffers(ReadOnlyMemory<byte>[] buffers)
-        {
-            base.OnLoadBuffers(buffers);
-            ReadOnlyMemory<byte> source = buffers[ClassHeight - 1];
-            if (source.Length > BlockLength)
-            {
-                source.Slice(0, BlockLength).CopyTo(_writableBlock);
-            }
-            else
-            {
-                source.CopyTo(_writableBlock);
-            }
-        }
 
         protected override IFreezable OnPartCopy() => new MyDTO(this);
 
@@ -118,20 +104,29 @@ namespace MyOrg.Models.MemBlocks
         //    17    96    16        Decimal LE    Field17
         // ------------------------------------------------------------
 
-        public MyDTO()
+        protected MyDTO(BlockStructure structure) : base(structure)
         {
-            _readonlyBlock = _writableBlock = new byte[BlockLength];
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public MyDTO(MyDTO source) : base(source)
+        public MyDTO() : base(_structure)
         {
-            _writableBlock = source._readonlyBlock.ToArray();
-            _readonlyBlock = _writableBlock;
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public MyDTO(IMyDTO source) : base(source)
+        protected MyDTO(BlockStructure structure, MyDTO source) : base(structure, source)
         {
-            _readonlyBlock = _writableBlock = new byte[BlockLength];
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+
+        public MyDTO(MyDTO source) : base(_structure, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+
+        protected MyDTO(BlockStructure structure, IMyDTO source) : base(structure, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
             this.Field1 = source.Field1;
             this.Field2 = source.Field2;
             this.Field3 = source.Field3;
@@ -151,123 +146,139 @@ namespace MyOrg.Models.MemBlocks
             this.Field17 = source.Field17;
         }
 
-        public MyDTO(ReadOnlyMemory<byte>[] buffers) : base(buffers)
+        public MyDTO(IMyDTO source) : base(_structure, source)
         {
-            ReadOnlyMemory<byte> source = buffers[ClassHeight - 1];
-            if (source.Length >= BlockLength)
-            {
-                _readonlyBlock = source; // todo? keep extra?
-            }
-            else
-            {
-                // forced copy as source is too short
-                Memory<byte> memory = new byte[BlockLength];
-                source.CopyTo(memory);
-                _readonlyBlock = memory;
-            }
-            _writableBlock = Memory<byte>.Empty;
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            this.Field1 = source.Field1;
+            this.Field2 = source.Field2;
+            this.Field3 = source.Field3;
+            this.Field4 = source.Field4;
+            this.Field5 = source.Field5;
+            this.Field6 = source.Field6;
+            this.Field7 = source.Field7;
+            this.Field8 = source.Field8;
+            this.Field9 = source.Field9;
+            this.Field10 = source.Field10;
+            this.Field11 = source.Field11;
+            this.Field12 = source.Field12;
+            this.Field13 = source.Field13;
+            this.Field14 = source.Field14;
+            this.Field15 = source.Field15;
+            this.Field16 = source.Field16;
+            this.Field17 = source.Field17;
+        }
+
+        protected MyDTO(BlockStructure structure, ReadOnlyMemory<byte> buffer) : base(structure, buffer)
+        {
+            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
+            _writableLocalBlock = Memory<byte>.Empty;
+        }
+        public MyDTO(ReadOnlyMemory<byte> buffer) : base(_structure, buffer)
+        {
+            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
+            _writableLocalBlock = Memory<byte>.Empty;
         }
 
         public Boolean Field1
         {
-            get => Codec_Boolean_LE.ReadFromSpan(_readonlyBlock.Slice(0, 1).Span);
-            set => Codec_Boolean_LE.WriteToSpan(_writableBlock.Slice(0, 1).Span, IfNotFrozen(value));
+            get => Codec_Boolean_LE.ReadFromSpan(_readonlyLocalBlock.Slice(0, 1).Span);
+            set => Codec_Boolean_LE.WriteToSpan(_writableLocalBlock.Slice(0, 1).Span, IfNotFrozen(value));
         }
 
         public SByte Field2
         {
-            get => Codec_SByte_LE.ReadFromSpan(_readonlyBlock.Slice(1, 1).Span);
-            set => Codec_SByte_LE.WriteToSpan(_writableBlock.Slice(1, 1).Span, IfNotFrozen(value));
+            get => Codec_SByte_LE.ReadFromSpan(_readonlyLocalBlock.Slice(1, 1).Span);
+            set => Codec_SByte_LE.WriteToSpan(_writableLocalBlock.Slice(1, 1).Span, IfNotFrozen(value));
         }
 
         public Byte Field3
         {
-            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(2, 1).Span);
-            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(2, 1).Span, IfNotFrozen(value));
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyLocalBlock.Slice(2, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableLocalBlock.Slice(2, 1).Span, IfNotFrozen(value));
         }
 
         public Int16 Field4
         {
-            get => Codec_Int16_LE.ReadFromSpan(_readonlyBlock.Slice(4, 2).Span);
-            set => Codec_Int16_LE.WriteToSpan(_writableBlock.Slice(4, 2).Span, IfNotFrozen(value));
+            get => Codec_Int16_LE.ReadFromSpan(_readonlyLocalBlock.Slice(4, 2).Span);
+            set => Codec_Int16_LE.WriteToSpan(_writableLocalBlock.Slice(4, 2).Span, IfNotFrozen(value));
         }
 
         public UInt16 Field5
         {
-            get => Codec_UInt16_LE.ReadFromSpan(_readonlyBlock.Slice(6, 2).Span);
-            set => Codec_UInt16_LE.WriteToSpan(_writableBlock.Slice(6, 2).Span, IfNotFrozen(value));
+            get => Codec_UInt16_LE.ReadFromSpan(_readonlyLocalBlock.Slice(6, 2).Span);
+            set => Codec_UInt16_LE.WriteToSpan(_writableLocalBlock.Slice(6, 2).Span, IfNotFrozen(value));
         }
 
         public Char Field6
         {
-            get => Codec_Char_LE.ReadFromSpan(_readonlyBlock.Slice(8, 2).Span);
-            set => Codec_Char_LE.WriteToSpan(_writableBlock.Slice(8, 2).Span, IfNotFrozen(value));
+            get => Codec_Char_LE.ReadFromSpan(_readonlyLocalBlock.Slice(8, 2).Span);
+            set => Codec_Char_LE.WriteToSpan(_writableLocalBlock.Slice(8, 2).Span, IfNotFrozen(value));
         }
 
         public Half Field7
         {
-            get => Codec_Half_LE.ReadFromSpan(_readonlyBlock.Slice(10, 2).Span);
-            set => Codec_Half_LE.WriteToSpan(_writableBlock.Slice(10, 2).Span, IfNotFrozen(value));
+            get => Codec_Half_LE.ReadFromSpan(_readonlyLocalBlock.Slice(10, 2).Span);
+            set => Codec_Half_LE.WriteToSpan(_writableLocalBlock.Slice(10, 2).Span, IfNotFrozen(value));
         }
 
         public Int32 Field8
         {
-            get => Codec_Int32_LE.ReadFromSpan(_readonlyBlock.Slice(12, 4).Span);
-            set => Codec_Int32_LE.WriteToSpan(_writableBlock.Slice(12, 4).Span, IfNotFrozen(value));
+            get => Codec_Int32_LE.ReadFromSpan(_readonlyLocalBlock.Slice(12, 4).Span);
+            set => Codec_Int32_LE.WriteToSpan(_writableLocalBlock.Slice(12, 4).Span, IfNotFrozen(value));
         }
 
         public UInt32 Field9
         {
-            get => Codec_UInt32_LE.ReadFromSpan(_readonlyBlock.Slice(16, 4).Span);
-            set => Codec_UInt32_LE.WriteToSpan(_writableBlock.Slice(16, 4).Span, IfNotFrozen(value));
+            get => Codec_UInt32_LE.ReadFromSpan(_readonlyLocalBlock.Slice(16, 4).Span);
+            set => Codec_UInt32_LE.WriteToSpan(_writableLocalBlock.Slice(16, 4).Span, IfNotFrozen(value));
         }
 
         public Single Field10
         {
-            get => Codec_Single_LE.ReadFromSpan(_readonlyBlock.Slice(20, 4).Span);
-            set => Codec_Single_LE.WriteToSpan(_writableBlock.Slice(20, 4).Span, IfNotFrozen(value));
+            get => Codec_Single_LE.ReadFromSpan(_readonlyLocalBlock.Slice(20, 4).Span);
+            set => Codec_Single_LE.WriteToSpan(_writableLocalBlock.Slice(20, 4).Span, IfNotFrozen(value));
         }
 
         public Int64 Field11
         {
-            get => Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(24, 8).Span);
-            set => Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(24, 8).Span, IfNotFrozen(value));
+            get => Codec_Int64_LE.ReadFromSpan(_readonlyLocalBlock.Slice(24, 8).Span);
+            set => Codec_Int64_LE.WriteToSpan(_writableLocalBlock.Slice(24, 8).Span, IfNotFrozen(value));
         }
 
         public UInt64 Field12
         {
-            get => Codec_UInt64_LE.ReadFromSpan(_readonlyBlock.Slice(32, 8).Span);
-            set => Codec_UInt64_LE.WriteToSpan(_writableBlock.Slice(32, 8).Span, IfNotFrozen(value));
+            get => Codec_UInt64_LE.ReadFromSpan(_readonlyLocalBlock.Slice(32, 8).Span);
+            set => Codec_UInt64_LE.WriteToSpan(_writableLocalBlock.Slice(32, 8).Span, IfNotFrozen(value));
         }
 
         public Double Field13
         {
-            get => Codec_Double_LE.ReadFromSpan(_readonlyBlock.Slice(40, 8).Span);
-            set => Codec_Double_LE.WriteToSpan(_writableBlock.Slice(40, 8).Span, IfNotFrozen(value));
+            get => Codec_Double_LE.ReadFromSpan(_readonlyLocalBlock.Slice(40, 8).Span);
+            set => Codec_Double_LE.WriteToSpan(_writableLocalBlock.Slice(40, 8).Span, IfNotFrozen(value));
         }
 
         public Guid Field14
         {
-            get => Codec_Guid_LE.ReadFromSpan(_readonlyBlock.Slice(48, 16).Span);
-            set => Codec_Guid_LE.WriteToSpan(_writableBlock.Slice(48, 16).Span, IfNotFrozen(value));
+            get => Codec_Guid_LE.ReadFromSpan(_readonlyLocalBlock.Slice(48, 16).Span);
+            set => Codec_Guid_LE.WriteToSpan(_writableLocalBlock.Slice(48, 16).Span, IfNotFrozen(value));
         }
 
         public Int128 Field15
         {
-            get => Codec_Int128_LE.ReadFromSpan(_readonlyBlock.Slice(64, 16).Span);
-            set => Codec_Int128_LE.WriteToSpan(_writableBlock.Slice(64, 16).Span, IfNotFrozen(value));
+            get => Codec_Int128_LE.ReadFromSpan(_readonlyLocalBlock.Slice(64, 16).Span);
+            set => Codec_Int128_LE.WriteToSpan(_writableLocalBlock.Slice(64, 16).Span, IfNotFrozen(value));
         }
 
         public UInt128 Field16
         {
-            get => Codec_UInt128_LE.ReadFromSpan(_readonlyBlock.Slice(80, 16).Span);
-            set => Codec_UInt128_LE.WriteToSpan(_writableBlock.Slice(80, 16).Span, IfNotFrozen(value));
+            get => Codec_UInt128_LE.ReadFromSpan(_readonlyLocalBlock.Slice(80, 16).Span);
+            set => Codec_UInt128_LE.WriteToSpan(_writableLocalBlock.Slice(80, 16).Span, IfNotFrozen(value));
         }
 
         public Decimal Field17
         {
-            get => Codec_Decimal_LE.ReadFromSpan(_readonlyBlock.Slice(96, 16).Span);
-            set => Codec_Decimal_LE.WriteToSpan(_writableBlock.Slice(96, 16).Span, IfNotFrozen(value));
+            get => Codec_Decimal_LE.ReadFromSpan(_readonlyLocalBlock.Slice(96, 16).Span);
+            set => Codec_Decimal_LE.WriteToSpan(_writableLocalBlock.Slice(96, 16).Span, IfNotFrozen(value));
         }
 
 
@@ -275,40 +286,13 @@ namespace MyOrg.Models.MemBlocks
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
-            if (!base.Equals(other)) return false;
-            if (!_readonlyBlock.Span.SequenceEqual(other._readonlyBlock.Span)) return false;
+            if (!_readonlyTotalBlock.Span.SequenceEqual(other._readonlyTotalBlock.Span)) return false;
             return true;
         }
-
         public override bool Equals(object? obj) => obj is MyDTO other && Equals(other);
+        public override int GetHashCode() => base.GetHashCode();
         public static bool operator ==(MyDTO? left, MyDTO? right) => left is not null ? left.Equals(right) : (right is null);
         public static bool operator !=(MyDTO? left, MyDTO? right) => left is not null ? !left.Equals(right) : (right is not null);
-
-        private int CalcHashCode()
-        {
-            HashCode result = new HashCode();
-            result.Add(base.GetHashCode());
-            result.Add(_readonlyBlock.Length);
-#if NET8_0_OR_GREATER
-            result.AddBytes(_readonlyBlock.Span);
-#else
-            var byteSpan = _readonlyBlock.Span;
-            for (int i = 0; i < byteSpan.Length; i++)
-            {
-                result.Add(byteSpan[i]);
-            }
-#endif
-            return result.ToHashCode();
-        }
-
-        private int? _hashCode;
-        public override int GetHashCode()
-        {
-            if (_hashCode.HasValue) return _hashCode.Value;
-            if (!IsFrozen) return CalcHashCode();
-            _hashCode = CalcHashCode();
-            return _hashCode.Value;
-        }
 
     }
 }

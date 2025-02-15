@@ -1,11 +1,7 @@
 ﻿using DTOMaker.Gentime;
 using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace DTOMaker.MemBlocks
 {
@@ -36,125 +32,6 @@ namespace DTOMaker.MemBlocks
             }
         }
 
-        private static int GetFieldLength(TargetMember member)
-        {
-            string typeName = member.MemberType.FullName;
-            switch (typeName)
-            {
-                case "System.Boolean":
-                case "System.Byte":
-                case "System.SByte":
-                    return 1;
-                case "System.Int16":
-                case "System.UInt16":
-                case "System.Char":
-                case "System.Half":
-                    return 2;
-                case "System.Int32":
-                case "System.UInt32":
-                case "System.Single":
-                    return 4;
-                case "System.Int64":
-                case "System.UInt64":
-                case "System.Double":
-                    return 8;
-                case "System.Int128":
-                case "System.UInt128":
-                case "System.Guid":
-                case "System.Decimal":
-                    return 16;
-                case "System.String":
-                    // encoded as UTF8
-                    return 1;
-                case "DataFac.Memory.Octets":
-                    return 64; // encoded as BlobIdV1
-                default:
-                    return 0;
-            }
-        }
-
-        private static void AutoLayoutMembers(MemBlockEntity entity)
-        {
-            switch (entity.LayoutMethod)
-            {
-                case LayoutMethod.Explicit:
-                    ExplicitLayoutMembers(entity);
-                    break;
-                case LayoutMethod.Linear:
-                    LinearLayoutMembers(entity);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Calculates length for explicitly positioned members
-        /// </summary>
-        /// <param name="entity"></param>
-        private static void ExplicitLayoutMembers(TargetEntity entity)
-        {
-            foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence).OfType<MemBlockMember>())
-            {
-                member.FieldLength = GetFieldLength(member);
-            }
-        }
-
-        /// <summary>
-        /// Calculates offset and length for all members in linear order
-        /// </summary>
-        /// <param name="entity"></param>
-        private static void LinearLayoutMembers(TargetEntity baseEntity)
-        {
-            if (baseEntity is not MemBlockEntity entity) return;
-
-            int minBlockLength = 0;
-            int fieldOffset = 0;
-
-            int Allocate(int fieldLength)
-            {
-                // calculate this offset
-                while (fieldLength > 0 && fieldOffset % fieldLength != 0)
-                {
-                    fieldOffset++;
-                }
-                int result = fieldOffset;
-
-                // calc next offset
-                fieldOffset = fieldOffset + fieldLength;
-                while (fieldOffset > minBlockLength)
-                {
-                    minBlockLength = minBlockLength == 0 ? 1 : minBlockLength * 2;
-                }
-
-                return result;
-            }
-
-            foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence).OfType<MemBlockMember>())
-            {
-                // allocate value bytes
-                int fieldLength = GetFieldLength(member);
-                // adjust field/array length for String types
-                if(member.MemberType.FullName == "System.String")
-                {
-                    fieldLength = member.StringLength;
-                }
-                else if (member.Kind == MemberKind.Entity)
-                {
-                    fieldLength = 64; // encoded as BlobIdV1
-                }
-
-                member.FieldLength = fieldLength;
-                if (member.Kind == MemberKind.Vector)
-                {
-                    member.FieldOffset = Allocate(fieldLength * member.ArrayCapacity);
-                }
-                else
-                {
-                    member.FieldOffset = Allocate(fieldLength);
-                }
-            }
-            entity.BlockLength = minBlockLength;
-        }
-
         protected override void OnExecute(GeneratorExecutionContext context)
         {
             if (context.SyntaxContextReceiver is not MemBlocksSyntaxReceiver syntaxReceiver) return;
@@ -172,7 +49,7 @@ namespace DTOMaker.MemBlocks
             foreach (var entity in domain.Entities.Values.OrderBy(e => e.EntityName.FullName).OfType<MemBlockEntity>())
             {
                 // do any auto-layout if required
-                AutoLayoutMembers(entity);
+                entity.AutoLayoutMembers();
 
                 EmitDiagnostics(context, entity);
                 foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence))

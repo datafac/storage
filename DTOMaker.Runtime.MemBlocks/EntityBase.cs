@@ -10,116 +10,6 @@ using System.Threading.Tasks;
 
 namespace DTOMaker.Runtime.MemBlocks
 {
-    public enum BlockSizeCode : byte
-    {
-        B001 = 0,   // 2^0 = 1
-        B002 = 1,   // 2^1 = 2
-        B004 = 2,   // 2^2 = 4
-        B008 = 3,   // 2^3 = 8
-        B016 = 4,   // 2^4 = 16
-        B032 = 5,
-        B064 = 6,
-        B128 = 7,
-        B256 = 8,
-        B512 = 9,
-        K001 = 10,
-        K002 = 11,
-        K004 = 12,
-        K008 = 13,
-        //K016 = 14,
-        //K032 = 15,
-        //etc.
-    }
-
-    /// <summary>
-    /// todo BlockStructure tests
-    /// </summary>
-    public readonly struct BlockStructure
-    {
-        /// <summary>
-        /// Marker and version bytes
-        /// </summary>
-        public readonly long SignatureCode;
-
-        /// <summary>
-        /// Class height and block size codes
-        /// </summary>
-        public readonly long StructureCode;
-
-        /// <summary>
-        /// Entity identifier
-        /// </summary>
-        public readonly Guid EntityGuid;
-
-        public readonly int EffectiveLength;
-
-        public BlockStructure(long signature, long structure, Guid entityGuid)
-        {
-            SignatureCode = signature;
-            StructureCode = structure;
-            EntityGuid = entityGuid;
-            EffectiveLength = GetEffectiveLength(structure);
-        }
-
-        public BlockStructure(ReadOnlySpan<byte> source)
-        {
-            SignatureCode = Codec_Int64_LE.ReadFromSpan(source.Slice(0, 8));
-            StructureCode = Codec_Int64_LE.ReadFromSpan(source.Slice(8, 8));
-            EntityGuid = Codec_Guid_LE.ReadFromSpan(source.Slice(16, 16));
-            EffectiveLength = GetEffectiveLength(StructureCode);
-        }
-
-        public void WriteTo(Span<byte> target)
-        {
-            Codec_Int64_LE.WriteToSpan(target.Slice(0, 8), SignatureCode);
-            Codec_Int64_LE.WriteToSpan(target.Slice(8, 8), StructureCode);
-            Codec_Guid_LE.WriteToSpan(target.Slice(16, 16), EntityGuid);
-        }
-
-        private static readonly int[] _effectiveBlockSizes = [64, 64, 64, 64, 64, 64, 64, 128, 256, 512, 1024 * 1, 1024 * 2, 1024 * 4, 1024 * 8, 1024 * 16, 1024 * 32];
-        private static int GetEffectiveBlockSize(int code)
-        {
-            if (code < 0 || code >= 16) throw new ArgumentOutOfRangeException(nameof(code), code, null);
-            return _effectiveBlockSizes[code];
-        }
-
-        private static int GetEffectiveLength(long structureCode)
-        {
-            int classHeight = (int)(structureCode & 0x0F);
-            int totalLength = 64;
-            long bits = structureCode;
-            for (int h = 0; h < classHeight && h < 15; h++)
-            {
-                bits = bits >> 4;
-                int blockLength = GetEffectiveBlockSize((int)(bits & 0x0F));
-                totalLength += blockLength;
-            }
-            return totalLength;
-        }
-
-        // -------------------- field map -----------------------------
-        //  Seq.  Off.  Len.  N.    Type    End.  Name
-        //  ----  ----  ----  ----  ------- ----  -------
-        //     1     0     1        Byte    LE    HeaderMajorVersion
-        //     2     1     1        Byte    LE    HeaderMinorVersion
-        //     3     2     1        Byte    LE    HeaderBlockSize
-        //     4     3     1        Byte    LE    ClassHeight
-        //     5     4     1        Byte    LE    BlockSize1
-        //     6     5     1        Byte    LE    BlockSize2
-        //     7     6     1        Byte    LE    BlockSize3
-        //     8     7     1        Byte    LE    BlockSize4
-        //     9     8     1        Byte    LE    BlockSize5
-        //    10     9     1        Byte    LE    BlockSize6
-        //    11    10     1        Byte    LE    BlockSize7
-        //    12    11     1        Byte    LE    BlockSize8
-        //    13    12     4        Int32   LE    Spare1
-        //    14    16    16        Guid    LE    EntityGuid
-        //    15    32    16        Guid    LE    Spare2
-        //    16    48    16        Guid    LE    Spare3
-        // ------------------------------------------------------------
-
-    }
-
     public abstract class EntityBase : IHasEntityId, IMemBlocksEntity, IFreezable, IEquatable<EntityBase>
     {
         #region Static Helpers
@@ -152,20 +42,20 @@ namespace DTOMaker.Runtime.MemBlocks
         }
         protected static void CheckStructures(BlockStructure thisStructure, BlockStructure thatStructure)
         {
-            if (thatStructure.SignatureCode != thisStructure.SignatureCode)
+            if (thatStructure.SignatureBits != thisStructure.SignatureBits)
             {
                 // todo support minor version change
-                throw new NotSupportedException($"Cannot read source with unknown signature ({thatStructure.SignatureCode}), expected ({thisStructure.SignatureCode}).");
+                throw new NotSupportedException($"Cannot read source with unknown signature ({thatStructure.SignatureBits}), expected ({thisStructure.SignatureBits}).");
             }
             if (thatStructure.EntityGuid != thisStructure.EntityGuid)
             {
                 // type mismatch
                 throw new InvalidDataException($"Cannot read source with unknown entity id ({thatStructure.EntityGuid}), expected ({thisStructure.EntityGuid}).");
             }
-            if (thatStructure.StructureCode != thisStructure.StructureCode)
+            if (thatStructure.StructureBits != thisStructure.StructureBits)
             {
                 // todo structure conversion
-                throw new NotSupportedException($"Cannot read source with different structure ({thatStructure.StructureCode}), expected ({thisStructure.StructureCode}).");
+                throw new NotSupportedException($"Cannot read source with different structure ({thatStructure.StructureBits}), expected ({thisStructure.StructureBits}).");
             }
         }
         protected EntityBase(BlockStructure thisStructure, object source)

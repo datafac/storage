@@ -29,7 +29,7 @@ namespace DTOMaker.MemBlocks
                     if (CheckAttributeArguments(nameof(LayoutAttribute), attributeArguments, 2, entity, location))
                     {
                         TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 0, (value) => { entity.LayoutMethod = (LayoutMethod)value; });
-                        TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 1, (value) => { entity.BlockLength = value; });
+                        TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 1, (value) => { entity.LocalBlockLength = value; });
                     }
                 }
             }

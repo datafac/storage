@@ -45,8 +45,8 @@ namespace Template.MemBlocks.Tests
             written.ShouldBeTrue();
 
             BlockStructure structure = new BlockStructure(buffer);
-            structure.SignatureCode.ShouldBe(89980L);
-            structure.StructureCode.ShouldBe(0x61);
+            structure.SignatureBits.ShouldBe(89980L);
+            structure.StructureBits.ShouldBe(0x61);
             structure.EffectiveLength.ShouldBe(128);
             structure.EntityGuid.ToString("D").ShouldBe("aa1e2d7b-fcb5-4739-9624-f6a648815251");
         }
@@ -66,8 +66,8 @@ namespace Template.MemBlocks.Tests
             buffer[3].ShouldBe((byte)0);    // minor version
 
             BlockStructure structure = new BlockStructure(buffer);
-            structure.SignatureCode.ShouldBe(89980L);
-            structure.StructureCode.ShouldBe(0x61);
+            structure.SignatureBits.ShouldBe(89980L);
+            structure.StructureBits.ShouldBe(0x61);
             structure.EffectiveLength.ShouldBe(128);
             structure.EntityGuid.ToString("D").ShouldBe("8bb1290a-9336-4371-8dad-fccd8d9c4494");
         }

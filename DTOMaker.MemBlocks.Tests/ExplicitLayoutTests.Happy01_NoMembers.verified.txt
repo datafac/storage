@@ -22,12 +22,17 @@ namespace MyOrg.Models.MemBlocks
     {
         // Derived entities: 0
 
+        private const long BlockSignatureCode = 89980L;
+        private const long BlockStructureCode = 97L;
         private const int ClassHeight = 1;
+        private const int BlockOffset = 64;
         private const int BlockLength = 64;
-        private readonly Memory<byte> _writableBlock;
-        private readonly ReadOnlyMemory<byte> _readonlyBlock;
+        private readonly Memory<byte> _writableLocalBlock;
+        private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
         public new const string EntityId = "01234567-89ab-cdef-0123-456789abcdef";
+        private static readonly Guid EntityGuid = new Guid("01234567-89ab-cdef-0123-456789abcdef");
+        private static readonly BlockStructure _structure = new BlockStructure(BlockSignatureCode, BlockStructureCode, EntityGuid);
 
         public new static MyDTO CreateFrom(MyDTO source)
         {
@@ -49,35 +54,16 @@ namespace MyOrg.Models.MemBlocks
 
         public new static MyDTO CreateFrom(ReadOnlyMemory<byte> buffer)
         {
-            var entityId = DataFac.MemBlocks.Protocol.ParseEntityId(buffer);
-            var buffers = DataFac.MemBlocks.Protocol.SplitBuffers(buffer);
-            return entityId switch
+            BlockStructure thatStructure = new BlockStructure(buffer.Span);
+            string entityIdStr = thatStructure.EntityGuid.ToString("D");
+            return entityIdStr switch
             {
-                _ => new MyOrg.Models.MemBlocks.MyDTO(buffers)
+                _ => new MyOrg.Models.MemBlocks.MyDTO(buffer)
             };
         }
 
         protected override string OnGetEntityId() => EntityId;
         protected override int OnGetClassHeight() => ClassHeight;
-        protected override void OnGetBuffers(ReadOnlyMemory<byte>[] buffers)
-        {
-            base.OnGetBuffers(buffers);
-            var block = IsFrozen ? _readonlyBlock : _writableBlock.ToArray();
-            buffers[ClassHeight - 1] = block;
-        }
-        protected override void OnLoadBuffers(ReadOnlyMemory<byte>[] buffers)
-        {
-            base.OnLoadBuffers(buffers);
-            ReadOnlyMemory<byte> source = buffers[ClassHeight - 1];
-            if (source.Length > BlockLength)
-            {
-                source.Slice(0, BlockLength).CopyTo(_writableBlock);
-            }
-            else
-            {
-                source.CopyTo(_writableBlock);
-            }
-        }
 
         protected override IFreezable OnPartCopy() => new MyDTO(this);
 
@@ -101,37 +87,45 @@ namespace MyOrg.Models.MemBlocks
         //  ----  ----  ----  ----  ------- ----  -------
         // ------------------------------------------------------------
 
-        public MyDTO()
+        protected MyDTO(BlockStructure structure) : base(structure)
         {
-            _readonlyBlock = _writableBlock = new byte[BlockLength];
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public MyDTO(MyDTO source) : base(source)
+        public MyDTO() : base(_structure)
         {
-            _writableBlock = source._readonlyBlock.ToArray();
-            _readonlyBlock = _writableBlock;
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public MyDTO(IMyDTO source) : base(source)
+        protected MyDTO(BlockStructure structure, MyDTO source) : base(structure, source)
         {
-            _readonlyBlock = _writableBlock = new byte[BlockLength];
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public MyDTO(ReadOnlyMemory<byte>[] buffers) : base(buffers)
+        public MyDTO(MyDTO source) : base(_structure, source)
         {
-            ReadOnlyMemory<byte> source = buffers[ClassHeight - 1];
-            if (source.Length >= BlockLength)
-            {
-                _readonlyBlock = source; // todo? keep extra?
-            }
-            else
-            {
-                // forced copy as source is too short
-                Memory<byte> memory = new byte[BlockLength];
-                source.CopyTo(memory);
-                _readonlyBlock = memory;
-            }
-            _writableBlock = Memory<byte>.Empty;
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+
+        protected MyDTO(BlockStructure structure, IMyDTO source) : base(structure, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+
+        public MyDTO(IMyDTO source) : base(_structure, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+
+        protected MyDTO(BlockStructure structure, ReadOnlyMemory<byte> buffer) : base(structure, buffer)
+        {
+            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
+            _writableLocalBlock = Memory<byte>.Empty;
+        }
+        public MyDTO(ReadOnlyMemory<byte> buffer) : base(_structure, buffer)
+        {
+            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
+            _writableLocalBlock = Memory<byte>.Empty;
         }
 
 
@@ -139,40 +133,13 @@ namespace MyOrg.Models.MemBlocks
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
-            if (!base.Equals(other)) return false;
-            if (!_readonlyBlock.Span.SequenceEqual(other._readonlyBlock.Span)) return false;
+            if (!_readonlyTotalBlock.Span.SequenceEqual(other._readonlyTotalBlock.Span)) return false;
             return true;
         }
-
         public override bool Equals(object? obj) => obj is MyDTO other && Equals(other);
+        public override int GetHashCode() => base.GetHashCode();
         public static bool operator ==(MyDTO? left, MyDTO? right) => left is not null ? left.Equals(right) : (right is null);
         public static bool operator !=(MyDTO? left, MyDTO? right) => left is not null ? !left.Equals(right) : (right is not null);
-
-        private int CalcHashCode()
-        {
-            HashCode result = new HashCode();
-            result.Add(base.GetHashCode());
-            result.Add(_readonlyBlock.Length);
-#if NET8_0_OR_GREATER
-            result.AddBytes(_readonlyBlock.Span);
-#else
-            var byteSpan = _readonlyBlock.Span;
-            for (int i = 0; i < byteSpan.Length; i++)
-            {
-                result.Add(byteSpan[i]);
-            }
-#endif
-            return result.ToHashCode();
-        }
-
-        private int? _hashCode;
-        public override int GetHashCode()
-        {
-            if (_hashCode.HasValue) return _hashCode.Value;
-            if (!IsFrozen) return CalcHashCode();
-            _hashCode = CalcHashCode();
-            return _hashCode.Value;
-        }
 
     }
 }

@@ -24,12 +24,17 @@ namespace MyOrg.Models.MemBlocks
         // - Rectangle
         // - Square
 
+        private const long BlockSignatureCode = 89980L;
+        private const long BlockStructureCode = 2L;
         private const int ClassHeight = 2;
+        private const int BlockOffset = 128;
         private const int BlockLength = 0;
-        private readonly Memory<byte> _writableBlock;
-        private readonly ReadOnlyMemory<byte> _readonlyBlock;
+        private readonly Memory<byte> _writableLocalBlock;
+        private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
         public new const string EntityId = "01234567-89ab-cdef-0204-456789abcdef";
+        private static readonly Guid EntityGuid = new Guid("01234567-89ab-cdef-0204-456789abcdef");
+        private static readonly BlockStructure _structure = new BlockStructure(BlockSignatureCode, BlockStructureCode, EntityGuid);
 
         public new static Quadrilateral CreateFrom(Quadrilateral source)
         {
@@ -55,37 +60,18 @@ namespace MyOrg.Models.MemBlocks
 
         public new static Quadrilateral CreateFrom(ReadOnlyMemory<byte> buffer)
         {
-            var entityId = DataFac.MemBlocks.Protocol.ParseEntityId(buffer);
-            var buffers = DataFac.MemBlocks.Protocol.SplitBuffers(buffer);
-            return entityId switch
+            BlockStructure thatStructure = new BlockStructure(buffer.Span);
+            string entityIdStr = thatStructure.EntityGuid.ToString("D");
+            return entityIdStr switch
             {
-                MyOrg.Models.MemBlocks.Rectangle.EntityId => new MyOrg.Models.MemBlocks.Rectangle(buffers),
-                MyOrg.Models.MemBlocks.Square.EntityId => new MyOrg.Models.MemBlocks.Square(buffers),
-                _ => new MyOrg.Models.MemBlocks.Quadrilateral(buffers)
+                MyOrg.Models.MemBlocks.Rectangle.EntityId => new MyOrg.Models.MemBlocks.Rectangle(buffer),
+                MyOrg.Models.MemBlocks.Square.EntityId => new MyOrg.Models.MemBlocks.Square(buffer),
+                _ => new MyOrg.Models.MemBlocks.Quadrilateral(buffer)
             };
         }
 
         protected override string OnGetEntityId() => EntityId;
         protected override int OnGetClassHeight() => ClassHeight;
-        protected override void OnGetBuffers(ReadOnlyMemory<byte>[] buffers)
-        {
-            base.OnGetBuffers(buffers);
-            var block = IsFrozen ? _readonlyBlock : _writableBlock.ToArray();
-            buffers[ClassHeight - 1] = block;
-        }
-        protected override void OnLoadBuffers(ReadOnlyMemory<byte>[] buffers)
-        {
-            base.OnLoadBuffers(buffers);
-            ReadOnlyMemory<byte> source = buffers[ClassHeight - 1];
-            if (source.Length > BlockLength)
-            {
-                source.Slice(0, BlockLength).CopyTo(_writableBlock);
-            }
-            else
-            {
-                source.CopyTo(_writableBlock);
-            }
-        }
 
         protected override IFreezable OnPartCopy() => new Quadrilateral(this);
 
@@ -109,37 +95,45 @@ namespace MyOrg.Models.MemBlocks
         //  ----  ----  ----  ----  ------- ----  -------
         // ------------------------------------------------------------
 
-        public Quadrilateral()
+        protected Quadrilateral(BlockStructure structure) : base(structure)
         {
-            _readonlyBlock = _writableBlock = new byte[BlockLength];
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public Quadrilateral(Quadrilateral source) : base(source)
+        public Quadrilateral() : base(_structure)
         {
-            _writableBlock = source._readonlyBlock.ToArray();
-            _readonlyBlock = _writableBlock;
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public Quadrilateral(IQuadrilateral source) : base(source)
+        protected Quadrilateral(BlockStructure structure, Quadrilateral source) : base(structure, source)
         {
-            _readonlyBlock = _writableBlock = new byte[BlockLength];
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public Quadrilateral(ReadOnlyMemory<byte>[] buffers) : base(buffers)
+        public Quadrilateral(Quadrilateral source) : base(_structure, source)
         {
-            ReadOnlyMemory<byte> source = buffers[ClassHeight - 1];
-            if (source.Length >= BlockLength)
-            {
-                _readonlyBlock = source; // todo? keep extra?
-            }
-            else
-            {
-                // forced copy as source is too short
-                Memory<byte> memory = new byte[BlockLength];
-                source.CopyTo(memory);
-                _readonlyBlock = memory;
-            }
-            _writableBlock = Memory<byte>.Empty;
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+
+        protected Quadrilateral(BlockStructure structure, IQuadrilateral source) : base(structure, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+
+        public Quadrilateral(IQuadrilateral source) : base(_structure, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+
+        protected Quadrilateral(BlockStructure structure, ReadOnlyMemory<byte> buffer) : base(structure, buffer)
+        {
+            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
+            _writableLocalBlock = Memory<byte>.Empty;
+        }
+        public Quadrilateral(ReadOnlyMemory<byte> buffer) : base(_structure, buffer)
+        {
+            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
+            _writableLocalBlock = Memory<byte>.Empty;
         }
 
 
@@ -147,40 +141,13 @@ namespace MyOrg.Models.MemBlocks
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
-            if (!base.Equals(other)) return false;
-            if (!_readonlyBlock.Span.SequenceEqual(other._readonlyBlock.Span)) return false;
+            if (!_readonlyTotalBlock.Span.SequenceEqual(other._readonlyTotalBlock.Span)) return false;
             return true;
         }
-
         public override bool Equals(object? obj) => obj is Quadrilateral other && Equals(other);
+        public override int GetHashCode() => base.GetHashCode();
         public static bool operator ==(Quadrilateral? left, Quadrilateral? right) => left is not null ? left.Equals(right) : (right is null);
         public static bool operator !=(Quadrilateral? left, Quadrilateral? right) => left is not null ? !left.Equals(right) : (right is not null);
-
-        private int CalcHashCode()
-        {
-            HashCode result = new HashCode();
-            result.Add(base.GetHashCode());
-            result.Add(_readonlyBlock.Length);
-#if NET8_0_OR_GREATER
-            result.AddBytes(_readonlyBlock.Span);
-#else
-            var byteSpan = _readonlyBlock.Span;
-            for (int i = 0; i < byteSpan.Length; i++)
-            {
-                result.Add(byteSpan[i]);
-            }
-#endif
-            return result.ToHashCode();
-        }
-
-        private int? _hashCode;
-        public override int GetHashCode()
-        {
-            if (_hashCode.HasValue) return _hashCode.Value;
-            if (!IsFrozen) return CalcHashCode();
-            _hashCode = CalcHashCode();
-            return _hashCode.Value;
-        }
 
     }
 }

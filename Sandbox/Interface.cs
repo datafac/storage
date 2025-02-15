@@ -1,5 +1,6 @@
-﻿using DataFac.Memory;
-using System;
+﻿using System;
+using DataFac.Memory;
+using DTOMaker.Models;
 namespace MyOrg.Models
 {
     public interface IOther

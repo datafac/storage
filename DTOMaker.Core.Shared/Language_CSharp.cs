@@ -34,6 +34,7 @@
                 long l => $"{l}L",
                 ulong ul => $"{ul}UL",
                 decimal m => $"{m}M",
+                System.Guid g => $"new Guid(\"{(g.ToString("D"))}\")",
                 _ => $"{value}"
             };
         }

@@ -22,12 +22,17 @@ namespace MyOrg.Models.MemBlocks
     {
         // Derived entities: 0
 
+        private const long BlockSignatureCode = 89980L;
+        private const long BlockStructureCode = 97L;
         private const int ClassHeight = 1;
+        private const int BlockOffset = 64;
         private const int BlockLength = 64;
-        private readonly Memory<byte> _writableBlock;
-        private readonly ReadOnlyMemory<byte> _readonlyBlock;
+        private readonly Memory<byte> _writableLocalBlock;
+        private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
         public new const string EntityId = "01234567-89ab-cdef-0123-456789abcdef";
+        private static readonly Guid EntityGuid = new Guid("01234567-89ab-cdef-0123-456789abcdef");
+        private static readonly BlockStructure _structure = new BlockStructure(BlockSignatureCode, BlockStructureCode, EntityGuid);
 
         public new static Header CreateFrom(Header source)
         {
@@ -49,35 +54,16 @@ namespace MyOrg.Models.MemBlocks
 
         public new static Header CreateFrom(ReadOnlyMemory<byte> buffer)
         {
-            var entityId = DataFac.MemBlocks.Protocol.ParseEntityId(buffer);
-            var buffers = DataFac.MemBlocks.Protocol.SplitBuffers(buffer);
-            return entityId switch
+            BlockStructure thatStructure = new BlockStructure(buffer.Span);
+            string entityIdStr = thatStructure.EntityGuid.ToString("D");
+            return entityIdStr switch
             {
-                _ => new MyOrg.Models.MemBlocks.Header(buffers)
+                _ => new MyOrg.Models.MemBlocks.Header(buffer)
             };
         }
 
         protected override string OnGetEntityId() => EntityId;
         protected override int OnGetClassHeight() => ClassHeight;
-        protected override void OnGetBuffers(ReadOnlyMemory<byte>[] buffers)
-        {
-            base.OnGetBuffers(buffers);
-            var block = IsFrozen ? _readonlyBlock : _writableBlock.ToArray();
-            buffers[ClassHeight - 1] = block;
-        }
-        protected override void OnLoadBuffers(ReadOnlyMemory<byte>[] buffers)
-        {
-            base.OnLoadBuffers(buffers);
-            ReadOnlyMemory<byte> source = buffers[ClassHeight - 1];
-            if (source.Length > BlockLength)
-            {
-                source.Slice(0, BlockLength).CopyTo(_writableBlock);
-            }
-            else
-            {
-                source.CopyTo(_writableBlock);
-            }
-        }
 
         protected override IFreezable OnPartCopy() => new Header(this);
 
@@ -120,20 +106,29 @@ namespace MyOrg.Models.MemBlocks
         //    19    48    16        Guid    LE    SpareGuid1
         // ------------------------------------------------------------
 
-        public Header()
+        protected Header(BlockStructure structure) : base(structure)
         {
-            _readonlyBlock = _writableBlock = new byte[BlockLength];
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public Header(Header source) : base(source)
+        public Header() : base(_structure)
         {
-            _writableBlock = source._readonlyBlock.ToArray();
-            _readonlyBlock = _writableBlock;
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public Header(IHeader source) : base(source)
+        protected Header(BlockStructure structure, Header source) : base(structure, source)
         {
-            _readonlyBlock = _writableBlock = new byte[BlockLength];
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+
+        public Header(Header source) : base(_structure, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+
+        protected Header(BlockStructure structure, IHeader source) : base(structure, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
             this.MarkerByte0 = source.MarkerByte0;
             this.MarkerByte1 = source.MarkerByte1;
             this.HeaderMajorVersion = source.HeaderMajorVersion;
@@ -155,135 +150,153 @@ namespace MyOrg.Models.MemBlocks
             this.SpareGuid1 = source.SpareGuid1;
         }
 
-        public Header(ReadOnlyMemory<byte>[] buffers) : base(buffers)
+        public Header(IHeader source) : base(_structure, source)
         {
-            ReadOnlyMemory<byte> source = buffers[ClassHeight - 1];
-            if (source.Length >= BlockLength)
-            {
-                _readonlyBlock = source; // todo? keep extra?
-            }
-            else
-            {
-                // forced copy as source is too short
-                Memory<byte> memory = new byte[BlockLength];
-                source.CopyTo(memory);
-                _readonlyBlock = memory;
-            }
-            _writableBlock = Memory<byte>.Empty;
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            this.MarkerByte0 = source.MarkerByte0;
+            this.MarkerByte1 = source.MarkerByte1;
+            this.HeaderMajorVersion = source.HeaderMajorVersion;
+            this.HeaderMinorVersion = source.HeaderMinorVersion;
+            this.SpareByte0 = source.SpareByte0;
+            this.SpareByte1 = source.SpareByte1;
+            this.SpareByte2 = source.SpareByte2;
+            this.SpareByte3 = source.SpareByte3;
+            this.ClassHeight = source.ClassHeight;
+            this.BlockSize1 = source.BlockSize1;
+            this.BlockSize2 = source.BlockSize2;
+            this.BlockSize3 = source.BlockSize3;
+            this.BlockSize4 = source.BlockSize4;
+            this.BlockSize5 = source.BlockSize5;
+            this.BlockSize6 = source.BlockSize6;
+            this.BlockSize7 = source.BlockSize7;
+            this.EntityGuid = source.EntityGuid;
+            this.SpareGuid0 = source.SpareGuid0;
+            this.SpareGuid1 = source.SpareGuid1;
+        }
+
+        protected Header(BlockStructure structure, ReadOnlyMemory<byte> buffer) : base(structure, buffer)
+        {
+            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
+            _writableLocalBlock = Memory<byte>.Empty;
+        }
+        public Header(ReadOnlyMemory<byte> buffer) : base(_structure, buffer)
+        {
+            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
+            _writableLocalBlock = Memory<byte>.Empty;
         }
 
         public Byte MarkerByte0
         {
-            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(0, 1).Span);
-            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(0, 1).Span, IfNotFrozen(value));
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyLocalBlock.Slice(0, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableLocalBlock.Slice(0, 1).Span, IfNotFrozen(value));
         }
 
         public Byte MarkerByte1
         {
-            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(1, 1).Span);
-            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(1, 1).Span, IfNotFrozen(value));
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyLocalBlock.Slice(1, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableLocalBlock.Slice(1, 1).Span, IfNotFrozen(value));
         }
 
         public Byte HeaderMajorVersion
         {
-            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(2, 1).Span);
-            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(2, 1).Span, IfNotFrozen(value));
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyLocalBlock.Slice(2, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableLocalBlock.Slice(2, 1).Span, IfNotFrozen(value));
         }
 
         public Byte HeaderMinorVersion
         {
-            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(3, 1).Span);
-            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(3, 1).Span, IfNotFrozen(value));
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyLocalBlock.Slice(3, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableLocalBlock.Slice(3, 1).Span, IfNotFrozen(value));
         }
 
         public Byte SpareByte0
         {
-            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(4, 1).Span);
-            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(4, 1).Span, IfNotFrozen(value));
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyLocalBlock.Slice(4, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableLocalBlock.Slice(4, 1).Span, IfNotFrozen(value));
         }
 
         public Byte SpareByte1
         {
-            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(5, 1).Span);
-            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(5, 1).Span, IfNotFrozen(value));
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyLocalBlock.Slice(5, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableLocalBlock.Slice(5, 1).Span, IfNotFrozen(value));
         }
 
         public Byte SpareByte2
         {
-            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(6, 1).Span);
-            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(6, 1).Span, IfNotFrozen(value));
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyLocalBlock.Slice(6, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableLocalBlock.Slice(6, 1).Span, IfNotFrozen(value));
         }
 
         public Byte SpareByte3
         {
-            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(7, 1).Span);
-            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(7, 1).Span, IfNotFrozen(value));
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyLocalBlock.Slice(7, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableLocalBlock.Slice(7, 1).Span, IfNotFrozen(value));
         }
 
         public Byte ClassHeight
         {
-            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(8, 1).Span);
-            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(8, 1).Span, IfNotFrozen(value));
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyLocalBlock.Slice(8, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableLocalBlock.Slice(8, 1).Span, IfNotFrozen(value));
         }
 
         public Byte BlockSize1
         {
-            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(9, 1).Span);
-            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(9, 1).Span, IfNotFrozen(value));
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyLocalBlock.Slice(9, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableLocalBlock.Slice(9, 1).Span, IfNotFrozen(value));
         }
 
         public Byte BlockSize2
         {
-            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(10, 1).Span);
-            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(10, 1).Span, IfNotFrozen(value));
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyLocalBlock.Slice(10, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableLocalBlock.Slice(10, 1).Span, IfNotFrozen(value));
         }
 
         public Byte BlockSize3
         {
-            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(11, 1).Span);
-            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(11, 1).Span, IfNotFrozen(value));
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyLocalBlock.Slice(11, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableLocalBlock.Slice(11, 1).Span, IfNotFrozen(value));
         }
 
         public Byte BlockSize4
         {
-            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(12, 1).Span);
-            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(12, 1).Span, IfNotFrozen(value));
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyLocalBlock.Slice(12, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableLocalBlock.Slice(12, 1).Span, IfNotFrozen(value));
         }
 
         public Byte BlockSize5
         {
-            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(13, 1).Span);
-            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(13, 1).Span, IfNotFrozen(value));
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyLocalBlock.Slice(13, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableLocalBlock.Slice(13, 1).Span, IfNotFrozen(value));
         }
 
         public Byte BlockSize6
         {
-            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(14, 1).Span);
-            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(14, 1).Span, IfNotFrozen(value));
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyLocalBlock.Slice(14, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableLocalBlock.Slice(14, 1).Span, IfNotFrozen(value));
         }
 
         public Byte BlockSize7
         {
-            get => Codec_Byte_LE.ReadFromSpan(_readonlyBlock.Slice(15, 1).Span);
-            set => Codec_Byte_LE.WriteToSpan(_writableBlock.Slice(15, 1).Span, IfNotFrozen(value));
+            get => Codec_Byte_LE.ReadFromSpan(_readonlyLocalBlock.Slice(15, 1).Span);
+            set => Codec_Byte_LE.WriteToSpan(_writableLocalBlock.Slice(15, 1).Span, IfNotFrozen(value));
         }
 
         public Guid EntityGuid
         {
-            get => Codec_Guid_LE.ReadFromSpan(_readonlyBlock.Slice(16, 16).Span);
-            set => Codec_Guid_LE.WriteToSpan(_writableBlock.Slice(16, 16).Span, IfNotFrozen(value));
+            get => Codec_Guid_LE.ReadFromSpan(_readonlyLocalBlock.Slice(16, 16).Span);
+            set => Codec_Guid_LE.WriteToSpan(_writableLocalBlock.Slice(16, 16).Span, IfNotFrozen(value));
         }
 
         public Guid SpareGuid0
         {
-            get => Codec_Guid_LE.ReadFromSpan(_readonlyBlock.Slice(32, 16).Span);
-            set => Codec_Guid_LE.WriteToSpan(_writableBlock.Slice(32, 16).Span, IfNotFrozen(value));
+            get => Codec_Guid_LE.ReadFromSpan(_readonlyLocalBlock.Slice(32, 16).Span);
+            set => Codec_Guid_LE.WriteToSpan(_writableLocalBlock.Slice(32, 16).Span, IfNotFrozen(value));
         }
 
         public Guid SpareGuid1
         {
-            get => Codec_Guid_LE.ReadFromSpan(_readonlyBlock.Slice(48, 16).Span);
-            set => Codec_Guid_LE.WriteToSpan(_writableBlock.Slice(48, 16).Span, IfNotFrozen(value));
+            get => Codec_Guid_LE.ReadFromSpan(_readonlyLocalBlock.Slice(48, 16).Span);
+            set => Codec_Guid_LE.WriteToSpan(_writableLocalBlock.Slice(48, 16).Span, IfNotFrozen(value));
         }
 
 
@@ -291,40 +304,13 @@ namespace MyOrg.Models.MemBlocks
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
-            if (!base.Equals(other)) return false;
-            if (!_readonlyBlock.Span.SequenceEqual(other._readonlyBlock.Span)) return false;
+            if (!_readonlyTotalBlock.Span.SequenceEqual(other._readonlyTotalBlock.Span)) return false;
             return true;
         }
-
         public override bool Equals(object? obj) => obj is Header other && Equals(other);
+        public override int GetHashCode() => base.GetHashCode();
         public static bool operator ==(Header? left, Header? right) => left is not null ? left.Equals(right) : (right is null);
         public static bool operator !=(Header? left, Header? right) => left is not null ? !left.Equals(right) : (right is not null);
-
-        private int CalcHashCode()
-        {
-            HashCode result = new HashCode();
-            result.Add(base.GetHashCode());
-            result.Add(_readonlyBlock.Length);
-#if NET8_0_OR_GREATER
-            result.AddBytes(_readonlyBlock.Span);
-#else
-            var byteSpan = _readonlyBlock.Span;
-            for (int i = 0; i < byteSpan.Length; i++)
-            {
-                result.Add(byteSpan[i]);
-            }
-#endif
-            return result.ToHashCode();
-        }
-
-        private int? _hashCode;
-        public override int GetHashCode()
-        {
-            if (_hashCode.HasValue) return _hashCode.Value;
-            if (!IsFrozen) return CalcHashCode();
-            _hashCode = CalcHashCode();
-            return _hashCode.Value;
-        }
 
     }
 }

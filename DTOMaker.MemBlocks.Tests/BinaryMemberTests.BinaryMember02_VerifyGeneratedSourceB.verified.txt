@@ -22,12 +22,17 @@ namespace MyOrg.Models.MemBlocks
     {
         // Derived entities: 0
 
+        private const long BlockSignatureCode = 89980L;
+        private const long BlockStructureCode = 65L;
         private const int ClassHeight = 1;
+        private const int BlockOffset = 64;
         private const int BlockLength = 16;
-        private readonly Memory<byte> _writableBlock;
-        private readonly ReadOnlyMemory<byte> _readonlyBlock;
+        private readonly Memory<byte> _writableLocalBlock;
+        private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
         public new const string EntityId = "46b4cf1e-d1f9-48ac-af8e-4c8b4d40b077";
+        private static readonly Guid EntityGuid = new Guid("46b4cf1e-d1f9-48ac-af8e-4c8b4d40b077");
+        private static readonly BlockStructure _structure = new BlockStructure(BlockSignatureCode, BlockStructureCode, EntityGuid);
 
         public new static Other CreateFrom(Other source)
         {
@@ -49,35 +54,16 @@ namespace MyOrg.Models.MemBlocks
 
         public new static Other CreateFrom(ReadOnlyMemory<byte> buffer)
         {
-            var entityId = DataFac.MemBlocks.Protocol.ParseEntityId(buffer);
-            var buffers = DataFac.MemBlocks.Protocol.SplitBuffers(buffer);
-            return entityId switch
+            BlockStructure thatStructure = new BlockStructure(buffer.Span);
+            string entityIdStr = thatStructure.EntityGuid.ToString("D");
+            return entityIdStr switch
             {
-                _ => new MyOrg.Models.MemBlocks.Other(buffers)
+                _ => new MyOrg.Models.MemBlocks.Other(buffer)
             };
         }
 
         protected override string OnGetEntityId() => EntityId;
         protected override int OnGetClassHeight() => ClassHeight;
-        protected override void OnGetBuffers(ReadOnlyMemory<byte>[] buffers)
-        {
-            base.OnGetBuffers(buffers);
-            var block = IsFrozen ? _readonlyBlock : _writableBlock.ToArray();
-            buffers[ClassHeight - 1] = block;
-        }
-        protected override void OnLoadBuffers(ReadOnlyMemory<byte>[] buffers)
-        {
-            base.OnLoadBuffers(buffers);
-            ReadOnlyMemory<byte> source = buffers[ClassHeight - 1];
-            if (source.Length > BlockLength)
-            {
-                source.Slice(0, BlockLength).CopyTo(_writableBlock);
-            }
-            else
-            {
-                source.CopyTo(_writableBlock);
-            }
-        }
 
         protected override IFreezable OnPartCopy() => new Other(this);
 
@@ -103,51 +89,61 @@ namespace MyOrg.Models.MemBlocks
         //     2     8     8        Int64   LE    Value2
         // ------------------------------------------------------------
 
-        public Other()
+        protected Other(BlockStructure structure) : base(structure)
         {
-            _readonlyBlock = _writableBlock = new byte[BlockLength];
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public Other(Other source) : base(source)
+        public Other() : base(_structure)
         {
-            _writableBlock = source._readonlyBlock.ToArray();
-            _readonlyBlock = _writableBlock;
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public Other(IOther source) : base(source)
+        protected Other(BlockStructure structure, Other source) : base(structure, source)
         {
-            _readonlyBlock = _writableBlock = new byte[BlockLength];
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+
+        public Other(Other source) : base(_structure, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+
+        protected Other(BlockStructure structure, IOther source) : base(structure, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
             this.Value1 = source.Value1;
             this.Value2 = source.Value2;
         }
 
-        public Other(ReadOnlyMemory<byte>[] buffers) : base(buffers)
+        public Other(IOther source) : base(_structure, source)
         {
-            ReadOnlyMemory<byte> source = buffers[ClassHeight - 1];
-            if (source.Length >= BlockLength)
-            {
-                _readonlyBlock = source; // todo? keep extra?
-            }
-            else
-            {
-                // forced copy as source is too short
-                Memory<byte> memory = new byte[BlockLength];
-                source.CopyTo(memory);
-                _readonlyBlock = memory;
-            }
-            _writableBlock = Memory<byte>.Empty;
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            this.Value1 = source.Value1;
+            this.Value2 = source.Value2;
+        }
+
+        protected Other(BlockStructure structure, ReadOnlyMemory<byte> buffer) : base(structure, buffer)
+        {
+            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
+            _writableLocalBlock = Memory<byte>.Empty;
+        }
+        public Other(ReadOnlyMemory<byte> buffer) : base(_structure, buffer)
+        {
+            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
+            _writableLocalBlock = Memory<byte>.Empty;
         }
 
         public Int64 Value1
         {
-            get => Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(0, 8).Span);
-            set => Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(0, 8).Span, IfNotFrozen(value));
+            get => Codec_Int64_LE.ReadFromSpan(_readonlyLocalBlock.Slice(0, 8).Span);
+            set => Codec_Int64_LE.WriteToSpan(_writableLocalBlock.Slice(0, 8).Span, IfNotFrozen(value));
         }
 
         public Int64 Value2
         {
-            get => Codec_Int64_LE.ReadFromSpan(_readonlyBlock.Slice(8, 8).Span);
-            set => Codec_Int64_LE.WriteToSpan(_writableBlock.Slice(8, 8).Span, IfNotFrozen(value));
+            get => Codec_Int64_LE.ReadFromSpan(_readonlyLocalBlock.Slice(8, 8).Span);
+            set => Codec_Int64_LE.WriteToSpan(_writableLocalBlock.Slice(8, 8).Span, IfNotFrozen(value));
         }
 
 
@@ -155,40 +151,13 @@ namespace MyOrg.Models.MemBlocks
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
-            if (!base.Equals(other)) return false;
-            if (!_readonlyBlock.Span.SequenceEqual(other._readonlyBlock.Span)) return false;
+            if (!_readonlyTotalBlock.Span.SequenceEqual(other._readonlyTotalBlock.Span)) return false;
             return true;
         }
-
         public override bool Equals(object? obj) => obj is Other other && Equals(other);
+        public override int GetHashCode() => base.GetHashCode();
         public static bool operator ==(Other? left, Other? right) => left is not null ? left.Equals(right) : (right is null);
         public static bool operator !=(Other? left, Other? right) => left is not null ? !left.Equals(right) : (right is not null);
-
-        private int CalcHashCode()
-        {
-            HashCode result = new HashCode();
-            result.Add(base.GetHashCode());
-            result.Add(_readonlyBlock.Length);
-#if NET8_0_OR_GREATER
-            result.AddBytes(_readonlyBlock.Span);
-#else
-            var byteSpan = _readonlyBlock.Span;
-            for (int i = 0; i < byteSpan.Length; i++)
-            {
-                result.Add(byteSpan[i]);
-            }
-#endif
-            return result.ToHashCode();
-        }
-
-        private int? _hashCode;
-        public override int GetHashCode()
-        {
-            if (_hashCode.HasValue) return _hashCode.Value;
-            if (!IsFrozen) return CalcHashCode();
-            _hashCode = CalcHashCode();
-            return _hashCode.Value;
-        }
 
     }
 }
