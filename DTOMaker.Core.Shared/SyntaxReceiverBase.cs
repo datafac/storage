@@ -40,8 +40,39 @@ namespace DTOMaker.Gentime
             }
 
             string? errorMessage = input is null
-                ? $"Could not parse arg[{index}] (null) as <{typeof(T).Name}>"
-                : $"Could not parse arg[{index}] '{input}' <{input.GetType().Name}> as <{typeof(T).Name}>";
+                ? $"Could not read arg[{index}] (null) as <{typeof(T).Name}>"
+                : $"Could not read arg[{index}] '{input}' <{input.GetType().Name}> as <{typeof(T).Name}>";
+
+            target.SyntaxErrors.Add(
+                new SyntaxDiagnostic(
+                    DiagnosticId.DTOM0005, "Invalid argument value", DiagnosticCategory.Syntax, location, DiagnosticSeverity.Error,
+                    errorMessage));
+        }
+
+        protected static void TryGetAttributeArgumentValue<TInp, TOut>(TargetBase target, Location location, ImmutableArray<TypedConstant> attributeArguments, int index, Func<TInp, (bool,TOut)> parser, Action<TOut> action)
+        {
+            string? errorMessage = null;
+            object? input = attributeArguments[index].Value;
+            if (input is TInp value)
+            {
+                (bool parsed, TOut output) = parser(value);
+                if (parsed)
+                {
+                    action(output);
+                    return;
+                }
+                else
+                {
+                    errorMessage = $"Could not convert arg[{index}] '{value}' <{typeof(TInp).Name}> to <{typeof(TOut).Name}>";
+                }
+            }
+            else
+            {
+                errorMessage = input is null
+                    ? $"Could not read arg[{index}] (null) as <{typeof(TInp).Name}>"
+                    : $"Could not read arg[{index}] '{input}' <{input.GetType().Name}> as <{typeof(TInp).Name}>";
+
+            }
 
             target.SyntaxErrors.Add(
                 new SyntaxDiagnostic(
@@ -65,6 +96,14 @@ namespace DTOMaker.Gentime
         protected abstract void OnProcessEntityAttributes(TargetEntity entity, Location location, ImmutableArray<AttributeData> entityAttributes);
 
         protected abstract void OnProcessMemberAttributes(TargetMember member, Location location, ImmutableArray<AttributeData> memberAttributes);
+
+        private static (bool parsed, Guid output) TryParseGuid(string input)
+        {
+            if (Guid.TryParse(input, out Guid result))
+                return (true, result);
+            else
+                return (false, Guid.Empty);
+        }
 
         protected virtual void OnProcessNode(GeneratorSyntaxContext context)
         {
@@ -120,14 +159,14 @@ namespace DTOMaker.Gentime
                                 entity.BaseName = new TypeFullName(baseNameSpace, baseName.Substring(1));
                             }
                         }
-                        entity.EntityIdqqq = entity.EntityName.FullName;
+                        entity.EntityId = entity.EntityName.FullName;
                         if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == IdAttribute) is AttributeData idAttr)
                         {
                             // found entity id attribute
                             var attributeArguments = idAttr.ConstructorArguments;
                             if (CheckAttributeArguments(IdAttribute, attributeArguments, 1, entity, idsLocation))
                             {
-                                TryGetAttributeArgumentValue<string>(entity, idsLocation, attributeArguments, 0, (value) => { entity.EntityIdqqq = value; });
+                                TryGetAttributeArgumentValue<string, Guid>(entity, idsLocation, attributeArguments, 0, TryParseGuid, (value) => { entity.EntityId = value.ToString("D"); });
                             }
                         }
                         //var attributeArguments = entityAttr.ConstructorArguments;

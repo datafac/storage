@@ -284,7 +284,7 @@ namespace DTOMaker.MemBlocks
         {
             if (!HasEntityAttribute) return null;
 
-            if (!Guid.TryParse(this.EntityIdqqq, out Guid entityGuid))
+            if (!Guid.TryParse(this.EntityId, out Guid entityGuid))
                 return new SyntaxDiagnostic(
                             DiagnosticId.DMMB0011, "Invalid entity identifier", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
                             $"Entity identifier must be a GUID. Have you forgotten the entity [Id] attribute?");

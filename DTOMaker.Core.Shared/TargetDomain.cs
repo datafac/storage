@@ -20,7 +20,7 @@ namespace DTOMaker.Gentime
 
             foreach (var entity in this.Entities.Values.OrderBy(e => e.EntityName.FullName))
             {
-                string id = entity.EntityIdqqq;
+                string id = entity.EntityId;
                 if (idMap.TryGetValue(id, out var otherEntity))
                 {
                     return new SyntaxDiagnostic(

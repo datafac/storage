@@ -23,7 +23,7 @@ namespace DTOMaker.MemBlocks
             _tokens["BlockLength"] = entity.LocalBlockLength;
             _tokens["BlockOffset"] = entity.LocalBlockOffset;
             _tokens["BlockStructureCode"] = entity.BlockStructureCode;
-            Guid entityGuid = ParseEntityIdAsGuid(entity.EntityIdqqq);
+            Guid entityGuid = ParseEntityIdAsGuid(entity.EntityId);
             _tokens["EntityId"] = entityGuid.ToString("D");
             _tokens["EntityGuid"] = entityGuid;
         }

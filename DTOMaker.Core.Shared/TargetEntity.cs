@@ -17,7 +17,7 @@ namespace DTOMaker.Gentime
             EntityName = new TypeFullName(nameSpace, name);
             _domain = domain;
         }
-        public string EntityIdqqq { get; set; } = "_undefined_entity_id_";
+        public string EntityId { get; set; } = "_undefined_entity_id_";
         public bool HasEntityAttribute { get; set; }
         public TypeFullName BaseName { get; set; } = TypeFullName.DefaultBase;
         public TargetEntity? Base { get; set; }

@@ -16,7 +16,7 @@ namespace MyOrg.Models.CSPoco
     {
         // Derived entities: 0
 
-        public new const string EntityId = "RightTriangle";
+        public new const string EntityId = "9ea51512-7118-47ab-9ac1-0daa4c68bc87";
 
         private static RightTriangle CreateEmpty()
         {

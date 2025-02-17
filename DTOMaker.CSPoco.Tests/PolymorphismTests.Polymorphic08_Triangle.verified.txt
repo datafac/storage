@@ -18,7 +18,7 @@ namespace MyOrg.Models.CSPoco
         // - Equilateral
         // - RightTriangle
 
-        public new const string EntityId = "Triangle";
+        public new const string EntityId = "ab43cde1-e7e3-45ee-a61d-ebf361c75d20";
 
         private static Triangle CreateEmpty()
         {

@@ -22,7 +22,7 @@ namespace MyOrg.Models.CSPoco
         // - Square
         // - Triangle
 
-        public new const string EntityId = "Polygon";
+        public new const string EntityId = "35274af9-5245-4366-be3a-1d0c23343436";
 
         private static Polygon CreateEmpty()
         {

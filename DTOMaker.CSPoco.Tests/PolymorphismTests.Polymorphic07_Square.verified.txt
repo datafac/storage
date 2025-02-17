@@ -16,7 +16,7 @@ namespace MyOrg.Models.CSPoco
     {
         // Derived entities: 0
 
-        public new const string EntityId = "Square";
+        public new const string EntityId = "931d0721-74be-41d3-bfb2-c5e8301162cf";
 
         private static Square CreateEmpty()
         {
