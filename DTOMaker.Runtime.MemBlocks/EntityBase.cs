@@ -22,7 +22,7 @@ namespace DTOMaker.Runtime.MemBlocks
         }
         #endregion
 
-        private const long BlockSignatureCode = 89980L; // V1.0
+        //private const long BlockSignatureCode = 89980L; // V1.0
         private const int ClassHeight = 0;
         private const int BlockOffset = 0;
         private const int BlockLength = 64; // V1.0
@@ -35,63 +35,15 @@ namespace DTOMaker.Runtime.MemBlocks
         protected abstract string OnGetEntityId();
         public string GetEntityId() => OnGetEntityId();
 
-        protected static ReadOnlyMemory<byte> CreateHeader(long structureBits, Guid entityGuid)
-        {
-            Span<byte> header = stackalloc byte[64];
-            Codec_Int64_LE.WriteToSpan(header.Slice(0, 8), BlockSignatureCode);
-            Codec_Int64_LE.WriteToSpan(header.Slice(8, 8), structureBits);
-            Codec_Guid_LE.WriteToSpan(header.Slice(16, 16), entityGuid);
-            return header.ToArray();
-        }
-
-        private static readonly int[] _blockSizes = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 * 1, 1024 * 2, 1024 * 4, 1024 * 8, 1024 * 16, 1024 * 32];
-        private static int GetEffectiveBlockSize(int code)
-        {
-            ReadOnlySpan<int> blockSizes = _blockSizes;
-            return Math.Max(64, blockSizes[code]);
-        }
-
-        protected static int CalculateTotalLength(long structureBits)
-        {
-            int classHeight = (int)(structureBits & 0x0F);
-            int totalLength = 64;
-            long bits = structureBits;
-            for (int h = 0; h < classHeight && h < 15; h++)
-            {
-                bits = bits >> 4;
-                int blockLength = GetEffectiveBlockSize((int)(bits & 0x0F));
-                totalLength += blockLength;
-            }
-            return totalLength;
-        }
-
         protected EntityBase(BlockHeader blockHeader)
         {
             _readonlyTotalBlock = _writableTotalBlock = new byte[blockHeader.TotalLength];
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
             blockHeader.Header.CopyTo(_writableLocalBlock);
         }
-        protected static void CheckStructuresqqq(BlockStructureOld thisStructure, BlockStructureOld thatStructure)
-        {
-            if (thatStructure.SignatureBits != thisStructure.SignatureBits)
-            {
-                // todo support minor version change
-                throw new NotSupportedException($"Cannot read source with unknown signature ({thatStructure.SignatureBits}), expected ({thisStructure.SignatureBits}).");
-            }
-            if (thatStructure.EntityGuid != thisStructure.EntityGuid)
-            {
-                // type mismatch
-                throw new InvalidDataException($"Cannot read source with unknown entity id ({thatStructure.EntityGuid}), expected ({thisStructure.EntityGuid}).");
-            }
-            if (thatStructure.StructureBits != thisStructure.StructureBits)
-            {
-                // todo structure conversion
-                throw new NotSupportedException($"Cannot read source with different structure ({thatStructure.StructureBits}), expected ({thisStructure.StructureBits}).");
-            }
-        }
         protected EntityBase(BlockHeader blockHeader, object source)
         {
-            // todo split this method into 2: 1 for concrete, 1 for interface
+            // todo? split this method into 2: 1 for concrete, 1 for interface
             _readonlyTotalBlock = _writableTotalBlock = new byte[blockHeader.TotalLength];
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
             if (source is EntityBase sourceEntity)
