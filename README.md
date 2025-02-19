@@ -50,10 +50,10 @@ Common types used at runtime by DTOMaker generated entities.
 - IEquatable\<T\> support
 
 ## Limitations
-- single assembly contains models and generated DTOs 
+- single compilation contains models and generated DTOs 
 
 ## In progress:
-- single block allocation (MemBlocks)
+- embedded short binary values
 - variable-length string members
 
 ## Coming soon:
