@@ -54,9 +54,9 @@ Emit("    {");
 Emit("        private const int ClassHeight = 1;");
 Emit("        private const int BlockOffset = 64;");
 Emit("        private const int BlockLength = 64;");
-Emit("        private const long BlockSignature = 12345678L;");
-Emit("        private const long BlockStructure = 12345678L;");
-Emit("        private static readonly Guid BlockEntityGuid = new Guid(\"9bb68dc1-8b05-4e19-80fd-c1fb946ffd8d\");");
+Emit("        private const long StructureCode = 0x0662;");
+Emit("        private static readonly Guid EntityGuid = new Guid(\"9bb68dc1-8b05-4e19-80fd-c1fb946ffd8d\");");
+Emit("        private static readonly BlockHeader _header = BlockHeader.CreateNew(StructureCode, EntityGuid);");
 Emit("");
 Emit("        public static T_MemberTypeName_ CreateFrom(T_MemberTypeName_ source)");
 Emit("        {");
@@ -74,20 +74,20 @@ Emit("            return new T_MemberTypeName_(buffer);");
 Emit("        }");
 Emit("        private readonly Memory<byte> _writableLocalBlock;");
 Emit("        private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;");
-Emit("        public T_MemberTypeName_() : base(new BlockStructure(BlockSignature, BlockStructure, BlockEntityGuid))");
+Emit("        public T_MemberTypeName_() : base(_header)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);");
 Emit("        }");
-Emit("        public T_MemberTypeName_(T_MemberTypeName_ source) : base(new BlockStructure(BlockSignature, BlockStructure, BlockEntityGuid), source)");
+Emit("        public T_MemberTypeName_(T_MemberTypeName_ source) : base(_header, source)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);");
 Emit("        }");
-Emit("        public T_MemberTypeName_(IT_MemberTypeName_ source) : base(new BlockStructure(BlockSignature, BlockStructure, BlockEntityGuid), source)");
+Emit("        public T_MemberTypeName_(IT_MemberTypeName_ source) : base(_header, source)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);");
 Emit("            this.Field1 = source.Field1;");
 Emit("        }");
-Emit("        public T_MemberTypeName_(ReadOnlyMemory<byte> buffer) : base(new BlockStructure(BlockSignature, BlockStructure, BlockEntityGuid), buffer)");
+Emit("        public T_MemberTypeName_(ReadOnlyMemory<byte> buffer) : base(_header, buffer)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);");
 Emit("            _writableLocalBlock = Memory<byte>.Empty;");
@@ -140,23 +140,23 @@ Emit("        {");
 Emit("            return base.OnUnpack(dataStore, depth);");
 Emit("        }");
 Emit("");
-Emit("        protected T_BaseName_(BlockStructure structure) : base(structure)");
+Emit("        protected T_BaseName_(BlockHeader header) : base(header)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);");
 Emit("        }");
 Emit("");
-Emit("        protected T_BaseName_(BlockStructure structure, T_BaseName_ source) : base(structure, source)");
+Emit("        protected T_BaseName_(BlockHeader header, T_BaseName_ source) : base(header, source)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);");
 Emit("        }");
 Emit("");
-Emit("        protected T_BaseName_(BlockStructure structure, IT_BaseName_ source) : base(structure, source)");
+Emit("        protected T_BaseName_(BlockHeader header, IT_BaseName_ source) : base(header, source)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);");
 Emit("            this.BaseField1 = source.BaseField1;");
 Emit("        }");
 Emit("");
-Emit("        protected T_BaseName_(BlockStructure structure, ReadOnlyMemory<byte> buffer) : base(structure, buffer)");
+Emit("        protected T_BaseName_(BlockHeader header, ReadOnlyMemory<byte> buffer) : base(header, buffer)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);");
 Emit("            _writableLocalBlock = Memory<byte>.Empty;");
@@ -213,7 +213,6 @@ Emit("        private const bool T_MemberObsoleteIsError_ = false;");
 Emit("        private const long T_BlockStructureCode_ = 0x0962;");
 Emit("        private static readonly Guid T_EntityGuid_ = new Guid(\"341c6631-30ba-482b-b580-7c1c2c9ff182\");");
         }
-Emit("        private const long BlockSignatureCode = 89980L;");
 Emit("        private const long BlockStructureCode = T_BlockStructureCode_;");
 Emit("        private const int ClassHeight = T_ClassHeight_;");
 Emit("        private const int BlockOffset = T_BlockOffset_;");
@@ -223,7 +222,7 @@ Emit("        private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;");
 Emit("");
 Emit("        public new const string EntityId = \"T_EntityId_\";");
 Emit("        private static readonly Guid EntityGuid = T_EntityGuid_;");
-Emit("        private static readonly BlockStructure _structure = new BlockStructure(BlockSignatureCode, BlockStructureCode, EntityGuid);");
+Emit("        private static readonly BlockHeader _header = BlockHeader.CreateNew(BlockStructureCode, EntityGuid);");
 Emit("");
 Emit("        public new static T_EntityName_ CreateFrom(T_EntityName_ source)");
 Emit("        {");
@@ -253,8 +252,8 @@ Emit("        }");
 Emit("");
 Emit("        public new static T_EntityName_ CreateFrom(ReadOnlyMemory<byte> buffer)");
 Emit("        {");
-Emit("            BlockStructure thatStructure = new BlockStructure(buffer.Span);");
-Emit("            string entityIdStr = thatStructure.EntityGuid.ToString(\"D\");");
+Emit("            BlockHeader header = BlockHeader.ParseFrom(buffer);");
+Emit("            string entityIdStr = header.EntityGuid.ToString(\"D\");");
 Emit("            return entityIdStr switch");
 Emit("            {");
                 foreach(var derived in entity.DerivedEntities) {
@@ -367,60 +366,25 @@ Emit("        //  T_MemberSequenceR4_  T_FieldOffsetR4_  T_FieldLengthR4_  T_Arr
         }
 Emit("        // ------------------------------------------------------------");
 Emit("");
-Emit("        protected T_EntityName_(BlockStructure structure) : base(structure)");
+Emit("        protected T_EntityName_(BlockHeader header) : base(header)");
+Emit("        {");
+Emit("            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);");
+Emit("        }");
+Emit("        public T_EntityName_() : base(_header)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);");
 Emit("        }");
 Emit("");
-Emit("        public T_EntityName_() : base(_structure)");
+Emit("        protected T_EntityName_(BlockHeader header, T_EntityName_ source) : base(header, source)");
+Emit("        {");
+Emit("            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);");
+Emit("        }");
+Emit("        public T_EntityName_(T_EntityName_ source) : base(_header, source)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);");
 Emit("        }");
 Emit("");
-Emit("        protected T_EntityName_(BlockStructure structure, T_EntityName_ source) : base(structure, source)");
-Emit("        {");
-Emit("            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);");
-Emit("        }");
-Emit("");
-Emit("        public T_EntityName_(T_EntityName_ source) : base(_structure, source)");
-Emit("        {");
-Emit("            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);");
-Emit("        }");
-Emit("");
-Emit("        protected T_EntityName_(BlockStructure structure, IT_EntityName_ source) : base(structure, source)");
-Emit("        {");
-Emit("            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);");
-            foreach(var member in entity.Members) {
-            using var _ = NewScope(member);
-            switch(member.Kind) {
-            case MemberKind.Scalar:
-Emit("            this.T_ScalarMemberName_ = source.T_ScalarMemberName_;");
-            break;
-            case MemberKind.Vector:
-Emit("            this.T_VectorMemberName_ = source.T_VectorMemberName_;");
-            break;
-            case MemberKind.Entity:
-            if (member.IsNullable) {
-Emit("            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);");
-            } else {
-Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);");
-            }
-            break;
-            case MemberKind.Binary:
-            if (member.IsNullable) {
-Emit("            _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_;");
-            } else {
-Emit("            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_;");
-            }
-            break;
-            default:
-            Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
-            break;
-            } // switch
-            }
-Emit("        }");
-Emit("");
-Emit("        public T_EntityName_(IT_EntityName_ source) : base(_structure, source)");
+Emit("        protected T_EntityName_(BlockHeader header, IT_EntityName_ source) : base(header, source)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);");
             foreach(var member in entity.Members) {
@@ -453,12 +417,45 @@ Emit("            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberNa
             }
 Emit("        }");
 Emit("");
-Emit("        protected T_EntityName_(BlockStructure structure, ReadOnlyMemory<byte> buffer) : base(structure, buffer)");
+Emit("        public T_EntityName_(IT_EntityName_ source) : base(_header, source)");
+Emit("        {");
+Emit("            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);");
+            foreach(var member in entity.Members) {
+            using var _ = NewScope(member);
+            switch(member.Kind) {
+            case MemberKind.Scalar:
+Emit("            this.T_ScalarMemberName_ = source.T_ScalarMemberName_;");
+            break;
+            case MemberKind.Vector:
+Emit("            this.T_VectorMemberName_ = source.T_VectorMemberName_;");
+            break;
+            case MemberKind.Entity:
+            if (member.IsNullable) {
+Emit("            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);");
+            } else {
+Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);");
+            }
+            break;
+            case MemberKind.Binary:
+            if (member.IsNullable) {
+Emit("            _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_;");
+            } else {
+Emit("            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_;");
+            }
+            break;
+            default:
+            Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
+            break;
+            } // switch
+            }
+Emit("        }");
+Emit("");
+Emit("        protected T_EntityName_(BlockHeader header, ReadOnlyMemory<byte> buffer) : base(header, buffer)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);");
 Emit("            _writableLocalBlock = Memory<byte>.Empty;");
 Emit("        }");
-Emit("        public T_EntityName_(ReadOnlyMemory<byte> buffer) : base(_structure, buffer)");
+Emit("        public T_EntityName_(ReadOnlyMemory<byte> buffer) : base(_header, buffer)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);");
 Emit("            _writableLocalBlock = Memory<byte>.Empty;");

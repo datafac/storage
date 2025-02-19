@@ -22,7 +22,6 @@ namespace MyOrg.Models.MemBlocks
     {
         // Derived entities: 0
 
-        private const long BlockSignatureCode = 89980L;
         private const long BlockStructureCode = 129L;
         private const int ClassHeight = 1;
         private const int BlockOffset = 64;
@@ -32,7 +31,7 @@ namespace MyOrg.Models.MemBlocks
 
         public new const string EntityId = "01234567-89ab-cdef-0206-456789abcdef";
         private static readonly Guid EntityGuid = new Guid("01234567-89ab-cdef-0206-456789abcdef");
-        private static readonly BlockStructure _structure = new BlockStructure(BlockSignatureCode, BlockStructureCode, EntityGuid);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(BlockStructureCode, EntityGuid);
 
         public new static Tree CreateFrom(Tree source)
         {
@@ -54,8 +53,8 @@ namespace MyOrg.Models.MemBlocks
 
         public new static Tree CreateFrom(ReadOnlyMemory<byte> buffer)
         {
-            BlockStructure thatStructure = new BlockStructure(buffer.Span);
-            string entityIdStr = thatStructure.EntityGuid.ToString("D");
+            BlockHeader header = BlockHeader.ParseFrom(buffer);
+            string entityIdStr = header.EntityGuid.ToString("D");
             return entityIdStr switch
             {
                 _ => new MyOrg.Models.MemBlocks.Tree(buffer)
@@ -99,35 +98,25 @@ namespace MyOrg.Models.MemBlocks
         //     3   128    64        Node    LE    Node
         // ------------------------------------------------------------
 
-        protected Tree(BlockStructure structure) : base(structure)
+        protected Tree(BlockHeader header) : base(header)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+        public Tree() : base(_header)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public Tree() : base(_structure)
+        protected Tree(BlockHeader header, Tree source) : base(header, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+        public Tree(Tree source) : base(_header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        protected Tree(BlockStructure structure, Tree source) : base(structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-        }
-
-        public Tree(Tree source) : base(_structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-        }
-
-        protected Tree(BlockStructure structure, ITree source) : base(structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-            _Left = source.Left is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(source.Left);
-            _Right = source.Right is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(source.Right);
-            _Node = source.Node is null ? null : MyOrg.Models.MemBlocks.Node.CreateFrom(source.Node);
-        }
-
-        public Tree(ITree source) : base(_structure, source)
+        protected Tree(BlockHeader header, ITree source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
             _Left = source.Left is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(source.Left);
@@ -135,12 +124,20 @@ namespace MyOrg.Models.MemBlocks
             _Node = source.Node is null ? null : MyOrg.Models.MemBlocks.Node.CreateFrom(source.Node);
         }
 
-        protected Tree(BlockStructure structure, ReadOnlyMemory<byte> buffer) : base(structure, buffer)
+        public Tree(ITree source) : base(_header, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _Left = source.Left is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(source.Left);
+            _Right = source.Right is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(source.Right);
+            _Node = source.Node is null ? null : MyOrg.Models.MemBlocks.Node.CreateFrom(source.Node);
+        }
+
+        protected Tree(BlockHeader header, ReadOnlyMemory<byte> buffer) : base(header, buffer)
         {
             _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public Tree(ReadOnlyMemory<byte> buffer) : base(_structure, buffer)
+        public Tree(ReadOnlyMemory<byte> buffer) : base(_header, buffer)
         {
             _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
             _writableLocalBlock = Memory<byte>.Empty;

@@ -22,7 +22,6 @@ namespace MyOrg.Models.MemBlocks
     {
         // Derived entities: 0
 
-        private const long BlockSignatureCode = 89980L;
         private const long BlockStructureCode = 97L;
         private const int ClassHeight = 1;
         private const int BlockOffset = 64;
@@ -32,7 +31,7 @@ namespace MyOrg.Models.MemBlocks
 
         public new const string EntityId = "01234567-89ab-cdef-0123-456789abcdef";
         private static readonly Guid EntityGuid = new Guid("01234567-89ab-cdef-0123-456789abcdef");
-        private static readonly BlockStructure _structure = new BlockStructure(BlockSignatureCode, BlockStructureCode, EntityGuid);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(BlockStructureCode, EntityGuid);
 
         public new static Header CreateFrom(Header source)
         {
@@ -54,8 +53,8 @@ namespace MyOrg.Models.MemBlocks
 
         public new static Header CreateFrom(ReadOnlyMemory<byte> buffer)
         {
-            BlockStructure thatStructure = new BlockStructure(buffer.Span);
-            string entityIdStr = thatStructure.EntityGuid.ToString("D");
+            BlockHeader header = BlockHeader.ParseFrom(buffer);
+            string entityIdStr = header.EntityGuid.ToString("D");
             return entityIdStr switch
             {
                 _ => new MyOrg.Models.MemBlocks.Header(buffer)
@@ -106,51 +105,25 @@ namespace MyOrg.Models.MemBlocks
         //    19    48    16        Guid    LE    SpareGuid1
         // ------------------------------------------------------------
 
-        protected Header(BlockStructure structure) : base(structure)
+        protected Header(BlockHeader header) : base(header)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+        public Header() : base(_header)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public Header() : base(_structure)
+        protected Header(BlockHeader header, Header source) : base(header, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+        public Header(Header source) : base(_header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        protected Header(BlockStructure structure, Header source) : base(structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-        }
-
-        public Header(Header source) : base(_structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-        }
-
-        protected Header(BlockStructure structure, IHeader source) : base(structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-            this.MarkerByte0 = source.MarkerByte0;
-            this.MarkerByte1 = source.MarkerByte1;
-            this.HeaderMajorVersion = source.HeaderMajorVersion;
-            this.HeaderMinorVersion = source.HeaderMinorVersion;
-            this.SpareByte0 = source.SpareByte0;
-            this.SpareByte1 = source.SpareByte1;
-            this.SpareByte2 = source.SpareByte2;
-            this.SpareByte3 = source.SpareByte3;
-            this.ClassHeight = source.ClassHeight;
-            this.BlockSize1 = source.BlockSize1;
-            this.BlockSize2 = source.BlockSize2;
-            this.BlockSize3 = source.BlockSize3;
-            this.BlockSize4 = source.BlockSize4;
-            this.BlockSize5 = source.BlockSize5;
-            this.BlockSize6 = source.BlockSize6;
-            this.BlockSize7 = source.BlockSize7;
-            this.EntityGuid = source.EntityGuid;
-            this.SpareGuid0 = source.SpareGuid0;
-            this.SpareGuid1 = source.SpareGuid1;
-        }
-
-        public Header(IHeader source) : base(_structure, source)
+        protected Header(BlockHeader header, IHeader source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
             this.MarkerByte0 = source.MarkerByte0;
@@ -174,12 +147,36 @@ namespace MyOrg.Models.MemBlocks
             this.SpareGuid1 = source.SpareGuid1;
         }
 
-        protected Header(BlockStructure structure, ReadOnlyMemory<byte> buffer) : base(structure, buffer)
+        public Header(IHeader source) : base(_header, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            this.MarkerByte0 = source.MarkerByte0;
+            this.MarkerByte1 = source.MarkerByte1;
+            this.HeaderMajorVersion = source.HeaderMajorVersion;
+            this.HeaderMinorVersion = source.HeaderMinorVersion;
+            this.SpareByte0 = source.SpareByte0;
+            this.SpareByte1 = source.SpareByte1;
+            this.SpareByte2 = source.SpareByte2;
+            this.SpareByte3 = source.SpareByte3;
+            this.ClassHeight = source.ClassHeight;
+            this.BlockSize1 = source.BlockSize1;
+            this.BlockSize2 = source.BlockSize2;
+            this.BlockSize3 = source.BlockSize3;
+            this.BlockSize4 = source.BlockSize4;
+            this.BlockSize5 = source.BlockSize5;
+            this.BlockSize6 = source.BlockSize6;
+            this.BlockSize7 = source.BlockSize7;
+            this.EntityGuid = source.EntityGuid;
+            this.SpareGuid0 = source.SpareGuid0;
+            this.SpareGuid1 = source.SpareGuid1;
+        }
+
+        protected Header(BlockHeader header, ReadOnlyMemory<byte> buffer) : base(header, buffer)
         {
             _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public Header(ReadOnlyMemory<byte> buffer) : base(_structure, buffer)
+        public Header(ReadOnlyMemory<byte> buffer) : base(_header, buffer)
         {
             _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
             _writableLocalBlock = Memory<byte>.Empty;

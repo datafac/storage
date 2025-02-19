@@ -27,7 +27,6 @@ namespace MyOrg.Models.MemBlocks
         // - NumericNode
         // - StringNode
 
-        private const long BlockSignatureCode = 89980L;
         private const long BlockStructureCode = 65L;
         private const int ClassHeight = 1;
         private const int BlockOffset = 64;
@@ -37,7 +36,7 @@ namespace MyOrg.Models.MemBlocks
 
         public new const string EntityId = "01234567-89ab-cdef-0123-456789abcdef";
         private static readonly Guid EntityGuid = new Guid("01234567-89ab-cdef-0123-456789abcdef");
-        private static readonly BlockStructure _structure = new BlockStructure(BlockSignatureCode, BlockStructureCode, EntityGuid);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(BlockStructureCode, EntityGuid);
 
         public new static Node CreateFrom(Node source)
         {
@@ -69,8 +68,8 @@ namespace MyOrg.Models.MemBlocks
 
         public new static Node CreateFrom(ReadOnlyMemory<byte> buffer)
         {
-            BlockStructure thatStructure = new BlockStructure(buffer.Span);
-            string entityIdStr = thatStructure.EntityGuid.ToString("D");
+            BlockHeader header = BlockHeader.ParseFrom(buffer);
+            string entityIdStr = header.EntityGuid.ToString("D");
             return entityIdStr switch
             {
                 MyOrg.Models.MemBlocks.BooleanNode.EntityId => new MyOrg.Models.MemBlocks.BooleanNode(buffer),
@@ -108,44 +107,42 @@ namespace MyOrg.Models.MemBlocks
         //     1     0    16        String  LE    Key
         // ------------------------------------------------------------
 
-        protected Node(BlockStructure structure) : base(structure)
+        protected Node(BlockHeader header) : base(header)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+        public Node() : base(_header)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public Node() : base(_structure)
+        protected Node(BlockHeader header, Node source) : base(header, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+        public Node(Node source) : base(_header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        protected Node(BlockStructure structure, Node source) : base(structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-        }
-
-        public Node(Node source) : base(_structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-        }
-
-        protected Node(BlockStructure structure, INode source) : base(structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-            this.Key = source.Key;
-        }
-
-        public Node(INode source) : base(_structure, source)
+        protected Node(BlockHeader header, INode source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
             this.Key = source.Key;
         }
 
-        protected Node(BlockStructure structure, ReadOnlyMemory<byte> buffer) : base(structure, buffer)
+        public Node(INode source) : base(_header, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            this.Key = source.Key;
+        }
+
+        protected Node(BlockHeader header, ReadOnlyMemory<byte> buffer) : base(header, buffer)
         {
             _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public Node(ReadOnlyMemory<byte> buffer) : base(_structure, buffer)
+        public Node(ReadOnlyMemory<byte> buffer) : base(_header, buffer)
         {
             _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
             _writableLocalBlock = Memory<byte>.Empty;

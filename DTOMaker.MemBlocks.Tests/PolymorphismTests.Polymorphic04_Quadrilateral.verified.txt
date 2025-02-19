@@ -24,7 +24,6 @@ namespace MyOrg.Models.MemBlocks
         // - Rectangle
         // - Square
 
-        private const long BlockSignatureCode = 89980L;
         private const long BlockStructureCode = 2L;
         private const int ClassHeight = 2;
         private const int BlockOffset = 128;
@@ -34,7 +33,7 @@ namespace MyOrg.Models.MemBlocks
 
         public new const string EntityId = "01234567-89ab-cdef-0204-456789abcdef";
         private static readonly Guid EntityGuid = new Guid("01234567-89ab-cdef-0204-456789abcdef");
-        private static readonly BlockStructure _structure = new BlockStructure(BlockSignatureCode, BlockStructureCode, EntityGuid);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(BlockStructureCode, EntityGuid);
 
         public new static Quadrilateral CreateFrom(Quadrilateral source)
         {
@@ -60,8 +59,8 @@ namespace MyOrg.Models.MemBlocks
 
         public new static Quadrilateral CreateFrom(ReadOnlyMemory<byte> buffer)
         {
-            BlockStructure thatStructure = new BlockStructure(buffer.Span);
-            string entityIdStr = thatStructure.EntityGuid.ToString("D");
+            BlockHeader header = BlockHeader.ParseFrom(buffer);
+            string entityIdStr = header.EntityGuid.ToString("D");
             return entityIdStr switch
             {
                 MyOrg.Models.MemBlocks.Rectangle.EntityId => new MyOrg.Models.MemBlocks.Rectangle(buffer),
@@ -95,42 +94,40 @@ namespace MyOrg.Models.MemBlocks
         //  ----  ----  ----  ----  ------- ----  -------
         // ------------------------------------------------------------
 
-        protected Quadrilateral(BlockStructure structure) : base(structure)
+        protected Quadrilateral(BlockHeader header) : base(header)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+        public Quadrilateral() : base(_header)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public Quadrilateral() : base(_structure)
+        protected Quadrilateral(BlockHeader header, Quadrilateral source) : base(header, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+        public Quadrilateral(Quadrilateral source) : base(_header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        protected Quadrilateral(BlockStructure structure, Quadrilateral source) : base(structure, source)
+        protected Quadrilateral(BlockHeader header, IQuadrilateral source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public Quadrilateral(Quadrilateral source) : base(_structure, source)
+        public Quadrilateral(IQuadrilateral source) : base(_header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        protected Quadrilateral(BlockStructure structure, IQuadrilateral source) : base(structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-        }
-
-        public Quadrilateral(IQuadrilateral source) : base(_structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-        }
-
-        protected Quadrilateral(BlockStructure structure, ReadOnlyMemory<byte> buffer) : base(structure, buffer)
+        protected Quadrilateral(BlockHeader header, ReadOnlyMemory<byte> buffer) : base(header, buffer)
         {
             _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public Quadrilateral(ReadOnlyMemory<byte> buffer) : base(_structure, buffer)
+        public Quadrilateral(ReadOnlyMemory<byte> buffer) : base(_header, buffer)
         {
             _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
             _writableLocalBlock = Memory<byte>.Empty;

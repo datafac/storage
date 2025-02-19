@@ -22,7 +22,6 @@ namespace MyOrg.Models.MemBlocks
     {
         // Derived entities: 0
 
-        private const long BlockSignatureCode = 89980L;
         private const long BlockStructureCode = 12291L;
         private const int ClassHeight = 3;
         private const int BlockOffset = 192;
@@ -32,7 +31,7 @@ namespace MyOrg.Models.MemBlocks
 
         public new const string EntityId = "01234567-89ab-cdef-0203-456789abcdef";
         private static readonly Guid EntityGuid = new Guid("01234567-89ab-cdef-0203-456789abcdef");
-        private static readonly BlockStructure _structure = new BlockStructure(BlockSignatureCode, BlockStructureCode, EntityGuid);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(BlockStructureCode, EntityGuid);
 
         public new static Int64Node CreateFrom(Int64Node source)
         {
@@ -54,8 +53,8 @@ namespace MyOrg.Models.MemBlocks
 
         public new static Int64Node CreateFrom(ReadOnlyMemory<byte> buffer)
         {
-            BlockStructure thatStructure = new BlockStructure(buffer.Span);
-            string entityIdStr = thatStructure.EntityGuid.ToString("D");
+            BlockHeader header = BlockHeader.ParseFrom(buffer);
+            string entityIdStr = header.EntityGuid.ToString("D");
             return entityIdStr switch
             {
                 _ => new MyOrg.Models.MemBlocks.Int64Node(buffer)
@@ -88,44 +87,42 @@ namespace MyOrg.Models.MemBlocks
         //     1     0     8        Int64   LE    Value
         // ------------------------------------------------------------
 
-        protected Int64Node(BlockStructure structure) : base(structure)
+        protected Int64Node(BlockHeader header) : base(header)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+        public Int64Node() : base(_header)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public Int64Node() : base(_structure)
+        protected Int64Node(BlockHeader header, Int64Node source) : base(header, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+        public Int64Node(Int64Node source) : base(_header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        protected Int64Node(BlockStructure structure, Int64Node source) : base(structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-        }
-
-        public Int64Node(Int64Node source) : base(_structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-        }
-
-        protected Int64Node(BlockStructure structure, IInt64Node source) : base(structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-            this.Value = source.Value;
-        }
-
-        public Int64Node(IInt64Node source) : base(_structure, source)
+        protected Int64Node(BlockHeader header, IInt64Node source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
             this.Value = source.Value;
         }
 
-        protected Int64Node(BlockStructure structure, ReadOnlyMemory<byte> buffer) : base(structure, buffer)
+        public Int64Node(IInt64Node source) : base(_header, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            this.Value = source.Value;
+        }
+
+        protected Int64Node(BlockHeader header, ReadOnlyMemory<byte> buffer) : base(header, buffer)
         {
             _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public Int64Node(ReadOnlyMemory<byte> buffer) : base(_structure, buffer)
+        public Int64Node(ReadOnlyMemory<byte> buffer) : base(_header, buffer)
         {
             _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
             _writableLocalBlock = Memory<byte>.Empty;

@@ -22,7 +22,6 @@ namespace MyOrg.Models.MemBlocks
     {
         // Derived entities: 0
 
-        private const long BlockSignatureCode = 89980L;
         private const long BlockStructureCode = 16387L;
         private const int ClassHeight = 3;
         private const int BlockOffset = 192;
@@ -32,7 +31,7 @@ namespace MyOrg.Models.MemBlocks
 
         public new const string EntityId = "01234567-89ab-cdef-0206-456789abcdef";
         private static readonly Guid EntityGuid = new Guid("01234567-89ab-cdef-0206-456789abcdef");
-        private static readonly BlockStructure _structure = new BlockStructure(BlockSignatureCode, BlockStructureCode, EntityGuid);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(BlockStructureCode, EntityGuid);
 
         public new static Rectangle CreateFrom(Rectangle source)
         {
@@ -54,8 +53,8 @@ namespace MyOrg.Models.MemBlocks
 
         public new static Rectangle CreateFrom(ReadOnlyMemory<byte> buffer)
         {
-            BlockStructure thatStructure = new BlockStructure(buffer.Span);
-            string entityIdStr = thatStructure.EntityGuid.ToString("D");
+            BlockHeader header = BlockHeader.ParseFrom(buffer);
+            string entityIdStr = header.EntityGuid.ToString("D");
             return entityIdStr switch
             {
                 _ => new MyOrg.Models.MemBlocks.Rectangle(buffer)
@@ -89,46 +88,44 @@ namespace MyOrg.Models.MemBlocks
         //     2     8     8        Double  LE    Height
         // ------------------------------------------------------------
 
-        protected Rectangle(BlockStructure structure) : base(structure)
+        protected Rectangle(BlockHeader header) : base(header)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+        public Rectangle() : base(_header)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public Rectangle() : base(_structure)
+        protected Rectangle(BlockHeader header, Rectangle source) : base(header, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+        public Rectangle(Rectangle source) : base(_header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        protected Rectangle(BlockStructure structure, Rectangle source) : base(structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-        }
-
-        public Rectangle(Rectangle source) : base(_structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-        }
-
-        protected Rectangle(BlockStructure structure, IRectangle source) : base(structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-            this.Length = source.Length;
-            this.Height = source.Height;
-        }
-
-        public Rectangle(IRectangle source) : base(_structure, source)
+        protected Rectangle(BlockHeader header, IRectangle source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
             this.Length = source.Length;
             this.Height = source.Height;
         }
 
-        protected Rectangle(BlockStructure structure, ReadOnlyMemory<byte> buffer) : base(structure, buffer)
+        public Rectangle(IRectangle source) : base(_header, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            this.Length = source.Length;
+            this.Height = source.Height;
+        }
+
+        protected Rectangle(BlockHeader header, ReadOnlyMemory<byte> buffer) : base(header, buffer)
         {
             _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public Rectangle(ReadOnlyMemory<byte> buffer) : base(_structure, buffer)
+        public Rectangle(ReadOnlyMemory<byte> buffer) : base(_header, buffer)
         {
             _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
             _writableLocalBlock = Memory<byte>.Empty;

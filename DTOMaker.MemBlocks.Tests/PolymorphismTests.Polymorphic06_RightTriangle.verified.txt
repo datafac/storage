@@ -22,7 +22,6 @@ namespace MyOrg.Models.MemBlocks
     {
         // Derived entities: 0
 
-        private const long BlockSignatureCode = 89980L;
         private const long BlockStructureCode = 16387L;
         private const int ClassHeight = 3;
         private const int BlockOffset = 192;
@@ -32,7 +31,7 @@ namespace MyOrg.Models.MemBlocks
 
         public new const string EntityId = "01234567-89ab-cdef-0203-456789abcdef";
         private static readonly Guid EntityGuid = new Guid("01234567-89ab-cdef-0203-456789abcdef");
-        private static readonly BlockStructure _structure = new BlockStructure(BlockSignatureCode, BlockStructureCode, EntityGuid);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(BlockStructureCode, EntityGuid);
 
         public new static RightTriangle CreateFrom(RightTriangle source)
         {
@@ -54,8 +53,8 @@ namespace MyOrg.Models.MemBlocks
 
         public new static RightTriangle CreateFrom(ReadOnlyMemory<byte> buffer)
         {
-            BlockStructure thatStructure = new BlockStructure(buffer.Span);
-            string entityIdStr = thatStructure.EntityGuid.ToString("D");
+            BlockHeader header = BlockHeader.ParseFrom(buffer);
+            string entityIdStr = header.EntityGuid.ToString("D");
             return entityIdStr switch
             {
                 _ => new MyOrg.Models.MemBlocks.RightTriangle(buffer)
@@ -89,46 +88,44 @@ namespace MyOrg.Models.MemBlocks
         //     2     8     8        Double  LE    Height
         // ------------------------------------------------------------
 
-        protected RightTriangle(BlockStructure structure) : base(structure)
+        protected RightTriangle(BlockHeader header) : base(header)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+        public RightTriangle() : base(_header)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        public RightTriangle() : base(_structure)
+        protected RightTriangle(BlockHeader header, RightTriangle source) : base(header, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+        }
+        public RightTriangle(RightTriangle source) : base(_header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
         }
 
-        protected RightTriangle(BlockStructure structure, RightTriangle source) : base(structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-        }
-
-        public RightTriangle(RightTriangle source) : base(_structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-        }
-
-        protected RightTriangle(BlockStructure structure, IRightTriangle source) : base(structure, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-            this.Length = source.Length;
-            this.Height = source.Height;
-        }
-
-        public RightTriangle(IRightTriangle source) : base(_structure, source)
+        protected RightTriangle(BlockHeader header, IRightTriangle source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
             this.Length = source.Length;
             this.Height = source.Height;
         }
 
-        protected RightTriangle(BlockStructure structure, ReadOnlyMemory<byte> buffer) : base(structure, buffer)
+        public RightTriangle(IRightTriangle source) : base(_header, source)
+        {
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            this.Length = source.Length;
+            this.Height = source.Height;
+        }
+
+        protected RightTriangle(BlockHeader header, ReadOnlyMemory<byte> buffer) : base(header, buffer)
         {
             _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public RightTriangle(ReadOnlyMemory<byte> buffer) : base(_structure, buffer)
+        public RightTriangle(ReadOnlyMemory<byte> buffer) : base(_header, buffer)
         {
             _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
             _writableLocalBlock = Memory<byte>.Empty;
