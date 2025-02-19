@@ -22,6 +22,7 @@ namespace DTOMaker.Runtime.MemBlocks
         }
         #endregion
 
+        private const long BlockSignatureCode = 89980L; // V1.0
         private const int ClassHeight = 0;
         private const int BlockOffset = 0;
         private const int BlockLength = 64; // V1.0
@@ -34,13 +35,43 @@ namespace DTOMaker.Runtime.MemBlocks
         protected abstract string OnGetEntityId();
         public string GetEntityId() => OnGetEntityId();
 
-        protected EntityBase(BlockStructure thisStructure)
+        protected static ReadOnlyMemory<byte> CreateHeader(long structureBits, Guid entityGuid)
         {
-            _readonlyTotalBlock = _writableTotalBlock = new byte[thisStructure.EffectiveLength];
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-            thisStructure.WriteTo(_writableLocalBlock.Span);
+            Span<byte> header = stackalloc byte[64];
+            Codec_Int64_LE.WriteToSpan(header.Slice(0, 8), BlockSignatureCode);
+            Codec_Int64_LE.WriteToSpan(header.Slice(8, 8), structureBits);
+            Codec_Guid_LE.WriteToSpan(header.Slice(16, 16), entityGuid);
+            return header.ToArray();
         }
-        protected static void CheckStructures(BlockStructure thisStructure, BlockStructure thatStructure)
+
+        private static readonly int[] _blockSizes = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 * 1, 1024 * 2, 1024 * 4, 1024 * 8, 1024 * 16, 1024 * 32];
+        private static int GetEffectiveBlockSize(int code)
+        {
+            ReadOnlySpan<int> blockSizes = _blockSizes;
+            return Math.Max(64, blockSizes[code]);
+        }
+
+        protected static int CalculateTotalLength(long structureBits)
+        {
+            int classHeight = (int)(structureBits & 0x0F);
+            int totalLength = 64;
+            long bits = structureBits;
+            for (int h = 0; h < classHeight && h < 15; h++)
+            {
+                bits = bits >> 4;
+                int blockLength = GetEffectiveBlockSize((int)(bits & 0x0F));
+                totalLength += blockLength;
+            }
+            return totalLength;
+        }
+
+        protected EntityBase(BlockHeader blockHeader)
+        {
+            _readonlyTotalBlock = _writableTotalBlock = new byte[blockHeader.TotalLength];
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            blockHeader.Header.CopyTo(_writableLocalBlock);
+        }
+        protected static void CheckStructuresqqq(BlockStructureOld thisStructure, BlockStructureOld thatStructure)
         {
             if (thatStructure.SignatureBits != thisStructure.SignatureBits)
             {
@@ -58,33 +89,49 @@ namespace DTOMaker.Runtime.MemBlocks
                 throw new NotSupportedException($"Cannot read source with different structure ({thatStructure.StructureBits}), expected ({thisStructure.StructureBits}).");
             }
         }
-        protected EntityBase(BlockStructure thisStructure, object source)
+        protected EntityBase(BlockHeader blockHeader, object source)
         {
+            // todo split this method into 2: 1 for concrete, 1 for interface
+            _readonlyTotalBlock = _writableTotalBlock = new byte[blockHeader.TotalLength];
+            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
             if (source is EntityBase sourceEntity)
             {
-                _readonlyTotalBlock = _writableTotalBlock = new byte[thisStructure.EffectiveLength];
-                _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-                thisStructure.WriteTo(_writableLocalBlock.Span);
-                BlockStructure thatStructure = new BlockStructure(sourceEntity._readonlyTotalBlock.Span);
-                CheckStructures(thisStructure, thatStructure);
-                sourceEntity._readonlyTotalBlock.CopyTo(_writableTotalBlock);
-                // todo copy source buffer if frozen and same structure (unsafe?)
-                // todo copy slices if source buffer structure not same
+                // special case
+                ReadOnlySpan<byte> sourceHeader = sourceEntity._readonlyTotalBlock.Slice(BlockOffset, BlockLength).Span;
+                if (sourceHeader.SequenceEqual(blockHeader.Header.Span))
+                {
+                    // identical type and structure - copy everything
+                    sourceEntity._readonlyTotalBlock.CopyTo(_writableTotalBlock);
+                }
+                else
+                {
+                    // todo check source signature bits
+                    // todo throw error if entity guids not equal
+                    // todo copy slices if structure not same
+                    throw new NotImplementedException();
+                }
             }
             else
             {
-                _readonlyTotalBlock = _writableTotalBlock = new byte[thisStructure.EffectiveLength];
-                _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-                thisStructure.WriteTo(_writableLocalBlock.Span);
+                blockHeader.Header.CopyTo(_writableLocalBlock);
             }
         }
-        protected EntityBase(BlockStructure thisStructure, ReadOnlyMemory<byte> buffer)
+        protected EntityBase(BlockHeader blockHeader, ReadOnlyMemory<byte> buffer)
         {
-            BlockStructure thatStructure = new BlockStructure(buffer.Span);
-            CheckStructures(thisStructure, thatStructure);
-            // todo copy slices if source buffer structure not same
-            _readonlyTotalBlock = buffer;
-            _writableTotalBlock = Memory<byte>.Empty;
+            ReadOnlySpan<byte> sourceHeader = buffer.Slice(BlockOffset, BlockLength).Span;
+            if (sourceHeader.SequenceEqual(blockHeader.Header.Span))
+            {
+                // identical type and structure - copy everything
+                _readonlyTotalBlock = buffer;
+                _writableTotalBlock = Memory<byte>.Empty;
+            }
+            else
+            {
+                // todo check source signature bits
+                // todo throw error if entity guids not equal
+                // todo copy slices if structure not same
+                throw new NotImplementedException();
+            }
             _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
             _writableLocalBlock = Memory<byte>.Empty;
             _frozen = true;
