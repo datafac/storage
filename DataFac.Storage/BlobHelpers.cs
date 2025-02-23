@@ -8,25 +8,6 @@ namespace DataFac.Storage;
 
 public static class BlobHelpers
 {
-    public static BlobIdV0old GetBlobIdold(this BlobData data)
-    {
-#if NET8_0_OR_GREATER
-        byte[] hash = SHA256.HashData(data.Memory.Span);
-#else
-        SHA256 sha256 = SHA256.Create();
-        byte[] hash = sha256.ComputeHash(data.Memory.ToArray());
-#endif
-
-        return BlobIdV0old.UnsafeWrap(hash);
-    }
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    public static void CheckIdMatchesData(in BlobIdV0old id, in BlobData data)
-    {
-        BlobIdV0old checkId = data.GetBlobIdold();
-        if (!id.Equals(checkId)) throw new InvalidDataException($"Id does not match Data");
-    }
-
     public static BlobIdV1 GetBlobId(this ReadOnlySpan<byte> blob)
     {
         using var sha256 = SHA256.Create();
@@ -48,15 +29,15 @@ public static class BlobHelpers
 
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    public static void CheckIdMatchesData(in BlobIdV1 id, in BlobData data)
+    public static void CheckIdMatchesData(in BlobIdV1 id, in ReadOnlyMemory<byte> data)
     {
-        BlobIdV1 checkId = GetBlobId(data.Memory.Span);
+        BlobIdV1 checkId = GetBlobId(data.Span);
         if (!id.Equals(checkId)) throw new InvalidDataException($"Id does not match Data");
     }
 
-    public static BlobIdV1 GetId(this BlobData data)
+    public static BlobIdV1 GetId(this ReadOnlyMemory<byte> data)
     {
-        return data.Memory.Span.GetBlobId();
+        return data.Span.GetBlobId();
     }
 
 }

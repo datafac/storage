@@ -42,17 +42,17 @@ public interface IDataStore : IDisposable
     /// <returns></returns>
     void RemoveNames(IEnumerable<string> keys);
 
-    ValueTask<BlobData?> GetBlob(BlobIdV1 id);
-    ValueTask<BlobIdV1> PutBlob(BlobData data, bool withSync = false);
+    ValueTask<ReadOnlyMemory<byte>?> GetBlob(BlobIdV1 id);
+    ValueTask<BlobIdV1> PutBlob(ReadOnlyMemory<byte> data, bool withSync = false);
 
-    KeyValuePair<BlobIdV1, BlobData>[] GetCachedBlobs();
-    KeyValuePair<BlobIdV1, BlobData>[] GetStoredBlobs();
+    KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetCachedBlobs();
+    KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetStoredBlobs();
 
     /// <summary>
     /// Removes the blob if it exists.
     /// </summary>
     /// <param name="id"></param>
-    ValueTask<BlobData?> RemoveBlob(BlobIdV1 id, bool withSync);
+    ValueTask<ReadOnlyMemory<byte>?> RemoveBlob(BlobIdV1 id, bool withSync);
 
     /// <summary>
     /// Removes the blob if it exists.

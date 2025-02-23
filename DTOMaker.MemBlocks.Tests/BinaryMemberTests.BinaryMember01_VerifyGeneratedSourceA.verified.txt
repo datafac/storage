@@ -148,8 +148,7 @@ namespace MyOrg.Models.MemBlocks
             {
                 await _Other1.Pack(dataStore);
                 var buffer = _Other1.GetBuffer();
-                var blob = BlobData.UnsafeWrap(buffer);
-                blobId = await dataStore.PutBlob(blob);
+                blobId = await dataStore.PutBlob(buffer);
             }
             Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(0, 64).Span, blobId);
         }
@@ -159,9 +158,9 @@ namespace MyOrg.Models.MemBlocks
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyLocalBlock.Slice(0, 64).Span);
             if (!blobId.IsEmpty)
             {
-                BlobData? blob = await dataStore.GetBlob(blobId);
+                var blob = await dataStore.GetBlob(blobId);
                 if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
-                _Other1 = MyOrg.Models.MemBlocks.Other.CreateFrom(blob.Value.Memory);
+                _Other1 = MyOrg.Models.MemBlocks.Other.CreateFrom(blob.Value);
                 await _Other1.Unpack(dataStore, depth - 1);
             }
         }
@@ -181,8 +180,7 @@ namespace MyOrg.Models.MemBlocks
         {
             BlobIdV1 blobId = default;
             var buffer = _Field1.Memory;
-            var blob = BlobData.UnsafeWrap(buffer);
-            blobId = await dataStore.PutBlob(blob);
+            blobId = await dataStore.PutBlob(buffer);
             Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(64, 64).Span, blobId);
         }
         private async ValueTask Field1_Unpack(IDataStore dataStore, int depth)
@@ -191,9 +189,9 @@ namespace MyOrg.Models.MemBlocks
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyLocalBlock.Slice(64, 64).Span);
             if (!blobId.IsEmpty)
             {
-                BlobData? blob = await dataStore.GetBlob(blobId);
+                var blob = await dataStore.GetBlob(blobId);
                 if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
-                _Field1 = Octets.UnsafeWrap(blob.Value.Memory);
+                _Field1 = Octets.UnsafeWrap(blob.Value);
             }
         }
         private Octets _Field1 = Octets.Empty;
@@ -209,8 +207,7 @@ namespace MyOrg.Models.MemBlocks
             if (_Field2 is not null)
             {
                 var buffer = _Field2.Memory;
-                var blob = BlobData.UnsafeWrap(buffer);
-                blobId = await dataStore.PutBlob(blob);
+                blobId = await dataStore.PutBlob(buffer);
             }
             Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(128, 64).Span, blobId);
         }
@@ -220,9 +217,9 @@ namespace MyOrg.Models.MemBlocks
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyLocalBlock.Slice(128, 64).Span);
             if (!blobId.IsEmpty)
             {
-                BlobData? blob = await dataStore.GetBlob(blobId);
+                var blob = await dataStore.GetBlob(blobId);
                 if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
-                _Field2 = Octets.UnsafeWrap(blob.Value.Memory);
+                _Field2 = Octets.UnsafeWrap(blob.Value);
             }
         }
         private Octets? _Field2;

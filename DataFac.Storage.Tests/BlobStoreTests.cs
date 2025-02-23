@@ -58,7 +58,7 @@ public class BlobStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        BlobData data = new BlobData(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+        ReadOnlyMemory<byte> data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
         BlobIdV1 id = data.GetId();
         var result = await dataStore.GetBlob(id);
         result.ShouldBeNull();
@@ -78,7 +78,7 @@ public class BlobStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        BlobData data = default;
+        ReadOnlyMemory<byte> data = default;
         await dataStore.PutBlob(data, true);
 
         var counters = dataStore.GetCounters();
@@ -97,7 +97,7 @@ public class BlobStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        BlobData data = new BlobData(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+        ReadOnlyMemory<byte> data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
         await dataStore.PutBlob(data, true);
 
         var counters = dataStore.GetCounters();
@@ -116,7 +116,7 @@ public class BlobStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        BlobData data = new BlobData(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+        ReadOnlyMemory<byte> data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
         BlobIdV1 id = data.GetId();
         await dataStore.PutBlob(data, true);
 
@@ -143,7 +143,7 @@ public class BlobStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        BlobData data = new BlobData(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+        ReadOnlyMemory<byte> data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
 
         // put first
         BlobIdV1 id0 = data.GetId();

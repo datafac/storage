@@ -1,10 +1,23 @@
 # DTOMaker
 
-Supports model-first development of DTOs (Data Transport Objects), DSOs (Data Storage 
-Objects) and related POCOs (Plain Old C# Objects). Models are defined as C# interfaces 
-with additional attributes.
-
 [![Build-Deploy](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml)
+
+Includes model-driven source generators for quickly creating DTOs (Data Transport Objects) supporting the following
+serialization schemes:
+- MessagePack
+- MemBlocks
+
+and related POCOs (Plain Old C# Objects).
+
+Models are defined as C# interfaces with additional attributes. For example:
+
+```C#
+[Entity]
+public interface IMyFirstDTO
+{
+    [Member(1)] string Name { get; set; }
+}
+```
 
 *Warning: This is pre-release software under active development. Breaking changes may occur.*
 

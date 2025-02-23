@@ -150,8 +150,7 @@ namespace MyOrg.Models.MemBlocks
             {
                 await _Left.Pack(dataStore);
                 var buffer = _Left.GetBuffer();
-                var blob = BlobData.UnsafeWrap(buffer);
-                blobId = await dataStore.PutBlob(blob);
+                blobId = await dataStore.PutBlob(buffer);
             }
             Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(0, 64).Span, blobId);
         }
@@ -161,9 +160,9 @@ namespace MyOrg.Models.MemBlocks
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyLocalBlock.Slice(0, 64).Span);
             if (!blobId.IsEmpty)
             {
-                BlobData? blob = await dataStore.GetBlob(blobId);
+                var blob = await dataStore.GetBlob(blobId);
                 if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
-                _Left = MyOrg.Models.MemBlocks.Tree.CreateFrom(blob.Value.Memory);
+                _Left = MyOrg.Models.MemBlocks.Tree.CreateFrom(blob.Value);
                 await _Left.Unpack(dataStore, depth - 1);
             }
         }
@@ -186,8 +185,7 @@ namespace MyOrg.Models.MemBlocks
             {
                 await _Right.Pack(dataStore);
                 var buffer = _Right.GetBuffer();
-                var blob = BlobData.UnsafeWrap(buffer);
-                blobId = await dataStore.PutBlob(blob);
+                blobId = await dataStore.PutBlob(buffer);
             }
             Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(64, 64).Span, blobId);
         }
@@ -197,9 +195,9 @@ namespace MyOrg.Models.MemBlocks
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyLocalBlock.Slice(64, 64).Span);
             if (!blobId.IsEmpty)
             {
-                BlobData? blob = await dataStore.GetBlob(blobId);
+                var blob = await dataStore.GetBlob(blobId);
                 if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
-                _Right = MyOrg.Models.MemBlocks.Tree.CreateFrom(blob.Value.Memory);
+                _Right = MyOrg.Models.MemBlocks.Tree.CreateFrom(blob.Value);
                 await _Right.Unpack(dataStore, depth - 1);
             }
         }
@@ -222,8 +220,7 @@ namespace MyOrg.Models.MemBlocks
             {
                 await _Node.Pack(dataStore);
                 var buffer = _Node.GetBuffer();
-                var blob = BlobData.UnsafeWrap(buffer);
-                blobId = await dataStore.PutBlob(blob);
+                blobId = await dataStore.PutBlob(buffer);
             }
             Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(128, 64).Span, blobId);
         }
@@ -233,9 +230,9 @@ namespace MyOrg.Models.MemBlocks
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyLocalBlock.Slice(128, 64).Span);
             if (!blobId.IsEmpty)
             {
-                BlobData? blob = await dataStore.GetBlob(blobId);
+                var blob = await dataStore.GetBlob(blobId);
                 if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
-                _Node = MyOrg.Models.MemBlocks.Node.CreateFrom(blob.Value.Memory);
+                _Node = MyOrg.Models.MemBlocks.Node.CreateFrom(blob.Value);
                 await _Node.Unpack(dataStore, depth - 1);
             }
         }

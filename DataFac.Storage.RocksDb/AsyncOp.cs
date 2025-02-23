@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace DataFac.Storage.RocksDbStore;
 
@@ -6,10 +7,10 @@ internal readonly struct AsyncOp
 {
     public readonly AsyncOpKind Kind;
     public readonly BlobIdV1 Id;
-    public readonly BlobData Data;
-    public readonly TaskCompletionSource<BlobData?>? Completion;
+    public readonly ReadOnlyMemory<byte> Data;
+    public readonly TaskCompletionSource<ReadOnlyMemory<byte>?>? Completion;
 
-    public AsyncOp(AsyncOpKind kind, BlobIdV1 id, BlobData data, TaskCompletionSource<BlobData?>? completion)
+    public AsyncOp(AsyncOpKind kind, BlobIdV1 id, ReadOnlyMemory<byte> data, TaskCompletionSource<ReadOnlyMemory<byte>?>? completion)
     {
         Kind = kind;
         Id = id;
@@ -21,7 +22,7 @@ internal readonly struct AsyncOp
     /// Async SYNC
     /// </summary>
     /// <param name="completion"></param>
-    public AsyncOp(TaskCompletionSource<BlobData?> completion)
+    public AsyncOp(TaskCompletionSource<ReadOnlyMemory<byte>?> completion)
     {
         Kind = AsyncOpKind.Sync;
         Completion = completion;
@@ -32,7 +33,7 @@ internal readonly struct AsyncOp
     /// </summary>
     /// <param name="id"></param>
     /// <param name="completion"></param>
-    public AsyncOp(BlobIdV1 id, TaskCompletionSource<BlobData?> completion)
+    public AsyncOp(BlobIdV1 id, TaskCompletionSource<ReadOnlyMemory<byte>?> completion)
     {
         Kind = AsyncOpKind.Get;
         Id = id;
@@ -44,7 +45,7 @@ internal readonly struct AsyncOp
     /// </summary>
     /// <param name="id"></param>
     /// <param name="data"></param>
-    public AsyncOp(BlobIdV1 id, BlobData data, TaskCompletionSource<BlobData?>? completion)
+    public AsyncOp(BlobIdV1 id, ReadOnlyMemory<byte> data, TaskCompletionSource<ReadOnlyMemory<byte>?>? completion)
     {
         Kind = AsyncOpKind.Put;
         Id = id;

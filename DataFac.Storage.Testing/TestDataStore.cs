@@ -14,7 +14,7 @@ namespace DataFac.Storage.Testing;
 public sealed class TestDataStore : IDataStore
 {
     private readonly ConcurrentDictionary<string, BlobIdV1> _nameStore = new ConcurrentDictionary<string, BlobIdV1>();
-    private readonly ConcurrentDictionary<BlobIdV1, BlobData> _blobStore = new ConcurrentDictionary<BlobIdV1, BlobData>();
+    private readonly ConcurrentDictionary<BlobIdV1, ReadOnlyMemory<byte>> _blobStore = new ConcurrentDictionary<BlobIdV1, ReadOnlyMemory<byte>>();
 
     public TestDataStore()
     {
@@ -72,35 +72,35 @@ public sealed class TestDataStore : IDataStore
         return added;
     }
 
-    public KeyValuePair<BlobIdV1, BlobData>[] GetCachedBlobs() => _blobStore.ToArray();
+    public KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetCachedBlobs() => _blobStore.ToArray();
 
-    public KeyValuePair<BlobIdV1, BlobData>[] GetStoredBlobs() => _blobStore.ToArray();
+    public KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetStoredBlobs() => _blobStore.ToArray();
 
-    public ValueTask<BlobData?> GetBlob(BlobIdV1 id)
+    public ValueTask<ReadOnlyMemory<byte>?> GetBlob(BlobIdV1 id)
     {
         if (id.IsEmpty) ThrowMustNotBeEmpty(nameof(id));
         Interlocked.Increment(ref _counters.BlobGetCount);
         if (_blobStore.TryGetValue(id, out var data))
         {
             Interlocked.Increment(ref _counters.BlobGetCache);
-            return new ValueTask<BlobData?>(data);
+            return new ValueTask<ReadOnlyMemory<byte>?>(data);
         }
         else
         {
             Interlocked.Increment(ref _counters.BlobGetReads);
-            return new ValueTask<BlobData?>((BlobData?)null);
+            return new ValueTask<ReadOnlyMemory<byte>?>((ReadOnlyMemory<byte>?)null);
         }
     }
 
-    public ValueTask<BlobData?> RemoveBlob(BlobIdV1 id, bool withSync)
+    public ValueTask<ReadOnlyMemory<byte>?> RemoveBlob(BlobIdV1 id, bool withSync)
     {
         if (_blobStore.TryRemove(id, out var data))
         {
-            return new ValueTask<BlobData?>(data);
+            return new ValueTask<ReadOnlyMemory<byte>?>(data);
         }
         else
         {
-            return new ValueTask<BlobData?>((BlobData?)null);
+            return new ValueTask<ReadOnlyMemory<byte>?>((ReadOnlyMemory<byte>?)null);
         }
     }
 
@@ -116,14 +116,14 @@ public sealed class TestDataStore : IDataStore
         return default;
     }
 
-    public ValueTask<BlobIdV1> PutBlob(BlobData data, bool withSync)
+    public ValueTask<BlobIdV1> PutBlob(ReadOnlyMemory<byte> data, bool withSync)
     {
-        var id = data.Memory.Span.GetBlobId();
+        var id = data.Span.GetBlobId();
         Interlocked.Increment(ref _counters.BlobPutCount);
         if (_blobStore.TryAdd(id, data))
         {
             Interlocked.Increment(ref _counters.BlobPutWrits);
-            Interlocked.Add(ref _counters.ByteDelta, data.Memory.Length);
+            Interlocked.Add(ref _counters.ByteDelta, data.Length);
         }
         else
         {

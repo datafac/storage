@@ -22,7 +22,6 @@ namespace DTOMaker.Runtime.MemBlocks
         }
         #endregion
 
-        //private const long BlockSignatureCode = 89980L; // V1.0
         private const int ClassHeight = 0;
         private const int BlockOffset = 0;
         private const int BlockLength = 64; // V1.0

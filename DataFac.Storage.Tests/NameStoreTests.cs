@@ -24,7 +24,7 @@ public class NameStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        BlobData data = default;
+        ReadOnlyMemory<byte> data = default;
         BlobIdV1 id = data.GetId();
         bool missing = dataStore.PutName("name1", id);
         missing.ShouldBeTrue();
@@ -43,7 +43,7 @@ public class NameStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        BlobData data = default;
+        ReadOnlyMemory<byte> data = default;
         BlobIdV1 id = data.GetId();
         bool missing = dataStore.PutName("name1", id);
         missing.ShouldBeTrue();
@@ -71,7 +71,7 @@ public class NameStoreTests
         var names0 = dataStore.GetNames();
         names0.Length.ShouldBe(0);
 
-        BlobData data = default;
+        ReadOnlyMemory<byte> data = default;
         BlobIdV1 id = data.GetId();
         dataStore.PutName("name1", id);
         dataStore.PutName("name2", id);
