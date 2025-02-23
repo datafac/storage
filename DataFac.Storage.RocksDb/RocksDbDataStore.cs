@@ -263,7 +263,7 @@ public sealed class RocksDbDataStore : IDataStore
     {
         ThrowIfDisposed();
         Interlocked.Increment(ref _counters.BlobPutCount);
-        var id = data.GetId();
+        var id = data.Span.GetBlobId();
         if (!_blobCache.TryAdd(id, data))
         {
             Interlocked.Increment(ref _counters.BlobPutSkips);

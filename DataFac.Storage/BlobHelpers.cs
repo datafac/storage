@@ -34,10 +34,4 @@ public static class BlobHelpers
         BlobIdV1 checkId = GetBlobId(data.Span);
         if (!id.Equals(checkId)) throw new InvalidDataException($"Id does not match Data");
     }
-
-    public static BlobIdV1 GetId(this ReadOnlyMemory<byte> data)
-    {
-        return data.Span.GetBlobId();
-    }
-
 }
