@@ -79,6 +79,10 @@ public sealed class TestDataStore : IDataStore
     public ValueTask<ReadOnlyMemory<byte>?> GetBlob(BlobIdV1 id)
     {
         if (id.IsEmpty) ThrowMustNotBeEmpty(nameof(id));
+        if (id.IsEmbedded)
+        {
+            return new ValueTask<ReadOnlyMemory<byte>?>(id.GetEmbeddedBlob());
+        }
         Interlocked.Increment(ref _counters.BlobGetCount);
         if (_blobStore.TryGetValue(id, out var data))
         {
@@ -118,7 +122,8 @@ public sealed class TestDataStore : IDataStore
 
     public ValueTask<BlobIdV1> PutBlob(ReadOnlyMemory<byte> data, bool withSync)
     {
-        var id = data.Span.GetBlobId();
+        var id = data.Span.GetBlobIdqqq();
+        if (id.IsEmbedded) return new ValueTask<BlobIdV1>(id);
         Interlocked.Increment(ref _counters.BlobPutCount);
         if (_blobStore.TryAdd(id, data))
         {

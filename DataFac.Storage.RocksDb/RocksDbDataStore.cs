@@ -191,6 +191,11 @@ public sealed class RocksDbDataStore : IDataStore
     {
         ThrowIfDisposed();
         if (id.IsEmpty) ThrowMustNotBeEmpty(nameof(id));
+        if (id.IsEmbedded)
+        {
+            return id.GetEmbeddedBlob();
+        }
+
         Interlocked.Increment(ref _counters.BlobGetCount);
 
         if (_blobCache.TryGetValue(id, out var cachedBlob))
@@ -262,8 +267,9 @@ public sealed class RocksDbDataStore : IDataStore
     public async ValueTask<BlobIdV1> PutBlob(ReadOnlyMemory<byte> data, bool withSync)
     {
         ThrowIfDisposed();
+        var id = data.Span.GetBlobIdqqq();
+        if (id.IsEmbedded) return id;
         Interlocked.Increment(ref _counters.BlobPutCount);
-        var id = data.Span.GetBlobId();
         if (!_blobCache.TryAdd(id, data))
         {
             Interlocked.Increment(ref _counters.BlobPutSkips);

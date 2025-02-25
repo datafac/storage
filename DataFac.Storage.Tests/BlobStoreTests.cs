@@ -59,7 +59,7 @@ public class BlobStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         ReadOnlyMemory<byte> data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobIdV1 id = data.Span.GetBlobId();
+        BlobIdV1 id = data.Span.GetBlobIdqqq();
         var result = await dataStore.GetBlob(id);
         result.ShouldBeNull();
         var counters = dataStore.GetCounters();
@@ -79,11 +79,12 @@ public class BlobStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         ReadOnlyMemory<byte> data = default;
-        await dataStore.PutBlob(data, true);
+        var id = await dataStore.PutBlob(data, true);
+        id.IsEmbedded.ShouldBeTrue();
 
         var counters = dataStore.GetCounters();
-        counters.BlobPutCount.ShouldBe(1);
-        counters.BlobPutWrits.ShouldBe(1);
+        counters.BlobPutCount.ShouldBe(0);
+        counters.BlobPutWrits.ShouldBe(0);
         counters.BlobPutSkips.ShouldBe(0);
     }
 
@@ -117,7 +118,7 @@ public class BlobStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         ReadOnlyMemory<byte> data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobIdV1 id = data.Span.GetBlobId();
+        BlobIdV1 id = data.Span.GetBlobIdqqq();
         await dataStore.PutBlob(data, true);
 
         var data2 = await dataStore.GetBlob(id);
@@ -146,7 +147,7 @@ public class BlobStoreTests
         ReadOnlyMemory<byte> data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
 
         // put first
-        BlobIdV1 id0 = data.Span.GetBlobId();
+        BlobIdV1 id0 = data.Span.GetBlobIdqqq();
         await dataStore.PutBlob(data, true);
         var counters1 = dataStore.GetCounters();
         counters1.BlobPutCount.ShouldBe(1);
@@ -155,7 +156,7 @@ public class BlobStoreTests
         counters1.ByteDelta.ShouldBe(256);
 
         // put again
-        BlobIdV1 id1 = data.Span.GetBlobId();
+        BlobIdV1 id1 = data.Span.GetBlobIdqqq();
         id1.Equals(id0).ShouldBeTrue();
         await dataStore.PutBlob(data, true);
         var counters2 = dataStore.GetCounters();

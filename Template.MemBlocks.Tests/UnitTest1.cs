@@ -81,6 +81,9 @@ namespace Template.MemBlocks.Tests
 
         public async Task RoundtripDTO()
         {
+            var smallBinary = new Octets(new byte[] { 1, 2, 3, 4, 5, 6, 7 });
+            var largeBinary = new Octets(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+
             using var dataStore = new DataFac.Storage.Testing.TestDataStore();
 
             var orig = new T_NameSpace_.MemBlocks.T_EntityName_();
@@ -88,6 +91,8 @@ namespace Template.MemBlocks.Tests
             orig.T_ScalarMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
             orig.T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_() { Field1 = 123 };
+            orig.T_RequiredBinaryMemberName_ = largeBinary;
+            orig.T_NullableBinaryMemberName_ = smallBinary;
             await orig.Pack(dataStore);
             orig.Freeze();
 
@@ -100,6 +105,9 @@ namespace Template.MemBlocks.Tests
             copy.T_ScalarMemberName_.ShouldBe(orig.T_ScalarMemberName_);
             copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).ShouldBeTrue();
             copy.T_RequiredEntityMemberName_.ShouldNotBeNull();
+            copy.T_RequiredBinaryMemberName_.ShouldNotBeNull();
+            copy.T_RequiredBinaryMemberName_.ShouldBe(orig.T_RequiredBinaryMemberName_);
+            copy.T_NullableBinaryMemberName_.ShouldBe(orig.T_NullableBinaryMemberName_);
             await copy.T_RequiredEntityMemberName_.Unpack(dataStore, 0);
             copy.T_RequiredEntityMemberName_!.Field1.ShouldBe(orig.T_RequiredEntityMemberName_.Field1);
         }

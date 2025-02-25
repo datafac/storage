@@ -39,6 +39,8 @@ namespace DataFac.Storage
         //  0C-0F   A.A.B.B     4   CompSize
         //  10-1F   A.B         16  -unused-
         //  20-3F   B           32  HashData
+        public byte Marker00 => _block.A.A.A.A.A.A.ByteValue;
+        public byte Marker01 => _block.A.A.A.A.A.B.ByteValue;
         public byte MajorVer => _block.A.A.A.A.B.A.ByteValue;
         public byte MinorVer => _block.A.A.A.A.B.B.ByteValue;
         public int BlobSize => _block.A.A.B.A.Int32ValueLE;
@@ -49,8 +51,45 @@ namespace DataFac.Storage
 
         public bool IsEmpty => _block.IsEmpty;
 
+        public bool IsEmbedded
+        {
+            get
+            {
+                char marker = (char)_block.A.A.A.A.A.A.ByteValue;
+                return marker switch
+                {
+                    'U' => true, // embedded, uncompressed
+                    'B' => true,    // embedded, Brotli
+                    'G'=> true,     // embedded, GZip
+                    _ => false
+                };
+            }
+        }
+
+        /// <summary>
+        /// Used to directly embed blob data which is small enough into the id.
+        /// </summary>
+        /// <param name="compAlgo"></param>
+        /// <param name="data"></param>
+        /// <exception cref="ArgumentException"></exception>
+        public BlobIdV1(BlobCompAlgo compAlgo, ReadOnlySpan<byte> data)
+        {
+            if (data.Length > 62) throw new ArgumentException("Data length must be <= 62");
+            Span<byte> block = BlockHelper.AsWritableSpan<BlockB064>(ref _block);
+            block[0] = compAlgo switch
+            {
+                BlobCompAlgo.Brotli => (byte)'B',
+                BlobCompAlgo.GZip => (byte)'G',
+                _ => (byte)'U'
+            };
+            block[1] = (byte)data.Length;
+            data.CopyTo(block.Slice(2));
+        }
+
         private BlobIdV1(byte majorVer, byte minorVer, int blobSize, BlobCompAlgo compAlgo, int compSize, BlobHashAlgo hashAlgo, BlockB032 hashData)
         {
+            _block.A.A.A.A.A.A.ByteValue = (byte)'|';
+            _block.A.A.A.A.A.B.ByteValue = (byte)'_';
             _block.A.A.A.A.B.A.ByteValue = majorVer;
             _block.A.A.A.A.B.B.ByteValue = minorVer;
             _block.A.A.B.A.Int32ValueLE = blobSize;
@@ -89,7 +128,23 @@ namespace DataFac.Storage
             if (!_block.TryWrite(target)) throw new ArgumentException($"Failed to write to", nameof(target));
         }
 
-        public bool IsAssigned => MajorVer > 0;
+        public bool IsAssigned => Marker00 != 0;
+
+        public ReadOnlyMemory<byte> GetEmbeddedBlob()
+        {
+            char marker = (char)Marker00;
+            if (marker == 'U' || marker == 'B' || marker == 'G')
+            {
+                BlockB064 copy = _block;
+                ReadOnlySpan<byte> block = BlockHelper.AsReadOnlySpan<BlockB064>(ref copy);
+                int dataSize = block[1];
+                return block.Slice(2, dataSize).ToArray();
+            }
+            else
+            {
+                throw new InvalidOperationException("Does not contain embedded blob!");
+            }
+        }
 
         /// <summary>
         /// Formats the blob id as a round-trip string.
@@ -97,8 +152,26 @@ namespace DataFac.Storage
         /// <returns></returns>
         public override string ToString()
         {
-            if (MajorVer == 0 && MinorVer == 0) return string.Empty;
+            if(_block.IsEmpty) return string.Empty;
             StringBuilder result = new StringBuilder();
+            char marker = (char)Marker00;
+            if (marker == 'U' || marker == 'B' || marker == 'G')
+            {
+                BlockB064 copy = _block;
+                ReadOnlySpan<byte> block = BlockHelper.AsReadOnlySpan<BlockB064>(ref copy);
+                int dataSize = block[1];
+                result.Append(marker);
+                result.Append(':');
+                result.Append(dataSize);
+                result.Append(':');
+#if NET8_0_OR_GREATER
+                result.Append(Convert.ToBase64String(block.Slice(2, dataSize)));
+#else
+                result.Append(Convert.ToBase64String(block.Slice(2, dataSize).ToArray()));
+#endif
+                return result.ToString();
+            }
+
             result.Append($"V{MajorVer}.{MinorVer}:");
             result.Append(BlobSize);
             result.Append(':');
