@@ -28,9 +28,7 @@ public static class BlobHelpers
         Span<byte> hashSpan = hashBytes.AsSpan();
 #endif
         // todo compression
-        BlockB032 hashData = default;
-        hashData.TryRead(hashSpan);
-        return new BlobIdV1(blob.Length, BlobCompAlgo.None, 0, BlobHashAlgo.Sha256, hashData);
+        return new BlobIdV1(blob.Length, BlobCompAlgo.None, 0, BlobHashAlgo.Sha256, hashSpan);
     }
 
 

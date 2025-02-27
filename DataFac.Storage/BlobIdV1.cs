@@ -1,31 +1,15 @@
 ﻿using DataFac.Memory;
-using DataFac.UnsafeHelpers;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DataFac.Storage
 {
-    public enum BlobCompAlgo : byte
-    {
-        None = 0,
-        Brotli = 1,
-        GZip = 2,
-    }
-    public enum BlobHashAlgo : byte
-    {
-        Undefined = 0,
-        Sha256 = 1,
-    }
     public readonly struct BlobIdV1 : IEquatable<BlobIdV1>
     {
-        private readonly BlockB064 _block;
-        private readonly int _hashCode;
+        private readonly ReadOnlyMemory<byte> _memory;
 
         // map
         //  offset  path        len fieldname
@@ -39,23 +23,35 @@ namespace DataFac.Storage
         //  0C-0F   A.A.B.B     4   CompSize
         //  10-1F   A.B         16  -unused-
         //  20-3F   B           32  HashData
-        public byte Marker00 => _block.A.A.A.A.A.A.ByteValue;
-        public byte Marker01 => _block.A.A.A.A.A.B.ByteValue;
-        public byte MajorVer => _block.A.A.A.A.B.A.ByteValue;
-        public byte MinorVer => _block.A.A.A.A.B.B.ByteValue;
-        public int BlobSize => _block.A.A.B.A.Int32ValueLE;
-        public BlobCompAlgo CompAlgo => (BlobCompAlgo)_block.A.A.A.B.A.A.ByteValue;
-        public int CompSize => _block.A.A.B.B.Int32ValueLE;
-        public BlobHashAlgo HashAlgo => (BlobHashAlgo)_block.A.A.A.B.A.B.ByteValue;
-        public BlockB032 HashData => _block.B;
+        public byte Marker00 => _memory.Span[0];
+        public byte Marker01 => _memory.Span[1];
+        public byte MajorVer => _memory.Span[2];
+        public byte MinorVer => _memory.Span[3];
+        public BlobCompAlgo CompAlgo => (BlobCompAlgo)_memory.Span[4];
+        public BlobHashAlgo HashAlgo => (BlobHashAlgo)_memory.Span[5];
+        public int BlobSize => Codec_Int32_LE.ReadFromSpan(_memory.Span.Slice(8, 4));
+        public int CompSize => Codec_Int32_LE.ReadFromSpan(_memory.Span.Slice(12, 4));
+        public ReadOnlyMemory<byte> HashData => _memory.Slice(32, 32);
 
-        public bool IsEmpty => _block.IsEmpty;
+        public ReadOnlyMemory<byte> Memory => _memory;
+        public bool IsDefaultOrAllZero
+        {
+            get
+            {
+                ReadOnlySpan<long> nums = MemoryMarshal.Cast<byte, long>(_memory.Span);
+                for (int i = 0; i < nums.Length; i++)
+                {
+                    if (nums[i] != 0) return false;
+                }
+                return true;
+            }
+        }
 
         public bool IsEmbedded
         {
             get
             {
-                char marker = (char)_block.A.A.A.A.A.A.ByteValue;
+                char marker = (char)Marker00;
                 return marker switch
                 {
                     'U' => true, // embedded, uncompressed
@@ -66,6 +62,23 @@ namespace DataFac.Storage
             }
         }
 
+        private BlobIdV1(ReadOnlyMemory<byte> memory)
+        {
+            _memory = memory;
+        }
+
+        public static BlobIdV1 FromSpan(ReadOnlySpan<byte> source)
+        {
+            if (source.Length != 64) throw new ArgumentException($"Length must be 64.", nameof(source));
+            return new BlobIdV1(source.ToArray());
+        }
+
+        public static BlobIdV1 UnsafeWrap(ReadOnlyMemory<byte> memory)
+        {
+            if (memory.Length != 64) throw new ArgumentException($"Length must be 64.", nameof(memory));
+            return new BlobIdV1(memory);
+        }
+
         /// <summary>
         /// Used to directly embed blob data which is small enough into the id.
         /// </summary>
@@ -74,8 +87,9 @@ namespace DataFac.Storage
         /// <exception cref="ArgumentException"></exception>
         public BlobIdV1(BlobCompAlgo compAlgo, ReadOnlySpan<byte> data)
         {
-            if (data.Length > 62) throw new ArgumentException("Data length must be <= 62");
-            Span<byte> block = BlockHelper.AsWritableSpan<BlockB064>(ref _block);
+            if (data.Length > 62) throw new ArgumentException("Length must be <= 62", nameof(data));
+            Memory<byte> memory = new byte[64];
+            Span<byte> block = memory.Span;
             block[0] = compAlgo switch
             {
                 BlobCompAlgo.Brotli => (byte)'B',
@@ -84,48 +98,32 @@ namespace DataFac.Storage
             };
             block[1] = (byte)data.Length;
             data.CopyTo(block.Slice(2));
+            _memory = memory;
         }
 
-        private BlobIdV1(byte majorVer, byte minorVer, int blobSize, BlobCompAlgo compAlgo, int compSize, BlobHashAlgo hashAlgo, BlockB032 hashData)
+        private BlobIdV1(byte majorVer, byte minorVer, int blobSize, BlobCompAlgo compAlgo, int compSize, BlobHashAlgo hashAlgo, ReadOnlySpan<byte> hashData)
         {
-            _block.A.A.A.A.A.A.ByteValue = (byte)'|';
-            _block.A.A.A.A.A.B.ByteValue = (byte)'_';
-            _block.A.A.A.A.B.A.ByteValue = majorVer;
-            _block.A.A.A.A.B.B.ByteValue = minorVer;
-            _block.A.A.B.A.Int32ValueLE = blobSize;
-            _block.A.A.A.B.A.A.ByteValue = (byte)compAlgo;
-            _block.A.A.B.B.Int32ValueLE = compSize;
-            _block.A.A.A.B.A.B.ByteValue = (byte)hashAlgo;
-            _block.B = hashData;
-            _hashCode = HashCode.Combine(_block);
+            if (hashData.Length != 32) throw new ArgumentException("Length must be == 32", nameof(hashData));
+            Memory<byte> memory = new byte[64];
+            Span<byte> block = memory.Span;
+            block[0] = (byte)'|';   // Marker00
+            block[1] = (byte)'_';   // Marker01
+            block[2] = majorVer;
+            block[3] = minorVer;
+            block[4] = (byte)compAlgo;
+            block[5] = (byte)hashAlgo;
+            Codec_Int32_LE.WriteToSpan(block.Slice(8, 4), blobSize);
+            Codec_Int32_LE.WriteToSpan(block.Slice(12, 4), compSize);
+            hashData.CopyTo(block.Slice(32, 32));
+            _memory = memory;
         }
 
-        public BlobIdV1(int blobSize, BlobCompAlgo compAlgo, int compSize, BlobHashAlgo hashAlgo, BlockB032 hashData)
+        public BlobIdV1(int blobSize, BlobCompAlgo compAlgo, int compSize, BlobHashAlgo hashAlgo, ReadOnlySpan<byte> hashData)
             : this(1, 0, blobSize, compAlgo, compSize, hashAlgo, hashData) { }
-
-        public BlobIdV1(in ReadOnlySpan<byte> source)
-        {
-            if (source.Length != 64) throw new ArgumentException($"Expected length to be 64.", nameof(source));
-            if (!_block.TryRead(source)) throw new ArgumentException($"Failed to read from", nameof(source));
-            _hashCode = HashCode.Combine(_block);
-        }
-
-        public BlobIdV1(in BlobIdV1 source)
-        {
-            _block = source._block;
-            _hashCode = HashCode.Combine(_block);
-        }
-
-        public byte[] ToArray()
-        {
-            Span<byte> target = stackalloc byte[64];
-            if (!_block.TryWrite(target)) throw new ArgumentException($"Failed to write to", nameof(target));
-            return target.ToArray();
-        }
 
         public void WriteTo(Span<byte> target)
         {
-            if (!_block.TryWrite(target)) throw new ArgumentException($"Failed to write to", nameof(target));
+            _memory.Span.CopyTo(target);
         }
 
         public bool IsAssigned => Marker00 != 0;
@@ -135,10 +133,8 @@ namespace DataFac.Storage
             char marker = (char)Marker00;
             if (marker == 'U' || marker == 'B' || marker == 'G')
             {
-                BlockB064 copy = _block;
-                ReadOnlySpan<byte> block = BlockHelper.AsReadOnlySpan<BlockB064>(ref copy);
-                int dataSize = block[1];
-                return block.Slice(2, dataSize).ToArray();
+                int dataSize = _memory.Span[1];
+                return _memory.Slice(2, dataSize);
             }
             else
             {
@@ -152,22 +148,20 @@ namespace DataFac.Storage
         /// <returns></returns>
         public override string ToString()
         {
-            if(_block.IsEmpty) return string.Empty;
+            if (IsDefaultOrAllZero) return string.Empty;
             StringBuilder result = new StringBuilder();
             char marker = (char)Marker00;
             if (marker == 'U' || marker == 'B' || marker == 'G')
             {
-                BlockB064 copy = _block;
-                ReadOnlySpan<byte> block = BlockHelper.AsReadOnlySpan<BlockB064>(ref copy);
-                int dataSize = block[1];
+                int dataSize = _memory.Span[1];
                 result.Append(marker);
                 result.Append(':');
                 result.Append(dataSize);
                 result.Append(':');
 #if NET8_0_OR_GREATER
-                result.Append(Convert.ToBase64String(block.Slice(2, dataSize)));
+                result.Append(Convert.ToBase64String(_memory.Span.Slice(2, dataSize)));
 #else
-                result.Append(Convert.ToBase64String(block.Slice(2, dataSize).ToArray()));
+                result.Append(Convert.ToBase64String(_memory.Slice(2, dataSize).ToArray()));
 #endif
                 return result.ToString();
             }
@@ -183,8 +177,7 @@ namespace DataFac.Storage
             result.Append(':');
             if (HashAlgo != BlobHashAlgo.Undefined)
             {
-                var hashData = HashData;
-                var hashSpan = BlockHelper.AsReadOnlySpan(ref hashData);
+                var hashSpan = HashData.Span;
 #if NET8_0_OR_GREATER
                 result.Append(Convert.ToBase64String(hashSpan));
 #else
@@ -211,8 +204,7 @@ namespace DataFac.Storage
             int compSize = default;
             int hashAlgoInt = default;
             var hashAlgo = BlobHashAlgo.Undefined;
-            BlockB032 hashData = default;
-            Span<byte> hashSpan = BlockHelper.AsWritableSpan(ref hashData);
+            Span<byte> hashSpan = stackalloc byte[32];
             while (sourceSpan.Length > 0)
             {
                 var sourceIndex = sourceSpan.IndexOf(':');
@@ -252,12 +244,26 @@ namespace DataFac.Storage
                 partId++;
                 sourceSpan = sourceIndex >= 0 ? sourceSpan.Slice(sourceIndex + 1) : default;
             }
-            return new BlobIdV1(blobSize, compAlgo, compSize, hashAlgo, hashData);
+            return new BlobIdV1(blobSize, compAlgo, compSize, hashAlgo, hashSpan);
         }
 
-        public bool Equals(BlobIdV1 that) => that._block.Equals(this._block);
+        public bool Equals(BlobIdV1 that) => that._memory.Span.SequenceEqual(this._memory.Span);
         public override bool Equals(object? obj) => obj is BlobIdV1 other && Equals(other);
-        public override int GetHashCode() => _hashCode;
+        public override int GetHashCode()
+        {
+            var hc = new HashCode();
+            ReadOnlySpan<byte> block = _memory.Span;
+#if NET8_0_OR_GREATER
+            hc.AddBytes(block);
+#else
+            for (int i = 0; i < block.Length; i++)
+            {
+                hc.Add(block[i]);
+            }
+#endif
+            return hc.ToHashCode();
+        }
+
         public static bool operator ==(BlobIdV1 left, BlobIdV1 right) => left.Equals(right);
         public static bool operator !=(BlobIdV1 left, BlobIdV1 right) => !left.Equals(right);
     }

@@ -155,8 +155,8 @@ namespace MyOrg.Models.MemBlocks
         private async ValueTask Other1_Unpack(IDataStore dataStore, int depth)
         {
             _Other1 = null;
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyLocalBlock.Slice(0, 64).Span);
-            if (!blobId.IsEmpty)
+            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(0, 64));
+            if (!blobId.IsDefaultOrAllZero)
             {
                 var blob = await dataStore.GetBlob(blobId);
                 if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
@@ -186,8 +186,8 @@ namespace MyOrg.Models.MemBlocks
         private async ValueTask Field1_Unpack(IDataStore dataStore, int depth)
         {
             _Field1 = Octets.Empty;
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyLocalBlock.Slice(64, 64).Span);
-            if (!blobId.IsEmpty)
+            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(64, 64));
+            if (!blobId.IsDefaultOrAllZero)
             {
                 var blob = await dataStore.GetBlob(blobId);
                 if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
@@ -214,8 +214,8 @@ namespace MyOrg.Models.MemBlocks
         private async ValueTask Field2_Unpack(IDataStore dataStore, int depth)
         {
             _Field2 = null;
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyLocalBlock.Slice(128, 64).Span);
-            if (!blobId.IsEmpty)
+            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(128, 64));
+            if (!blobId.IsDefaultOrAllZero)
             {
                 var blob = await dataStore.GetBlob(blobId);
                 if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");

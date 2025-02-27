@@ -550,12 +550,11 @@ namespace T_NameSpace_.MemBlocks
         }
         private async ValueTask T_NullableEntityMemberName__Unpack(IDataStore dataStore, int depth)
         {
+            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_NullableEntityFieldOffset_, 64));
+            var blob = await dataStore.GetBlob(blobId);
             _T_NullableEntityMemberName_ = null;
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyLocalBlock.Slice(T_NullableEntityFieldOffset_, 64).Span);
-            if (!blobId.IsEmpty)
+            if (blob is not null)
             {
-                var blob = await dataStore.GetBlob(blobId);
-                if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
                 _T_NullableEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(blob.Value);
                 await _T_NullableEntityMemberName_.Unpack(dataStore, depth - 1);
             }
@@ -592,15 +591,14 @@ namespace T_NameSpace_.MemBlocks
         }
         private async ValueTask T_RequiredEntityMemberName__Unpack(IDataStore dataStore, int depth)
         {
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyLocalBlock.Slice(T_RequiredEntityFieldOffset_, 64).Span);
-            if (blobId.IsEmpty)
+            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_RequiredEntityFieldOffset_, 64));
+            var blob = await dataStore.GetBlob(blobId);
+            if(blob is null)
             {
                 _T_RequiredEntityMemberName_ = await CreateEmpty<T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_>(dataStore);
             }
             else
             {
-                var blob = await dataStore.GetBlob(blobId);
-                if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
                 _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(blob.Value);
                 await _T_RequiredEntityMemberName_.Unpack(dataStore, depth - 1);
             }
@@ -635,14 +633,9 @@ namespace T_NameSpace_.MemBlocks
         }
         private async ValueTask T_NullableBinaryMemberName__Unpack(IDataStore dataStore, int depth)
         {
-            _T_NullableBinaryMemberName_ = null;
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyLocalBlock.Slice(T_NullableBinaryFieldOffset_, 64).Span);
-            if (!blobId.IsEmpty)
-            {
-                var blob = await dataStore.GetBlob(blobId);
-                if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
-                _T_NullableBinaryMemberName_ = Octets.UnsafeWrap(blob.Value);
-            }
+            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_NullableBinaryFieldOffset_, 64));
+            var blob = await dataStore.GetBlob(blobId);
+            _T_NullableBinaryMemberName_ = blob is null ? null : Octets.UnsafeWrap(blob.Value);
         }
         private Octets? _T_NullableBinaryMemberName_;
         //##if(member.IsObsolete) {
@@ -663,14 +656,10 @@ namespace T_NameSpace_.MemBlocks
         }
         private async ValueTask T_RequiredBinaryMemberName__Unpack(IDataStore dataStore, int depth)
         {
-            _T_RequiredBinaryMemberName_ = Octets.Empty;
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyLocalBlock.Slice(T_RequiredBinaryFieldOffset_, 64).Span);
-            if (!blobId.IsEmpty)
-            {
-                var blob = await dataStore.GetBlob(blobId);
-                if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
-                _T_RequiredBinaryMemberName_ = Octets.UnsafeWrap(blob.Value);
-            }
+            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_RequiredBinaryFieldOffset_, 64));
+            var blob = await dataStore.GetBlob(blobId);
+            _T_RequiredBinaryMemberName_ = blob is null ? Octets.Empty: Octets.UnsafeWrap(blob.Value);
+
         }
         private Octets _T_RequiredBinaryMemberName_ = Octets.Empty;
         //##if(member.IsObsolete) {

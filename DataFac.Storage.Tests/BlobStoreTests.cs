@@ -36,16 +36,13 @@ public class BlobStoreTests
 #if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
 #endif
-    public async Task Store02GetEmptyIdFails(StoreKind storeKind)
+    public async Task Store02GetEmptyIdReturnsNull(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        var ex = await Assert.ThrowsAnyAsync<ArgumentException>(async () =>
-        {
-            var result = await dataStore.GetBlob(default);
-        });
-        ex.Message.ShouldStartWith("Must not be empty");
+        var result = await dataStore.GetBlob(default);
+        result.ShouldBeNull();
     }
 
     [Theory]

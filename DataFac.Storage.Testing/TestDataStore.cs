@@ -78,7 +78,7 @@ public sealed class TestDataStore : IDataStore
 
     public ValueTask<ReadOnlyMemory<byte>?> GetBlob(BlobIdV1 id)
     {
-        if (id.IsEmpty) ThrowMustNotBeEmpty(nameof(id));
+        if (id.IsDefaultOrAllZero) return new ValueTask<ReadOnlyMemory<byte>?>((ReadOnlyMemory<byte>?)null);
         if (id.IsEmbedded)
         {
             return new ValueTask<ReadOnlyMemory<byte>?>(id.GetEmbeddedBlob());

@@ -83,10 +83,10 @@ public sealed class RocksDbDataStore : IDataStore
         {
 #if NET8_0_OR_GREATER
             string key = Encoding.UTF8.GetString(iter2.GetKeySpan());
-            BlobIdV1 value = new BlobIdV1(iter2.GetValueSpan());
+            BlobIdV1 value = BlobIdV1.UnsafeWrap(iter2.Value());
 #else
             string key = Encoding.UTF8.GetString(iter2.Key());
-            BlobIdV1 value = new BlobIdV1(iter2.Value().AsSpan());
+            BlobIdV1 value = BlobIdV1.UnsafeWrap(iter2.Value());
 #endif
             list.Add(new KeyValuePair<string, BlobIdV1>(key, value));
             iter2 = iter2.Next();
@@ -104,7 +104,7 @@ public sealed class RocksDbDataStore : IDataStore
 #else
         var currentBytes = _rocksNameDb.Get(keyBytes);
 #endif
-        return currentBytes is null ? null : new BlobIdV1(currentBytes);
+        return currentBytes is null ? null : BlobIdV1.UnsafeWrap(currentBytes);
     }
 
     public void RemoveName(string key)
@@ -145,16 +145,14 @@ public sealed class RocksDbDataStore : IDataStore
         bool added = _rocksNameDb.Get(keySpan) is null;
         if (added)
         {
-            Span<byte> valueSpan = stackalloc byte[64];
-            id.WriteTo(valueSpan);
-            _rocksNameDb.Put(keySpan, valueSpan);
+            _rocksNameDb.Put(keySpan, id.Memory.Span);
         }
 #else
         var keyBytes = Encoding.UTF8.GetBytes(key);
         bool added = _rocksNameDb.Get(keyBytes) is null;
         if (added)
         {
-            byte[] valueBytes = id.ToArray();
+            byte[] valueBytes = id.Memory.ToArray();
             _rocksNameDb.Put(keyBytes, valueBytes);
         }
 #endif
@@ -175,10 +173,10 @@ public sealed class RocksDbDataStore : IDataStore
         while (iter2.Valid())
         {
 #if NET8_0_OR_GREATER
-            BlobIdV1 key = new BlobIdV1(iter2.GetKeySpan());
+            BlobIdV1 key = BlobIdV1.UnsafeWrap(iter2.Key());
             ReadOnlyMemory<byte> value = new ReadOnlyMemory<byte>(iter2.Value());
 #else
-            BlobIdV1 key = new BlobIdV1(iter2.Key());
+            BlobIdV1 key = BlobIdV1.UnsafeWrap(iter2.Key());
             ReadOnlyMemory<byte> value = new ReadOnlyMemory<byte>(iter2.Value());
 #endif
             list.Add(new KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>(key, value));
@@ -190,7 +188,7 @@ public sealed class RocksDbDataStore : IDataStore
     public async ValueTask<ReadOnlyMemory<byte>?> GetBlob(BlobIdV1 id)
     {
         ThrowIfDisposed();
-        if (id.IsEmpty) ThrowMustNotBeEmpty(nameof(id));
+        if (id.IsDefaultOrAllZero) return null;
         if (id.IsEmbedded)
         {
             return id.GetEmbeddedBlob();
@@ -361,11 +359,9 @@ public sealed class RocksDbDataStore : IDataStore
     private ValueTask<ReadOnlyMemory<byte>?> InternalGetBlob(in BlobIdV1 id)
     {
 #if NET8_0_OR_GREATER
-        Span<byte> valueSpan = stackalloc byte[64];
-        id.WriteTo(valueSpan);
-        byte[] currentBytes = _rocksBlobDb.Get(valueSpan);
+        byte[] currentBytes = _rocksBlobDb.Get(id.Memory.Span);
 #else
-        byte[] currentBytes = _rocksBlobDb.Get(id.ToArray());
+        byte[] currentBytes = _rocksBlobDb.Get(id.Memory.ToArray());
 #endif
         return currentBytes is null
             ? new ValueTask<ReadOnlyMemory<byte>?>((ReadOnlyMemory<byte>?)null)
@@ -375,11 +371,10 @@ public sealed class RocksDbDataStore : IDataStore
     private ValueTask InternalPutBlob(in BlobIdV1 id, in ReadOnlyMemory<byte> data)
     {
 #if NET8_0_OR_GREATER
-        Span<byte> keySpan = stackalloc byte[64];
-        id.WriteTo(keySpan);
+        var keySpan = id.Memory.Span;
         byte[] currentBytes = _rocksBlobDb.Get(keySpan);
 #else
-        var key = id.ToArray();
+        var key = id.Memory.ToArray();
         byte[] currentBytes = _rocksBlobDb.Get(key);
 #endif
         if (currentBytes is null)
@@ -403,12 +398,11 @@ public sealed class RocksDbDataStore : IDataStore
     private ValueTask<ReadOnlyMemory<byte>?> InternalDelBlob(in BlobIdV1 id)
     {
 #if NET8_0_OR_GREATER
-        Span<byte> keySpan = stackalloc byte[64];
-        id.WriteTo(keySpan);
+        var keySpan = id.Memory.Span;
         byte[] currentBytes = _rocksBlobDb.Get(keySpan);
 #else
-        var keyBytes = id.ToArray();
-        byte[] currentBytes = _rocksBlobDb.Get(keyBytes);
+        var key = id.Memory.ToArray();
+        byte[] currentBytes = _rocksBlobDb.Get(key);
 #endif
         if (currentBytes is null)
         {
@@ -419,7 +413,7 @@ public sealed class RocksDbDataStore : IDataStore
 #if NET8_0_OR_GREATER
             _rocksBlobDb.Remove(keySpan);
 #else
-            _rocksBlobDb.Remove(keyBytes);
+            _rocksBlobDb.Remove(key);
 #endif
             return new ValueTask<ReadOnlyMemory<byte>?>(currentBytes);
         }
