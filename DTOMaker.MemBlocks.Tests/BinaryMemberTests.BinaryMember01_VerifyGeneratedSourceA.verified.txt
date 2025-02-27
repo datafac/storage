@@ -154,12 +154,11 @@ namespace MyOrg.Models.MemBlocks
         }
         private async ValueTask Other1_Unpack(IDataStore dataStore, int depth)
         {
+            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(0, 64));
+            var blob = await dataStore.GetBlob(blobId);
             _Other1 = null;
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyLocalBlock.Slice(0, 64).Span);
-            if (!blobId.IsEmpty)
+            if (blob is not null)
             {
-                var blob = await dataStore.GetBlob(blobId);
-                if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
                 _Other1 = MyOrg.Models.MemBlocks.Other.CreateFrom(blob.Value);
                 await _Other1.Unpack(dataStore, depth - 1);
             }
@@ -185,14 +184,10 @@ namespace MyOrg.Models.MemBlocks
         }
         private async ValueTask Field1_Unpack(IDataStore dataStore, int depth)
         {
-            _Field1 = Octets.Empty;
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyLocalBlock.Slice(64, 64).Span);
-            if (!blobId.IsEmpty)
-            {
-                var blob = await dataStore.GetBlob(blobId);
-                if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
-                _Field1 = Octets.UnsafeWrap(blob.Value);
-            }
+            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(64, 64));
+            var blob = await dataStore.GetBlob(blobId);
+            _Field1 = blob is null ? Octets.Empty: Octets.UnsafeWrap(blob.Value);
+
         }
         private Octets _Field1 = Octets.Empty;
         public Octets Field1
@@ -213,14 +208,9 @@ namespace MyOrg.Models.MemBlocks
         }
         private async ValueTask Field2_Unpack(IDataStore dataStore, int depth)
         {
-            _Field2 = null;
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromSpan(_readonlyLocalBlock.Slice(128, 64).Span);
-            if (!blobId.IsEmpty)
-            {
-                var blob = await dataStore.GetBlob(blobId);
-                if (blob is null) throw new InvalidDataException($"Blob not found: {blobId}");
-                _Field2 = Octets.UnsafeWrap(blob.Value);
-            }
+            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(128, 64));
+            var blob = await dataStore.GetBlob(blobId);
+            _Field2 = blob is null ? null : Octets.UnsafeWrap(blob.Value);
         }
         private Octets? _Field2;
         public Octets? Field2
