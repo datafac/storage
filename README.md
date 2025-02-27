@@ -35,7 +35,7 @@ MessagePack entity and member keys.
 
 ## DTOMaker.MemBlocks
 Generates DTOs whose internal data is a single memory block (Memory\<byte\>). Property getters and setters decode and encode
-values directly to the block with explicit byte ordering (little-endian or big-endian).
+values directly to the block with little-endian (default) or big-endian byte ordering.
 ## DTOMaker.Models.MemBlocks
 Additional attributes used by the DTOMaker.MemBlocks source generator, to 
 manage entity and member memory layout.
@@ -54,26 +54,26 @@ Common types used at runtime by DTOMaker generated entities.
 - Variable length binary member types:
   - Octets (model interfaces, CSPoco, MemBlocks)
   - ReadOnlyMemory\<byte\> (MessagePack)
-- IFreezable support
+- Built-in freezability (mutable until frozen) support
 - Templates as testable code, template-to-generator processing
 - [Obsolete] members
 - Fixed length arrays of above value types.
 - polymorphic types
 - entity members
 - IEquatable\<T\> support
+- auto-embedded entity members (MemBlocks)
+- auto-embedded binary members (MemBlocks)
 
 ## Limitations
 - single compilation contains models and generated DTOs 
 
 ## In progress:
-- embedded short binary values
 - variable-length string members
+- auto-embedded string members (MemBlocks)
 
 ## Coming soon:
+- implement IIncrementalGenerator
 - global interface equality comparer
-- auto-embedded entity members (MemBlocks)
-- auto-embedded binary members (MemBlocks)
-- auto-embedded string members (MemBlocks)
 - fixed-length binary members (MemBlocks)
 - fixed-length string members (MemBlocks)
 - reservation (hidden members)
