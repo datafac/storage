@@ -1,5 +1,4 @@
-﻿using DataFac.Memory;
-using DataFac.Storage;
+﻿using DataFac.Storage;
 using System;
 using System.Buffers.Binary;
 

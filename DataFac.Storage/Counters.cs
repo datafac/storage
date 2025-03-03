@@ -1,6 +1,4 @@
-﻿using System;
-
-#pragma warning disable CA1051 // Do not declare visible instance fields
+﻿#pragma warning disable CA1051 // Do not declare visible instance fields
 #pragma warning disable CA1815 // Override equals and operator equals on value types
 
 namespace DataFac.Storage;

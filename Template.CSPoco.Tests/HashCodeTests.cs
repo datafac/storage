@@ -16,7 +16,6 @@ namespace Template_CSPoco.Tests
             sut.Freeze();
             int hc1 = sut.GetHashCode();
             hc1.ShouldBe(hc0);
-
         }
 
         [Fact]

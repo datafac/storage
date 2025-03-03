@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis;
 using System.Linq;
 using Xunit;
 using Microsoft.CodeAnalysis.CSharp;
-using System.Reflection;
 using System.Threading.Tasks;
 using System;
 using VerifyXunit;

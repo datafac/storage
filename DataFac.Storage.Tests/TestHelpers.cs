@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.Linq;
-using DataFac.Storage;
 using DataFac.Storage.Testing;
 using DataFac.Storage.RocksDbStore;
 

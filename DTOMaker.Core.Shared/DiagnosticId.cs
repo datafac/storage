@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DTOMaker.Gentime
+﻿namespace DTOMaker.Gentime
 {
     internal static class DiagnosticId
     {
