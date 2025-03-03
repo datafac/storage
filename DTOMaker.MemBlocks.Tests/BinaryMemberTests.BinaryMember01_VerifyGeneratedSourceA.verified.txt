@@ -84,8 +84,8 @@ namespace MyOrg.Models.MemBlocks
         {
             await base.OnUnpack(dataStore, depth);
             await Other1_Unpack(dataStore, depth);
-            await Field1_Unpack(dataStore, depth);
-            await Field2_Unpack(dataStore, depth);
+            await Field1_Unpack(dataStore);
+            await Field2_Unpack(dataStore);
         }
 
         // -------------------- field map -----------------------------
@@ -182,11 +182,11 @@ namespace MyOrg.Models.MemBlocks
             blobId = await dataStore.PutBlob(buffer);
             Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(64, 64).Span, blobId);
         }
-        private async ValueTask Field1_Unpack(IDataStore dataStore, int depth)
+        private async ValueTask Field1_Unpack(IDataStore dataStore)
         {
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(64, 64));
             var blob = await dataStore.GetBlob(blobId);
-            _Field1 = blob is null ? Octets.Empty: Octets.UnsafeWrap(blob.Value);
+            _Field1 = blob is null ? Octets.Empty : Octets.UnsafeWrap(blob.Value);
 
         }
         private Octets _Field1 = Octets.Empty;
@@ -206,7 +206,7 @@ namespace MyOrg.Models.MemBlocks
             }
             Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(128, 64).Span, blobId);
         }
-        private async ValueTask Field2_Unpack(IDataStore dataStore, int depth)
+        private async ValueTask Field2_Unpack(IDataStore dataStore)
         {
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(128, 64));
             var blob = await dataStore.GetBlob(blobId);

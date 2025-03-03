@@ -94,11 +94,13 @@ namespace MyOrg.Models.MemBlocks
         protected override async ValueTask OnPack(IDataStore dataStore)
         {
             await base.OnPack(dataStore);
+            Key_Pack();
         }
 
         protected override async ValueTask OnUnpack(IDataStore dataStore, int depth)
         {
             await base.OnUnpack(dataStore, depth);
+            Key_Unpack();
         }
 
         // -------------------- field map -----------------------------
@@ -128,13 +130,13 @@ namespace MyOrg.Models.MemBlocks
         protected Node(BlockHeader header, INode source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-            this.Key = source.Key;
+            _Key = source.Key;
         }
 
         public Node(INode source) : base(_header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-            this.Key = source.Key;
+            _Key = source.Key;
         }
 
         protected Node(BlockHeader header, ReadOnlyMemory<byte> buffer) : base(header, buffer)
@@ -148,10 +150,25 @@ namespace MyOrg.Models.MemBlocks
             _writableLocalBlock = Memory<byte>.Empty;
         }
 
-        public String Key
+        private void Key_Pack()
         {
-            get => Codec_String_LE.ReadFromSpan(_readonlyLocalBlock.Slice(0, 16).Span);
-            set => Codec_String_LE.WriteToSpan(_writableLocalBlock.Slice(0, 16).Span, IfNotFrozen(value));
+            Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(0, 16),
+                Encoding.UTF8.GetBytes(_Key));
+        }
+        private void Key_Unpack()
+        {
+            ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(0, 16));
+#if NET8_0_OR_GREATER
+            _Key = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.Span);
+#else
+            _Key = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.ToArray());
+#endif
+        }
+        private string _Key = string.Empty;
+        public string Key
+        {
+            get => IfUnpacked(_Key);
+            set => _Key = IfNotFrozen(value);
         }
 
 

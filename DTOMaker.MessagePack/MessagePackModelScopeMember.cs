@@ -31,6 +31,9 @@ namespace DTOMaker.MessagePack
                 case MemberKind.Binary:
                     _tokens[(member.MemberIsNullable ? "Nullable" : "Required") + "BinaryMemberKey"] = memberKey;
                     break;
+                case MemberKind.String:
+                    _tokens[(member.MemberIsNullable ? "Nullable" : "Required") + "StringMemberKey"] = memberKey;
+                    break;
                 default:
                     throw new NotImplementedException($"Member.Kind: {member.Kind}");
             }

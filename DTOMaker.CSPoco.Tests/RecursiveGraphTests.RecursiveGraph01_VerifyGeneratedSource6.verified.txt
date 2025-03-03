@@ -133,17 +133,17 @@ namespace MyOrg.Models.CSPoco
         {
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
-            result.Add(_Left?.GetHashCode() ?? 0);
-            result.Add(_Right?.GetHashCode() ?? 0);
-            result.Add(_Node?.GetHashCode() ?? 0);
+            result.Add(_Left);
+            result.Add(_Right);
+            result.Add(_Node);
             return result.ToHashCode();
         }
 
         private int? _hashCode;
         public override int GetHashCode()
         {
-            if (_hashCode.HasValue) return _hashCode.Value;
             if (!IsFrozen) return CalcHashCode();
+            if (_hashCode.HasValue) return _hashCode.Value;
             _hashCode = CalcHashCode();
             return _hashCode.Value;
         }

@@ -6,6 +6,6 @@
         Vector,
         Entity,
         Binary,
-        //String,
+        String,
     }
 }

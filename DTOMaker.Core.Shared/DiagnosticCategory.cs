@@ -1,9 +1,5 @@
 ﻿namespace DTOMaker.Gentime
 {
-    public static class FullTypeName
-    {
-        public const string Octets = "DataFac.Memory.Octets";
-    }
     public static class DiagnosticCategory
     {
         public const string Design = "DTOMaker.Design";

@@ -54,6 +54,9 @@ namespace DTOMaker.Gentime
                 case MemberKind.Binary:
                     _tokens[(member.MemberIsNullable ? "Nullable" : "Required") + "BinaryMemberName"] = member.Name;
                     break;
+                case MemberKind.String:
+                    _tokens[(member.MemberIsNullable ? "Nullable" : "Required") + "StringMemberName"] = member.Name;
+                    break;
                 default:
                     throw new NotImplementedException($"Member.Kind: {member.Kind}");
             }

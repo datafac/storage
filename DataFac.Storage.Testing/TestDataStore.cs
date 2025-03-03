@@ -122,7 +122,7 @@ public sealed class TestDataStore : IDataStore
 
     public ValueTask<BlobIdV1> PutBlob(ReadOnlyMemory<byte> data, bool withSync)
     {
-        var id = data.Span.GetBlobIdqqq();
+        var id = data.Span.GetBlobId();
         if (id.IsEmbedded) return new ValueTask<BlobIdV1>(id);
         Interlocked.Increment(ref _counters.BlobPutCount);
         if (_blobStore.TryAdd(id, data))

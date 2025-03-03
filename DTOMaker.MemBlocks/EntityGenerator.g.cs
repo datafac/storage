@@ -32,6 +32,7 @@ Emit("using DataFac.Storage;");
 Emit("");
 if(false) {
 Emit("using T_MemberType_ = System.Int32;");
+Emit("using System.Text;");
 Emit("namespace DataFac.Memory");
 Emit("{");
 Emit("    public static class Codec_T_MemberType__T_MemberBELE_");
@@ -190,8 +191,14 @@ Emit("        T_MemberType_ T_ScalarMemberName_ { get; set; }");
 Emit("        ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }");
 Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberName_ { get; set; }");
 Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; set; }");
-Emit("        Octets? T_NullableBinaryMemberName_ { get; set; }");
-Emit("        Octets T_RequiredBinaryMemberName_ { get; set; }");
+Emit("        Octets? T_NullableFixLenBinaryMemberName_ { get; set; }");
+Emit("        Octets? T_NullableVarLenBinaryMemberName_ { get; set; }");
+Emit("        Octets T_RequiredFixLenBinaryMemberName_ { get; set; }");
+Emit("        Octets T_RequiredVarLenBinaryMemberName_ { get; set; }");
+Emit("        String? T_NullableFixLenStringMemberName_ { get; set; }");
+Emit("        String? T_NullableVarLenStringMemberName_ { get; set; }");
+Emit("        String T_RequiredFixLenStringMemberName_ { get; set; }");
+Emit("        String T_RequiredVarLenStringMemberName_ { get; set; }");
 Emit("    }");
 Emit("}");
 }
@@ -208,9 +215,9 @@ Emit("");
         if(false) {
 Emit("        private const int T_ClassHeight_ = 2;");
 Emit("        private const int T_BlockOffset_ = 128;");
-Emit("        private const int T_BlockLength_ = 512;");
+Emit("        private const int T_BlockLength_ = 1024;");
 Emit("        private const bool T_MemberObsoleteIsError_ = false;");
-Emit("        private const long T_BlockStructureCode_ = 0x0962;");
+Emit("        private const long T_BlockStructureCode_ = 0x0A62;");
 Emit("        private static readonly Guid T_EntityGuid_ = new Guid(\"341c6631-30ba-482b-b580-7c1c2c9ff182\");");
         }
 Emit("        private const long BlockStructureCode = T_BlockStructureCode_;");
@@ -272,7 +279,7 @@ Emit("");
 Emit("        protected override void OnFreeze()");
 Emit("        {");
 Emit("            base.OnFreeze();");
-            foreach (var member in entity.Members) {
+            foreach (var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
             using var _ = NewScope(member);
             switch(member.Kind) {
             case MemberKind.Scalar:
@@ -288,6 +295,8 @@ Emit("            _T_RequiredEntityMemberName_?.Freeze();");
             break;
             case MemberKind.Binary:
             break;
+            case MemberKind.String:
+            break;
             default:
             Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
             break;
@@ -298,7 +307,7 @@ Emit("");
 Emit("        protected override async ValueTask OnPack(IDataStore dataStore)");
 Emit("        {");
 Emit("            await base.OnPack(dataStore);");
-            foreach (var member in entity.Members) {
+            foreach (var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
             using var _ = NewScope(member);
             switch(member.Kind) {
             case MemberKind.Scalar:
@@ -314,9 +323,32 @@ Emit("            await T_RequiredEntityMemberName__Pack(dataStore);");
             break;
             case MemberKind.Binary:
             if (member.IsNullable) {
-Emit("            await T_NullableBinaryMemberName__Pack(dataStore);");
+            if (member.IsFixedLength) {
+Emit("            T_NullableFixLenBinaryMemberName__Pack();");
             } else {
-Emit("            await T_RequiredBinaryMemberName__Pack(dataStore);");
+Emit("            await T_NullableVarLenBinaryMemberName__Pack(dataStore);");
+            }
+            } else {
+            if (member.IsFixedLength) {
+Emit("            T_RequiredFixLenBinaryMemberName__Pack();");
+            } else {
+Emit("            await T_RequiredVarLenBinaryMemberName__Pack(dataStore);");
+            }
+            }
+            break;
+            case MemberKind.String:
+            if (member.IsNullable) {
+            if (member.IsFixedLength) {
+Emit("            T_NullableFixLenStringMemberName__Pack();");
+            } else {
+Emit("            await T_NullableVarLenStringMemberName__Pack(dataStore);");
+            }
+            } else {
+            if (member.IsFixedLength) {
+Emit("            T_RequiredFixLenStringMemberName__Pack();");
+            } else {
+Emit("            await T_RequiredVarLenStringMemberName__Pack(dataStore);");
+            }
             }
             break;
             default:
@@ -329,7 +361,7 @@ Emit("");
 Emit("        protected override async ValueTask OnUnpack(IDataStore dataStore, int depth)");
 Emit("        {");
 Emit("            await base.OnUnpack(dataStore, depth);");
-            foreach (var member in entity.Members) {
+            foreach (var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
             using var _ = NewScope(member);
             switch(member.Kind) {
             case MemberKind.Scalar:
@@ -345,9 +377,32 @@ Emit("            await T_RequiredEntityMemberName__Unpack(dataStore, depth);");
             break;
             case MemberKind.Binary:
             if (member.IsNullable) {
-Emit("            await T_NullableBinaryMemberName__Unpack(dataStore, depth);");
+            if (member.IsFixedLength) {
+Emit("            T_NullableFixLenBinaryMemberName__Unpack();");
             } else {
-Emit("            await T_RequiredBinaryMemberName__Unpack(dataStore, depth);");
+Emit("            await T_NullableVarLenBinaryMemberName__Unpack(dataStore);");
+            }
+            } else {
+            if (member.IsFixedLength) {
+Emit("            T_RequiredFixLenBinaryMemberName__Unpack();");
+            } else {
+Emit("            await T_RequiredVarLenBinaryMemberName__Unpack(dataStore);");
+            }
+            }
+            break;
+            case MemberKind.String:
+            if (member.IsNullable) {
+            if (member.IsFixedLength) {
+Emit("            T_NullableFixLenStringMemberName__Unpack();");
+            } else {
+Emit("            await T_NullableVarLenStringMemberName__Unpack(dataStore);");
+            }
+            } else {
+            if (member.IsFixedLength) {
+Emit("            T_RequiredFixLenStringMemberName__Unpack();");
+            } else {
+Emit("            await T_RequiredVarLenStringMemberName__Unpack(dataStore);");
+            }
             }
             break;
             default:
@@ -360,7 +415,7 @@ Emit("");
 Emit("        // -------------------- field map -----------------------------");
 Emit("        //  Seq.  Off.  Len.  N.    Type    End.  Name");
 Emit("        //  ----  ----  ----  ----  ------- ----  -------");
-        foreach(var member in entity.Members) {
+        foreach(var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
         using var _ = NewScope(member);
 Emit("        //  T_MemberSequenceR4_  T_FieldOffsetR4_  T_FieldLengthR4_  T_ArrayLengthR4_  T_MemberTypeL7_ T_MemberBELE_    T_MemberName_");
         }
@@ -387,7 +442,7 @@ Emit("");
 Emit("        protected T_EntityName_(BlockHeader header, IT_EntityName_ source) : base(header, source)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);");
-            foreach(var member in entity.Members) {
+            foreach(var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
             using var _ = NewScope(member);
             switch(member.Kind) {
             case MemberKind.Scalar:
@@ -405,9 +460,32 @@ Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlock
             break;
             case MemberKind.Binary:
             if (member.IsNullable) {
-Emit("            _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_;");
+            if (member.IsFixedLength) {
+Emit("            _T_NullableFixLenBinaryMemberName_ = source.T_NullableFixLenBinaryMemberName_;");
             } else {
-Emit("            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_;");
+Emit("            _T_NullableVarLenBinaryMemberName_ = source.T_NullableVarLenBinaryMemberName_;");
+            }
+            } else {
+            if (member.IsFixedLength) {
+Emit("            _T_RequiredFixLenBinaryMemberName_ = source.T_RequiredFixLenBinaryMemberName_;");
+            } else {
+Emit("            _T_RequiredVarLenBinaryMemberName_ = source.T_RequiredVarLenBinaryMemberName_;");
+            }
+            }
+            break;
+            case MemberKind.String:
+            if (member.IsNullable) {
+            if (member.IsFixedLength) {
+Emit("            _T_NullableFixLenStringMemberName_ = source.T_NullableFixLenStringMemberName_;");
+            } else {
+Emit("            _T_NullableVarLenStringMemberName_ = source.T_NullableVarLenStringMemberName_;");
+            }
+            } else {
+            if (member.IsFixedLength) {
+Emit("            _T_RequiredFixLenStringMemberName_ = source.T_RequiredFixLenStringMemberName_;");
+            } else {
+Emit("            _T_RequiredVarLenStringMemberName_ = source.T_RequiredVarLenStringMemberName_;");
+            }
             }
             break;
             default:
@@ -420,7 +498,7 @@ Emit("");
 Emit("        public T_EntityName_(IT_EntityName_ source) : base(_header, source)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);");
-            foreach(var member in entity.Members) {
+            foreach(var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
             using var _ = NewScope(member);
             switch(member.Kind) {
             case MemberKind.Scalar:
@@ -438,9 +516,32 @@ Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlock
             break;
             case MemberKind.Binary:
             if (member.IsNullable) {
-Emit("            _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_;");
+            if (member.IsFixedLength) {
+Emit("            _T_NullableFixLenBinaryMemberName_ = source.T_NullableFixLenBinaryMemberName_;");
             } else {
-Emit("            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_;");
+Emit("            _T_NullableVarLenBinaryMemberName_ = source.T_NullableVarLenBinaryMemberName_;");
+            }
+            } else {
+            if (member.IsFixedLength) {
+Emit("            _T_RequiredFixLenBinaryMemberName_ = source.T_RequiredFixLenBinaryMemberName_;");
+            } else {
+Emit("            _T_RequiredVarLenBinaryMemberName_ = source.T_RequiredVarLenBinaryMemberName_;");
+            }
+            }
+            break;
+            case MemberKind.String:
+            if (member.IsNullable) {
+            if (member.IsFixedLength) {
+Emit("            _T_NullableFixLenStringMemberName_ = source.T_NullableFixLenStringMemberName_;");
+            } else {
+Emit("            _T_NullableVarLenStringMemberName_ = source.T_NullableVarLenStringMemberName_;");
+            }
+            } else {
+            if (member.IsFixedLength) {
+Emit("            _T_RequiredFixLenStringMemberName_ = source.T_RequiredFixLenStringMemberName_;");
+            } else {
+Emit("            _T_RequiredVarLenStringMemberName_ = source.T_RequiredVarLenStringMemberName_;");
+            }
             }
             break;
             default:
@@ -467,13 +568,27 @@ Emit("        private const int T_ScalarFieldOffset_ = 0;");
 Emit("        private const int T_VectorFieldOffset_ = 32;");
 Emit("        private const int T_NullableEntityFieldOffset_ = 64;");
 Emit("        private const int T_RequiredEntityFieldOffset_ = 128;");
-Emit("        private const int T_NullableBinaryFieldOffset_ = 192;");
-Emit("        private const int T_RequiredBinaryFieldOffset_ = 256;");
+Emit("        private const int T_NullableFixLenBinaryFieldOffset_ = 192;");
+Emit("        private const int T_NullableFixLenBinaryFieldLength_ = 32;");
+Emit("        private const int T_RequiredFixLenBinaryFieldOffset_ = 224;");
+Emit("        private const int T_RequiredFixLenBinaryFieldLength_ = 32;");
+Emit("");
+Emit("        private const int T_NullableVarLenBinaryFieldOffset_ = 256;");
+Emit("        private const int T_RequiredVarLenBinaryFieldOffset_ = 320;");
+Emit("");
+Emit("        private const int T_NullableFixLenStringFieldOffset_ = 384;");
+Emit("        private const int T_NullableFixLenStringFieldLength_ = 32;");
+Emit("        private const int T_RequiredFixLenStringFieldOffset_ = 416;");
+Emit("        private const int T_RequiredFixLenStringFieldLength_ = 32;");
+Emit("");
+Emit("        private const int T_NullableVarLenStringFieldOffset_ = 448;");
+Emit("        private const int T_RequiredVarLenStringFieldOffset_ = 512;");
+Emit("");
 Emit("        private const int T_FieldLength_ = 8;");
 Emit("        private const bool T_IsBigEndian_ = false;");
 Emit("        private const int T_ArrayLength_ = 4;");
         }
-        foreach(var member in entity.Members) {
+        foreach(var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
         using var _ = NewScope(member);
         switch(member.Kind) {
         case MemberKind.Scalar:
@@ -496,17 +611,17 @@ Emit("            get");
 Emit("            {");
 Emit("                var sourceSpan = _readonlyLocalBlock.Slice(T_VectorFieldOffset_, T_FieldLength_ * T_ArrayLength_).Span;");
                 if(member.FieldLength == 1) {
-Emit("                return MemoryMarshal.Cast<byte, T_MemberType_>(sourceSpan).ToArray(); // todo alloc!");
+Emit("                return MemoryMarshal.Cast<byte, T_MemberType_>(sourceSpan).ToArray();");
                 } else {
 Emit("                if (BitConverter.IsLittleEndian != T_IsBigEndian_)");
 Emit("                {");
 Emit("                    // endian match");
-Emit("                    return MemoryMarshal.Cast<byte, T_MemberType_>(sourceSpan).ToArray(); // todo alloc!");
+Emit("                    return MemoryMarshal.Cast<byte, T_MemberType_>(sourceSpan).ToArray();");
 Emit("                }");
 Emit("                else");
 Emit("                {");
 Emit("                    // endian mismatch - decode each element");
-Emit("                    var target = new T_MemberType_[T_ArrayLength_]; // todo alloc!");
+Emit("                    var target = new T_MemberType_[T_ArrayLength_];");
 Emit("                    Span<T_MemberType_> targetSpan = target.AsSpan();");
 Emit("                    for (int i = 0; i < T_ArrayLength_; i++)");
 Emit("                    {");
@@ -631,55 +746,211 @@ Emit("        }");
         break;
         case MemberKind.Binary:
         if (member.IsNullable) {
-Emit("        private async ValueTask T_NullableBinaryMemberName__Pack(IDataStore dataStore)");
+        if (member.IsFixedLength) {
+Emit("        private void T_NullableFixLenBinaryMemberName__Pack()");
 Emit("        {");
-Emit("            BlobIdV1 blobId = default;");
-Emit("            if (_T_NullableBinaryMemberName_ is not null)");
-Emit("            {");
-Emit("                var buffer = _T_NullableBinaryMemberName_.Memory;");
-Emit("                blobId = await dataStore.PutBlob(buffer);");
-Emit("            }");
-Emit("            Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(T_NullableBinaryFieldOffset_, 64).Span, blobId);");
+Emit("            Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(T_NullableFixLenBinaryFieldOffset_, T_NullableFixLenBinaryFieldLength_),");
+Emit("                _T_NullableFixLenBinaryMemberName_ is null ? (ReadOnlyMemory<byte>?)null : _T_NullableFixLenBinaryMemberName_.Memory);");
 Emit("        }");
-Emit("        private async ValueTask T_NullableBinaryMemberName__Unpack(IDataStore dataStore, int depth)");
+Emit("        private void T_NullableFixLenBinaryMemberName__Unpack()");
 Emit("        {");
-Emit("            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_NullableBinaryFieldOffset_, 64));");
-Emit("            var blob = await dataStore.GetBlob(blobId);");
-Emit("            _T_NullableBinaryMemberName_ = blob is null ? null : Octets.UnsafeWrap(blob.Value);");
+Emit("            ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_NullableFixLenBinaryFieldOffset_, T_NullableFixLenBinaryFieldLength_));");
+Emit("            _T_NullableFixLenBinaryMemberName_ = memory is null ? null : Octets.UnsafeWrap(memory.Value);");
 Emit("        }");
-Emit("        private Octets? _T_NullableBinaryMemberName_;");
+Emit("        private Octets? _T_NullableFixLenBinaryMemberName_;");
         if(member.IsObsolete) {
 Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
         }
-Emit("        public Octets? T_NullableBinaryMemberName_");
+Emit("        public Octets? T_NullableFixLenBinaryMemberName_");
 Emit("        {");
-Emit("            get => IfUnpacked(_T_NullableBinaryMemberName_);");
-Emit("            set => _T_NullableBinaryMemberName_ = IfNotFrozen(value);");
+Emit("            get => IfUnpacked(_T_NullableFixLenBinaryMemberName_);");
+Emit("            set => _T_NullableFixLenBinaryMemberName_ = IfNotFrozen(value);");
 Emit("        }");
         } else {
-Emit("        private async ValueTask T_RequiredBinaryMemberName__Pack(IDataStore dataStore)");
+Emit("        private async ValueTask T_NullableVarLenBinaryMemberName__Pack(IDataStore dataStore)");
 Emit("        {");
 Emit("            BlobIdV1 blobId = default;");
-Emit("            var buffer = _T_RequiredBinaryMemberName_.Memory;");
-Emit("            blobId = await dataStore.PutBlob(buffer);");
-Emit("            Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(T_RequiredBinaryFieldOffset_, 64).Span, blobId);");
+Emit("            if (_T_NullableVarLenBinaryMemberName_ is not null)");
+Emit("            {");
+Emit("                var buffer = _T_NullableVarLenBinaryMemberName_.Memory;");
+Emit("                blobId = await dataStore.PutBlob(buffer);");
+Emit("            }");
+Emit("            Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(T_NullableVarLenBinaryFieldOffset_, 64).Span, blobId);");
 Emit("        }");
-Emit("        private async ValueTask T_RequiredBinaryMemberName__Unpack(IDataStore dataStore, int depth)");
+Emit("        private async ValueTask T_NullableVarLenBinaryMemberName__Unpack(IDataStore dataStore)");
 Emit("        {");
-Emit("            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_RequiredBinaryFieldOffset_, 64));");
+Emit("            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_NullableVarLenBinaryFieldOffset_, 64));");
 Emit("            var blob = await dataStore.GetBlob(blobId);");
-Emit("            _T_RequiredBinaryMemberName_ = blob is null ? Octets.Empty: Octets.UnsafeWrap(blob.Value);");
-Emit("");
+Emit("            _T_NullableVarLenBinaryMemberName_ = blob is null ? null : Octets.UnsafeWrap(blob.Value);");
 Emit("        }");
-Emit("        private Octets _T_RequiredBinaryMemberName_ = Octets.Empty;");
+Emit("        private Octets? _T_NullableVarLenBinaryMemberName_;");
         if(member.IsObsolete) {
 Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
         }
-Emit("        public Octets T_RequiredBinaryMemberName_");
+Emit("        public Octets? T_NullableVarLenBinaryMemberName_");
 Emit("        {");
-Emit("            get => IfUnpacked(_T_RequiredBinaryMemberName_);");
-Emit("            set => _T_RequiredBinaryMemberName_ = IfNotFrozen(value);");
+Emit("            get => IfUnpacked(_T_NullableVarLenBinaryMemberName_);");
+Emit("            set => _T_NullableVarLenBinaryMemberName_ = IfNotFrozen(value);");
 Emit("        }");
+        }
+        } else {
+        if (member.IsFixedLength) {
+Emit("        private void T_RequiredFixLenBinaryMemberName__Pack()");
+Emit("        {");
+Emit("            Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(T_RequiredFixLenBinaryFieldOffset_, T_RequiredFixLenBinaryFieldLength_),");
+Emit("                _T_RequiredFixLenBinaryMemberName_.Memory);");
+Emit("        }");
+Emit("        private void T_RequiredFixLenBinaryMemberName__Unpack()");
+Emit("        {");
+Emit("            ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_RequiredFixLenBinaryFieldOffset_, T_RequiredFixLenBinaryFieldLength_));");
+Emit("            _T_RequiredFixLenBinaryMemberName_ = memory is null ? Octets.Empty : Octets.UnsafeWrap(memory.Value);");
+Emit("        }");
+Emit("        private Octets _T_RequiredFixLenBinaryMemberName_ = Octets.Empty;");
+        if(member.IsObsolete) {
+Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
+        }
+Emit("        public Octets T_RequiredFixLenBinaryMemberName_");
+Emit("        {");
+Emit("            get => IfUnpacked(_T_RequiredFixLenBinaryMemberName_);");
+Emit("            set => _T_RequiredFixLenBinaryMemberName_ = IfNotFrozen(value);");
+Emit("        }");
+        } else {
+Emit("        private async ValueTask T_RequiredVarLenBinaryMemberName__Pack(IDataStore dataStore)");
+Emit("        {");
+Emit("            BlobIdV1 blobId = default;");
+Emit("            var buffer = _T_RequiredVarLenBinaryMemberName_.Memory;");
+Emit("            blobId = await dataStore.PutBlob(buffer);");
+Emit("            Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(T_RequiredVarLenBinaryFieldOffset_, 64).Span, blobId);");
+Emit("        }");
+Emit("        private async ValueTask T_RequiredVarLenBinaryMemberName__Unpack(IDataStore dataStore)");
+Emit("        {");
+Emit("            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_RequiredVarLenBinaryFieldOffset_, 64));");
+Emit("            var blob = await dataStore.GetBlob(blobId);");
+Emit("            _T_RequiredVarLenBinaryMemberName_ = blob is null ? Octets.Empty : Octets.UnsafeWrap(blob.Value);");
+Emit("");
+Emit("        }");
+Emit("        private Octets _T_RequiredVarLenBinaryMemberName_ = Octets.Empty;");
+        if(member.IsObsolete) {
+Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
+        }
+Emit("        public Octets T_RequiredVarLenBinaryMemberName_");
+Emit("        {");
+Emit("            get => IfUnpacked(_T_RequiredVarLenBinaryMemberName_);");
+Emit("            set => _T_RequiredVarLenBinaryMemberName_ = IfNotFrozen(value);");
+Emit("        }");
+        }
+        }
+        break;
+        case MemberKind.String:
+        if (member.IsNullable) {
+        if (member.IsFixedLength) {
+Emit("        private void T_NullableFixLenStringMemberName__Pack()");
+Emit("        {");
+Emit("            Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(T_NullableFixLenStringFieldOffset_, T_NullableFixLenStringFieldLength_),");
+Emit("                _T_NullableFixLenStringMemberName_ is null ? (ReadOnlyMemory<byte>?)null : Encoding.UTF8.GetBytes(_T_NullableFixLenStringMemberName_));");
+Emit("        }");
+Emit("        private void T_NullableFixLenStringMemberName__Unpack()");
+Emit("        {");
+Emit("            ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_NullableFixLenStringFieldOffset_, T_NullableFixLenStringFieldLength_));");
+Emit("#if NET8_0_OR_GREATER");
+Emit("            _T_NullableFixLenStringMemberName_ = memory is null ? null : Encoding.UTF8.GetString(memory.Value.Span);");
+Emit("#else");
+Emit("            _T_NullableFixLenStringMemberName_ = memory is null ? null : Encoding.UTF8.GetString(memory.Value.ToArray());");
+Emit("#endif");
+Emit("        }");
+Emit("        private string? _T_NullableFixLenStringMemberName_;");
+        if(member.IsObsolete) {
+Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
+        }
+Emit("        public string? T_NullableFixLenStringMemberName_");
+Emit("        {");
+Emit("            get => IfUnpacked(_T_NullableFixLenStringMemberName_);");
+Emit("            set => _T_NullableFixLenStringMemberName_ = IfNotFrozen(value);");
+Emit("        }");
+        } else {
+Emit("        private async ValueTask T_NullableVarLenStringMemberName__Pack(IDataStore dataStore)");
+Emit("        {");
+Emit("            BlobIdV1 blobId = default;");
+Emit("            if (_T_NullableVarLenStringMemberName_ is not null)");
+Emit("            {");
+Emit("                ReadOnlyMemory<byte> buffer = Encoding.UTF8.GetBytes(_T_NullableVarLenStringMemberName_);");
+Emit("                blobId = await dataStore.PutBlob(buffer);");
+Emit("            }");
+Emit("            Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(T_NullableVarLenStringFieldOffset_, 64).Span, blobId);");
+Emit("        }");
+Emit("        private async ValueTask T_NullableVarLenStringMemberName__Unpack(IDataStore dataStore)");
+Emit("        {");
+Emit("            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_NullableVarLenStringFieldOffset_, 64));");
+Emit("            var blob = await dataStore.GetBlob(blobId);");
+Emit("#if NET8_0_OR_GREATER");
+Emit("            _T_NullableVarLenStringMemberName_ = blob is null ? null : Encoding.UTF8.GetString(blob.Value.Span);");
+Emit("#else");
+Emit("            _T_NullableVarLenStringMemberName_ = blob is null ? null : Encoding.UTF8.GetString(blob.Value.ToArray());");
+Emit("#endif");
+Emit("        }");
+Emit("        private string? _T_NullableVarLenStringMemberName_;");
+        if(member.IsObsolete) {
+Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
+        }
+Emit("        public string? T_NullableVarLenStringMemberName_");
+Emit("        {");
+Emit("            get => IfUnpacked(_T_NullableVarLenStringMemberName_);");
+Emit("            set => _T_NullableVarLenStringMemberName_ = IfNotFrozen(value);");
+Emit("        }");
+        }
+        } else {
+        if (member.IsFixedLength) {
+Emit("        private void T_RequiredFixLenStringMemberName__Pack()");
+Emit("        {");
+Emit("            Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(T_RequiredFixLenStringFieldOffset_, T_RequiredFixLenStringFieldLength_),");
+Emit("                Encoding.UTF8.GetBytes(_T_RequiredFixLenStringMemberName_));");
+Emit("        }");
+Emit("        private void T_RequiredFixLenStringMemberName__Unpack()");
+Emit("        {");
+Emit("            ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_RequiredFixLenStringFieldOffset_, T_RequiredFixLenStringFieldLength_));");
+Emit("#if NET8_0_OR_GREATER");
+Emit("            _T_RequiredFixLenStringMemberName_ = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.Span);");
+Emit("#else");
+Emit("            _T_RequiredFixLenStringMemberName_ = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.ToArray());");
+Emit("#endif");
+Emit("        }");
+Emit("        private string _T_RequiredFixLenStringMemberName_ = string.Empty;");
+        if(member.IsObsolete) {
+Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
+        }
+Emit("        public string T_RequiredFixLenStringMemberName_");
+Emit("        {");
+Emit("            get => IfUnpacked(_T_RequiredFixLenStringMemberName_);");
+Emit("            set => _T_RequiredFixLenStringMemberName_ = IfNotFrozen(value);");
+Emit("        }");
+        } else {
+Emit("        private async ValueTask T_RequiredVarLenStringMemberName__Pack(IDataStore dataStore)");
+Emit("        {");
+Emit("            BlobIdV1 blobId = default;");
+Emit("            var buffer = Encoding.UTF8.GetBytes(_T_RequiredVarLenStringMemberName_);");
+Emit("            blobId = await dataStore.PutBlob(buffer);");
+Emit("            Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(T_RequiredVarLenStringFieldOffset_, 64).Span, blobId);");
+Emit("        }");
+Emit("        private async ValueTask T_RequiredVarLenStringMemberName__Unpack(IDataStore dataStore)");
+Emit("        {");
+Emit("            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_RequiredVarLenStringFieldOffset_, 64));");
+Emit("            var blob = await dataStore.GetBlob(blobId);");
+Emit("#if NET8_0_OR_GREATER");
+Emit("            _T_RequiredVarLenStringMemberName_ = blob is null ? string.Empty : Encoding.UTF8.GetString(blob.Value.Span);");
+Emit("#else");
+Emit("            _T_RequiredVarLenStringMemberName_ = blob is null ? string.Empty : Encoding.UTF8.GetString(blob.Value.ToArray());");
+Emit("#endif");
+Emit("        }");
+Emit("        private string _T_RequiredVarLenStringMemberName_ = string.Empty;");
+        if(member.IsObsolete) {
+Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
+        }
+Emit("        public string T_RequiredVarLenStringMemberName_");
+Emit("        {");
+Emit("            get => IfUnpacked(_T_RequiredVarLenStringMemberName_);");
+Emit("            set => _T_RequiredVarLenStringMemberName_ = IfNotFrozen(value);");
+Emit("        }");
+        }
         }
         break;
         default:

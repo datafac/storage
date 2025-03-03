@@ -199,10 +199,15 @@ namespace DTOMaker.Gentime
                         Location pdsLocation = Location.Create(pds.SyntaxTree, pds.Span);
                         var member = entity.Members.GetOrAdd(pds.Identifier.Text, (n) => _memberFactory(entity, n, pdsLocation));
                         member.MemberType = new TypeFullName(memberTypeNameSpace, memberTypeName);
-                        if(member.MemberType.FullName == FullTypeName.Octets)
+                        if(member.MemberType.FullName == FullTypeName.MemoryOctets)
                         {
                             // binary
                             member.Kind = MemberKind.Binary;
+                        }
+                        else if(member.MemberType.FullName == FullTypeName.SystemString)
+                        {
+                            // string
+                            member.Kind = MemberKind.String;
                         }
                         else if (pdsSymbolType.IsGenericType && pdsSymbolType.Name == "ReadOnlyMemory" && pdsSymbolType.TypeArguments.Length == 1)
                         {

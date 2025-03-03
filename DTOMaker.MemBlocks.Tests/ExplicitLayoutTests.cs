@@ -32,7 +32,7 @@ namespace DTOMaker.MemBlocks.Tests
             nameof(DTOMaker.MemBlocks.LayoutAttribute).ShouldBe(nameof(DTOMaker.Models.MemBlocks.LayoutAttribute));
             nameof(DTOMaker.MemBlocks.OffsetAttribute).ShouldBe(nameof(DTOMaker.Models.MemBlocks.OffsetAttribute));
             nameof(DTOMaker.MemBlocks.EndianAttribute).ShouldBe(nameof(DTOMaker.Models.MemBlocks.EndianAttribute));
-            nameof(DTOMaker.MemBlocks.StrLenAttribute).ShouldBe(nameof(DTOMaker.Models.MemBlocks.StrLenAttribute));
+            nameof(DTOMaker.MemBlocks.FixedLengthAttribute).ShouldBe(nameof(DTOMaker.Models.MemBlocks.FixedLengthAttribute));
             nameof(DTOMaker.MemBlocks.CapacityAttribute).ShouldBe(nameof(DTOMaker.Models.MemBlocks.CapacityAttribute));
         }
     }

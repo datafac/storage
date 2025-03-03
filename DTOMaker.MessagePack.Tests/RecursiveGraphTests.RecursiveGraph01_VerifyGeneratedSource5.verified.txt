@@ -77,9 +77,9 @@ namespace MyOrg.Models.MessagePack
         }
 
         [IgnoreMember]
-        private String _Value = string.Empty;
+        private string _Value = string.Empty;
         [Key(101)]
-        public String Value
+        public string Value
         {
             get => _Value;
             set => _Value = IfNotFrozen(value);
@@ -91,7 +91,7 @@ namespace MyOrg.Models.MessagePack
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
             if (!base.Equals(other)) return false;
-            if (_Value != other.Value) return false;
+            if (!string.Equals(_Value, other._Value)) return false;
             return true;
         }
 
@@ -111,8 +111,8 @@ namespace MyOrg.Models.MessagePack
         private int? _hashCode;
         public override int GetHashCode()
         {
-            if (_hashCode.HasValue) return _hashCode.Value;
             if (!IsFrozen) return CalcHashCode();
+            if (_hashCode.HasValue) return _hashCode.Value;
             _hashCode = CalcHashCode();
             return _hashCode.Value;
         }

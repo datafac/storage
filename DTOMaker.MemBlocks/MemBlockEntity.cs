@@ -44,10 +44,10 @@ namespace DTOMaker.MemBlocks
                 case "System.Guid":
                 case "System.Decimal":
                     return 16;
-                case "System.String":
+                case FullTypeName.SystemString:
                     // encoded as UTF8
                     return 1;
-                case "DataFac.Memory.Octets":
+                case FullTypeName.MemoryOctets:
                     return 64; // encoded as BlobIdV1
                 default:
                     return 0;
@@ -80,13 +80,17 @@ namespace DTOMaker.MemBlocks
                 // allocate value bytes
                 int fieldLength = GetFieldLength(member);
                 // adjust field/array length for fixed string and entity types
-                if (member.MemberType.FullName == "System.String")
+                if (member.MemberType.FullName == FullTypeName.SystemString)
                 {
-                    fieldLength = member.StringLength;
+                    fieldLength = member.FixedLength;
                 }
                 else if (member.Kind == MemberKind.Entity)
                 {
                     fieldLength = 64; // encoded as BlobIdV1
+                }
+                else if (member.FixedLength != 0)
+                {
+                    fieldLength = member.FixedLength;
                 }
 
                 member.FieldLength = fieldLength;
@@ -308,6 +312,8 @@ namespace DTOMaker.MemBlocks
             if ((diagnostic2 = CheckEntityIdIsGuid()) is not null) yield return diagnostic2;
             // todo check class height <= 8
             // todo check block length >= 64
+            // todo check binary fixed length >= 4
+            // todo check string fixed length >= 4
         }
     }
 }

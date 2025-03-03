@@ -1,8 +1,10 @@
 # DTOMaker
 
+*Warning: This is pre-release software under active development. Breaking changes may occur.*
+
 [![Build-Deploy](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml)
 
-Includes model-driven source generators for quickly creating DTOs (Data Transport Objects) supporting the following
+This repo includes model-driven source generators for quickly creating DTOs (Data Transport Objects) supporting the following
 serialization schemes:
 - MessagePack
 - MemBlocks
@@ -18,8 +20,6 @@ public interface IMyFirstDTO
     [Member(1)] string Name { get; set; }
 }
 ```
-
-*Warning: This is pre-release software under active development. Breaking changes may occur.*
 
 This repo includes the following packages:
 
@@ -65,7 +65,7 @@ Common types used at runtime by DTOMaker generated entities.
 - auto-embedded binary members (MemBlocks)
 
 ## Limitations
-- single compilation contains models and generated DTOs 
+- single compilation (assembly) contains all models and generated DTOs 
 
 ## In progress:
 - variable-length string members

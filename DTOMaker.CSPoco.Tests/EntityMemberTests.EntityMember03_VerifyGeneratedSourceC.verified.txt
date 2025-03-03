@@ -114,16 +114,16 @@ namespace MyOrg.DomainC.CSPoco
         {
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
-            result.Add(_Member1?.GetHashCode() ?? 0);
-            result.Add(_Member2.GetHashCode());
+            result.Add(_Member1);
+            result.Add(_Member2);
             return result.ToHashCode();
         }
 
         private int? _hashCode;
         public override int GetHashCode()
         {
-            if (_hashCode.HasValue) return _hashCode.Value;
             if (!IsFrozen) return CalcHashCode();
+            if (_hashCode.HasValue) return _hashCode.Value;
             _hashCode = CalcHashCode();
             return _hashCode.Value;
         }

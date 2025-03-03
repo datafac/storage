@@ -150,9 +150,9 @@ namespace MyOrg.Models.MessagePack
         {
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
-            result.Add(_Other1?.GetHashCode() ?? 0);
-            result.Add(_Field1.GetHashCode());
-            result.Add(_Field2?.GetHashCode() ?? 0);
+            result.Add(_Other1);
+            result.Add(_Field1);
+            result.Add(_Field2);
             return result.ToHashCode();
         }
 
@@ -160,8 +160,8 @@ namespace MyOrg.Models.MessagePack
         private int? _hashCode;
         public override int GetHashCode()
         {
-            if (_hashCode.HasValue) return _hashCode.Value;
             if (!IsFrozen) return CalcHashCode();
+            if (_hashCode.HasValue) return _hashCode.Value;
             _hashCode = CalcHashCode();
             return _hashCode.Value;
         }

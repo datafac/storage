@@ -81,6 +81,8 @@ Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberN
 Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; set; }");
 Emit("        Octets? T_NullableBinaryMemberName_ { get; set; }");
 Emit("        Octets T_RequiredBinaryMemberName_ { get; set; }");
+Emit("        string? T_NullableStringMemberName_ { get; set; }");
+Emit("        string T_RequiredStringMemberName_ { get; set; }");
 Emit("    }");
 Emit("}");
 }
@@ -159,6 +161,8 @@ Emit("            _T_RequiredEntityMemberName_.Freeze();");
             break;
             case MemberKind.Binary:
             break;
+            case MemberKind.String:
+            break;
             default:
             Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
             break;
@@ -196,6 +200,13 @@ Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSPoco.T
 Emit("            _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_;");
             } else {
 Emit("            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_;");
+            }
+            break;
+            case MemberKind.String:
+            if (member.IsNullable) {
+Emit("            _T_NullableStringMemberName_ = source.T_NullableStringMemberName_;");
+            } else {
+Emit("            _T_RequiredStringMemberName_ = source.T_RequiredStringMemberName_;");
             }
             break;
             default:
@@ -294,6 +305,23 @@ Emit("            set => _T_RequiredBinaryMemberName_ = IfNotFrozen(ref value);"
 Emit("        }");
         }
         break;
+        case MemberKind.String:
+        if (member.IsNullable) {
+Emit("        private string? _T_NullableStringMemberName_;");
+Emit("        public string? T_NullableStringMemberName_");
+Emit("        {");
+Emit("            get => _T_NullableStringMemberName_;");
+Emit("            set => _T_NullableStringMemberName_ = IfNotFrozen(ref value);");
+Emit("        }");
+        } else {
+Emit("        private string _T_RequiredStringMemberName_ = string.Empty;");
+Emit("        public string T_RequiredStringMemberName_");
+Emit("        {");
+Emit("            get => _T_RequiredStringMemberName_;");
+Emit("            set => _T_RequiredStringMemberName_ = IfNotFrozen(ref value);");
+Emit("        }");
+        }
+        break;
         default:
         Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
         break;
@@ -333,6 +361,13 @@ Emit("            if (_T_NullableBinaryMemberName_ != other.T_NullableBinaryMemb
 Emit("            if (_T_RequiredBinaryMemberName_ != other.T_RequiredBinaryMemberName_) return false;");
             }
             break;
+            case MemberKind.String:
+            if (member.IsNullable) {
+Emit("            if (_T_NullableStringMemberName_ != other.T_NullableStringMemberName_) return false;");
+            } else {
+Emit("            if (_T_RequiredStringMemberName_ != other.T_RequiredStringMemberName_) return false;");
+            }
+            break;
             default:
             Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
             break;
@@ -368,16 +403,23 @@ Emit("            }");
             break;
             case MemberKind.Entity:
             if (member.IsNullable) {
-Emit("            result.Add(_T_NullableEntityMemberName_?.GetHashCode() ?? 0);");
+Emit("            result.Add(_T_NullableEntityMemberName_);");
             } else {
-Emit("            result.Add(_T_RequiredEntityMemberName_.GetHashCode());");
+Emit("            result.Add(_T_RequiredEntityMemberName_);");
             }
             break;
             case MemberKind.Binary:
             if (member.IsNullable) {
-Emit("            result.Add(_T_NullableBinaryMemberName_?.GetHashCode() ?? 0);");
+Emit("            result.Add(_T_NullableBinaryMemberName_);");
             } else {
-Emit("            result.Add(_T_RequiredBinaryMemberName_.GetHashCode());");
+Emit("            result.Add(_T_RequiredBinaryMemberName_);");
+            }
+            break;
+            case MemberKind.String:
+            if (member.IsNullable) {
+Emit("            result.Add(_T_NullableStringMemberName_);");
+            } else {
+Emit("            result.Add(_T_RequiredStringMemberName_);");
             }
             break;
             default:
@@ -391,8 +433,8 @@ Emit("");
 Emit("        private int? _hashCode;");
 Emit("        public override int GetHashCode()");
 Emit("        {");
-Emit("            if (_hashCode.HasValue) return _hashCode.Value;");
 Emit("            if (!IsFrozen) return CalcHashCode();");
+Emit("            if (_hashCode.HasValue) return _hashCode.Value;");
 Emit("            _hashCode = CalcHashCode();");
 Emit("            return _hashCode.Value;");
 Emit("        }");

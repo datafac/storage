@@ -190,11 +190,9 @@ namespace DTOMaker.MessagePack.Tests
                     [Entity][EntityKey(1)]
                     public interface IMyDTO
                     {
-                        [Member(1)] string FamilyName { get; set; }
-                        [Member(2)] string GivenName { get; set; }
-                        [Member(3)] string OtherNames_Value { get; set; }
-                        [Member(4)] bool   OtherNames_HasValue { get; set; }
-                                    string? OtherNames { get; set; }
+                        [Member(1)] string  FamilyName { get; set; }
+                        [Member(2)] string  GivenName { get; set; }
+                        [Member(3)] string? OtherNames { get; set; }
                     }
                 }
                 """;

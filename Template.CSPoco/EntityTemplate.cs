@@ -71,6 +71,8 @@ namespace T_NameSpace_
         T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; set; }
         Octets? T_NullableBinaryMemberName_ { get; set; }
         Octets T_RequiredBinaryMemberName_ { get; set; }
+        string? T_NullableStringMemberName_ { get; set; }
+        string T_RequiredStringMemberName_ { get; set; }
     }
 }
 //##}
@@ -149,6 +151,8 @@ namespace T_NameSpace_.CSPoco
             //##break;
             //##case MemberKind.Binary:
             //##break;
+            //##case MemberKind.String:
+            //##break;
             //##default:
             //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
             //##break;
@@ -186,6 +190,13 @@ namespace T_NameSpace_.CSPoco
             _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_;
             //##} else {
             _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_;
+            //##}
+            //##break;
+            //##case MemberKind.String:
+            //##if (member.IsNullable) {
+            _T_NullableStringMemberName_ = source.T_NullableStringMemberName_;
+            //##} else {
+            _T_RequiredStringMemberName_ = source.T_RequiredStringMemberName_;
             //##}
             //##break;
             //##default:
@@ -284,6 +295,23 @@ namespace T_NameSpace_.CSPoco
         }
         //##}
         //##break;
+        //##case MemberKind.String:
+        //##if (member.IsNullable) {
+        private string? _T_NullableStringMemberName_;
+        public string? T_NullableStringMemberName_
+        {
+            get => _T_NullableStringMemberName_;
+            set => _T_NullableStringMemberName_ = IfNotFrozen(ref value);
+        }
+        //##} else {
+        private string _T_RequiredStringMemberName_ = string.Empty;
+        public string T_RequiredStringMemberName_
+        {
+            get => _T_RequiredStringMemberName_;
+            set => _T_RequiredStringMemberName_ = IfNotFrozen(ref value);
+        }
+        //##}
+        //##break;
         //##default:
         //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
         //##break;
@@ -323,6 +351,13 @@ namespace T_NameSpace_.CSPoco
             if (_T_RequiredBinaryMemberName_ != other.T_RequiredBinaryMemberName_) return false;
             //##}
             //##break;
+            //##case MemberKind.String:
+            //##if (member.IsNullable) {
+            if (_T_NullableStringMemberName_ != other.T_NullableStringMemberName_) return false;
+            //##} else {
+            if (_T_RequiredStringMemberName_ != other.T_RequiredStringMemberName_) return false;
+            //##}
+            //##break;
             //##default:
             //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
             //##break;
@@ -358,16 +393,23 @@ namespace T_NameSpace_.CSPoco
             //##break;
             //##case MemberKind.Entity:
             //##if (member.IsNullable) {
-            result.Add(_T_NullableEntityMemberName_?.GetHashCode() ?? 0);
+            result.Add(_T_NullableEntityMemberName_);
             //##} else {
-            result.Add(_T_RequiredEntityMemberName_.GetHashCode());
+            result.Add(_T_RequiredEntityMemberName_);
             //##}
             //##break;
             //##case MemberKind.Binary:
             //##if (member.IsNullable) {
-            result.Add(_T_NullableBinaryMemberName_?.GetHashCode() ?? 0);
+            result.Add(_T_NullableBinaryMemberName_);
             //##} else {
-            result.Add(_T_RequiredBinaryMemberName_.GetHashCode());
+            result.Add(_T_RequiredBinaryMemberName_);
+            //##}
+            //##break;
+            //##case MemberKind.String:
+            //##if (member.IsNullable) {
+            result.Add(_T_NullableStringMemberName_);
+            //##} else {
+            result.Add(_T_RequiredStringMemberName_);
             //##}
             //##break;
             //##default:
@@ -381,8 +423,8 @@ namespace T_NameSpace_.CSPoco
         private int? _hashCode;
         public override int GetHashCode()
         {
-            if (_hashCode.HasValue) return _hashCode.Value;
             if (!IsFrozen) return CalcHashCode();
+            if (_hashCode.HasValue) return _hashCode.Value;
             _hashCode = CalcHashCode();
             return _hashCode.Value;
         }

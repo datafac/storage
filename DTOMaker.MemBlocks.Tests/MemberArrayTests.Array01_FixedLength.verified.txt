@@ -136,12 +136,12 @@ namespace MyOrg.Models.MemBlocks
                 if (BitConverter.IsLittleEndian != false)
                 {
                     // endian match
-                    return MemoryMarshal.Cast<byte, Double>(sourceSpan).ToArray(); // todo alloc!
+                    return MemoryMarshal.Cast<byte, Double>(sourceSpan).ToArray();
                 }
                 else
                 {
                     // endian mismatch - decode each element
-                    var target = new Double[8]; // todo alloc!
+                    var target = new Double[8];
                     Span<Double> targetSpan = target.AsSpan();
                     for (int i = 0; i < 8; i++)
                     {

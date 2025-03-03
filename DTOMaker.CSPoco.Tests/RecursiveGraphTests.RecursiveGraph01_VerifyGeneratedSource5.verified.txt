@@ -60,8 +60,8 @@ namespace MyOrg.Models.CSPoco
             _Value = source.Value;
         }
 
-        private String _Value = string.Empty;
-        public String Value
+        private string _Value = string.Empty;
+        public string Value
         {
             get => _Value;
             set => _Value = IfNotFrozen(ref value);
@@ -92,8 +92,8 @@ namespace MyOrg.Models.CSPoco
         private int? _hashCode;
         public override int GetHashCode()
         {
-            if (_hashCode.HasValue) return _hashCode.Value;
             if (!IsFrozen) return CalcHashCode();
+            if (_hashCode.HasValue) return _hashCode.Value;
             _hashCode = CalcHashCode();
             return _hashCode.Value;
         }

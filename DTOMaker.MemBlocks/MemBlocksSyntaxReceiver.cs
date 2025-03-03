@@ -8,7 +8,7 @@ namespace DTOMaker.MemBlocks
     public readonly struct LayoutAttribute { }
     public readonly struct OffsetAttribute { }
     public readonly struct EndianAttribute { }
-    public readonly struct StrLenAttribute { }
+    public readonly struct FixedLengthAttribute { }
     public readonly struct CapacityAttribute { }
 
     internal class MemBlocksSyntaxReceiver : SyntaxReceiverBase
@@ -48,12 +48,12 @@ namespace DTOMaker.MemBlocks
                         TryGetAttributeArgumentValue<int>(member, location, attributeArguments, 0, (value) => { member.FieldOffset = value; });
                     }
                 }
-                if (memberAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(StrLenAttribute)) is AttributeData strLenAttr)
+                if (memberAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(FixedLengthAttribute)) is AttributeData strLenAttr)
                 {
                     var attributeArguments = strLenAttr.ConstructorArguments;
-                    if (CheckAttributeArguments(nameof(StrLenAttribute), attributeArguments, 1, member, location))
+                    if (CheckAttributeArguments(nameof(FixedLengthAttribute), attributeArguments, 1, member, location))
                     {
-                        TryGetAttributeArgumentValue<int>(member, location, attributeArguments, 0, (value) => { member.StringLength = value; });
+                        TryGetAttributeArgumentValue<int>(member, location, attributeArguments, 0, (value) => { member.FixedLength = value; });
                     }
                 }
                 if (memberAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(CapacityAttribute)) is AttributeData capacityAttr)

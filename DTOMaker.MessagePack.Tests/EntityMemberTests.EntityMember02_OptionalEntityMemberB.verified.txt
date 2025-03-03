@@ -113,7 +113,7 @@ namespace MyOrg.DomainB.MessagePack
         {
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
-            result.Add(_Member1?.GetHashCode() ?? 0);
+            result.Add(_Member1);
             return result.ToHashCode();
         }
 
@@ -121,8 +121,8 @@ namespace MyOrg.DomainB.MessagePack
         private int? _hashCode;
         public override int GetHashCode()
         {
-            if (_hashCode.HasValue) return _hashCode.Value;
             if (!IsFrozen) return CalcHashCode();
+            if (_hashCode.HasValue) return _hashCode.Value;
             _hashCode = CalcHashCode();
             return _hashCode.Value;
         }

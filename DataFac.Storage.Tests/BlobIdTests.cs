@@ -55,7 +55,7 @@ public class BlobIdTests
     public void BlobId06CreateFromCopy()
     {
         ReadOnlyMemory<byte> data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobIdV1 orig = data.Span.GetBlobIdqqq();
+        BlobIdV1 orig = data.Span.GetBlobId();
         BlobIdV1 copy = orig;
         copy.ShouldBe(orig);
         copy.Equals(orig).ShouldBeTrue();

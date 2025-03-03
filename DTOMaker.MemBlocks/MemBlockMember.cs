@@ -12,7 +12,8 @@ namespace DTOMaker.MemBlocks
 
         // todo? remove these flags if not used
         public bool HasOffsetAttribute { get; set; }
-        public int StringLength { get; set; }
+        public int FixedLength { get; set; }
+        public bool IsFixedLength => FixedLength != 0;
         public int ArrayCapacity { get; set; }
         public int FieldOffset { get; set; }
         public int TotalLength => (Kind == MemberKind.Vector) ? FieldLength * ArrayCapacity : FieldLength;
@@ -40,8 +41,8 @@ namespace DTOMaker.MemBlocks
                 "System.UInt128" => null,
                 "System.Decimal" => null,
                 "System.Guid" => null,
-                "System.String" => null,
-                "DataFac.Memory.Octets" => null,
+                FullTypeName.SystemString => null,
+                FullTypeName.MemoryOctets => null,
                 _ => new SyntaxDiagnostic(
                     DiagnosticId.DMMB0007, "Unsupported member datatype", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
                     $"MemberType '{MemberType}' not supported")
@@ -52,6 +53,7 @@ namespace DTOMaker.MemBlocks
         {
             if (Kind == MemberKind.Entity) return null;
             if (Kind == MemberKind.Binary) return null;
+            if (Kind == MemberKind.String) return null;
             if (!MemberIsNullable) return null;
 
             return new SyntaxDiagnostic(
@@ -102,11 +104,11 @@ namespace DTOMaker.MemBlocks
 
         private SyntaxDiagnostic? CheckStringLengthIsValid()
         {
-            if (MemberType.FullName != "System.String") return null;
-            if (IsPowerOf2(StringLength, 1, 1024)) return null;
+            if (MemberType.FullName != FullTypeName.SystemString) return null;
+            if (IsPowerOf2(FixedLength, 1, 1024)) return null;
             return new SyntaxDiagnostic(
-                        DiagnosticId.DMMB0009, "Invalid string length", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                        $"StringLength ({StringLength}) is invalid. StringLength must be a whole power of 2 between 1 and 1024.");
+                        DiagnosticId.DMMB0009, "Invalid length", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+                        $"Length ({FixedLength}) is invalid. Length must be a whole power of 2 between 1 and 1024.");
         }
 
         private SyntaxDiagnostic? CheckArrayCapacityIsValid()

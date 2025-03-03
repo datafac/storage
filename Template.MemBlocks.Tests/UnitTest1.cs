@@ -81,8 +81,8 @@ namespace Template.MemBlocks.Tests
 
         public async Task RoundtripDTO()
         {
-            var smallBinary = new Octets(new byte[] { 1, 2, 3, 4, 5, 6, 7 });
-            var largeBinary = new Octets(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+            Octets smallBinary = new Octets(new byte[] { 1, 2, 3, 4, 5, 6, 7 });
+            Octets largeBinary = new Octets(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
 
             using var dataStore = new DataFac.Storage.Testing.TestDataStore();
 
@@ -91,8 +91,10 @@ namespace Template.MemBlocks.Tests
             orig.T_ScalarMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
             orig.T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_() { Field1 = 123 };
-            orig.T_RequiredBinaryMemberName_ = largeBinary;
-            orig.T_NullableBinaryMemberName_ = smallBinary;
+            orig.T_RequiredFixLenBinaryMemberName_ = smallBinary;
+            orig.T_RequiredVarLenBinaryMemberName_ = largeBinary;
+            orig.T_NullableFixLenBinaryMemberName_ = null;
+            orig.T_NullableVarLenBinaryMemberName_ = smallBinary;
             await orig.Pack(dataStore);
             orig.Freeze();
 
@@ -105,9 +107,10 @@ namespace Template.MemBlocks.Tests
             copy.T_ScalarMemberName_.ShouldBe(orig.T_ScalarMemberName_);
             copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).ShouldBeTrue();
             copy.T_RequiredEntityMemberName_.ShouldNotBeNull();
-            copy.T_RequiredBinaryMemberName_.ShouldNotBeNull();
-            copy.T_RequiredBinaryMemberName_.ShouldBe(orig.T_RequiredBinaryMemberName_);
-            copy.T_NullableBinaryMemberName_.ShouldBe(orig.T_NullableBinaryMemberName_);
+            copy.T_RequiredFixLenBinaryMemberName_.ShouldBe(orig.T_RequiredFixLenBinaryMemberName_);
+            copy.T_RequiredVarLenBinaryMemberName_.ShouldBe(orig.T_RequiredVarLenBinaryMemberName_);
+            copy.T_NullableFixLenBinaryMemberName_.ShouldBe(orig.T_NullableFixLenBinaryMemberName_);
+            copy.T_NullableVarLenBinaryMemberName_.ShouldBe(orig.T_NullableVarLenBinaryMemberName_);
             await copy.T_RequiredEntityMemberName_.Unpack(dataStore, 0);
             copy.T_RequiredEntityMemberName_!.Field1.ShouldBe(orig.T_RequiredEntityMemberName_.Field1);
         }

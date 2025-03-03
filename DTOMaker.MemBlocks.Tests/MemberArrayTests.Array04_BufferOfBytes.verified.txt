@@ -133,7 +133,7 @@ namespace MyOrg.Models.MemBlocks
             get
             {
                 var sourceSpan = _readonlyLocalBlock.Slice(0, 1 * 8).Span;
-                return MemoryMarshal.Cast<byte, Byte>(sourceSpan).ToArray(); // todo alloc!
+                return MemoryMarshal.Cast<byte, Byte>(sourceSpan).ToArray();
             }
 
             set

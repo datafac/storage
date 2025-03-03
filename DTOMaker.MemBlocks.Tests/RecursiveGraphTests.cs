@@ -23,14 +23,14 @@ namespace DTOMaker.MemBlocks.Tests
                 [Id("01234567-89ab-cdef-0123-456789abcdef")]
                 public interface INode
                 {
-                    [Member(1)][StrLen(16)] String Key { get; set; }
+                    [Member(1)][FixedLength(16)] String Key { get; set; }
                 }
 
                 [Entity][Layout(LayoutMethod.Linear)]
                 [Id("01234567-89ab-cdef-0201-456789abcdef")]
                 public interface IStringNode : INode
                 {
-                    [Member(1)][StrLen(256)] String Value { get; set; }
+                    [Member(1)][FixedLength(256)] String Value { get; set; }
                 }
 
                 [Entity][Layout(LayoutMethod.Linear)]

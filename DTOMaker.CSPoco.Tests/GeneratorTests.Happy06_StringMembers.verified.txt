@@ -63,22 +63,22 @@ namespace MyOrg.Models.CSPoco
             _OtherNames_HasValue = source.OtherNames_HasValue;
         }
 
-        private String _FamilyName = string.Empty;
-        public String FamilyName
+        private string _FamilyName = string.Empty;
+        public string FamilyName
         {
             get => _FamilyName;
             set => _FamilyName = IfNotFrozen(ref value);
         }
 
-        private String _GivenName = string.Empty;
-        public String GivenName
+        private string _GivenName = string.Empty;
+        public string GivenName
         {
             get => _GivenName;
             set => _GivenName = IfNotFrozen(ref value);
         }
 
-        private String _OtherNames_Value = string.Empty;
-        public String OtherNames_Value
+        private string _OtherNames_Value = string.Empty;
+        public string OtherNames_Value
         {
             get => _OtherNames_Value;
             set => _OtherNames_Value = IfNotFrozen(ref value);
@@ -122,8 +122,8 @@ namespace MyOrg.Models.CSPoco
         private int? _hashCode;
         public override int GetHashCode()
         {
-            if (_hashCode.HasValue) return _hashCode.Value;
             if (!IsFrozen) return CalcHashCode();
+            if (_hashCode.HasValue) return _hashCode.Value;
             _hashCode = CalcHashCode();
             return _hashCode.Value;
         }

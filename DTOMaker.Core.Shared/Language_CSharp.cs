@@ -25,6 +25,7 @@
                 null => "null",
                 string s => s, // todo? identifers vs. literals
                 bool b => b ? "true" : "false",
+                char c => $"'{c}'",
                 float f => $"{f}F",
                 double d => $"{d}D",
                 short s => $"{s}S",
@@ -43,8 +44,8 @@
         {
             return typeFullName.FullName switch
             {
-                "System.String" => "String",
-                FullTypeName.Octets => "Octets",
+                FullTypeName.SystemString => "String",
+                FullTypeName.MemoryOctets => "Octets",
                 _ => typeFullName.ShortName
             };
         }
@@ -53,8 +54,8 @@
         {
             return typeFullName.FullName switch
             {
-                "System.String" => "string.Empty",
-                FullTypeName.Octets => "Octets.Empty",
+                FullTypeName.SystemString => "string.Empty",
+                FullTypeName.MemoryOctets => "Octets.Empty",
                 _ => "default"
             };
         }

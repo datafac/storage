@@ -8,7 +8,7 @@ namespace DataFac.Storage;
 
 public static class BlobHelpers
 {
-    public static BlobIdV1 GetBlobIdqqq(this ReadOnlySpan<byte> blob)
+    public static BlobIdV1 GetBlobId(this ReadOnlySpan<byte> blob)
     {
         // embed short blobs directly into id
         if (blob.Length <= 62)
@@ -35,7 +35,7 @@ public static class BlobHelpers
     [MethodImpl(MethodImplOptions.NoInlining)]
     public static void CheckIdMatchesData(in BlobIdV1 id, in ReadOnlyMemory<byte> data)
     {
-        BlobIdV1 checkId = GetBlobIdqqq(data.Span);
+        BlobIdV1 checkId = GetBlobId(data.Span);
         if (!id.Equals(checkId)) throw new InvalidDataException($"Id does not match Data");
     }
 }

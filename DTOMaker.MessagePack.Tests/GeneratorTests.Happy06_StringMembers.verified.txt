@@ -69,8 +69,7 @@ namespace MyOrg.Models.MessagePack
             if (source is null) throw new ArgumentNullException(nameof(source));
             _FamilyName = source._FamilyName;
             _GivenName = source._GivenName;
-            _OtherNames_Value = source._OtherNames_Value;
-            _OtherNames_HasValue = source._OtherNames_HasValue;
+            _OtherNames = source._OtherNames;
         }
 
         public MyDTO(IMyDTO source) : base(source)
@@ -78,44 +77,34 @@ namespace MyOrg.Models.MessagePack
             if (source is null) throw new ArgumentNullException(nameof(source));
             _FamilyName = source.FamilyName;
             _GivenName = source.GivenName;
-            _OtherNames_Value = source.OtherNames_Value;
-            _OtherNames_HasValue = source.OtherNames_HasValue;
+            _OtherNames = source.OtherNames;
         }
 
         [IgnoreMember]
-        private String _FamilyName = string.Empty;
+        private string _FamilyName = string.Empty;
         [Key(1)]
-        public String FamilyName
+        public string FamilyName
         {
             get => _FamilyName;
             set => _FamilyName = IfNotFrozen(value);
         }
 
         [IgnoreMember]
-        private String _GivenName = string.Empty;
+        private string _GivenName = string.Empty;
         [Key(2)]
-        public String GivenName
+        public string GivenName
         {
             get => _GivenName;
             set => _GivenName = IfNotFrozen(value);
         }
 
         [IgnoreMember]
-        private String _OtherNames_Value = string.Empty;
+        private string? _OtherNames;
         [Key(3)]
-        public String OtherNames_Value
+        public string? OtherNames
         {
-            get => _OtherNames_Value;
-            set => _OtherNames_Value = IfNotFrozen(value);
-        }
-
-        [IgnoreMember]
-        private Boolean _OtherNames_HasValue = default;
-        [Key(4)]
-        public Boolean OtherNames_HasValue
-        {
-            get => _OtherNames_HasValue;
-            set => _OtherNames_HasValue = IfNotFrozen(value);
+            get => _OtherNames;
+            set => _OtherNames = IfNotFrozen(value);
         }
 
 
@@ -124,10 +113,9 @@ namespace MyOrg.Models.MessagePack
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
             if (!base.Equals(other)) return false;
-            if (_FamilyName != other.FamilyName) return false;
-            if (_GivenName != other.GivenName) return false;
-            if (_OtherNames_Value != other.OtherNames_Value) return false;
-            if (_OtherNames_HasValue != other.OtherNames_HasValue) return false;
+            if (!string.Equals(_FamilyName, other._FamilyName)) return false;
+            if (!string.Equals(_GivenName, other._GivenName)) return false;
+            if (!string.Equals(_OtherNames, other._OtherNames)) return false;
             return true;
         }
 
@@ -141,8 +129,7 @@ namespace MyOrg.Models.MessagePack
             result.Add(base.GetHashCode());
             result.Add(_FamilyName);
             result.Add(_GivenName);
-            result.Add(_OtherNames_Value);
-            result.Add(_OtherNames_HasValue);
+            result.Add(_OtherNames);
             return result.ToHashCode();
         }
 
@@ -150,8 +137,8 @@ namespace MyOrg.Models.MessagePack
         private int? _hashCode;
         public override int GetHashCode()
         {
-            if (_hashCode.HasValue) return _hashCode.Value;
             if (!IsFrozen) return CalcHashCode();
+            if (_hashCode.HasValue) return _hashCode.Value;
             _hashCode = CalcHashCode();
             return _hashCode.Value;
         }

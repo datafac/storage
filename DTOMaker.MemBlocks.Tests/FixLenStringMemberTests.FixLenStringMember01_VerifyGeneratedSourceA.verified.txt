@@ -29,8 +29,8 @@ namespace MyOrg.Models.MemBlocks
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        public new const string EntityId = "01234567-89ab-cdef-0123-456789abcdef";
-        private static readonly Guid EntityGuid = new Guid("01234567-89ab-cdef-0123-456789abcdef");
+        public new const string EntityId = "0025011c-e76b-4914-b0cf-465fb73e180c";
+        private static readonly Guid EntityGuid = new Guid("0025011c-e76b-4914-b0cf-465fb73e180c");
         private static readonly BlockHeader _header = BlockHeader.CreateNew(BlockStructureCode, EntityGuid);
 
         public new static MyDTO CreateFrom(MyDTO source)
@@ -74,25 +74,22 @@ namespace MyOrg.Models.MemBlocks
         protected override async ValueTask OnPack(IDataStore dataStore)
         {
             await base.OnPack(dataStore);
-            FamilyName_Pack();
-            GivenNames_Pack();
-            OtherNames_Pack();
+            Field1_Pack();
+            Field2_Pack();
         }
 
         protected override async ValueTask OnUnpack(IDataStore dataStore, int depth)
         {
             await base.OnUnpack(dataStore, depth);
-            FamilyName_Unpack();
-            GivenNames_Unpack();
-            OtherNames_Unpack();
+            Field1_Unpack();
+            Field2_Unpack();
         }
 
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
         //  ----  ----  ----  ----  ------- ----  -------
-        //     1     0    64        String  LE    FamilyName
-        //     2    64    64        String  LE    GivenNames
-        //     3   128    64        String  LE    OtherNames
+        //     1     0   128        String  LE    Field1
+        //     2   128    32        String  LE    Field2
         // ------------------------------------------------------------
 
         protected MyDTO(BlockHeader header) : base(header)
@@ -116,17 +113,15 @@ namespace MyOrg.Models.MemBlocks
         protected MyDTO(BlockHeader header, IMyDTO source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-            _FamilyName = source.FamilyName;
-            _GivenNames = source.GivenNames;
-            _OtherNames = source.OtherNames;
+            _Field1 = source.Field1;
+            _Field2 = source.Field2;
         }
 
         public MyDTO(IMyDTO source) : base(_header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-            _FamilyName = source.FamilyName;
-            _GivenNames = source.GivenNames;
-            _OtherNames = source.OtherNames;
+            _Field1 = source.Field1;
+            _Field2 = source.Field2;
         }
 
         protected MyDTO(BlockHeader header, ReadOnlyMemory<byte> buffer) : base(header, buffer)
@@ -140,67 +135,46 @@ namespace MyOrg.Models.MemBlocks
             _writableLocalBlock = Memory<byte>.Empty;
         }
 
-        private void FamilyName_Pack()
+        private void Field1_Pack()
         {
-            Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(0, 64),
-                Encoding.UTF8.GetBytes(_FamilyName));
+            Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(0, 128),
+                Encoding.UTF8.GetBytes(_Field1));
         }
-        private void FamilyName_Unpack()
+        private void Field1_Unpack()
         {
-            ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(0, 64));
+            ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(0, 128));
 #if NET8_0_OR_GREATER
-            _FamilyName = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.Span);
+            _Field1 = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.Span);
 #else
-            _FamilyName = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.ToArray());
+            _Field1 = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.ToArray());
 #endif
         }
-        private string _FamilyName = string.Empty;
-        public string FamilyName
+        private string _Field1 = string.Empty;
+        public string Field1
         {
-            get => IfUnpacked(_FamilyName);
-            set => _FamilyName = IfNotFrozen(value);
+            get => IfUnpacked(_Field1);
+            set => _Field1 = IfNotFrozen(value);
         }
 
-        private void GivenNames_Pack()
+        private void Field2_Pack()
         {
-            Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(64, 64),
-                Encoding.UTF8.GetBytes(_GivenNames));
+            Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(128, 32),
+                _Field2 is null ? (ReadOnlyMemory<byte>?)null : Encoding.UTF8.GetBytes(_Field2));
         }
-        private void GivenNames_Unpack()
+        private void Field2_Unpack()
         {
-            ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(64, 64));
+            ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(128, 32));
 #if NET8_0_OR_GREATER
-            _GivenNames = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.Span);
+            _Field2 = memory is null ? null : Encoding.UTF8.GetString(memory.Value.Span);
 #else
-            _GivenNames = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.ToArray());
+            _Field2 = memory is null ? null : Encoding.UTF8.GetString(memory.Value.ToArray());
 #endif
         }
-        private string _GivenNames = string.Empty;
-        public string GivenNames
+        private string? _Field2;
+        public string? Field2
         {
-            get => IfUnpacked(_GivenNames);
-            set => _GivenNames = IfNotFrozen(value);
-        }
-
-        private void OtherNames_Pack()
-        {
-            Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(128, 64),
-                _OtherNames is null ? (ReadOnlyMemory<byte>?)null : Encoding.UTF8.GetBytes(_OtherNames));
-        }
-        private void OtherNames_Unpack()
-        {
-            ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(128, 64));
-#if NET8_0_OR_GREATER
-            _OtherNames = memory is null ? null : Encoding.UTF8.GetString(memory.Value.Span);
-#else
-            _OtherNames = memory is null ? null : Encoding.UTF8.GetString(memory.Value.ToArray());
-#endif
-        }
-        private string? _OtherNames;
-        public string? OtherNames
-        {
-            get => IfUnpacked(_OtherNames);
-            set => _OtherNames = IfNotFrozen(value);
+            get => IfUnpacked(_Field2);
+            set => _Field2 = IfNotFrozen(value);
         }
 
 
