@@ -86,7 +86,7 @@ namespace MyOrg.Models.MemBlocks
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
         //  ----  ----  ----  ----  ------- ----  -------
-        //     1     0   128        String  LE    Field1
+        //     1     0   128        Octets  LE    Field1
         //     2   128    32        Octets  LE    Field2
         // ------------------------------------------------------------
 
@@ -136,19 +136,15 @@ namespace MyOrg.Models.MemBlocks
         private void Field1_Pack()
         {
             Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(0, 128),
-                System.Text.Encoding.UTF8.GetBytes(_Field1));
+                _Field1.Memory);
         }
         private void Field1_Unpack()
         {
             ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(0, 128));
-#if NET8_0_OR_GREATER
-            _Field1 = memory is null ? string.Empty : System.Text.Encoding.UTF8.GetString(memory.Value.Span);
-#else
-            _Field1 = memory is null ? string.Empty : System.Text.Encoding.UTF8.GetString(memory.Value.ToArray());
-#endif
+            _Field1 = memory is null ? Octets.Empty : Octets.UnsafeWrap(memory.Value);
         }
-        private string _Field1 = string.Empty;
-        public string Field1
+        private Octets _Field1 = Octets.Empty;
+        public Octets Field1
         {
             get => IfUnpacked(_Field1);
             set => _Field1 = IfNotFrozen(value);

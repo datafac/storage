@@ -23,7 +23,7 @@ namespace DTOMaker.MemBlocks.Tests
                 [Id("c8ab1cae-e54b-4c37-8890-ddd9e3032451")]
                 public interface IMyDTO
                 {
-                    [Member(1)] [FixedLength(128)] string Field1 { get; set; }
+                    [Member(1)] [FixedLength(128)] Octets Field1 { get; set; }
                     [Member(2)] [FixedLength(32)] Octets? Field2 { get; set; }
                 }
             }
