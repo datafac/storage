@@ -6,15 +6,13 @@
 #pragma warning disable CS0109 // Member does not hide an inherited member; new keyword is not required
 #nullable enable
 using System;
-using System.Buffers;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using DataFac.Memory;
+using DataFac.Storage;
 using DTOMaker.Runtime;
 using DTOMaker.Runtime.MemBlocks;
-using DataFac.Storage;
 
 namespace MyOrg.Models.MemBlocks
 {
@@ -138,15 +136,15 @@ namespace MyOrg.Models.MemBlocks
         private void Field1_Pack()
         {
             Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(0, 128),
-                Encoding.UTF8.GetBytes(_Field1));
+                System.Text.Encoding.UTF8.GetBytes(_Field1));
         }
         private void Field1_Unpack()
         {
             ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(0, 128));
 #if NET8_0_OR_GREATER
-            _Field1 = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.Span);
+            _Field1 = memory is null ? string.Empty : System.Text.Encoding.UTF8.GetString(memory.Value.Span);
 #else
-            _Field1 = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.ToArray());
+            _Field1 = memory is null ? string.Empty : System.Text.Encoding.UTF8.GetString(memory.Value.ToArray());
 #endif
         }
         private string _Field1 = string.Empty;

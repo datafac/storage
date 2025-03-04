@@ -6,15 +6,13 @@
 #pragma warning disable CS0109 // Member does not hide an inherited member; new keyword is not required
 #nullable enable
 using System;
-using System.Buffers;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using DataFac.Memory;
+using DataFac.Storage;
 using DTOMaker.Runtime;
 using DTOMaker.Runtime.MemBlocks;
-using DataFac.Storage;
 
 namespace MyOrg.Models.MemBlocks
 {
@@ -153,15 +151,15 @@ namespace MyOrg.Models.MemBlocks
         private void Key_Pack()
         {
             Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(0, 16),
-                Encoding.UTF8.GetBytes(_Key));
+                System.Text.Encoding.UTF8.GetBytes(_Key));
         }
         private void Key_Unpack()
         {
             ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(0, 16));
 #if NET8_0_OR_GREATER
-            _Key = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.Span);
+            _Key = memory is null ? string.Empty : System.Text.Encoding.UTF8.GetString(memory.Value.Span);
 #else
-            _Key = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.ToArray());
+            _Key = memory is null ? string.Empty : System.Text.Encoding.UTF8.GetString(memory.Value.ToArray());
 #endif
         }
         private string _Key = string.Empty;

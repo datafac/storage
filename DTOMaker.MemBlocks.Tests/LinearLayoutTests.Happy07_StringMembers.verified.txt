@@ -6,15 +6,13 @@
 #pragma warning disable CS0109 // Member does not hide an inherited member; new keyword is not required
 #nullable enable
 using System;
-using System.Buffers;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using DataFac.Memory;
+using DataFac.Storage;
 using DTOMaker.Runtime;
 using DTOMaker.Runtime.MemBlocks;
-using DataFac.Storage;
 
 namespace MyOrg.Models.MemBlocks
 {
@@ -143,15 +141,15 @@ namespace MyOrg.Models.MemBlocks
         private void FamilyName_Pack()
         {
             Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(0, 64),
-                Encoding.UTF8.GetBytes(_FamilyName));
+                System.Text.Encoding.UTF8.GetBytes(_FamilyName));
         }
         private void FamilyName_Unpack()
         {
             ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(0, 64));
 #if NET8_0_OR_GREATER
-            _FamilyName = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.Span);
+            _FamilyName = memory is null ? string.Empty : System.Text.Encoding.UTF8.GetString(memory.Value.Span);
 #else
-            _FamilyName = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.ToArray());
+            _FamilyName = memory is null ? string.Empty : System.Text.Encoding.UTF8.GetString(memory.Value.ToArray());
 #endif
         }
         private string _FamilyName = string.Empty;
@@ -164,15 +162,15 @@ namespace MyOrg.Models.MemBlocks
         private void GivenNames_Pack()
         {
             Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(64, 64),
-                Encoding.UTF8.GetBytes(_GivenNames));
+                System.Text.Encoding.UTF8.GetBytes(_GivenNames));
         }
         private void GivenNames_Unpack()
         {
             ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(64, 64));
 #if NET8_0_OR_GREATER
-            _GivenNames = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.Span);
+            _GivenNames = memory is null ? string.Empty : System.Text.Encoding.UTF8.GetString(memory.Value.Span);
 #else
-            _GivenNames = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.ToArray());
+            _GivenNames = memory is null ? string.Empty : System.Text.Encoding.UTF8.GetString(memory.Value.ToArray());
 #endif
         }
         private string _GivenNames = string.Empty;
@@ -185,15 +183,15 @@ namespace MyOrg.Models.MemBlocks
         private void OtherNames_Pack()
         {
             Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(128, 64),
-                _OtherNames is null ? (ReadOnlyMemory<byte>?)null : Encoding.UTF8.GetBytes(_OtherNames));
+                _OtherNames is null ? (ReadOnlyMemory<byte>?)null : System.Text.Encoding.UTF8.GetBytes(_OtherNames));
         }
         private void OtherNames_Unpack()
         {
             ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(128, 64));
 #if NET8_0_OR_GREATER
-            _OtherNames = memory is null ? null : Encoding.UTF8.GetString(memory.Value.Span);
+            _OtherNames = memory is null ? null : System.Text.Encoding.UTF8.GetString(memory.Value.Span);
 #else
-            _OtherNames = memory is null ? null : Encoding.UTF8.GetString(memory.Value.ToArray());
+            _OtherNames = memory is null ? null : System.Text.Encoding.UTF8.GetString(memory.Value.ToArray());
 #endif
         }
         private string? _OtherNames;

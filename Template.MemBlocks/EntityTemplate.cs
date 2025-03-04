@@ -10,15 +10,13 @@
 #pragma warning disable CS0109 // Member does not hide an inherited member; new keyword is not required
 #nullable enable
 using System;
-using System.Buffers;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using DataFac.Memory;
+using DataFac.Storage;
 using DTOMaker.Runtime;
 using DTOMaker.Runtime.MemBlocks;
-using DataFac.Storage;
 
 //##if(false) {
 using T_MemberType_ = System.Int32;
@@ -837,15 +835,15 @@ namespace T_NameSpace_.MemBlocks
         private void T_NullableFixLenStringMemberName__Pack()
         {
             Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(T_NullableFixLenStringFieldOffset_, T_NullableFixLenStringFieldLength_),
-                _T_NullableFixLenStringMemberName_ is null ? (ReadOnlyMemory<byte>?)null : Encoding.UTF8.GetBytes(_T_NullableFixLenStringMemberName_));
+                _T_NullableFixLenStringMemberName_ is null ? (ReadOnlyMemory<byte>?)null : System.Text.Encoding.UTF8.GetBytes(_T_NullableFixLenStringMemberName_));
         }
         private void T_NullableFixLenStringMemberName__Unpack()
         {
             ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_NullableFixLenStringFieldOffset_, T_NullableFixLenStringFieldLength_));
 #if NET8_0_OR_GREATER
-            _T_NullableFixLenStringMemberName_ = memory is null ? null : Encoding.UTF8.GetString(memory.Value.Span);
+            _T_NullableFixLenStringMemberName_ = memory is null ? null : System.Text.Encoding.UTF8.GetString(memory.Value.Span);
 #else
-            _T_NullableFixLenStringMemberName_ = memory is null ? null : Encoding.UTF8.GetString(memory.Value.ToArray());
+            _T_NullableFixLenStringMemberName_ = memory is null ? null : System.Text.Encoding.UTF8.GetString(memory.Value.ToArray());
 #endif
         }
         private string? _T_NullableFixLenStringMemberName_;
@@ -863,7 +861,7 @@ namespace T_NameSpace_.MemBlocks
             BlobIdV1 blobId = default;
             if (_T_NullableVarLenStringMemberName_ is not null)
             {
-                ReadOnlyMemory<byte> buffer = Encoding.UTF8.GetBytes(_T_NullableVarLenStringMemberName_);
+                ReadOnlyMemory<byte> buffer = System.Text.Encoding.UTF8.GetBytes(_T_NullableVarLenStringMemberName_);
                 blobId = await dataStore.PutBlob(buffer);
             }
             Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(T_NullableVarLenStringFieldOffset_, 64).Span, blobId);
@@ -873,9 +871,9 @@ namespace T_NameSpace_.MemBlocks
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_NullableVarLenStringFieldOffset_, 64));
             var blob = await dataStore.GetBlob(blobId);
 #if NET8_0_OR_GREATER
-            _T_NullableVarLenStringMemberName_ = blob is null ? null : Encoding.UTF8.GetString(blob.Value.Span);
+            _T_NullableVarLenStringMemberName_ = blob is null ? null : System.Text.Encoding.UTF8.GetString(blob.Value.Span);
 #else
-            _T_NullableVarLenStringMemberName_ = blob is null ? null : Encoding.UTF8.GetString(blob.Value.ToArray());
+            _T_NullableVarLenStringMemberName_ = blob is null ? null : System.Text.Encoding.UTF8.GetString(blob.Value.ToArray());
 #endif
         }
         private string? _T_NullableVarLenStringMemberName_;
@@ -893,15 +891,15 @@ namespace T_NameSpace_.MemBlocks
         private void T_RequiredFixLenStringMemberName__Pack()
         {
             Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(T_RequiredFixLenStringFieldOffset_, T_RequiredFixLenStringFieldLength_),
-                Encoding.UTF8.GetBytes(_T_RequiredFixLenStringMemberName_));
+                System.Text.Encoding.UTF8.GetBytes(_T_RequiredFixLenStringMemberName_));
         }
         private void T_RequiredFixLenStringMemberName__Unpack()
         {
             ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_RequiredFixLenStringFieldOffset_, T_RequiredFixLenStringFieldLength_));
 #if NET8_0_OR_GREATER
-            _T_RequiredFixLenStringMemberName_ = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.Span);
+            _T_RequiredFixLenStringMemberName_ = memory is null ? string.Empty : System.Text.Encoding.UTF8.GetString(memory.Value.Span);
 #else
-            _T_RequiredFixLenStringMemberName_ = memory is null ? string.Empty : Encoding.UTF8.GetString(memory.Value.ToArray());
+            _T_RequiredFixLenStringMemberName_ = memory is null ? string.Empty : System.Text.Encoding.UTF8.GetString(memory.Value.ToArray());
 #endif
         }
         private string _T_RequiredFixLenStringMemberName_ = string.Empty;
@@ -917,7 +915,7 @@ namespace T_NameSpace_.MemBlocks
         private async ValueTask T_RequiredVarLenStringMemberName__Pack(IDataStore dataStore)
         {
             BlobIdV1 blobId = default;
-            var buffer = Encoding.UTF8.GetBytes(_T_RequiredVarLenStringMemberName_);
+            var buffer = System.Text.Encoding.UTF8.GetBytes(_T_RequiredVarLenStringMemberName_);
             blobId = await dataStore.PutBlob(buffer);
             Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(T_RequiredVarLenStringFieldOffset_, 64).Span, blobId);
         }
@@ -926,9 +924,9 @@ namespace T_NameSpace_.MemBlocks
             BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_RequiredVarLenStringFieldOffset_, 64));
             var blob = await dataStore.GetBlob(blobId);
 #if NET8_0_OR_GREATER
-            _T_RequiredVarLenStringMemberName_ = blob is null ? string.Empty : Encoding.UTF8.GetString(blob.Value.Span);
+            _T_RequiredVarLenStringMemberName_ = blob is null ? string.Empty : System.Text.Encoding.UTF8.GetString(blob.Value.Span);
 #else
-            _T_RequiredVarLenStringMemberName_ = blob is null ? string.Empty : Encoding.UTF8.GetString(blob.Value.ToArray());
+            _T_RequiredVarLenStringMemberName_ = blob is null ? string.Empty : System.Text.Encoding.UTF8.GetString(blob.Value.ToArray());
 #endif
         }
         private string _T_RequiredVarLenStringMemberName_ = string.Empty;
