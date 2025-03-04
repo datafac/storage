@@ -1,17 +1,56 @@
-# DTOMaker
+[![Build-Deploy](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml)
 
 *Warning: This is pre-release software under active development. Breaking changes may occur.*
 
-[![Build-Deploy](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml)
+<!--TOC-->
+- [DTOMaker](#dtomaker)
+- [Included Packages](#included-packages)
+  - [DTOMaker.Models](#dtomaker.models)
+  - [DTOMaker.MessagePack](#dtomaker.messagepack)
+  - [DTOMaker.Models.MessagePack](#dtomaker.models.messagepack)
+  - [DTOMaker.MemBlocks](#dtomaker.memblocks)
+  - [DTOMaker.Models.MemBlocks](#dtomaker.models.memblocks)
+  - [DTOMaker.CSPoco](#dtomaker.cspoco)
+  - [DTOMaker.Runtime](#dtomaker.runtime)
+- [Model features](#model-features)
+  - [MemBlocks features](#memblocks-features)
+- [Limitations](#limitations)
+- [Development](#development)
+  - [In progress](#in-progress)
+  - [Coming soon](#coming-soon)
+  - [Coming later](#coming-later)
+<!--/TOC-->
 
-This repo includes model-driven source generators for quickly creating DTOs (Data Transport Objects) supporting the following
+# DTOMaker
+
+This repo includes model-driven compile-time source generators for quickly creating DTOs (Data Transport Objects) supporting the following
 serialization schemes:
 - MessagePack
 - MemBlocks
 
 and related POCOs (Plain Old C# Objects).
 
-Models are defined as C# interfaces with additional attributes. For example:
+```mermaid
+---
+title: Workflow
+---
+flowchart LR
+    def(Define models e.g. IMyDTO.cs)
+    ref1(Reference DTOMaker.Models.*)
+    ref2(Reference DTOMaker.Runtime.*)
+    ref3(Reference one or more source generators e.g. DTOMaker.MessagePack)
+    bld(VS/Code/MSBuild)
+    pkg(Assembly)
+    def-->ref1
+    def-->ref2
+    def-->ref3
+    ref1-->bld
+    ref2-->bld
+    ref3-->bld
+    bld-->pkg
+```
+
+Models are defined as C# interfaces with additional attributes. Here's a trivial example:
 
 ```C#
 [Entity]
@@ -20,6 +59,17 @@ public interface IMyFirstDTO
     [Member(1)] string Name { get; set; }
 }
 ```
+If using the MessagePack source generator, the following implmentation will be 
+generated (simplified):
+
+```C#
+[MessagePackObject]
+public sealed class MyFirstDTO : IMyFirstDTO:
+{
+    [Key(1)] string Name { get; set; }
+}
+```
+# Included Packages
 
 This repo includes the following packages:
 
@@ -46,32 +96,31 @@ Generates basic POCOs (Plain Old C# Objects) that implement the model interfaces
 ## DTOMaker.Runtime
 Common types used at runtime by DTOMaker generated entities.
 
-## Model Features
+# Model features
 - Member value types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
-- String member types:
-  - Required or nullable strings for CSPoco and MessagePack
-  - Non-nullable UTF8-encoded fixed length strings for MemBlocks
+- Nullable string member types.
 - Variable length binary member types:
   - Octets (model interfaces, CSPoco, MemBlocks)
   - ReadOnlyMemory\<byte\> (MessagePack)
 - Built-in freezability (mutable until frozen) support
-- Templates as testable code, template-to-generator processing
 - [Obsolete] members
 - Fixed length arrays of above value types.
 - polymorphic types
 - entity members
 - IEquatable\<T\> support
-- auto-embedded entity members (MemBlocks)
-- auto-embedded binary members (MemBlocks)
+- Templates as testable code, template-to-generator processing
+## MemBlocks features
+- auto-embedded string, binary and entity members when short enough.
 
-## Limitations
+# Limitations
 - single compilation (assembly) contains all models and generated DTOs 
 
-## In progress:
+# Development
+## In progress
 - variable-length string members
 - auto-embedded string members (MemBlocks)
 
-## Coming soon:
+## Coming soon
 - implement IIncrementalGenerator
 - global interface equality comparer
 - fixed-length binary members (MemBlocks)
@@ -89,7 +138,7 @@ Common types used at runtime by DTOMaker generated entities.
 - MemBlocks nullable types. Workaround - T? can be implemented with a pair
   of members (Boolean, T).
 
-## Coming later:
+## Coming later
 - custom struct members (to avoid primitive obsession)
 - C# records generator
 - Google Protobuf .proto generation
