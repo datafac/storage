@@ -48,7 +48,7 @@ namespace MyOrg.Models.MemBlocks
             };
         }
 
-        public new static MyDTO CreateFrom(ReadOnlySequence<byte> buffers)
+        public new static MyDTO CreateFrom(System.Buffers.ReadOnlySequence<byte> buffers)
         {
             ReadOnlyMemory<byte> buffer = buffers.Slice(0, 64).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
@@ -144,7 +144,7 @@ namespace MyOrg.Models.MemBlocks
             }
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public MyDTO(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
+        public MyDTO(System.Buffers.ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
         {
         }
 
@@ -157,11 +157,11 @@ namespace MyOrg.Models.MemBlocks
                 var buffer = _Other1.GetBuffer();
                 blobId = await dataStore.PutBlob(buffer.Compact());
             }
-            Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(0, 64).Span, blobId);
+            blobId.WriteTo(_writableLocalBlock.Slice(0, 64).Span);
         }
         private async ValueTask Other1_Unpack(IDataStore dataStore, int depth)
         {
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(0, 64));
+            BlobIdV1 blobId = BlobIdV1.UnsafeWrap(_readonlyLocalBlock.Slice(0, 64));
             var blob = await dataStore.GetBlob(blobId);
             _Other1 = null;
             if (blob is not null)
@@ -187,11 +187,11 @@ namespace MyOrg.Models.MemBlocks
             BlobIdV1 blobId = default;
             var buffer = _Field1.Memory;
             blobId = await dataStore.PutBlob(buffer);
-            Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(64, 64).Span, blobId);
+            blobId.WriteTo(_writableLocalBlock.Slice(64, 64).Span);
         }
         private async ValueTask Field1_Unpack(IDataStore dataStore)
         {
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(64, 64));
+            BlobIdV1 blobId = BlobIdV1.UnsafeWrap(_readonlyLocalBlock.Slice(64, 64));
             var blob = await dataStore.GetBlob(blobId);
             _Field1 = blob is null ? Octets.Empty : Octets.UnsafeWrap(blob.Value);
 
@@ -211,11 +211,11 @@ namespace MyOrg.Models.MemBlocks
                 var buffer = _Field2.Memory;
                 blobId = await dataStore.PutBlob(buffer);
             }
-            Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(128, 64).Span, blobId);
+            blobId.WriteTo(_writableLocalBlock.Slice(128, 64).Span);
         }
         private async ValueTask Field2_Unpack(IDataStore dataStore)
         {
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(128, 64));
+            BlobIdV1 blobId = BlobIdV1.UnsafeWrap(_readonlyLocalBlock.Slice(128, 64));
             var blob = await dataStore.GetBlob(blobId);
             _Field2 = blob is null ? null : Octets.UnsafeWrap(blob.Value);
         }

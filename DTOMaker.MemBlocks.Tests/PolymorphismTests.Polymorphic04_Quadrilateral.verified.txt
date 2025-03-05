@@ -54,7 +54,7 @@ namespace MyOrg.Models.MemBlocks
             };
         }
 
-        public new static Quadrilateral CreateFrom(ReadOnlySequence<byte> buffers)
+        public new static Quadrilateral CreateFrom(System.Buffers.ReadOnlySequence<byte> buffers)
         {
             ReadOnlyMemory<byte> buffer = buffers.Slice(0, 64).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
@@ -136,7 +136,7 @@ namespace MyOrg.Models.MemBlocks
             }
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public Quadrilateral(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
+        public Quadrilateral(System.Buffers.ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
         {
         }
 

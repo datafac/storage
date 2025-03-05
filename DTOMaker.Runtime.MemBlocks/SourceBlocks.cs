@@ -20,7 +20,7 @@ namespace DTOMaker.Runtime.MemBlocks
 
         private static readonly int[] _blockSizes = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 * 1, 1024 * 2, 1024 * 4, 1024 * 8, 1024 * 16, 1024 * 32];
 
-        public static SourceBlocks ParseFrom(ReadOnlySequence<byte> buffers)
+        public static SourceBlocks ParseFrom(System.Buffers.ReadOnlySequence<byte> buffers)
         {
             int startPosition = 0;
             ReadOnlyMemory<byte> headerMemory = buffers.Slice(startPosition, 64).Compact();

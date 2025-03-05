@@ -48,7 +48,7 @@ namespace MyOrg.Models.MemBlocks
             };
         }
 
-        public new static Rectangle CreateFrom(ReadOnlySequence<byte> buffers)
+        public new static Rectangle CreateFrom(System.Buffers.ReadOnlySequence<byte> buffers)
         {
             ReadOnlyMemory<byte> buffer = buffers.Slice(0, 64).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
@@ -134,7 +134,7 @@ namespace MyOrg.Models.MemBlocks
             }
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public Rectangle(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
+        public Rectangle(System.Buffers.ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
         {
         }
 

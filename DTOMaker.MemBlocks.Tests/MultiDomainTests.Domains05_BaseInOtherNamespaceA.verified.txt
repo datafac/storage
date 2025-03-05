@@ -51,7 +51,7 @@ namespace MyOrg.DomainA.MemBlocks
             };
         }
 
-        public new static MyBase CreateFrom(ReadOnlySequence<byte> buffers)
+        public new static MyBase CreateFrom(System.Buffers.ReadOnlySequence<byte> buffers)
         {
             ReadOnlyMemory<byte> buffer = buffers.Slice(0, 64).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
@@ -132,7 +132,7 @@ namespace MyOrg.DomainA.MemBlocks
             }
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public MyBase(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
+        public MyBase(System.Buffers.ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
         {
         }
 

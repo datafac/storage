@@ -57,7 +57,7 @@ namespace T_MemberTypeNameSpace_.MemBlocks
             if (source is T_MemberTypeName_ concrete && concrete.IsFrozen) return concrete;
             return new T_MemberTypeName_(source);
         }
-        public static T_MemberTypeName_ CreateFrom(ReadOnlySequence<byte> buffers)
+        public static T_MemberTypeName_ CreateFrom(System.Buffers.ReadOnlySequence<byte> buffers)
         {
             return new T_MemberTypeName_(buffers);
         }
@@ -91,7 +91,7 @@ namespace T_MemberTypeNameSpace_.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        public T_MemberTypeName_(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
+        public T_MemberTypeName_(System.Buffers.ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
@@ -266,7 +266,7 @@ namespace T_NameSpace_.MemBlocks
             };
         }
 
-        public new static T_EntityName_ CreateFrom(ReadOnlySequence<byte> buffers)
+        public new static T_EntityName_ CreateFrom(System.Buffers.ReadOnlySequence<byte> buffers)
         {
             ReadOnlyMemory<byte> buffer = buffers.Slice(0, 64).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
@@ -577,7 +577,7 @@ namespace T_NameSpace_.MemBlocks
             }
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public T_EntityName_(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
+        public T_EntityName_(System.Buffers.ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
         {
         }
 
@@ -690,11 +690,11 @@ namespace T_NameSpace_.MemBlocks
                 var buffer = _T_NullableEntityMemberName_.GetBuffer();
                 blobId = await dataStore.PutBlob(buffer.Compact());
             }
-            Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(T_NullableEntityFieldOffset_, 64).Span, blobId);
+            blobId.WriteTo(_writableLocalBlock.Slice(T_NullableEntityFieldOffset_, 64).Span);
         }
         private async ValueTask T_NullableEntityMemberName__Unpack(IDataStore dataStore, int depth)
         {
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_NullableEntityFieldOffset_, 64));
+            BlobIdV1 blobId = BlobIdV1.UnsafeWrap(_readonlyLocalBlock.Slice(T_NullableEntityFieldOffset_, 64));
             var blob = await dataStore.GetBlob(blobId);
             _T_NullableEntityMemberName_ = null;
             if (blob is not null)
@@ -728,11 +728,11 @@ namespace T_NameSpace_.MemBlocks
             await _T_RequiredEntityMemberName_.Pack(dataStore);
             var buffer = _T_RequiredEntityMemberName_.GetBuffer();
             blobId = await dataStore.PutBlob(buffer.Compact());
-            Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(T_RequiredEntityFieldOffset_, 64).Span, blobId);
+            blobId.WriteTo(_writableLocalBlock.Slice(T_RequiredEntityFieldOffset_, 64).Span);
         }
         private async ValueTask T_RequiredEntityMemberName__Unpack(IDataStore dataStore, int depth)
         {
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_RequiredEntityFieldOffset_, 64));
+            BlobIdV1 blobId = BlobIdV1.UnsafeWrap(_readonlyLocalBlock.Slice(T_RequiredEntityFieldOffset_, 64));
             var blob = await dataStore.GetBlob(blobId);
             if (blob is null)
             {
@@ -791,11 +791,11 @@ namespace T_NameSpace_.MemBlocks
                 var buffer = _T_NullableVarLenBinaryMemberName_.Memory;
                 blobId = await dataStore.PutBlob(buffer);
             }
-            Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(T_NullableVarLenBinaryFieldOffset_, 64).Span, blobId);
+            blobId.WriteTo(_writableLocalBlock.Slice(T_NullableVarLenBinaryFieldOffset_, 64).Span);
         }
         private async ValueTask T_NullableVarLenBinaryMemberName__Unpack(IDataStore dataStore)
         {
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_NullableVarLenBinaryFieldOffset_, 64));
+            BlobIdV1 blobId = BlobIdV1.UnsafeWrap(_readonlyLocalBlock.Slice(T_NullableVarLenBinaryFieldOffset_, 64));
             var blob = await dataStore.GetBlob(blobId);
             _T_NullableVarLenBinaryMemberName_ = blob is null ? null : Octets.UnsafeWrap(blob.Value);
         }
@@ -836,11 +836,11 @@ namespace T_NameSpace_.MemBlocks
             BlobIdV1 blobId = default;
             var buffer = _T_RequiredVarLenBinaryMemberName_.Memory;
             blobId = await dataStore.PutBlob(buffer);
-            Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(T_RequiredVarLenBinaryFieldOffset_, 64).Span, blobId);
+            blobId.WriteTo(_writableLocalBlock.Slice(T_RequiredVarLenBinaryFieldOffset_, 64).Span);
         }
         private async ValueTask T_RequiredVarLenBinaryMemberName__Unpack(IDataStore dataStore)
         {
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_RequiredVarLenBinaryFieldOffset_, 64));
+            BlobIdV1 blobId = BlobIdV1.UnsafeWrap(_readonlyLocalBlock.Slice(T_RequiredVarLenBinaryFieldOffset_, 64));
             var blob = await dataStore.GetBlob(blobId);
             _T_RequiredVarLenBinaryMemberName_ = blob is null ? Octets.Empty : Octets.UnsafeWrap(blob.Value);
 
@@ -892,11 +892,11 @@ namespace T_NameSpace_.MemBlocks
                 ReadOnlyMemory<byte> buffer = System.Text.Encoding.UTF8.GetBytes(_T_NullableVarLenStringMemberName_);
                 blobId = await dataStore.PutBlob(buffer);
             }
-            Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(T_NullableVarLenStringFieldOffset_, 64).Span, blobId);
+            blobId.WriteTo(_writableLocalBlock.Slice(T_NullableVarLenStringFieldOffset_, 64).Span);
         }
         private async ValueTask T_NullableVarLenStringMemberName__Unpack(IDataStore dataStore)
         {
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_NullableVarLenStringFieldOffset_, 64));
+            BlobIdV1 blobId = BlobIdV1.UnsafeWrap(_readonlyLocalBlock.Slice(T_NullableVarLenStringFieldOffset_, 64));
             var blob = await dataStore.GetBlob(blobId);
 #if NET8_0_OR_GREATER
             _T_NullableVarLenStringMemberName_ = blob is null ? null : System.Text.Encoding.UTF8.GetString(blob.Value.Span);
@@ -945,11 +945,11 @@ namespace T_NameSpace_.MemBlocks
             BlobIdV1 blobId = default;
             var buffer = System.Text.Encoding.UTF8.GetBytes(_T_RequiredVarLenStringMemberName_);
             blobId = await dataStore.PutBlob(buffer);
-            Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(T_RequiredVarLenStringFieldOffset_, 64).Span, blobId);
+            blobId.WriteTo(_writableLocalBlock.Slice(T_RequiredVarLenStringFieldOffset_, 64).Span);
         }
         private async ValueTask T_RequiredVarLenStringMemberName__Unpack(IDataStore dataStore)
         {
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(T_RequiredVarLenStringFieldOffset_, 64));
+            BlobIdV1 blobId = BlobIdV1.UnsafeWrap(_readonlyLocalBlock.Slice(T_RequiredVarLenStringFieldOffset_, 64));
             var blob = await dataStore.GetBlob(blobId);
 #if NET8_0_OR_GREATER
             _T_RequiredVarLenStringMemberName_ = blob is null ? string.Empty : System.Text.Encoding.UTF8.GetString(blob.Value.Span);
