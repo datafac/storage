@@ -20,8 +20,7 @@ namespace DTOMaker.MemBlocks
             MemBlockEntity entity = baseEntity as MemBlockEntity
                 ?? throw new ArgumentException("Expected baseEntity to be a MemBlocksEntity", nameof(baseEntity));
 
-            _tokens["BlockLength"] = entity.LocalBlockLength;
-            _tokens["BlockOffset"] = entity.LocalBlockOffset;
+            _tokens["BlockLength"] = entity.BlockLength;
             _tokens["BlockStructureCode"] = entity.BlockStructureCode;
             Guid entityGuid = ParseEntityIdAsGuid(entity.EntityId);
             _tokens["EntityId"] = entityGuid.ToString("D");

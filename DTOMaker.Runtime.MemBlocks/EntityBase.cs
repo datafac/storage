@@ -57,11 +57,7 @@ namespace DTOMaker.Runtime.MemBlocks
         }
 
         protected abstract int OnGetClassHeight();
-        protected virtual ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder)
-        {
-            builder.Add(_readonlyLocalBlock);
-            return builder;
-        }
+        protected virtual ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => builder.Append(_readonlyLocalBlock);
         public ReadOnlySequence<byte> GetBuffer()
         {
             ThrowIfNotFrozen();

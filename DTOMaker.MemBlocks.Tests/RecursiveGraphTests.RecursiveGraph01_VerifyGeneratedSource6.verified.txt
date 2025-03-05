@@ -22,7 +22,6 @@ namespace MyOrg.Models.MemBlocks
 
         private const long BlockStructureCode = 129L;
         private const int ClassHeight = 1;
-        private const int BlockOffset = 64;
         private const int BlockLength = 256;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
@@ -49,19 +48,20 @@ namespace MyOrg.Models.MemBlocks
             };
         }
 
-        public new static Tree CreateFrom(ReadOnlyMemory<byte> buffer)
+        public new static Tree CreateFrom(ReadOnlySequence<byte> buffers)
         {
+            ReadOnlyMemory<byte> buffer = buffers.Slice(0, 64).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
             string entityIdStr = header.EntityGuid.ToString("D");
             return entityIdStr switch
             {
-                _ => new MyOrg.Models.MemBlocks.Tree(buffer)
+                _ => new MyOrg.Models.MemBlocks.Tree(buffers)
             };
         }
 
         protected override string OnGetEntityId() => EntityId;
         protected override int OnGetClassHeight() => ClassHeight;
-
+        protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => new Tree(this);
 
         protected override void OnFreeze()
@@ -98,25 +98,25 @@ namespace MyOrg.Models.MemBlocks
 
         protected Tree(BlockHeader header) : base(header)
         {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
         public Tree() : base(_header)
         {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
 
         protected Tree(BlockHeader header, Tree source) : base(header, source)
         {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
         public Tree(Tree source) : base(_header, source)
         {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
 
         protected Tree(BlockHeader header, ITree source) : base(header, source)
         {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
             _Left = source.Left is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(source.Left);
             _Right = source.Right is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(source.Right);
             _Node = source.Node is null ? null : MyOrg.Models.MemBlocks.Node.CreateFrom(source.Node);
@@ -124,21 +124,30 @@ namespace MyOrg.Models.MemBlocks
 
         public Tree(ITree source) : base(_header, source)
         {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
             _Left = source.Left is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(source.Left);
             _Right = source.Right is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(source.Right);
             _Node = source.Node is null ? null : MyOrg.Models.MemBlocks.Node.CreateFrom(source.Node);
         }
 
-        protected Tree(BlockHeader header, ReadOnlyMemory<byte> buffer) : base(header, buffer)
+        protected Tree(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
-            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
+            var sourceBlock = sourceBlocks.GetBlock(ClassHeight);
+            if (sourceBlock.Length < BlockLength)
+            {
+                // source too short - allocate new
+                Memory<byte> memory = new byte[BlockLength];
+                sourceBlock.CopyTo(memory);
+                _readonlyLocalBlock = memory;
+            }
+            else
+            {
+                _readonlyLocalBlock = sourceBlock;
+            }
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public Tree(ReadOnlyMemory<byte> buffer) : base(_header, buffer)
+        public Tree(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
         {
-            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
-            _writableLocalBlock = Memory<byte>.Empty;
         }
 
         private async ValueTask Left_Pack(IDataStore dataStore)
@@ -148,7 +157,7 @@ namespace MyOrg.Models.MemBlocks
             {
                 await _Left.Pack(dataStore);
                 var buffer = _Left.GetBuffer();
-                blobId = await dataStore.PutBlob(buffer);
+                blobId = await dataStore.PutBlob(buffer.Compact());
             }
             Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(0, 64).Span, blobId);
         }
@@ -159,7 +168,7 @@ namespace MyOrg.Models.MemBlocks
             _Left = null;
             if (blob is not null)
             {
-                _Left = MyOrg.Models.MemBlocks.Tree.CreateFrom(blob.Value);
+                _Left = MyOrg.Models.MemBlocks.Tree.CreateFrom(new ReadOnlySequence<byte>(blob.Value));
                 await _Left.Unpack(dataStore, depth - 1);
             }
         }
@@ -182,7 +191,7 @@ namespace MyOrg.Models.MemBlocks
             {
                 await _Right.Pack(dataStore);
                 var buffer = _Right.GetBuffer();
-                blobId = await dataStore.PutBlob(buffer);
+                blobId = await dataStore.PutBlob(buffer.Compact());
             }
             Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(64, 64).Span, blobId);
         }
@@ -193,7 +202,7 @@ namespace MyOrg.Models.MemBlocks
             _Right = null;
             if (blob is not null)
             {
-                _Right = MyOrg.Models.MemBlocks.Tree.CreateFrom(blob.Value);
+                _Right = MyOrg.Models.MemBlocks.Tree.CreateFrom(new ReadOnlySequence<byte>(blob.Value));
                 await _Right.Unpack(dataStore, depth - 1);
             }
         }
@@ -216,7 +225,7 @@ namespace MyOrg.Models.MemBlocks
             {
                 await _Node.Pack(dataStore);
                 var buffer = _Node.GetBuffer();
-                blobId = await dataStore.PutBlob(buffer);
+                blobId = await dataStore.PutBlob(buffer.Compact());
             }
             Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(128, 64).Span, blobId);
         }
@@ -227,7 +236,7 @@ namespace MyOrg.Models.MemBlocks
             _Node = null;
             if (blob is not null)
             {
-                _Node = MyOrg.Models.MemBlocks.Node.CreateFrom(blob.Value);
+                _Node = MyOrg.Models.MemBlocks.Node.CreateFrom(new ReadOnlySequence<byte>(blob.Value));
                 await _Node.Unpack(dataStore, depth - 1);
             }
         }
@@ -248,7 +257,8 @@ namespace MyOrg.Models.MemBlocks
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
-            if (!_readonlyTotalBlock.Span.SequenceEqual(other._readonlyTotalBlock.Span)) return false;
+            if (!base.Equals(other)) return false;
+            if (!_readonlyLocalBlock.Span.SequenceEqual(other._readonlyLocalBlock.Span)) return false;
             return true;
         }
         public override bool Equals(object? obj) => obj is Tree other && Equals(other);

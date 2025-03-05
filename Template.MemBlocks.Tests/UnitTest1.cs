@@ -30,12 +30,7 @@ namespace Template.MemBlocks.Tests
         private static readonly BlockHeader _header = BlockHeader.CreateNew(_structureBits, _entityGuid);
 
         protected override int OnGetClassHeight() => ClassHeight;
-        protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder)
-        {
-            var updated = base.OnSequenceBuilder(builder);
-            updated.Add(_readonlyLocalBlock);
-            return updated;
-        }
+        protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override string OnGetEntityId() => _entityGuid.ToString("D");
         public TestEntity() : base(_header)
         {

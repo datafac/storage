@@ -22,7 +22,6 @@ namespace MyOrg.Models.MemBlocks
 
         private const long BlockStructureCode = 2114L;
         private const int ClassHeight = 2;
-        private const int BlockOffset = 128;
         private const int BlockLength = 256;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
@@ -49,19 +48,20 @@ namespace MyOrg.Models.MemBlocks
             };
         }
 
-        public new static StringNode CreateFrom(ReadOnlyMemory<byte> buffer)
+        public new static StringNode CreateFrom(ReadOnlySequence<byte> buffers)
         {
+            ReadOnlyMemory<byte> buffer = buffers.Slice(0, 64).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
             string entityIdStr = header.EntityGuid.ToString("D");
             return entityIdStr switch
             {
-                _ => new MyOrg.Models.MemBlocks.StringNode(buffer)
+                _ => new MyOrg.Models.MemBlocks.StringNode(buffers)
             };
         }
 
         protected override string OnGetEntityId() => EntityId;
         protected override int OnGetClassHeight() => ClassHeight;
-
+        protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => new StringNode(this);
 
         protected override void OnFreeze()
@@ -89,43 +89,52 @@ namespace MyOrg.Models.MemBlocks
 
         protected StringNode(BlockHeader header) : base(header)
         {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
         public StringNode() : base(_header)
         {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
 
         protected StringNode(BlockHeader header, StringNode source) : base(header, source)
         {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
         public StringNode(StringNode source) : base(_header, source)
         {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
 
         protected StringNode(BlockHeader header, IStringNode source) : base(header, source)
         {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
             _Value = source.Value;
         }
 
         public StringNode(IStringNode source) : base(_header, source)
         {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
             _Value = source.Value;
         }
 
-        protected StringNode(BlockHeader header, ReadOnlyMemory<byte> buffer) : base(header, buffer)
+        protected StringNode(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
-            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
+            var sourceBlock = sourceBlocks.GetBlock(ClassHeight);
+            if (sourceBlock.Length < BlockLength)
+            {
+                // source too short - allocate new
+                Memory<byte> memory = new byte[BlockLength];
+                sourceBlock.CopyTo(memory);
+                _readonlyLocalBlock = memory;
+            }
+            else
+            {
+                _readonlyLocalBlock = sourceBlock;
+            }
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public StringNode(ReadOnlyMemory<byte> buffer) : base(_header, buffer)
+        public StringNode(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
         {
-            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
-            _writableLocalBlock = Memory<byte>.Empty;
         }
 
         private void Value_Pack()
@@ -154,7 +163,8 @@ namespace MyOrg.Models.MemBlocks
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
-            if (!_readonlyTotalBlock.Span.SequenceEqual(other._readonlyTotalBlock.Span)) return false;
+            if (!base.Equals(other)) return false;
+            if (!_readonlyLocalBlock.Span.SequenceEqual(other._readonlyLocalBlock.Span)) return false;
             return true;
         }
         public override bool Equals(object? obj) => obj is StringNode other && Equals(other);

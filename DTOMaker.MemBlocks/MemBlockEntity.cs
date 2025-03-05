@@ -10,9 +10,7 @@ namespace DTOMaker.MemBlocks
     {
         public bool HasEntityLayoutAttribute { get; set; }
         public LayoutMethod LayoutMethod { get; set; }
-        public int LocalBlockOffset { get; set; }
-        public int LocalBlockLength { get; set; }
-        public int EffectiveBlockLength => Math.Max(64, LocalBlockLength);
+        public int BlockLength { get; set; }
         public long BlockStructureCode { get; set; }
 
         public MemBlockEntity(TargetDomain domain, string nameSpace, string name, Location location) : base(domain, nameSpace, name, location) { }
@@ -111,7 +109,7 @@ namespace DTOMaker.MemBlocks
                 }
 
             }
-            this.LocalBlockLength = minBlockLength;
+            this.BlockLength = minBlockLength;
         }
 
         private static readonly int[] _blockSizes = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 * 1, 1024 * 2, 1024 * 4, 1024 * 8, 1024 * 16, 1024 * 32];
@@ -133,7 +131,7 @@ namespace DTOMaker.MemBlocks
             }
             SyntaxErrors.Add(new SyntaxDiagnostic(
                 DiagnosticId.DMMB0001, "Invalid block length", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                $"BlockLength ({LocalBlockLength}) is invalid. BlockLength must be a whole power of 2 between 1 and 1024."));
+                $"BlockLength ({BlockLength}) is invalid. BlockLength must be a whole power of 2 between 1 and 1024."));
             return 15; // 32K
         }
 
@@ -164,17 +162,14 @@ namespace DTOMaker.MemBlocks
                     break;
             }
 
-            // calculate block offset and structure code
-            int blockOffset = 64; // effective block length of EntityBase
-            long structureCode = InitStructure(this.GetClassHeight(), this.LocalBlockLength);
+            // calculate structure code
+            long structureCode = InitStructure(this.GetClassHeight(), this.BlockLength);
             var parent = this.Base;
             while (parent is MemBlockEntity parentEntity)
             {
-                blockOffset += parentEntity.EffectiveBlockLength;
-                structureCode = AddStructure(structureCode, parentEntity.GetClassHeight(), parentEntity.LocalBlockLength);
+                structureCode = AddStructure(structureCode, parentEntity.GetClassHeight(), parentEntity.BlockLength);
                 parent = parentEntity.Base;
             }
-            this.LocalBlockOffset = blockOffset;
             this.BlockStructureCode = structureCode;
         }
 
@@ -195,7 +190,7 @@ namespace DTOMaker.MemBlocks
             if (LayoutMethod != LayoutMethod.Explicit)
                 return null;
 
-            return LocalBlockLength switch
+            return BlockLength switch
             {
                 1 => null,
                 2 => null,
@@ -210,7 +205,7 @@ namespace DTOMaker.MemBlocks
                 1024 => null,
                 _ => new SyntaxDiagnostic(
                         DiagnosticId.DMMB0001, "Invalid block length", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                        $"BlockLength ({LocalBlockLength}) is invalid. BlockLength must be a whole power of 2 between 1 and 1024.")
+                        $"BlockLength ({BlockLength}) is invalid. BlockLength must be a whole power of 2 between 1 and 1024.")
             };
         }
 
@@ -235,7 +230,7 @@ namespace DTOMaker.MemBlocks
         private SyntaxDiagnostic? CheckMemberLayoutHasNoOverlaps()
         {
             // memory map of every byte in the entity block
-            int[] memberMap = new int[LocalBlockLength];
+            int[] memberMap = new int[BlockLength];
 
             if (LayoutMethod == LayoutMethod.Undefined) return null;
 
@@ -248,7 +243,7 @@ namespace DTOMaker.MemBlocks
                         $"This member extends before the start of the block.");
                 }
 
-                if (member.FieldOffset + member.TotalLength > LocalBlockLength)
+                if (member.FieldOffset + member.TotalLength > BlockLength)
                 {
                     return new SyntaxDiagnostic(
                         DiagnosticId.DMMB0008, "Member layout issue", DiagnosticCategory.Design, member.Location, DiagnosticSeverity.Error,

@@ -22,7 +22,6 @@ namespace MyOrg.Models.MemBlocks
 
         private const long BlockStructureCode = 97L;
         private const int ClassHeight = 1;
-        private const int BlockOffset = 64;
         private const int BlockLength = 64;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
@@ -49,19 +48,20 @@ namespace MyOrg.Models.MemBlocks
             };
         }
 
-        public new static Header CreateFrom(ReadOnlyMemory<byte> buffer)
+        public new static Header CreateFrom(ReadOnlySequence<byte> buffers)
         {
+            ReadOnlyMemory<byte> buffer = buffers.Slice(0, 64).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
             string entityIdStr = header.EntityGuid.ToString("D");
             return entityIdStr switch
             {
-                _ => new MyOrg.Models.MemBlocks.Header(buffer)
+                _ => new MyOrg.Models.MemBlocks.Header(buffers)
             };
         }
 
         protected override string OnGetEntityId() => EntityId;
         protected override int OnGetClassHeight() => ClassHeight;
-
+        protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => new Header(this);
 
         protected override void OnFreeze()
@@ -105,25 +105,25 @@ namespace MyOrg.Models.MemBlocks
 
         protected Header(BlockHeader header) : base(header)
         {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
         public Header() : base(_header)
         {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
 
         protected Header(BlockHeader header, Header source) : base(header, source)
         {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
         public Header(Header source) : base(_header, source)
         {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
 
         protected Header(BlockHeader header, IHeader source) : base(header, source)
         {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
             this.MarkerByte0 = source.MarkerByte0;
             this.MarkerByte1 = source.MarkerByte1;
             this.HeaderMajorVersion = source.HeaderMajorVersion;
@@ -147,7 +147,7 @@ namespace MyOrg.Models.MemBlocks
 
         public Header(IHeader source) : base(_header, source)
         {
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
             this.MarkerByte0 = source.MarkerByte0;
             this.MarkerByte1 = source.MarkerByte1;
             this.HeaderMajorVersion = source.HeaderMajorVersion;
@@ -169,15 +169,24 @@ namespace MyOrg.Models.MemBlocks
             this.SpareGuid1 = source.SpareGuid1;
         }
 
-        protected Header(BlockHeader header, ReadOnlyMemory<byte> buffer) : base(header, buffer)
+        protected Header(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
-            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
+            var sourceBlock = sourceBlocks.GetBlock(ClassHeight);
+            if (sourceBlock.Length < BlockLength)
+            {
+                // source too short - allocate new
+                Memory<byte> memory = new byte[BlockLength];
+                sourceBlock.CopyTo(memory);
+                _readonlyLocalBlock = memory;
+            }
+            else
+            {
+                _readonlyLocalBlock = sourceBlock;
+            }
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public Header(ReadOnlyMemory<byte> buffer) : base(_header, buffer)
+        public Header(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
         {
-            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
-            _writableLocalBlock = Memory<byte>.Empty;
         }
 
         public Byte MarkerByte0
@@ -299,7 +308,8 @@ namespace MyOrg.Models.MemBlocks
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
-            if (!_readonlyTotalBlock.Span.SequenceEqual(other._readonlyTotalBlock.Span)) return false;
+            if (!base.Equals(other)) return false;
+            if (!_readonlyLocalBlock.Span.SequenceEqual(other._readonlyLocalBlock.Span)) return false;
             return true;
         }
         public override bool Equals(object? obj) => obj is Header other && Equals(other);

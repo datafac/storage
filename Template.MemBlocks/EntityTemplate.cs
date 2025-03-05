@@ -42,7 +42,6 @@ namespace T_MemberTypeNameSpace_.MemBlocks
     public sealed class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_
     {
         private const int ClassHeight = 1;
-        //private const int BlockOffset = 64;
         private const int BlockLength = 64;
         private const long StructureCode = 0x0061;
         private static readonly Guid EntityGuid = new Guid("9bb68dc1-8b05-4e19-80fd-c1fb946ffd8d");
@@ -92,16 +91,9 @@ namespace T_MemberTypeNameSpace_.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        public T_MemberTypeName_(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
-        {
-        }
+        public T_MemberTypeName_(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
-        protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder)
-        {
-            var updated = base.OnSequenceBuilder(builder);
-            updated.Add(_readonlyLocalBlock);
-            return updated;
-        }
+        protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
         protected override string OnGetEntityId() => "T_MemberTypeName_";
         protected override int OnGetClassHeight() => ClassHeight;
@@ -124,7 +116,6 @@ namespace T_BaseNameSpace_.MemBlocks
     public class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
         private const int ClassHeight = 1;
-        //private const int BlockOffset = 64;
         private const int BlockLength = 64;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
@@ -133,12 +124,7 @@ namespace T_BaseNameSpace_.MemBlocks
 
         protected override string OnGetEntityId() => "_undefined_";
         protected override int OnGetClassHeight() => ClassHeight;
-        protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder)
-        {
-            var updated = base.OnSequenceBuilder(builder);
-            updated.Add(_readonlyLocalBlock);
-            return updated;
-        }
+        protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override void OnFreeze()
         {
             base.OnFreeze();
@@ -297,12 +283,7 @@ namespace T_NameSpace_.MemBlocks
 
         protected override string OnGetEntityId() => EntityId;
         protected override int OnGetClassHeight() => ClassHeight;
-        protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder)
-        {
-            var updated = base.OnSequenceBuilder(builder);
-            updated.Add(_readonlyLocalBlock);
-            return updated;
-        }
+        protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => new T_EntityName_(this);
 
         protected override void OnFreeze()
