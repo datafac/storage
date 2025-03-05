@@ -1,7 +1,10 @@
-﻿using DataFac.Storage;
+﻿using DataFac.Memory;
+using DataFac.Storage;
 using System;
+using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 
 namespace DTOMaker.Runtime.MemBlocks
 {
@@ -18,12 +21,9 @@ namespace DTOMaker.Runtime.MemBlocks
         #endregion
 
         private const int ClassHeight = 0;
-        private const int BlockOffset = 0;
         private const int BlockLength = 64; // V1.0
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
-        protected readonly Memory<byte> _writableTotalBlock;
-        protected readonly ReadOnlyMemory<byte> _readonlyTotalBlock;
 
         public const string EntityId = "EntityBase";
         protected abstract string OnGetEntityId();
@@ -31,54 +31,18 @@ namespace DTOMaker.Runtime.MemBlocks
 
         protected EntityBase(BlockHeader blockHeader)
         {
-            _readonlyTotalBlock = _writableTotalBlock = new byte[blockHeader.TotalLength];
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-            blockHeader.Header.CopyTo(_writableLocalBlock);
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
+            blockHeader.Memory.CopyTo(_writableLocalBlock);
         }
         protected EntityBase(BlockHeader blockHeader, object source)
         {
-            // todo? split this method into 2: 1 for concrete, 1 for interface
-            _readonlyTotalBlock = _writableTotalBlock = new byte[blockHeader.TotalLength];
-            _readonlyLocalBlock = _writableLocalBlock = _writableTotalBlock.Slice(BlockOffset, BlockLength);
-            if (source is EntityBase sourceEntity)
-            {
-                // special case
-                ReadOnlySpan<byte> sourceHeader = sourceEntity._readonlyTotalBlock.Slice(BlockOffset, BlockLength).Span;
-                if (sourceHeader.SequenceEqual(blockHeader.Header.Span))
-                {
-                    // identical type and structure - copy everything
-                    sourceEntity._readonlyTotalBlock.CopyTo(_writableTotalBlock);
-                }
-                else
-                {
-                    // todo check source signature bits
-                    // todo throw error if entity guids not equal
-                    // todo copy slices if structure not same
-                    throw new NotImplementedException();
-                }
-            }
-            else
-            {
-                blockHeader.Header.CopyTo(_writableLocalBlock);
-            }
+            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
+            blockHeader.Memory.CopyTo(_writableLocalBlock);
         }
-        protected EntityBase(BlockHeader blockHeader, ReadOnlyMemory<byte> buffer)
+        protected EntityBase(BlockHeader blockHeader, SourceBlocks sourceBlocks)
         {
-            ReadOnlySpan<byte> sourceHeader = buffer.Slice(BlockOffset, BlockLength).Span;
-            if (sourceHeader.SequenceEqual(blockHeader.Header.Span))
-            {
-                // identical type and structure - copy everything
-                _readonlyTotalBlock = buffer;
-                _writableTotalBlock = Memory<byte>.Empty;
-            }
-            else
-            {
-                // todo check source signature bits
-                // todo throw error if entity guids not equal
-                // todo copy slices if structure not same
-                throw new NotImplementedException();
-            }
-            _readonlyLocalBlock = _readonlyTotalBlock.Slice(BlockOffset, BlockLength);
+            if (sourceBlocks.Header != blockHeader) throw new NotSupportedException("Entity evolution not supported yet!");
+            _readonlyLocalBlock = blockHeader.Memory;
             _writableLocalBlock = Memory<byte>.Empty;
             _frozen = true;
         }
@@ -94,15 +58,15 @@ namespace DTOMaker.Runtime.MemBlocks
         }
 
         protected abstract int OnGetClassHeight();
-        public ReadOnlyMemory<byte> GetBuffer()
+        protected virtual ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder)
         {
-            return _frozen ? _readonlyTotalBlock : _readonlyTotalBlock.ToArray();
-            // old
-            //string entityId = OnGetEntityId();
-            //int height = OnGetClassHeight();
-            //var buffers = new ReadOnlyMemory<byte>[height];
-            //OnGetBuffers(buffers);
-            //return DataFac.MemBlocks.Protocol.CombineBuffers(entityId, buffers);
+            builder.Add(_readonlyLocalBlock);
+            return builder;
+        }
+        public ReadOnlySequence<byte> GetBuffer()
+        {
+            ThrowIfNotFrozen();
+            return OnSequenceBuilder(new ReadOnlySequenceBuilder<byte>()).Build();
         }
 
         //public void LoadBuffer(ReadOnlyMemory<byte> buffer)
@@ -163,18 +127,25 @@ namespace DTOMaker.Runtime.MemBlocks
             throw new InvalidOperationException($"Cannot call {methodName} when not set.");
         }
 
-        public bool Equals(EntityBase? other) => true;
+        public bool Equals(EntityBase? other)
+        {
+            if (ReferenceEquals(this, other)) return true;
+            if (other is null) return false;
+            if (!_readonlyLocalBlock.Span.SequenceEqual(other._readonlyLocalBlock.Span)) return false;
+            return true;
+        }
+
         public override bool Equals(object? obj) => obj is EntityBase;
 
         private int CalcHashCode()
         {
             HashCode result = new HashCode();
             result.Add(GetType());
-            result.Add(_readonlyTotalBlock.Length);
+            result.Add(_readonlyLocalBlock.Length);
 #if NET8_0_OR_GREATER
-            result.AddBytes(_readonlyTotalBlock.Span);
+            result.AddBytes(_readonlyLocalBlock.Span);
 #else
-            var byteSpan = _readonlyTotalBlock.Span;
+            var byteSpan = _readonlyLocalBlock.Span;
             for (int i = 0; i < byteSpan.Length; i++)
             {
                 result.Add(byteSpan[i]);

@@ -1,5 +1,6 @@
 ﻿using DataFac.Storage;
 using System;
+using System.Buffers;
 using System.Threading.Tasks;
 
 namespace DTOMaker.Runtime.MemBlocks
@@ -7,7 +8,7 @@ namespace DTOMaker.Runtime.MemBlocks
     public interface IMemBlocksEntity
     {
         ValueTask Pack(IDataStore dataStore);
-        ReadOnlyMemory<byte> GetBuffer();
+        ReadOnlySequence<byte> GetBuffer();
         ValueTask Unpack(IDataStore dataStore, int depth = 0);
         ValueTask UnpackAll(IDataStore dataStore);
     }

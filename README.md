@@ -98,19 +98,21 @@ Common types used at runtime by DTOMaker generated entities.
 
 # Model features
 - Member value types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
-- Nullable string member types.
-- Variable length binary member types:
+- String member types.
+- Binary member types:
   - Octets (model interfaces, CSPoco, MemBlocks)
   - ReadOnlyMemory\<byte\> (MessagePack)
+- polymorphic types
+- entity members
 - Built-in freezability (mutable until frozen) support
 - [Obsolete] members
 - Fixed length arrays of above value types.
-- polymorphic types
-- entity members
 - IEquatable\<T\> support
-- Templates as testable code, template-to-generator processing
+- Templates as testable code, template-to-generator processing.
+
 ## MemBlocks features
 - auto-embedded string, binary and entity members when short enough.
+- fixed-length string and binary member types.
 
 # Limitations
 - single compilation (assembly) contains all models and generated DTOs 

@@ -5,6 +5,26 @@ namespace DTOMaker.Runtime.MemBlocks
 {
     public readonly struct BlockHeader
     {
+        public static BlockHeader CreateNew(long structureBits, Guid entityGuid)
+        {
+            Memory<byte> memory = new byte[64];
+            Span<byte> headerSpan = memory.Span;
+            Codec_Int64_LE.WriteToSpan(headerSpan.Slice(0, 8), SignatureBitsV10);
+            Codec_Int64_LE.WriteToSpan(headerSpan.Slice(8, 8), structureBits);
+            Codec_Guid_LE.WriteToSpan(headerSpan.Slice(16, 16), entityGuid);
+            return new BlockHeader(SignatureBitsV10, structureBits, entityGuid, memory);
+        }
+
+        public static BlockHeader ParseFrom(ReadOnlyMemory<byte> buffer)
+        {
+            var header = buffer.Slice(0, 64);
+            var signature = Codec_Int64_LE.ReadFromSpan(header.Span.Slice(0, 8));
+            // todo check signature marker and version bytes
+            var structureBits = Codec_Int64_LE.ReadFromSpan(header.Span.Slice(8, 8));
+            var entityGuid = Codec_Guid_LE.ReadFromSpan(header.Span.Slice(16, 16));
+            return new BlockHeader(signature, structureBits, entityGuid, header);
+        }
+
         private const long SignatureBitsV10 = 89980L;
 
         /// <summary>
@@ -22,63 +42,27 @@ namespace DTOMaker.Runtime.MemBlocks
         /// </summary>
         public readonly Guid EntityGuid;
 
-        /// <summary>
-        /// Total length of block
-        /// </summary>
-        public readonly int TotalLength;
+        public readonly ReadOnlyMemory<byte> Memory;
 
-        public readonly ReadOnlyMemory<byte> Header;
-
-        private BlockHeader(long signatureBits, long structureBits, Guid entityGuid, int totalLength, ReadOnlyMemory<byte> header)
+        private BlockHeader(long signatureBits, long structureBits, Guid entityGuid, ReadOnlyMemory<byte> memory)
         {
             SignatureBits = signatureBits;
             StructureBits = structureBits;
             EntityGuid = entityGuid;
-            TotalLength = totalLength;
-            Header = header;
+            Memory = memory;
         }
 
-        private static readonly int[] _blockSizes = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 * 1, 1024 * 2, 1024 * 4, 1024 * 8, 1024 * 16, 1024 * 32];
-        private static int GetEffectiveBlockSize(int code)
+        public bool Equals(BlockHeader other)
         {
-            ReadOnlySpan<int> blockSizes = _blockSizes;
-            return Math.Max(64, blockSizes[code]);
+            if (other.SignatureBits != SignatureBits) return false;
+            if (other.StructureBits != StructureBits) return false;
+            if (other.EntityGuid != EntityGuid) return false;
+            return true;
         }
 
-        private static int GetEffectiveLength(long structureCode)
-        {
-            int classHeight = (int)(structureCode & 0x0F);
-            int totalLength = 64;
-            long bits = structureCode;
-            for (int h = 0; h < classHeight && h < 15; h++)
-            {
-                bits = bits >> 4;
-                int blockLength = GetEffectiveBlockSize((int)(bits & 0x0F));
-                totalLength += blockLength;
-            }
-            return totalLength;
-        }
-
-        public static BlockHeader CreateNew(long structureBits, Guid entityGuid)
-        {
-            Memory<byte> memory = new byte[64];
-            Span<byte> headerSpan = memory.Span;
-            Codec_Int64_LE.WriteToSpan(headerSpan.Slice(0, 8), SignatureBitsV10);
-            Codec_Int64_LE.WriteToSpan(headerSpan.Slice(8, 8), structureBits);
-            Codec_Guid_LE.WriteToSpan(headerSpan.Slice(16, 16), entityGuid);
-            var totalLength = GetEffectiveLength(structureBits);
-            return new BlockHeader(SignatureBitsV10, structureBits, entityGuid, totalLength, memory);
-        }
-
-        public static BlockHeader ParseFrom(ReadOnlyMemory<byte> buffer)
-        {
-            var header = buffer.Slice(0, 64);
-            var signature = Codec_Int64_LE.ReadFromSpan(header.Span.Slice(0, 8));
-            // todo check signature marker and version bytes
-            var structureBits = Codec_Int64_LE.ReadFromSpan(header.Span.Slice(8, 8));
-            var entityGuid = Codec_Guid_LE.ReadFromSpan(header.Span.Slice(16, 16));
-            var totalLength = GetEffectiveLength(structureBits);
-            return new BlockHeader(signature, structureBits, entityGuid, totalLength, header);
-        }
+        public override bool Equals(object? obj) => obj is BlockHeader other && Equals(other);
+        public override int GetHashCode() => HashCode.Combine(SignatureBits, StructureBits, EntityGuid);
+        public static bool operator ==(BlockHeader left, BlockHeader right) => left.Equals(right);
+        public static bool operator !=(BlockHeader left, BlockHeader right) => !left.Equals(right);
     }
 }
