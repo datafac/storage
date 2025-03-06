@@ -53,7 +53,7 @@ namespace Template.MemBlocks.Tests
             // entityid
             outgoing.A.B.GuidValueLE = new Guid("aa1e2d7b-fcb5-4739-9624-f6a648815251");
 
-            Memory<byte> buffer = new byte[64];
+            Memory<byte> buffer = new byte[Constants.HeaderSize];
             bool written = outgoing.TryWrite(buffer.Span);
             written.ShouldBeTrue();
 
@@ -70,7 +70,7 @@ namespace Template.MemBlocks.Tests
             var orig = new TestEntity();
             await orig.Pack(dataStore);
             orig.Freeze();
-            var buffer = orig.GetBuffer().Compact();
+            var buffer = orig.GetBuffers().Compact();
             buffer.Length.ShouldBe(96);
 
             buffer.Span[0].ShouldBe((byte)'|');  // marker byte 0
@@ -108,7 +108,7 @@ namespace Template.MemBlocks.Tests
             await orig.Pack(dataStore);
             orig.Freeze();
 
-            var buffers = orig.GetBuffer();
+            var buffers = orig.GetBuffers();
 
             var copy = T_NameSpace_.MemBlocks.T_EntityName_.CreateFrom(buffers);
             copy.IsFrozen.ShouldBeTrue();

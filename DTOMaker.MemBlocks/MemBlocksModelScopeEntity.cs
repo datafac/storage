@@ -9,8 +9,7 @@ namespace DTOMaker.MemBlocks
         {
             if (Guid.TryParse(entityId, out Guid result)) return result;
 
-            // todo issue warning
-            // Guid not supplied - generate a random
+            // Guid not supplied - generate a random - todo issue warning
             return Guid.NewGuid();
         }
 
@@ -21,7 +20,7 @@ namespace DTOMaker.MemBlocks
                 ?? throw new ArgumentException("Expected baseEntity to be a MemBlocksEntity", nameof(baseEntity));
 
             _tokens["BlockLength"] = entity.BlockLength;
-            _tokens["BlockStructureCode"] = entity.BlockStructureCode;
+            _tokens["BlockStructureCode"] = entity.BlockStructureCode; // todo format as hex eg. 0x0041L
             Guid entityGuid = ParseEntityIdAsGuid(entity.EntityId);
             _tokens["EntityId"] = entityGuid.ToString("D");
             _tokens["EntityGuid"] = entityGuid;

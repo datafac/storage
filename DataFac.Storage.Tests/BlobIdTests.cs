@@ -18,7 +18,7 @@ public class BlobIdTests
     [Fact]
     public void BlobId02CreateWithZeroData()
     {
-        ReadOnlySpan<byte> input = stackalloc byte[64];
+        ReadOnlySpan<byte> input = stackalloc byte[BlobIdV1.Size];
         BlobIdV1 id = BlobIdV1.FromSpan(input);
         id.IsDefaultOrAllZero.ShouldBeTrue();
         id.ToString().ShouldBe("");
@@ -28,7 +28,7 @@ public class BlobIdTests
     [Fact]
     public void BlobId03CreateWithInvalidData()
     {
-        ReadOnlyMemory<byte> input = Enumerable.Range(0, 64).Select(i => (byte)i).ToArray();
+        ReadOnlyMemory<byte> input = Enumerable.Range(0, BlobIdV1.Size).Select(i => (byte)i).ToArray();
         BlobIdV1 id = BlobIdV1.UnsafeWrap(input);
         id.IsDefaultOrAllZero.ShouldBeFalse();
         id.ToString().ShouldBe("V2.3:185207048:4:252579084:5:ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8=");

@@ -154,6 +154,8 @@ namespace DTOMaker.MemBlocks
             if ((diagnostic2 = CheckStringLengthIsValid()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckArrayCapacityIsValid()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckTotalLengthIsValid()) is not null) yield return diagnostic2;
+            // todo check binary fixed length >= 4
+            // todo check string fixed length >= 4
         }
 
 

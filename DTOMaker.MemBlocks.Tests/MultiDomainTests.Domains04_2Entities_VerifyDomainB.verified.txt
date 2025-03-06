@@ -52,7 +52,7 @@ namespace MyOrg.DomainB.MemBlocks
 
         public new static MyDTO CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            ReadOnlyMemory<byte> buffer = buffers.Slice(0, 64).Compact();
+            ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
             string entityIdStr = header.EntityGuid.ToString("D");
             return entityIdStr switch
@@ -116,7 +116,7 @@ namespace MyOrg.DomainB.MemBlocks
 
         protected MyDTO(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
-            var sourceBlock = sourceBlocks.GetBlock(ClassHeight);
+            var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];
             if (sourceBlock.Length < BlockLength)
             {
                 // source too short - allocate new

@@ -9,6 +9,7 @@ using System;
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using DataFac.Memory;
 using DataFac.Storage;
@@ -21,7 +22,7 @@ namespace MyOrg.Models.MemBlocks
     {
         // Derived entities: 0
 
-        private const long BlockStructureCode = 65L;
+        private const long BlockStructureCode = 81L;
         private const int ClassHeight = 1;
         private const int BlockLength = 16;
         private readonly Memory<byte> _writableLocalBlock;
@@ -49,9 +50,9 @@ namespace MyOrg.Models.MemBlocks
             };
         }
 
-        public new static Other CreateFrom(System.Buffers.ReadOnlySequence<byte> buffers)
+        public new static Other CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            ReadOnlyMemory<byte> buffer = buffers.Slice(0, 64).Compact();
+            ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
             string entityIdStr = header.EntityGuid.ToString("D");
             return entityIdStr switch
@@ -121,7 +122,7 @@ namespace MyOrg.Models.MemBlocks
 
         protected Other(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
-            var sourceBlock = sourceBlocks.GetBlock(ClassHeight);
+            var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];
             if (sourceBlock.Length < BlockLength)
             {
                 // source too short - allocate new
@@ -135,7 +136,7 @@ namespace MyOrg.Models.MemBlocks
             }
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public Other(System.Buffers.ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
+        public Other(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
         {
         }
 

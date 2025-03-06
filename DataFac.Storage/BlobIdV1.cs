@@ -9,6 +9,7 @@ namespace DataFac.Storage
 {
     public readonly struct BlobIdV1 : IEquatable<BlobIdV1>
     {
+        public const int Size = 64;
         private readonly ReadOnlyMemory<byte> _memory;
 
         // map
@@ -69,13 +70,13 @@ namespace DataFac.Storage
 
         public static BlobIdV1 FromSpan(ReadOnlySpan<byte> source)
         {
-            if (source.Length != 64) throw new ArgumentException($"Length must be 64.", nameof(source));
+            if (source.Length != BlobIdV1.Size) throw new ArgumentException($"Length must be {BlobIdV1.Size}.", nameof(source));
             return new BlobIdV1(source.ToArray());
         }
 
         public static BlobIdV1 UnsafeWrap(ReadOnlyMemory<byte> memory)
         {
-            if (memory.Length != 64) throw new ArgumentException($"Length must be 64.", nameof(memory));
+            if (memory.Length != BlobIdV1.Size) throw new ArgumentException($"Length must be {BlobIdV1.Size}.", nameof(memory));
             return new BlobIdV1(memory);
         }
 
@@ -88,7 +89,7 @@ namespace DataFac.Storage
         public BlobIdV1(BlobCompAlgo compAlgo, ReadOnlySpan<byte> data)
         {
             if (data.Length > 62) throw new ArgumentException("Length must be <= 62", nameof(data));
-            Memory<byte> memory = new byte[64];
+            Memory<byte> memory = new byte[BlobIdV1.Size];
             Span<byte> block = memory.Span;
             block[0] = compAlgo switch
             {
@@ -104,7 +105,7 @@ namespace DataFac.Storage
         private BlobIdV1(byte majorVer, byte minorVer, int blobSize, BlobCompAlgo compAlgo, int compSize, BlobHashAlgo hashAlgo, ReadOnlySpan<byte> hashData)
         {
             if (hashData.Length != 32) throw new ArgumentException("Length must be == 32", nameof(hashData));
-            Memory<byte> memory = new byte[64];
+            Memory<byte> memory = new byte[BlobIdV1.Size];
             Span<byte> block = memory.Span;
             block[0] = (byte)'|';   // Marker00
             block[1] = (byte)'_';   // Marker01

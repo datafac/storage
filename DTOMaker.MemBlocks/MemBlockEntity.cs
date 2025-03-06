@@ -6,6 +6,50 @@ using System.Linq;
 
 namespace DTOMaker.MemBlocks
 {
+    public readonly struct StructureCode
+    {
+        private static readonly int[] _blockSizes = [0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 * 1, 1024 * 2, 1024 * 4, 1024 * 8, 1024 * 16];
+        private static int GetBlockSizeCode(int blockLength)
+        {
+            ReadOnlySpan<int> blockSizes = _blockSizes;
+            for (byte i = 0; i < blockSizes.Length; i++)
+            {
+                int blockSize = blockSizes[i];
+                if (blockLength <= blockSize)
+                    return i;
+            }
+
+            // unsupported large block size - todo error handling
+            //SyntaxErrors.Add(new SyntaxDiagnostic(
+            //    DiagnosticId.DMMB0001, "Invalid block length", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+            //    $"BlockLength ({BlockLength}) is invalid. BlockLength must be a whole power of 2 between 1 and 1024."));
+            return 15; // 16K
+        }
+        private readonly long _bits;
+        private StructureCode(long bits)
+        {
+            _bits = bits;
+        }
+
+        public long Bits => _bits;
+        public StructureCode(int classHeight, int blockLength)
+        {
+            // todo check class height
+            int blockSizeCode = GetBlockSizeCode(blockLength);
+            long init = (long)classHeight & 0x0F;
+            long bits = (long)blockSizeCode << (classHeight * 4);
+            _bits = (init | bits);
+        }
+
+        public StructureCode AddStructure(int classHeight, int blockLength)
+        {
+            int blockSizeCode = GetBlockSizeCode(blockLength);
+            long bits = (long)blockSizeCode << (classHeight * 4);
+            return new StructureCode(_bits | bits);
+        }
+
+    }
+
     internal sealed class MemBlockEntity : TargetEntity
     {
         public bool HasEntityLayoutAttribute { get; set; }
@@ -42,11 +86,10 @@ namespace DTOMaker.MemBlocks
                 case "System.Guid":
                 case "System.Decimal":
                     return 16;
+                // encoded as BlobIdV1
                 case FullTypeName.SystemString:
-                    // encoded as UTF8
-                    return 1;
                 case FullTypeName.MemoryOctets:
-                    return 64; // encoded as BlobIdV1
+                    return Constants.BlobIdV1Size; 
                 default:
                     return 0;
             }
@@ -77,16 +120,14 @@ namespace DTOMaker.MemBlocks
             {
                 // allocate value bytes
                 int fieldLength = GetFieldLength(member);
+
                 // adjust field/array length for fixed string and entity types
-                if (member.MemberType.FullName == FullTypeName.SystemString)
+                if (member.Kind == MemberKind.Entity)
                 {
-                    fieldLength = member.FixedLength;
+                    fieldLength = Constants.BlobIdV1Size; // encoded as BlobIdV1
                 }
-                else if (member.Kind == MemberKind.Entity)
-                {
-                    fieldLength = 64; // encoded as BlobIdV1
-                }
-                else if (member.FixedLength != 0)
+
+                if (member.FixedLength != 0)
                 {
                     fieldLength = member.FixedLength;
                 }
@@ -112,44 +153,6 @@ namespace DTOMaker.MemBlocks
             this.BlockLength = minBlockLength;
         }
 
-        private static readonly int[] _blockSizes = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 * 1, 1024 * 2, 1024 * 4, 1024 * 8, 1024 * 16, 1024 * 32];
-        private int GetBlockSizeCode(int blockLength)
-        {
-            ReadOnlySpan<int> blockSizes = _blockSizes;
-            for (byte i = 0; i < blockSizes.Length; i++)
-            {
-                int blockSize = blockSizes[i];
-                if (blockLength == blockSize)
-                    return i;
-                if (blockLength < blockSize)
-                {
-                    //SyntaxErrors.Add(new SyntaxDiagnostic(
-                    //    DiagnosticId.DMMB0001, "Invalid block length", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                    //    $"BlockLength ({LocalBlockLength}) is invalid. BlockLength must be a whole power of 2 between 1 and 1024."));
-                    return i;
-                }
-            }
-            SyntaxErrors.Add(new SyntaxDiagnostic(
-                DiagnosticId.DMMB0001, "Invalid block length", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                $"BlockLength ({BlockLength}) is invalid. BlockLength must be a whole power of 2 between 1 and 1024."));
-            return 15; // 32K
-        }
-
-        public long InitStructure(int classHeight, int blockLength)
-        {
-            int blockSizeCode = GetBlockSizeCode(blockLength);
-            long init = (long)classHeight & 0x0F;
-            long bits = (long)blockSizeCode << (classHeight * 4);
-            return (init | bits);
-        }
-
-        public long AddStructure(long code, int classHeight, int blockLength)
-        {
-            int blockSizeCode = GetBlockSizeCode(blockLength);
-            long bits = (long)blockSizeCode << (classHeight * 4);
-            return (code | bits);
-        }
-
         public void AutoLayoutMembers()
         {
             switch (LayoutMethod)
@@ -163,14 +166,14 @@ namespace DTOMaker.MemBlocks
             }
 
             // calculate structure code
-            long structureCode = InitStructure(this.GetClassHeight(), this.BlockLength);
+            var structureCode = new StructureCode(this.GetClassHeight(), this.BlockLength);
             var parent = this.Base;
             while (parent is MemBlockEntity parentEntity)
             {
-                structureCode = AddStructure(structureCode, parentEntity.GetClassHeight(), parentEntity.BlockLength);
+                structureCode = structureCode.AddStructure(parentEntity.GetClassHeight(), parentEntity.BlockLength);
                 parent = parentEntity.Base;
             }
-            this.BlockStructureCode = structureCode;
+            this.BlockStructureCode = structureCode.Bits;
         }
 
         private SyntaxDiagnostic? CheckHasEntityLayoutAttribute()
@@ -192,6 +195,7 @@ namespace DTOMaker.MemBlocks
 
             return BlockLength switch
             {
+                0 => null,
                 1 => null,
                 2 => null,
                 4 => null,
@@ -205,9 +209,20 @@ namespace DTOMaker.MemBlocks
                 1024 => null,
                 _ => new SyntaxDiagnostic(
                         DiagnosticId.DMMB0001, "Invalid block length", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                        $"BlockLength ({BlockLength}) is invalid. BlockLength must be a whole power of 2 between 1 and 1024.")
+                        $"BlockLength ({BlockLength}) is invalid. BlockLength must be zero or a whole power of 2 between 1 and 1024.")
             };
         }
+
+        private SyntaxDiagnostic? CheckClassHeightIsValid()
+        {
+            int classHeight = this.GetClassHeight();
+            if (classHeight >= 1 && classHeight <= 15) return null;
+
+            return new SyntaxDiagnostic(
+                    DiagnosticId.DMMB0012, "Invalid class height", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+                    $"ClassHeight ({classHeight}) is invalid. ClassHeight must be between 1 and 15.");
+        }
+
 
         private SyntaxDiagnostic? CheckLayoutMethodIsSupported()
         {
@@ -305,10 +320,7 @@ namespace DTOMaker.MemBlocks
             if ((diagnostic2 = CheckBlockSizeIsValid()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckMemberLayoutHasNoOverlaps()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckEntityIdIsGuid()) is not null) yield return diagnostic2;
-            // todo check class height <= 8
-            // todo check block length >= 64
-            // todo check binary fixed length >= 4
-            // todo check string fixed length >= 4
+            if ((diagnostic2 = CheckClassHeightIsValid()) is not null) yield return diagnostic2;
         }
     }
 }

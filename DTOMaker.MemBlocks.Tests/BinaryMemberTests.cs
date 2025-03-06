@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using VerifyXunit;
 using Xunit;
 using Microsoft.CodeAnalysis.CSharp;
+using DataFac.Storage;
 
 namespace DTOMaker.MemBlocks.Tests
 {
+
     public class BinaryMemberTests
     {
         private readonly string inputSource1 =

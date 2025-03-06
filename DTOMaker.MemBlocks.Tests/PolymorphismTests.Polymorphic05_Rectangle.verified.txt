@@ -22,7 +22,7 @@ namespace MyOrg.Models.MemBlocks
     {
         // Derived entities: 0
 
-        private const long BlockStructureCode = 16387L;
+        private const long BlockStructureCode = 20483L;
         private const int ClassHeight = 3;
         private const int BlockLength = 16;
         private readonly Memory<byte> _writableLocalBlock;
@@ -52,7 +52,7 @@ namespace MyOrg.Models.MemBlocks
 
         public new static Rectangle CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            ReadOnlyMemory<byte> buffer = buffers.Slice(0, 64).Compact();
+            ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
             string entityIdStr = header.EntityGuid.ToString("D");
             return entityIdStr switch
@@ -122,7 +122,7 @@ namespace MyOrg.Models.MemBlocks
 
         protected Rectangle(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
-            var sourceBlock = sourceBlocks.GetBlock(ClassHeight);
+            var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];
             if (sourceBlock.Length < BlockLength)
             {
                 // source too short - allocate new

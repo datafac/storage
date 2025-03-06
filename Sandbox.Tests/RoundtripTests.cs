@@ -57,7 +57,7 @@ namespace Sandbox.Tests
             var send = new MyOrg.Models.MemBlocks.MyDTO(orig);
             await send.Pack(dataStore);
 
-            var buffer = send.GetBuffer();
+            var buffer = send.GetBuffers();
 
             var recv = MyOrg.Models.MemBlocks.MyDTO.CreateFrom(buffer);
             await recv.UnpackAll(dataStore);

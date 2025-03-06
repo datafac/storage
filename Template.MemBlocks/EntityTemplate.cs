@@ -42,8 +42,8 @@ namespace T_MemberTypeNameSpace_.MemBlocks
     public class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_
     {
         private const int ClassHeight = 1;
-        private const int BlockLength = 64;
-        private const long StructureCode = 0x0061;
+        private const int BlockLength = 8;
+        private const long StructureCode = 0x00_41L;
         private static readonly Guid EntityGuid = new Guid("9bb68dc1-8b05-4e19-80fd-c1fb946ffd8d");
         private static readonly BlockHeader _header = BlockHeader.CreateNew(StructureCode, EntityGuid);
 
@@ -78,7 +78,7 @@ namespace T_MemberTypeNameSpace_.MemBlocks
         }
         protected T_MemberTypeName_(BlockHeader header, SourceBlocks sourceBlocks) : base(_header, sourceBlocks)
         {
-            var sourceBlock = sourceBlocks.GetBlock(ClassHeight);
+            var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];
             if (sourceBlock.Length < BlockLength)
             {
                 // source too short - allocate new
@@ -116,7 +116,7 @@ namespace T_BaseNameSpace_.MemBlocks
     public class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
         private const int ClassHeight = 1;
-        private const int BlockLength = 64;
+        private const int BlockLength = 4; // structure code = 0x0031L;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
@@ -158,7 +158,7 @@ namespace T_BaseNameSpace_.MemBlocks
 
         protected T_BaseName_(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
-            var sourceBlock = sourceBlocks.GetBlock(ClassHeight);
+            var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];
             if (sourceBlock.Length < BlockLength)
             {
                 // source too short - allocate new
@@ -173,7 +173,7 @@ namespace T_BaseNameSpace_.MemBlocks
             _writableLocalBlock = Memory<byte>.Empty;
         }
 
-        private const int T_FieldOffset_ = 4;
+        private const int T_FieldOffset_ = 0;
         private const int T_FieldLength_ = 4;
 
         public T_MemberType_ BaseField1
@@ -227,7 +227,7 @@ namespace T_NameSpace_.MemBlocks
         private const int T_ClassHeight_ = 2;
         private const int T_BlockLength_ = 1024;
         private const bool T_MemberObsoleteIsError_ = false;
-        private const long T_BlockStructureCode_ = 0x0A62;
+        private const long T_BlockStructureCode_ = 0x0B00 + 0x0030 + 0x0002;
         private static readonly Guid T_EntityGuid_ = new Guid("341c6631-30ba-482b-b580-7c1c2c9ff182");
         //##}
         private const long BlockStructureCode = T_BlockStructureCode_;
@@ -268,7 +268,7 @@ namespace T_NameSpace_.MemBlocks
 
         public new static T_EntityName_ CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            ReadOnlyMemory<byte> buffer = buffers.Slice(0, 64).Compact();
+            ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
             string entityIdStr = header.EntityGuid.ToString("D");
             return entityIdStr switch
@@ -563,7 +563,7 @@ namespace T_NameSpace_.MemBlocks
 
         protected T_EntityName_(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
-            var sourceBlock = sourceBlocks.GetBlock(ClassHeight);
+            var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];
             if (sourceBlock.Length < BlockLength)
             {
                 // source too short - allocate new
@@ -582,7 +582,6 @@ namespace T_NameSpace_.MemBlocks
         }
 
         //##if(false) {
-        //private const int T_FieldOffset_ = 64;
         private const int T_ScalarFieldOffset_ = 0;
         private const int T_VectorFieldOffset_ = 32;
         private const int T_NullableEntityFieldOffset_ = 64;
@@ -687,7 +686,7 @@ namespace T_NameSpace_.MemBlocks
             if (_T_NullableEntityMemberName_ is not null)
             {
                 await _T_NullableEntityMemberName_.Pack(dataStore);
-                var buffer = _T_NullableEntityMemberName_.GetBuffer();
+                var buffer = _T_NullableEntityMemberName_.GetBuffers();
                 blobId = await dataStore.PutBlob(buffer.Compact());
             }
             blobId.WriteTo(_writableLocalBlock.Slice(T_NullableEntityFieldOffset_, 64).Span);
@@ -726,7 +725,7 @@ namespace T_NameSpace_.MemBlocks
                 _T_RequiredEntityMemberName_ = await CreateEmpty<T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_>(dataStore);
             }
             await _T_RequiredEntityMemberName_.Pack(dataStore);
-            var buffer = _T_RequiredEntityMemberName_.GetBuffer();
+            var buffer = _T_RequiredEntityMemberName_.GetBuffers();
             blobId = await dataStore.PutBlob(buffer.Compact());
             blobId.WriteTo(_writableLocalBlock.Slice(T_RequiredEntityFieldOffset_, 64).Span);
         }

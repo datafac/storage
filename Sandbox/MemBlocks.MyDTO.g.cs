@@ -9,6 +9,7 @@ using System;
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using DataFac.Memory;
 using DataFac.Storage;
@@ -21,7 +22,7 @@ namespace MyOrg.Models.MemBlocks
     {
         // Derived entities: 0
 
-        private const long BlockStructureCode = 129L;
+        private const long BlockStructureCode = 145L;
         private const int ClassHeight = 1;
         private const int BlockLength = 256;
         private readonly Memory<byte> _writableLocalBlock;
@@ -49,9 +50,9 @@ namespace MyOrg.Models.MemBlocks
             };
         }
 
-        public new static MyDTO CreateFrom(System.Buffers.ReadOnlySequence<byte> buffers)
+        public new static MyDTO CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            ReadOnlyMemory<byte> buffer = buffers.Slice(0, 64).Compact();
+            ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
             string entityIdStr = header.EntityGuid.ToString("D");
             return entityIdStr switch
@@ -131,7 +132,7 @@ namespace MyOrg.Models.MemBlocks
 
         protected MyDTO(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
-            var sourceBlock = sourceBlocks.GetBlock(ClassHeight);
+            var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];
             if (sourceBlock.Length < BlockLength)
             {
                 // source too short - allocate new
@@ -145,7 +146,7 @@ namespace MyOrg.Models.MemBlocks
             }
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public MyDTO(System.Buffers.ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
+        public MyDTO(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
         {
         }
 
@@ -155,14 +156,14 @@ namespace MyOrg.Models.MemBlocks
             if (_Other1 is not null)
             {
                 await _Other1.Pack(dataStore);
-                var buffer = _Other1.GetBuffer();
+                var buffer = _Other1.GetBuffers();
                 blobId = await dataStore.PutBlob(buffer.Compact());
             }
-            Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(0, 64).Span, blobId);
+            blobId.WriteTo(_writableLocalBlock.Slice(0, 64).Span);
         }
         private async ValueTask Other1_Unpack(IDataStore dataStore, int depth)
         {
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(0, 64));
+            BlobIdV1 blobId = BlobIdV1.UnsafeWrap(_readonlyLocalBlock.Slice(0, 64));
             var blob = await dataStore.GetBlob(blobId);
             _Other1 = null;
             if (blob is not null)
@@ -188,11 +189,11 @@ namespace MyOrg.Models.MemBlocks
             BlobIdV1 blobId = default;
             var buffer = _Field1.Memory;
             blobId = await dataStore.PutBlob(buffer);
-            Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(64, 64).Span, blobId);
+            blobId.WriteTo(_writableLocalBlock.Slice(64, 64).Span);
         }
         private async ValueTask Field1_Unpack(IDataStore dataStore)
         {
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(64, 64));
+            BlobIdV1 blobId = BlobIdV1.UnsafeWrap(_readonlyLocalBlock.Slice(64, 64));
             var blob = await dataStore.GetBlob(blobId);
             _Field1 = blob is null ? Octets.Empty : Octets.UnsafeWrap(blob.Value);
 
@@ -212,11 +213,11 @@ namespace MyOrg.Models.MemBlocks
                 var buffer = _Field2.Memory;
                 blobId = await dataStore.PutBlob(buffer);
             }
-            Codec_BlobId_NE.WriteToSpan(_writableLocalBlock.Slice(128, 64).Span, blobId);
+            blobId.WriteTo(_writableLocalBlock.Slice(128, 64).Span);
         }
         private async ValueTask Field2_Unpack(IDataStore dataStore)
         {
-            BlobIdV1 blobId = Codec_BlobId_NE.ReadFromMemory(_readonlyLocalBlock.Slice(128, 64));
+            BlobIdV1 blobId = BlobIdV1.UnsafeWrap(_readonlyLocalBlock.Slice(128, 64));
             var blob = await dataStore.GetBlob(blobId);
             _Field2 = blob is null ? null : Octets.UnsafeWrap(blob.Value);
         }

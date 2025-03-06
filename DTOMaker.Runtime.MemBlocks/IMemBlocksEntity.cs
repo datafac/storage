@@ -7,7 +7,7 @@ namespace DTOMaker.Runtime.MemBlocks
     public interface IMemBlocksEntity
     {
         ValueTask Pack(IDataStore dataStore);
-        ReadOnlySequence<byte> GetBuffer();
+        ReadOnlySequence<byte> GetBuffers();
         ValueTask Unpack(IDataStore dataStore, int depth = 0);
         ValueTask UnpackAll(IDataStore dataStore);
     }

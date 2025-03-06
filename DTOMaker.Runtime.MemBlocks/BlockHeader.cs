@@ -3,11 +3,15 @@ using System;
 
 namespace DTOMaker.Runtime.MemBlocks
 {
+    public static class Constants
+    {
+        public const int HeaderSize = 64;
+    }
     public readonly struct BlockHeader
     {
         public static BlockHeader CreateNew(long structureBits, Guid entityGuid)
         {
-            Memory<byte> memory = new byte[64];
+            Memory<byte> memory = new byte[Constants.HeaderSize];
             Span<byte> headerSpan = memory.Span;
             Codec_Int64_LE.WriteToSpan(headerSpan.Slice(0, 8), SignatureBitsV10);
             Codec_Int64_LE.WriteToSpan(headerSpan.Slice(8, 8), structureBits);
@@ -17,7 +21,7 @@ namespace DTOMaker.Runtime.MemBlocks
 
         public static BlockHeader ParseFrom(ReadOnlyMemory<byte> buffer)
         {
-            var header = buffer.Slice(0, 64);
+            var header = buffer.Slice(0, Constants.HeaderSize);
             var signature = Codec_Int64_LE.ReadFromSpan(header.Span.Slice(0, 8));
             // todo check signature marker and version bytes
             var structureBits = Codec_Int64_LE.ReadFromSpan(header.Span.Slice(8, 8));

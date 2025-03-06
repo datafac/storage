@@ -24,7 +24,7 @@ namespace MyOrg.Models.MemBlocks
         // - DoubleNode
         // - Int64Node
 
-        private const long BlockStructureCode = 66L;
+        private const long BlockStructureCode = 82L;
         private const int ClassHeight = 2;
         private const int BlockLength = 0;
         private readonly Memory<byte> _writableLocalBlock;
@@ -58,7 +58,7 @@ namespace MyOrg.Models.MemBlocks
 
         public new static NumericNode CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            ReadOnlyMemory<byte> buffer = buffers.Slice(0, 64).Compact();
+            ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
             string entityIdStr = header.EntityGuid.ToString("D");
             return entityIdStr switch
@@ -124,7 +124,7 @@ namespace MyOrg.Models.MemBlocks
 
         protected NumericNode(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
-            var sourceBlock = sourceBlocks.GetBlock(ClassHeight);
+            var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];
             if (sourceBlock.Length < BlockLength)
             {
                 // source too short - allocate new

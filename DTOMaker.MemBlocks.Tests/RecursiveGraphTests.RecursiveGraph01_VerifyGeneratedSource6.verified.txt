@@ -22,7 +22,7 @@ namespace MyOrg.Models.MemBlocks
     {
         // Derived entities: 0
 
-        private const long BlockStructureCode = 129L;
+        private const long BlockStructureCode = 145L;
         private const int ClassHeight = 1;
         private const int BlockLength = 256;
         private readonly Memory<byte> _writableLocalBlock;
@@ -52,7 +52,7 @@ namespace MyOrg.Models.MemBlocks
 
         public new static Tree CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            ReadOnlyMemory<byte> buffer = buffers.Slice(0, 64).Compact();
+            ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
             string entityIdStr = header.EntityGuid.ToString("D");
             return entityIdStr switch
@@ -134,7 +134,7 @@ namespace MyOrg.Models.MemBlocks
 
         protected Tree(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
-            var sourceBlock = sourceBlocks.GetBlock(ClassHeight);
+            var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];
             if (sourceBlock.Length < BlockLength)
             {
                 // source too short - allocate new
@@ -158,7 +158,7 @@ namespace MyOrg.Models.MemBlocks
             if (_Left is not null)
             {
                 await _Left.Pack(dataStore);
-                var buffer = _Left.GetBuffer();
+                var buffer = _Left.GetBuffers();
                 blobId = await dataStore.PutBlob(buffer.Compact());
             }
             blobId.WriteTo(_writableLocalBlock.Slice(0, 64).Span);
@@ -192,7 +192,7 @@ namespace MyOrg.Models.MemBlocks
             if (_Right is not null)
             {
                 await _Right.Pack(dataStore);
-                var buffer = _Right.GetBuffer();
+                var buffer = _Right.GetBuffers();
                 blobId = await dataStore.PutBlob(buffer.Compact());
             }
             blobId.WriteTo(_writableLocalBlock.Slice(64, 64).Span);
@@ -226,7 +226,7 @@ namespace MyOrg.Models.MemBlocks
             if (_Node is not null)
             {
                 await _Node.Pack(dataStore);
-                var buffer = _Node.GetBuffer();
+                var buffer = _Node.GetBuffers();
                 blobId = await dataStore.PutBlob(buffer.Compact());
             }
             blobId.WriteTo(_writableLocalBlock.Slice(128, 64).Span);
