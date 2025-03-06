@@ -14,7 +14,8 @@
   - [DTOMaker.Runtime](#dtomaker.runtime)
 - [Model features](#model-features)
   - [MemBlocks features](#memblocks-features)
-- [Limitations](#limitations)
+- [!Limitations](#limitations)
+  - [Single compilation unit](#single-compilation-unit)
 - [Development](#development)
   - [In progress](#in-progress)
   - [Coming soon](#coming-soon)
@@ -114,22 +115,23 @@ Common types used at runtime by DTOMaker generated entities.
 - auto-embedded string, binary and entity members when short enough.
 - fixed-length string and binary member types.
 
-# Limitations
-- single compilation (assembly) contains all models and generated DTOs 
+# !Limitations
+## Single compilation unit
+All models and generated DTOs are contained within a single assembly.
+Models cannot reference types in other projects or pacakges (other 
+than native types). Generated classes are partial, which can help you 
+mitigate the single assembly constraint.
 
 # Development
 ## In progress
-- variable-length string members
-- auto-embedded string members (MemBlocks)
 
 ## Coming soon
-- implement IIncrementalGenerator
-- global interface equality comparer
-- fixed-length binary members (MemBlocks)
-- fixed-length string members (MemBlocks)
-- reservation (hidden members)
+- unique entity ordinals
 - Json (NewtonSoft) generator
 - Json (System.Text) generator
+- upgrade source generators to IIncrementalGenerator
+- global interface equality comparer
+- reservation (hidden members)
 - Orleans generator
 - ProtobufNet 3.0 generator
 - MessagePack 3.x generator
