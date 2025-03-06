@@ -22,7 +22,7 @@ namespace MyOrg.Models.MemBlocks
     {
         // Derived entities: 0
 
-        private const long BlockStructureCode = 258L;
+        private const long BlockStructureCode = 338L;
         private const int ClassHeight = 2;
         private const int BlockLength = 1;
         private readonly Memory<byte> _writableLocalBlock;

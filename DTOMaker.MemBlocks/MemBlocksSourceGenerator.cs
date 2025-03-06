@@ -45,12 +45,21 @@ namespace DTOMaker.MemBlocks
 
             var domainScope = new MemBlocksModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
 
+            // complete intra-entity layout
+            foreach (var entity in domain.Entities.Values.OrderBy(e => e.EntityName.FullName).OfType<MemBlockEntity>())
+            {
+                entity.AutoLayoutMembers();
+            }
+
+            // complete inter-entity layout
+            foreach (var entity in domain.Entities.Values.OrderBy(e => e.EntityName.FullName).OfType<MemBlockEntity>())
+            {
+                entity.BuildStructureCodes();
+            }
+
             // emit each entity
             foreach (var entity in domain.Entities.Values.OrderBy(e => e.EntityName.FullName).OfType<MemBlockEntity>())
             {
-                // do any auto-layout if required
-                entity.AutoLayoutMembers();
-
                 EmitDiagnostics(context, entity);
                 foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence))
                 {

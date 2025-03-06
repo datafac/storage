@@ -32,19 +32,19 @@ namespace DTOMaker.MemBlocks
         }
 
         public long Bits => _bits;
-        public StructureCode(int classHeight, int blockLength)
+        public StructureCode(int classHeight, int outerBlockLength)
         {
             // todo check class height
-            int blockSizeCode = GetBlockSizeCode(blockLength);
+            int blockSizeCode = GetBlockSizeCode(outerBlockLength);
             long init = (long)classHeight & 0x0F;
             long bits = (long)blockSizeCode << (classHeight * 4);
             _bits = (init | bits);
         }
 
-        public StructureCode AddStructure(int classHeight, int blockLength)
+        public StructureCode AddInnerBlock(int innerHeight, int innerBlockLength)
         {
-            int blockSizeCode = GetBlockSizeCode(blockLength);
-            long bits = (long)blockSizeCode << (classHeight * 4);
+            int blockSizeCode = GetBlockSizeCode(innerBlockLength);
+            long bits = (long)blockSizeCode << (innerHeight * 4);
             return new StructureCode(_bits | bits);
         }
 
@@ -164,13 +164,18 @@ namespace DTOMaker.MemBlocks
                     LinearLayoutMembers();
                     break;
             }
+        }
 
+        public void BuildStructureCodes()
+        { 
             // calculate structure code
-            var structureCode = new StructureCode(this.GetClassHeight(), this.BlockLength);
+            int thisClassHeight = GetClassHeight();
+            var structureCode = new StructureCode(thisClassHeight, this.BlockLength);
             var parent = this.Base;
             while (parent is MemBlockEntity parentEntity)
             {
-                structureCode = structureCode.AddStructure(parentEntity.GetClassHeight(), parentEntity.BlockLength);
+                var parentClassHeight = parentEntity.GetClassHeight();
+                structureCode = structureCode.AddInnerBlock(parentClassHeight, parentEntity.BlockLength);
                 parent = parentEntity.Base;
             }
             this.BlockStructureCode = structureCode.Bits;
