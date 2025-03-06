@@ -112,7 +112,7 @@ Common types used at runtime by DTOMaker generated entities.
 - Templates as testable code, template-to-generator processing.
 
 ## MemBlocks features
-- auto-embedded string, binary and entity members when short enough.
+- auto-embedded string, binary and entity members when encoded <= 62 bytes.
 - fixed-length string and binary member types.
 
 # !Limitations
@@ -124,6 +124,7 @@ mitigate the single assembly constraint.
 
 # Development
 ## In progress
+- performance improvements
 
 ## Coming soon
 - unique entity ordinals
