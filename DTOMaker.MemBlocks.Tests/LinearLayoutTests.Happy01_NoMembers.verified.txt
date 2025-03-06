@@ -6,8 +6,10 @@
 #pragma warning disable CS0109 // Member does not hide an inherited member; new keyword is not required
 #nullable enable
 using System;
+using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using DataFac.Memory;
 using DataFac.Storage;
@@ -48,7 +50,7 @@ namespace MyOrg.Models.MemBlocks
             };
         }
 
-        public new static MyDTO CreateFrom(System.Buffers.ReadOnlySequence<byte> buffers)
+        public new static MyDTO CreateFrom(ReadOnlySequence<byte> buffers)
         {
             ReadOnlyMemory<byte> buffer = buffers.Slice(0, 64).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
@@ -128,7 +130,7 @@ namespace MyOrg.Models.MemBlocks
             }
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public MyDTO(System.Buffers.ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
+        public MyDTO(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
         {
         }
 

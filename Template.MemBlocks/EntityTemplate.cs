@@ -10,8 +10,10 @@
 #pragma warning disable CS0109 // Member does not hide an inherited member; new keyword is not required
 #nullable enable
 using System;
+using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using DataFac.Memory;
 using DataFac.Storage;
@@ -20,8 +22,6 @@ using DTOMaker.Runtime.MemBlocks;
 
 //##if(false) {
 using T_MemberType_ = System.Int32;
-using System.Text;
-using System.Buffers;
 namespace DataFac.Memory
 {
     public static class Codec_T_MemberType__T_MemberBELE_
@@ -39,7 +39,7 @@ namespace T_MemberTypeNameSpace_
 }
 namespace T_MemberTypeNameSpace_.MemBlocks
 {
-    public sealed class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_
+    public class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_
     {
         private const int ClassHeight = 1;
         private const int BlockLength = 64;
@@ -57,7 +57,7 @@ namespace T_MemberTypeNameSpace_.MemBlocks
             if (source is T_MemberTypeName_ concrete && concrete.IsFrozen) return concrete;
             return new T_MemberTypeName_(source);
         }
-        public static T_MemberTypeName_ CreateFrom(System.Buffers.ReadOnlySequence<byte> buffers)
+        public static T_MemberTypeName_ CreateFrom(ReadOnlySequence<byte> buffers)
         {
             return new T_MemberTypeName_(buffers);
         }
@@ -91,7 +91,7 @@ namespace T_MemberTypeNameSpace_.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        public T_MemberTypeName_(System.Buffers.ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
+        public T_MemberTypeName_(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
@@ -266,7 +266,7 @@ namespace T_NameSpace_.MemBlocks
             };
         }
 
-        public new static T_EntityName_ CreateFrom(System.Buffers.ReadOnlySequence<byte> buffers)
+        public new static T_EntityName_ CreateFrom(ReadOnlySequence<byte> buffers)
         {
             ReadOnlyMemory<byte> buffer = buffers.Slice(0, 64).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
@@ -577,7 +577,7 @@ namespace T_NameSpace_.MemBlocks
             }
             _writableLocalBlock = Memory<byte>.Empty;
         }
-        public T_EntityName_(System.Buffers.ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
+        public T_EntityName_(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
         {
         }
 
