@@ -16,7 +16,7 @@ namespace MyOrg.Models.CSPoco
     {
         // Derived entities: 0
 
-        public new const int EntityId = 0;
+        private const int EntityId = 2;
 
         private static Other CreateEmpty()
         {
