@@ -21,7 +21,7 @@ namespace MyOrg.Models.CSPoco
         // - NumericNode
         // - StringNode
 
-        private const int EntityId = 1;
+        public new const int EntityId = 1;
 
         private static Node CreateEmpty()
         {

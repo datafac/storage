@@ -95,7 +95,7 @@ namespace T_NameSpace_.CSPoco
         private const int T_EntityId_ = 1;
         //##}
 
-        private const int EntityId = T_EntityId_;
+        public new const int EntityId = T_EntityId_;
 
         private static T_EntityName_ CreateEmpty()
         {

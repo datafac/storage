@@ -16,7 +16,7 @@ namespace MyOrg.DomainA.CSPoco
     {
         // Derived entities: 0
 
-        private const int EntityId = 1;
+        public new const int EntityId = 1;
 
         private static MyDTO1 CreateEmpty()
         {

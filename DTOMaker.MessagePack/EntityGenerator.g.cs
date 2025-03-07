@@ -51,7 +51,7 @@ Emit("    [MessagePackObject]");
 Emit("    [Union(T_NameSpace_.MessagePack.T_ConcreteEntityName_.EntityId, typeof(T_NameSpace_.MessagePack.T_ConcreteEntityName_))]");
 Emit("    public abstract class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>");
 Emit("    {");
-Emit("        //private const int EntityId = 1;");
+Emit("        //public new const int EntityId = 1;");
 Emit("");
 Emit("        public T_BaseName_() { }");
 Emit("        public T_BaseName_(IT_BaseName_ source) : base(source) { }");

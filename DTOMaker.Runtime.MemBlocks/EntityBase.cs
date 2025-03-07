@@ -20,7 +20,7 @@ namespace DTOMaker.Runtime.MemBlocks
         #endregion
 
         private const int ClassHeight = 0;
-        private const int EntityId = 0;
+        public const int EntityId = 0;
         private const int BlockLength = Constants.HeaderSize; // V1.0
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;

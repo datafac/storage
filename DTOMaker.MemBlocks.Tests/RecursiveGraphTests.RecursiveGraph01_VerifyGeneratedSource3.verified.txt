@@ -29,7 +29,7 @@ namespace MyOrg.Models.MemBlocks
 
         private const long BlockStructureCode = 81L;
         private const int ClassHeight = 1;
-        private const int EntityId = 1;
+        public new const int EntityId = 1;
         private const int BlockLength = 16;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;

@@ -18,7 +18,7 @@ namespace MyOrg.Models.CSPoco
         // - Rectangle
         // - Square
 
-        private const int EntityId = 5;
+        public new const int EntityId = 5;
 
         private static Quadrilateral CreateEmpty()
         {

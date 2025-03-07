@@ -41,7 +41,7 @@ namespace T_BaseNameSpace_.MessagePack
     [Union(T_NameSpace_.MessagePack.T_ConcreteEntityName_.EntityId, typeof(T_NameSpace_.MessagePack.T_ConcreteEntityName_))]
     public abstract class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
-        //private const int EntityId = 1;
+        //public new const int EntityId = 1;
 
         public T_BaseName_() { }
         public T_BaseName_(IT_BaseName_ source) : base(source) { }

@@ -18,7 +18,7 @@ namespace MyOrg.Models.CSPoco
         // - DoubleNode
         // - Int64Node
 
-        private const int EntityId = 3;
+        public new const int EntityId = 3;
 
         private static NumericNode CreateEmpty()
         {

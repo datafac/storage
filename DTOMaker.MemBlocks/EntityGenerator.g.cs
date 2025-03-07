@@ -53,7 +53,7 @@ Emit("    public class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_");
 Emit("    {");
 Emit("        private const int ClassHeight = 1;");
 Emit("        private const int BlockLength = 8;");
-Emit("        private const int EntityId = 3;");
+Emit("        public new const int EntityId = 3;");
 Emit("        private const long StructureCode = 0x00_41L;");
 Emit("        private static readonly BlockHeader _header = BlockHeader.CreateNew(EntityId, StructureCode);");
 Emit("");
@@ -126,7 +126,7 @@ Emit("    }");
 Emit("    public class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>");
 Emit("    {");
 Emit("        private const int ClassHeight = 1;");
-Emit("        private const int EntityId = 1;");
+Emit("        public new const int EntityId = 1;");
 Emit("        private const int BlockLength = 4; // structure code = 0x0031L;");
 Emit("        private readonly Memory<byte> _writableLocalBlock;");
 Emit("        private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;");
@@ -241,7 +241,7 @@ Emit("        private const long T_BlockStructureCode_ = 0x0B00 + 0x0030 + 0x000
         }
 Emit("        private const long BlockStructureCode = T_BlockStructureCode_;");
 Emit("        private const int ClassHeight = T_ClassHeight_;");
-Emit("        private const int EntityId = T_EntityId_;");
+Emit("        public new const int EntityId = T_EntityId_;");
 Emit("        private const int BlockLength = T_BlockLength_;");
 Emit("        private readonly Memory<byte> _writableLocalBlock;");
 Emit("        private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;");

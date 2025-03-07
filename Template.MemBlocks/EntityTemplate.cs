@@ -43,7 +43,7 @@ namespace T_MemberTypeNameSpace_.MemBlocks
     {
         private const int ClassHeight = 1;
         private const int BlockLength = 8;
-        private const int EntityId = 3;
+        public new const int EntityId = 3;
         private const long StructureCode = 0x00_41L;
         private static readonly BlockHeader _header = BlockHeader.CreateNew(EntityId, StructureCode);
 
@@ -116,7 +116,7 @@ namespace T_BaseNameSpace_.MemBlocks
     public class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
         private const int ClassHeight = 1;
-        private const int EntityId = 1;
+        public new const int EntityId = 1;
         private const int BlockLength = 4; // structure code = 0x0031L;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
@@ -231,7 +231,7 @@ namespace T_NameSpace_.MemBlocks
         //##}
         private const long BlockStructureCode = T_BlockStructureCode_;
         private const int ClassHeight = T_ClassHeight_;
-        private const int EntityId = T_EntityId_;
+        public new const int EntityId = T_EntityId_;
         private const int BlockLength = T_BlockLength_;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;

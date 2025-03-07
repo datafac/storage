@@ -105,7 +105,7 @@ Emit("        private const int T_MemberDefaultValue_ = 0;");
 Emit("        private const int T_EntityId_ = 1;");
         }
 Emit("");
-Emit("        private const int EntityId = T_EntityId_;");
+Emit("        public new const int EntityId = T_EntityId_;");
 Emit("");
 Emit("        private static T_EntityName_ CreateEmpty()");
 Emit("        {");
