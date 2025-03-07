@@ -32,7 +32,7 @@ namespace DataFac.Memory
 }
 namespace T_MemberTypeNameSpace_
 {
-    public interface IT_MemberTypeName_ : IMemBlocksEntity
+    public interface IT_MemberTypeName_ : IPackable
     {
         Int64 Field1 { get; set; }
     }

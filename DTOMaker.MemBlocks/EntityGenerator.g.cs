@@ -42,7 +42,7 @@ Emit("    }");
 Emit("}");
 Emit("namespace T_MemberTypeNameSpace_");
 Emit("{");
-Emit("    public interface IT_MemberTypeName_ : IMemBlocksEntity");
+Emit("    public interface IT_MemberTypeName_ : IPackable");
 Emit("    {");
 Emit("        Int64 Field1 { get; set; }");
 Emit("    }");

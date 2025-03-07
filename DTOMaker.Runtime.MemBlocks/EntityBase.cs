@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace DTOMaker.Runtime.MemBlocks
 {
-    public abstract class EntityBase : IMemBlocksEntity, IFreezable, IEquatable<EntityBase>
+    public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {
         #region Static Helpers
-        public static async ValueTask<T> CreateEmpty<T>(IDataStore dataStore) where T: class, IMemBlocksEntity, IFreezable, new()
+        public static async ValueTask<T> CreateEmpty<T>(IDataStore dataStore) where T: class, IPackable, IFreezable, new()
         {
             var empty = new T();
             await empty.Pack(dataStore);
