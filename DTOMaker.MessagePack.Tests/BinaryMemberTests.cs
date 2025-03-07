@@ -18,12 +18,12 @@ namespace DTOMaker.MessagePack.Tests
             using DTOMaker.Models.MessagePack;
             namespace MyOrg.Models
             {
-                [Entity] [EntityKey(2)] public interface IOther
+                [Entity] [Id(2)] public interface IOther
                 {
                     [Member(1)] Int64  Value1 { get; set; }
                     [Member(2)] Int64  Value2 { get; set; }
                 }
-                [Entity] [EntityKey(1)] public interface IMyDTO
+                [Entity] [Id(1)] public interface IMyDTO
                 {
                     [Member(1)] IOther? Other1 { get; set; }
                     [Member(2)] Octets  Field1 { get; set; }

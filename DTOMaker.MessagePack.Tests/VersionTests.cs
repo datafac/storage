@@ -10,7 +10,7 @@ namespace DTOMaker.MessagePack.Tests
         public void ModelsVersionChecks()
         {
             Version coreVersion = typeof(DTOMaker.Models.EntityAttribute).Assembly.GetName().Version ?? new Version(99, 99, 9999);
-            Version thisVersion = typeof(DTOMaker.Models.MessagePack.EntityKeyAttribute).Assembly.GetName().Version ?? new Version(0, 0, 0);
+            Version thisVersion = typeof(DTOMaker.Models.MessagePack.MemberKeyOffsetAttribute).Assembly.GetName().Version ?? new Version(0, 0, 0);
 
             thisVersion.Major.ShouldBe(coreVersion.Major);
             thisVersion.Minor.ShouldBeGreaterThanOrEqualTo(coreVersion.Minor);

@@ -52,7 +52,7 @@ namespace MyOrg.Models.MessagePack
                 throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);
         }
 
-        protected override string OnGetEntityId() => EntityKey.ToString();
+        protected override int OnGetEntityId() => 0;
 
         protected override void OnFreeze()
         {
@@ -124,8 +124,8 @@ namespace MyOrg.Models.MessagePack
         private int? _hashCode;
         public override int GetHashCode()
         {
-            if (_hashCode.HasValue) return _hashCode.Value;
             if (!IsFrozen) return CalcHashCode();
+            if (_hashCode.HasValue) return _hashCode.Value;
             _hashCode = CalcHashCode();
             return _hashCode.Value;
         }

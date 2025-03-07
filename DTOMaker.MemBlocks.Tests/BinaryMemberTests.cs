@@ -22,14 +22,14 @@ namespace DTOMaker.MemBlocks.Tests
             namespace MyOrg.Models
             {
                 [Entity] [Layout(LayoutMethod.Linear)]
-                [Id("46b4cf1e-d1f9-48ac-af8e-4c8b4d40b077")]
+                [Id(1)]
                 public interface IOther
                 {
                     [Member(1)] Int64  Value1 { get; set; }
                     [Member(2)] Int64  Value2 { get; set; }
                 }
                 [Entity] [Layout(LayoutMethod.Linear)]
-                [Id("81bd408d-c10a-4fc2-81e1-4517b4e199bb")]
+                [Id(2)]
                 public interface IMyDTO
                 {
                     [Member(1)] IOther? Other1 { get; set; }

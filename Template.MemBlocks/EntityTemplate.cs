@@ -43,9 +43,9 @@ namespace T_MemberTypeNameSpace_.MemBlocks
     {
         private const int ClassHeight = 1;
         private const int BlockLength = 8;
+        private const int EntityId = 3;
         private const long StructureCode = 0x00_41L;
-        private static readonly Guid EntityGuid = new Guid("9bb68dc1-8b05-4e19-80fd-c1fb946ffd8d");
-        private static readonly BlockHeader _header = BlockHeader.CreateNew(StructureCode, EntityGuid);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(EntityId, StructureCode);
 
         public static T_MemberTypeName_ CreateFrom(T_MemberTypeName_ source)
         {
@@ -81,7 +81,7 @@ namespace T_MemberTypeNameSpace_.MemBlocks
             var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];
             if (sourceBlock.Length < BlockLength)
             {
-                // source too short - allocate new
+                // source too small - allocate new
                 _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
                 sourceBlock.CopyTo(_writableLocalBlock);
             }
@@ -95,7 +95,7 @@ namespace T_MemberTypeNameSpace_.MemBlocks
 
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
-        protected override string OnGetEntityId() => "T_MemberTypeName_";
+        protected override int OnGetEntityId() => EntityId;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ValueTask OnPack(IDataStore dataStore) => default;
         protected override ValueTask OnUnpack(IDataStore dataStore, int depth) => default;
@@ -116,13 +116,12 @@ namespace T_BaseNameSpace_.MemBlocks
     public class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
         private const int ClassHeight = 1;
+        private const int EntityId = 1;
         private const int BlockLength = 4; // structure code = 0x0031L;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        public new const string EntityId = "T_BaseName_";
-
-        protected override string OnGetEntityId() => "_undefined_";
+        protected override int OnGetEntityId() => EntityId;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override void OnFreeze()
@@ -161,7 +160,7 @@ namespace T_BaseNameSpace_.MemBlocks
             var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];
             if (sourceBlock.Length < BlockLength)
             {
-                // source too short - allocate new
+                // source too small - allocate new
                 Memory<byte> memory = new byte[BlockLength];
                 sourceBlock.CopyTo(memory);
                 _readonlyLocalBlock = memory;
@@ -225,20 +224,19 @@ namespace T_NameSpace_.MemBlocks
 
         //##if(false) {
         private const int T_ClassHeight_ = 2;
+        private const int T_EntityId_ = 2;
         private const int T_BlockLength_ = 1024;
         private const bool T_MemberObsoleteIsError_ = false;
         private const long T_BlockStructureCode_ = 0x0B00 + 0x0030 + 0x0002;
-        private static readonly Guid T_EntityGuid_ = new Guid("341c6631-30ba-482b-b580-7c1c2c9ff182");
         //##}
         private const long BlockStructureCode = T_BlockStructureCode_;
         private const int ClassHeight = T_ClassHeight_;
+        private const int EntityId = T_EntityId_;
         private const int BlockLength = T_BlockLength_;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        public new const string EntityId = "T_EntityId_";
-        private static readonly Guid EntityGuid = T_EntityGuid_;
-        private static readonly BlockHeader _header = BlockHeader.CreateNew(BlockStructureCode, EntityGuid);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(EntityId, BlockStructureCode);
 
         public new static T_EntityName_ CreateFrom(T_EntityName_ source)
         {
@@ -270,8 +268,7 @@ namespace T_NameSpace_.MemBlocks
         {
             ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
-            string entityIdStr = header.EntityGuid.ToString("D");
-            return entityIdStr switch
+            return header.EntityId switch
             {
                 //##foreach(var derived in entity.DerivedEntities) {
                 //##using var _ = NewScope(derived);
@@ -281,7 +278,7 @@ namespace T_NameSpace_.MemBlocks
             };
         }
 
-        protected override string OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => EntityId;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => new T_EntityName_(this);
@@ -566,7 +563,7 @@ namespace T_NameSpace_.MemBlocks
             var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];
             if (sourceBlock.Length < BlockLength)
             {
-                // source too short - allocate new
+                // source too small - allocate new
                 Memory<byte> memory = new byte[BlockLength];
                 sourceBlock.CopyTo(memory);
                 _readonlyLocalBlock = memory;

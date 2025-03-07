@@ -14,15 +14,15 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    [Union(Rectangle.EntityKey, typeof(Rectangle))]
-    [Union(Square.EntityKey, typeof(Square))]
+    [Union(Rectangle.EntityId, typeof(Rectangle))]
+    [Union(Square.EntityId, typeof(Square))]
     public abstract partial class Quadrilateral : MyOrg.Models.MessagePack.Polygon, IQuadrilateral, IEquatable<Quadrilateral>
     {
         // Derived entities: 2
         // - Rectangle
         // - Square
 
-        public new const int EntityKey = 5;
+        public new const int EntityId = 5;
 
         public new static Quadrilateral CreateFrom(Quadrilateral source)
         {
@@ -46,17 +46,17 @@ namespace MyOrg.Models.MessagePack
             };
         }
 
-        public new static Quadrilateral CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static Quadrilateral CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            return entityKey switch
+            return entityId switch
             {
-                MyOrg.Models.MessagePack.Rectangle.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Rectangle>(buffer, out var _),
-                MyOrg.Models.MessagePack.Square.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Square>(buffer, out var _),
-                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
+                MyOrg.Models.MessagePack.Rectangle.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Rectangle>(buffer, out var _),
+                MyOrg.Models.MessagePack.Square.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Square>(buffer, out var _),
+                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }
 
-        protected override string OnGetEntityId() => EntityKey.ToString();
+        protected override int OnGetEntityId() => 5;
 
         protected override void OnFreeze()
         {

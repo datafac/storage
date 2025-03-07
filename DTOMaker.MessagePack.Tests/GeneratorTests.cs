@@ -20,7 +20,7 @@ namespace DTOMaker.MessagePack.Tests
                 using DTOMaker.Models.MessagePack;
                 namespace MyOrg.Models
                 {
-                    [Entity][EntityKey(1)]
+                    [Entity][Id(1)]
                     public interface IMyDTO
                     {
                     }
@@ -50,7 +50,7 @@ namespace DTOMaker.MessagePack.Tests
                 using DTOMaker.Models.MessagePack;
                 namespace MyOrg.Models
                 {
-                    [Entity][EntityKey(1)]
+                    [Entity][Id(1)]
                     public interface IMyDTO
                     {
                         [Member(1)] double Field1 { get; set; }
@@ -81,7 +81,7 @@ namespace DTOMaker.MessagePack.Tests
                 using DTOMaker.Models.MessagePack;
                 namespace MyOrg.Models
                 {
-                    [Entity][EntityKey(1)]
+                    [Entity][Id(1)]
                     public interface IMyDTO
                     {
                         [Member(1)] double Field1 { get; set; }
@@ -113,13 +113,13 @@ namespace DTOMaker.MessagePack.Tests
                 using DTOMaker.Models.MessagePack;
                 namespace MyOrg.Models
                 {
-                    [Entity][EntityKey(1)]
+                    [Entity][Id(1)]
                     public interface IMyFirstDTO
                     {
                         [Member(1)] double Field1 { get; set; }
                     }
 
-                    [Entity][EntityKey(2)]
+                    [Entity][Id(2)]
                     public interface IMyOtherDTO
                     {
                         [Member(1)] long Field1 { get; set; }
@@ -156,7 +156,7 @@ namespace DTOMaker.MessagePack.Tests
                 using DTOMaker.Models.MessagePack;
                 namespace MyOrg.Models
                 {
-                    [Entity][EntityKey(1)]
+                    [Entity][Id(1)]
                     public interface IMyDTO
                     {
                         [Member(1)] ReadOnlyMemory<double> Field1 { get; set; }
@@ -187,7 +187,7 @@ namespace DTOMaker.MessagePack.Tests
                 using DTOMaker.Models.MessagePack;
                 namespace MyOrg.Models
                 {
-                    [Entity][EntityKey(1)]
+                    [Entity][Id(1)]
                     public interface IMyDTO
                     {
                         [Member(1)] string  FamilyName { get; set; }

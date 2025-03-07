@@ -16,7 +16,7 @@
         public const string DMMB0008 = nameof(DMMB0008); // Member layout issue
         public const string DMMB0009 = nameof(DMMB0009); // Invalid length or array capacity
         public const string DMMB0010 = nameof(DMMB0010); // Missing assembly reference
-        public const string DMMB0011 = nameof(DMMB0011); // Invalid entity identifier
+        public const string DMMB0011 = nameof(DMMB0011); // not used
         public const string DMMB0012 = nameof(DMMB0012); // Invalid class height
     }
 }

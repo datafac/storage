@@ -17,14 +17,14 @@ namespace DTOMaker.MessagePack.Tests
             using DTOMaker.Models.MessagePack;
             namespace MyOrg.DomainA
             {
-                [Entity] [EntityKey(1)] public interface IMyDTO1
+                [Entity] [Id(1)] public interface IMyDTO1
                 {
                     [Member(1)] long Field1 { get; set; }
                 }
             }
             namespace MyOrg.DomainB
             {
-                [Entity] [EntityKey(2)] public interface IMyDTO2
+                [Entity] [Id(2)] public interface IMyDTO2
                 {
                     [Member(1)] MyOrg.DomainA.IMyDTO1? Member1 { get; set; }
                 }

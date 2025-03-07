@@ -17,7 +17,7 @@ namespace MyOrg.Models.MessagePack
     public sealed partial class RightTriangle : MyOrg.Models.MessagePack.Triangle, IRightTriangle, IEquatable<RightTriangle>
     {
 
-        public new const int EntityKey = 4;
+        public new const int EntityId = 4;
 
         private static RightTriangle CreateEmpty()
         {
@@ -44,15 +44,15 @@ namespace MyOrg.Models.MessagePack
                 return new RightTriangle(source);
         }
 
-        public new static RightTriangle CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static RightTriangle CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            if (entityKey == MyOrg.Models.MessagePack.RightTriangle.EntityKey)
+            if (entityId == MyOrg.Models.MessagePack.RightTriangle.EntityId)
                 return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.RightTriangle>(buffer, out var _);
             else
-                throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);
+                throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }
 
-        protected override string OnGetEntityId() => EntityKey.ToString();
+        protected override int OnGetEntityId() => 4;
 
         protected override void OnFreeze()
         {

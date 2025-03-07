@@ -18,13 +18,13 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.DomainA
                 {
                     [Entity] [Layout(LayoutMethod.Linear)]
-                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
+                    [Id(1)]
                     public interface IMyDTO { }
                 }
                 namespace MyOrg.DomainB
                 {
                     [Entity] [Layout(LayoutMethod.Linear)]
-                    [Id("01234567-89ab-cdef-1234-456789abcdef")]
+                    [Id(2)]
                     public interface IMyDTO { }
                 }
                 """;
@@ -75,13 +75,13 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.DomainA
                 {
                     [Entity]
-                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
+                    [Id(1)]
                     public interface IMyBase { }
                 }
                 namespace MyOrg.DomainB
                 {
                     [Entity]
-                    [Id("01234567-89ab-cdef-1234-456789abcdef")]
+                    [Id(2)]
                     public interface IMyDTO : MyOrg.DomainA.IMyBase { }
                 }
                 """;

@@ -14,10 +14,10 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    [Union(BooleanNode.EntityKey, typeof(BooleanNode))]
-    [Union(DoubleNode.EntityKey, typeof(DoubleNode))]
-    [Union(Int64Node.EntityKey, typeof(Int64Node))]
-    [Union(StringNode.EntityKey, typeof(StringNode))]
+    [Union(BooleanNode.EntityId, typeof(BooleanNode))]
+    [Union(DoubleNode.EntityId, typeof(DoubleNode))]
+    [Union(Int64Node.EntityId, typeof(Int64Node))]
+    [Union(StringNode.EntityId, typeof(StringNode))]
     public abstract partial class Node : DTOMaker.Runtime.MessagePack.EntityBase, INode, IEquatable<Node>
     {
         // Derived entities: 5
@@ -27,7 +27,7 @@ namespace MyOrg.Models.MessagePack
         // - NumericNode (abstract)
         // - StringNode
 
-        public new const int EntityKey = 1;
+        public new const int EntityId = 1;
 
         public new static Node CreateFrom(Node source)
         {
@@ -55,19 +55,19 @@ namespace MyOrg.Models.MessagePack
             };
         }
 
-        public new static Node CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static Node CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            return entityKey switch
+            return entityId switch
             {
-                MyOrg.Models.MessagePack.BooleanNode.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.BooleanNode>(buffer, out var _),
-                MyOrg.Models.MessagePack.DoubleNode.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.DoubleNode>(buffer, out var _),
-                MyOrg.Models.MessagePack.Int64Node.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Int64Node>(buffer, out var _),
-                MyOrg.Models.MessagePack.StringNode.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.StringNode>(buffer, out var _),
-                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
+                MyOrg.Models.MessagePack.BooleanNode.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.BooleanNode>(buffer, out var _),
+                MyOrg.Models.MessagePack.DoubleNode.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.DoubleNode>(buffer, out var _),
+                MyOrg.Models.MessagePack.Int64Node.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Int64Node>(buffer, out var _),
+                MyOrg.Models.MessagePack.StringNode.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.StringNode>(buffer, out var _),
+                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }
 
-        protected override string OnGetEntityId() => EntityKey.ToString();
+        protected override int OnGetEntityId() => 1;
 
         protected override void OnFreeze()
         {

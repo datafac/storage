@@ -14,15 +14,15 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    [Union(Equilateral.EntityKey, typeof(Equilateral))]
-    [Union(RightTriangle.EntityKey, typeof(RightTriangle))]
+    [Union(Equilateral.EntityId, typeof(Equilateral))]
+    [Union(RightTriangle.EntityId, typeof(RightTriangle))]
     public abstract partial class Triangle : MyOrg.Models.MessagePack.Polygon, ITriangle, IEquatable<Triangle>
     {
         // Derived entities: 2
         // - Equilateral
         // - RightTriangle
 
-        public new const int EntityKey = 2;
+        public new const int EntityId = 2;
 
         public new static Triangle CreateFrom(Triangle source)
         {
@@ -46,17 +46,17 @@ namespace MyOrg.Models.MessagePack
             };
         }
 
-        public new static Triangle CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static Triangle CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            return entityKey switch
+            return entityId switch
             {
-                MyOrg.Models.MessagePack.Equilateral.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Equilateral>(buffer, out var _),
-                MyOrg.Models.MessagePack.RightTriangle.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.RightTriangle>(buffer, out var _),
-                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
+                MyOrg.Models.MessagePack.Equilateral.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Equilateral>(buffer, out var _),
+                MyOrg.Models.MessagePack.RightTriangle.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.RightTriangle>(buffer, out var _),
+                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }
 
-        protected override string OnGetEntityId() => EntityKey.ToString();
+        protected override int OnGetEntityId() => 2;
 
         protected override void OnFreeze()
         {

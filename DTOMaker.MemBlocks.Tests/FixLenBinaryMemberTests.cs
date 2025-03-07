@@ -20,7 +20,7 @@ namespace DTOMaker.MemBlocks.Tests
             namespace MyOrg.Models
             {
                 [Entity] [Layout(LayoutMethod.Linear)]
-                [Id("c8ab1cae-e54b-4c37-8890-ddd9e3032451")]
+                [Id(1)]
                 public interface IMyDTO
                 {
                     [Member(1)] [FixedLength(128)] Octets Field1 { get; set; }

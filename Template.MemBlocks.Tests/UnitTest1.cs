@@ -4,6 +4,7 @@ using Shouldly;
 using System;
 using System.Buffers;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -17,21 +18,19 @@ namespace Template.MemBlocks.Tests
         //private const int T_BlockLength_ = 1024;
         //private const bool T_MemberObsoleteIsError_ = false;
         //private const long T_BlockStructureCode_ = 0x0A62;
-        //private static readonly Guid T_EntityGuid_ = new Guid("341c6631-30ba-482b-b580-7c1c2c9ff182");
         //##}
         private static readonly long _structureBits = 0x0051;
         private const int ClassHeight = 1;
+        private const int EntityId = 4;
         private const int BlockLength = 32;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        public new const string EntityId = "T_EntityId_";
-        private static readonly Guid _entityGuid = new Guid("8bb1290a-9336-4371-8dad-fccd8d9c4494");
-        private static readonly BlockHeader _header = BlockHeader.CreateNew(_structureBits, _entityGuid);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(EntityId, _structureBits);
 
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
-        protected override string OnGetEntityId() => _entityGuid.ToString("D");
+        protected override int OnGetEntityId() => EntityId;
         public TestEntity() : base(_header)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
@@ -42,25 +41,25 @@ namespace Template.MemBlocks.Tests
         [Fact]
         public void ParseBlockHeader()
         {
-            BlockB064 outgoing = default;
+            BlockB016 outgoing = default;
             // signature
-            outgoing.A.A.A.A.A.A.ByteValue = (byte)'|';
-            outgoing.A.A.A.A.A.B.ByteValue = (byte)'_';
-            outgoing.A.A.A.A.B.A.ByteValue = (byte)1;
-            outgoing.A.A.A.A.B.B.ByteValue = (byte)0;
+            outgoing.A.A.A.A.ByteValue = (byte)'|';
+            outgoing.A.A.A.B.ByteValue = (byte)'_';
+            outgoing.A.A.B.A.ByteValue = (byte)1;
+            outgoing.A.A.B.B.ByteValue = (byte)1;
+            // entity id
+            outgoing.A.B.A.Int16ValueLE = 4;
             // structure
-            outgoing.A.A.B.Int64ValueLE = 0x61;
-            // entityid
-            outgoing.A.B.GuidValueLE = new Guid("aa1e2d7b-fcb5-4739-9624-f6a648815251");
+            outgoing.B.Int64ValueLE = 0x61;
 
             Memory<byte> buffer = new byte[Constants.HeaderSize];
             bool written = outgoing.TryWrite(buffer.Span);
             written.ShouldBeTrue();
 
             BlockHeader incoming = BlockHeader.ParseFrom(buffer);
-            incoming.SignatureBits.ShouldBe(89980L);
+            incoming.SignatureBits.ShouldBe(0x01015f7c);
             incoming.StructureBits.ShouldBe(0x61);
-            incoming.EntityGuid.ToString("D").ShouldBe("aa1e2d7b-fcb5-4739-9624-f6a648815251");
+            incoming.EntityId.ShouldBe(4);
         }
 
         [Fact]
@@ -71,17 +70,17 @@ namespace Template.MemBlocks.Tests
             await orig.Pack(dataStore);
             orig.Freeze();
             var buffer = orig.GetBuffers().Compact();
-            buffer.Length.ShouldBe(96);
+            buffer.Length.ShouldBe(48);
 
             buffer.Span[0].ShouldBe((byte)'|');  // marker byte 0
             buffer.Span[1].ShouldBe((byte)'_');  // marker byte 1
             buffer.Span[2].ShouldBe((byte)1);    // major version
-            buffer.Span[3].ShouldBe((byte)0);    // minor version
+            buffer.Span[3].ShouldBe((byte)1);    // minor version
 
             BlockHeader parsed = BlockHeader.ParseFrom(buffer);
-            parsed.SignatureBits.ShouldBe(89980L);
+            parsed.SignatureBits.ShouldBe(0x01015f7c);
             parsed.StructureBits.ShouldBe(0x51);
-            parsed.EntityGuid.ToString("D").ShouldBe("8bb1290a-9336-4371-8dad-fccd8d9c4494");
+            parsed.EntityId.ShouldBe(4);
         }
     }
 

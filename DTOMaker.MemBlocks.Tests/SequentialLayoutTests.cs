@@ -21,7 +21,7 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [Id("01234567-89ab-cdef-0123-456789abcdef")][Layout(LayoutMethod.Linear)]
+                    [Id(1)][Layout(LayoutMethod.Linear)]
                     public interface IMyDTO
                     {
                     }
@@ -52,7 +52,7 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [Id("01234567-89ab-cdef-0123-456789abcdef")][Layout(LayoutMethod.Linear)]
+                    [Id(1)][Layout(LayoutMethod.Linear)]
                     public interface IMyDTO
                     {
                         [Member(1)] 
@@ -84,7 +84,7 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [Id("01234567-89ab-cdef-0123-456789abcdef")][Layout(LayoutMethod.Linear)]
+                    [Id(1)][Layout(LayoutMethod.Linear)]
                     public interface IMyDTO
                     {
                         [Member(1)] double Field1 { get; set; }
@@ -118,7 +118,7 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [Id("01234567-89ab-cdef-0123-456789abcdef")][Layout(LayoutMethod.Linear)]
+                    [Id(1)][Layout(LayoutMethod.Linear)]
                     public interface IMyDTO
                     {
                         [Obsolete("Removed", true)]
@@ -152,7 +152,7 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [Id("01234567-89ab-cdef-0123-456789abcdef")][Layout(LayoutMethod.Linear)]
+                    [Id(1)][Layout(LayoutMethod.Linear)]
                     public interface IMyDTO
                     {
                         [Member(1)]
@@ -194,7 +194,7 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [Id("01234567-89ab-cdef-0123-456789abcdef")][Layout(LayoutMethod.Linear)]
+                    [Id(1)][Layout(LayoutMethod.Linear)]
                     public interface IMyDTO
                     {
                         [Member(1)]  bool    Field1  { get; set; }
@@ -242,7 +242,7 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
+                    [Id(1)]
                     [Layout(LayoutMethod.Linear)]
                     public interface IMyDTO
                     {
@@ -273,7 +273,7 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [Id("01234567-89ab-cdef-0123-456789abcdef")][Layout(LayoutMethod.Linear)]
+                    [Id(1)][Layout(LayoutMethod.Linear)]
                     public interface IMyDTO
                     {
                         [Member(1)] 
@@ -303,7 +303,7 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [Id("01234567-89ab-cdef-0123-456789abcdef")][Layout(LayoutMethod.Linear)]
+                    [Id(1)][Layout(LayoutMethod.Linear)]
                     public interface IMyDTO
                     {
                         [Member(1)] 
@@ -334,7 +334,7 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [Id("01234567-89ab-cdef-0123-456789abcdef")][Layout(LayoutMethod.Linear)]
+                    [Id(1)][Layout(LayoutMethod.Linear)]
                     public interface IMyDTO
                     {
                         [Member(1)] 
@@ -365,11 +365,11 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity][Layout(LayoutMethod.Linear)]
-                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
+                    [Id(1)]
                     public interface IMyDTO1 { }
 
                     [Entity][Layout(LayoutMethod.Linear)]
-                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
+                    [Id(1)]
                     public interface IMyDTO2 { }
                 }
                 """;
@@ -381,7 +381,7 @@ namespace DTOMaker.MemBlocks.Tests
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
             errors.Length.ShouldBe(1);
-            errors[0].GetMessage().ShouldBe("Entity id (01234567-89ab-cdef-0123-456789abcdef) is already used by entity: MyOrg.Models.MyDTO1");
+            errors[0].GetMessage().ShouldBe("Entity id (1) is already used by entity: MyOrg.Models.MyDTO1");
         }
 
     }

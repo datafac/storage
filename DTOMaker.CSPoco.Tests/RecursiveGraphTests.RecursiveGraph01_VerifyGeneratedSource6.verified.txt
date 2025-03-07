@@ -16,7 +16,7 @@ namespace MyOrg.Models.CSPoco
     {
         // Derived entities: 0
 
-        public new const string EntityId = "MyOrg.Models.Tree";
+        private const int EntityId = 7;
 
         private static Tree CreateEmpty()
         {
@@ -45,7 +45,7 @@ namespace MyOrg.Models.CSPoco
             };
         }
 
-        protected override string OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {

@@ -19,48 +19,48 @@ namespace DTOMaker.MemBlocks.Tests
             namespace MyOrg.Models
             {
                 [Entity][Layout(LayoutMethod.Linear)]
-                [Id("01234567-89ab-cdef-0123-456789abcdef")]
+                [Id(1)]
                 public interface INode
                 {
                     [Member(1)][FixedLength(16)] String Key { get; set; }
                 }
 
                 [Entity][Layout(LayoutMethod.Linear)]
-                [Id("01234567-89ab-cdef-0201-456789abcdef")]
+                [Id(2)]
                 public interface IStringNode : INode
                 {
                     [Member(1)][FixedLength(256)] String Value { get; set; }
                 }
 
                 [Entity][Layout(LayoutMethod.Linear)]
-                [Id("01234567-89ab-cdef-0202-456789abcdef")]
+                [Id(3)]
                 public interface INumericNode : INode
                 {
                 }
 
                 [Entity][Layout(LayoutMethod.Linear)]
-                [Id("01234567-89ab-cdef-0203-456789abcdef")]
+                [Id(4)]
                 public interface IInt64Node : INumericNode
                 {
                     [Member(1)] Int64 Value { get; set; }
                 }
 
                 [Entity][Layout(LayoutMethod.Linear)]
-                [Id("01234567-89ab-cdef-0204-456789abcdef")]
+                [Id(5)]
                 public interface IDoubleNode : INumericNode
                 {
                     [Member(1)] Double Value { get; set; }
                 }
 
                 [Entity][Layout(LayoutMethod.Linear)]
-                [Id("01234567-89ab-cdef-0205-456789abcdef")]
+                [Id(6)]
                 public interface IBooleanNode : INode
                 {
                     [Member(1)] Boolean Value { get; set; }
                 }
 
                 [Entity][Layout(LayoutMethod.Linear)]
-                [Id("01234567-89ab-cdef-0206-456789abcdef")]
+                [Id(7)]
                 public interface ITree
                 {
                     [Member(1)] ITree? Left { get; set; }

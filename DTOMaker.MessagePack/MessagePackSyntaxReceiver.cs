@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace DTOMaker.MessagePack
 {
-    public readonly struct EntityKeyAttribute { }
+    public readonly struct MemberKeyOffsetAttribute { }
 
     internal class MessagePackSyntaxReceiver : SyntaxReceiverBase
     {
@@ -16,14 +16,13 @@ namespace DTOMaker.MessagePack
         protected override void OnProcessEntityAttributes(TargetEntity baseEntity, Location location, ImmutableArray<AttributeData> entityAttributes)
         {
             if (baseEntity is MessagePackEntity entity
-                && entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(EntityKeyAttribute)) is AttributeData entityAttr)
+                && entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(MemberKeyOffsetAttribute)) is AttributeData entityAttr)
             {
                 // found entity key attribute
                 var attributeArguments = entityAttr.ConstructorArguments;
-                if (CheckAttributeArguments(nameof(EntityKeyAttribute), attributeArguments, 2, entity, location))
+                if (CheckAttributeArguments(nameof(MemberKeyOffsetAttribute), attributeArguments, 1, entity, location))
                 {
-                    TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 0, (value) => { entity.EntityKey = value; });
-                    TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 1, (value) => { entity.MemberKeyOffset = value; });
+                    TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 0, (value) => { entity.MemberKeyOffset = value; });
                 }
             }
         }

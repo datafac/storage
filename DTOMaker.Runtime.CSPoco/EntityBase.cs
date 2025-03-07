@@ -5,8 +5,8 @@ namespace DTOMaker.Runtime.CSPoco
 {
     public abstract class EntityBase : IHasEntityId, IFreezable, IEquatable<EntityBase>
     {
-        protected abstract string OnGetEntityId();
-        public string GetEntityId() => OnGetEntityId();
+        protected abstract int OnGetEntityId();
+        public int GetEntityId() => OnGetEntityId();
 
         public EntityBase() { }
         public EntityBase(object? notUsed) { }

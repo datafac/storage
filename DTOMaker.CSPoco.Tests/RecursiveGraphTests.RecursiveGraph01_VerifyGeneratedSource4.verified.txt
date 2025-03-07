@@ -18,7 +18,7 @@ namespace MyOrg.Models.CSPoco
         // - DoubleNode
         // - Int64Node
 
-        public new const string EntityId = "MyOrg.Models.NumericNode";
+        private const int EntityId = 3;
 
         private static NumericNode CreateEmpty()
         {
@@ -51,7 +51,7 @@ namespace MyOrg.Models.CSPoco
             };
         }
 
-        protected override string OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {

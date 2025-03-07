@@ -7,9 +7,9 @@ namespace DTOMaker.Runtime.MessagePack
     [MessagePackObject]
     public abstract class EntityBase : IHasEntityId, IFreezable, IEquatable<EntityBase>
     {
-        public const int EntityKey = 0;
-        protected abstract string OnGetEntityId();
-        public string GetEntityId() => OnGetEntityId();
+        public const int EntityId = 0;
+        protected abstract int OnGetEntityId();
+        public int GetEntityId() => OnGetEntityId();
 
         public EntityBase() { }
         public EntityBase(object? notUsed) { }

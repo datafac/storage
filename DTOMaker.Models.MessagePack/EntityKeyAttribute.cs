@@ -3,14 +3,12 @@
 namespace DTOMaker.Models.MessagePack
 {
     [AttributeUsage(AttributeTargets.Interface, AllowMultiple = false)]
-    public class EntityKeyAttribute : Attribute
+    public class MemberKeyOffsetAttribute : Attribute
     {
-        public readonly int EntityKey;
         public readonly int MemberKeyOffset;
 
-        public EntityKeyAttribute(int entityKey, int memberKeyOffset = 0)
+        public MemberKeyOffsetAttribute(int memberKeyOffset)
         {
-            EntityKey = entityKey;
             MemberKeyOffset = memberKeyOffset;
         }
     }

@@ -18,7 +18,7 @@ namespace MyOrg.Models.CSPoco
         // - Equilateral
         // - RightTriangle
 
-        public new const string EntityId = "ab43cde1-e7e3-45ee-a61d-ebf361c75d20";
+        private const int EntityId = 2;
 
         private static Triangle CreateEmpty()
         {
@@ -51,7 +51,7 @@ namespace MyOrg.Models.CSPoco
             };
         }
 
-        protected override string OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {

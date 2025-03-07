@@ -44,8 +44,8 @@ namespace DTOMaker.Common.MemBlocks
             OnFreeze();
         }
 
-        protected abstract string OnGetEntityId();
-        public string GetEntityId() => OnGetEntityId();
+        protected abstract int OnGetEntityId();
+        public int GetEntityId() => OnGetEntityId();
         protected abstract int OnGetClassHeight();
         protected virtual void OnGetBuffers(ReadOnlyMemory<byte>[] buffers) { }
         public ReadOnlyMemory<ReadOnlyMemory<byte>> GetBuffers()

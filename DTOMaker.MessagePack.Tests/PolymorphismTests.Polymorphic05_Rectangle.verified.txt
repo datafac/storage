@@ -17,7 +17,7 @@ namespace MyOrg.Models.MessagePack
     public sealed partial class Rectangle : MyOrg.Models.MessagePack.Quadrilateral, IRectangle, IEquatable<Rectangle>
     {
 
-        public new const int EntityKey = 7;
+        public new const int EntityId = 7;
 
         private static Rectangle CreateEmpty()
         {
@@ -44,15 +44,15 @@ namespace MyOrg.Models.MessagePack
                 return new Rectangle(source);
         }
 
-        public new static Rectangle CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static Rectangle CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            if (entityKey == MyOrg.Models.MessagePack.Rectangle.EntityKey)
+            if (entityId == MyOrg.Models.MessagePack.Rectangle.EntityId)
                 return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Rectangle>(buffer, out var _);
             else
-                throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);
+                throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }
 
-        protected override string OnGetEntityId() => EntityKey.ToString();
+        protected override int OnGetEntityId() => 7;
 
         protected override void OnFreeze()
         {

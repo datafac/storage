@@ -18,7 +18,7 @@ namespace MyOrg.Models.CSPoco
         // - Rectangle
         // - Square
 
-        public new const string EntityId = "0b524606-ede1-4f9e-ae7d-34abbe67c911";
+        private const int EntityId = 5;
 
         private static Quadrilateral CreateEmpty()
         {
@@ -51,7 +51,7 @@ namespace MyOrg.Models.CSPoco
             };
         }
 
-        protected override string OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {

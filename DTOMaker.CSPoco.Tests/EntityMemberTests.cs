@@ -16,21 +16,21 @@ namespace DTOMaker.CSPoco.Tests
             using DTOMaker.Models;
             namespace MyOrg.DomainA
             {
-                [Entity] public interface IMyDTO1
+                [Entity][Id(1)] public interface IMyDTO1
                 {
                     [Member(1)] long Field1 { get; set; }
                 }
             }
             namespace MyOrg.DomainB
             {
-                [Entity] public interface IMyDTO1
+                [Entity][Id(2)] public interface IMyDTO1
                 {
                     [Member(1)] double Field1 { get; set; }
                 }
             }
             namespace MyOrg.DomainC
             {
-                [Entity] public interface IMyDTO2
+                [Entity][Id(3)] public interface IMyDTO2
                 {
                     [Member(1)] MyOrg.DomainA.IMyDTO1? Member1 { get; set; }
                     [Member(2)] MyOrg.DomainB.IMyDTO1  Member2 { get; set; }

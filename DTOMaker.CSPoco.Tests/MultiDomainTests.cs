@@ -16,11 +16,11 @@ namespace DTOMaker.CSPoco.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.DomainA
                 {
-                    [Entity] public interface IMyDTO { }
+                    [Entity][Id(1)] public interface IMyDTO { }
                 }
                 namespace MyOrg.DomainB
                 {
-                    [Entity] public interface IMyDTO { }
+                    [Entity][Id(2)] public interface IMyDTO { }
                 }
                 """;
 
@@ -69,11 +69,11 @@ namespace DTOMaker.CSPoco.Tests
                 using DTOMaker.Models.MessagePack;
                 namespace MyOrg.DomainA
                 {
-                    [Entity] public interface IMyBase { }
+                    [Entity][Id(2)] public interface IMyBase { }
                 }
                 namespace MyOrg.DomainB
                 {
-                    [Entity] public interface IMyDTO : MyOrg.DomainA.IMyBase { }
+                    [Entity][Id(1)] public interface IMyDTO : MyOrg.DomainA.IMyBase { }
                 }
                 """;
 

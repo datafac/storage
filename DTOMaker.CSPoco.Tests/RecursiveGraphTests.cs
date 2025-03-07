@@ -19,42 +19,42 @@ namespace DTOMaker.CSPoco.Tests
             using DTOMaker.Models.MessagePack;
             namespace MyOrg.Models
             {
-                [Entity]
+                [Entity][Id(1)]
                 public interface INode
                 {
                     [Member(1)] String Key { get; set; }
                 }
 
-                [Entity]
+                [Entity][Id(2)]
                 public interface IStringNode : INode
                 {
                     [Member(1)] String Value { get; set; }
                 }
 
-                [Entity]
+                [Entity][Id(3)]
                 public interface INumericNode : INode
                 {
                 }
 
-                [Entity]
+                [Entity][Id(5)]
                 public interface IInt64Node : INumericNode
                 {
                     [Member(1)] Int64 Value { get; set; }
                 }
 
-                [Entity]
+                [Entity][Id(6)]
                 public interface IDoubleNode : INumericNode
                 {
                     [Member(1)] Double Value { get; set; }
                 }
 
-                [Entity]
+                [Entity][Id(4)]
                 public interface IBooleanNode : INode
                 {
                     [Member(1)] Boolean Value { get; set; }
                 }
 
-                [Entity]
+                [Entity][Id(7)]
                 public interface ITree
                 {
                     [Member(1)] ITree? Left { get; set; }

@@ -16,7 +16,7 @@ namespace MyOrg.Models.CSPoco
     {
         // Derived entities: 0
 
-        public new const string EntityId = "MyOrg.Models.MyDTO";
+        private const int EntityId = 1;
 
         private static MyDTO CreateEmpty()
         {
@@ -45,7 +45,7 @@ namespace MyOrg.Models.CSPoco
             };
         }
 
-        protected override string OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {
@@ -59,8 +59,7 @@ namespace MyOrg.Models.CSPoco
         {
             _FamilyName = source.FamilyName;
             _GivenName = source.GivenName;
-            _OtherNames_Value = source.OtherNames_Value;
-            _OtherNames_HasValue = source.OtherNames_HasValue;
+            _OtherNames = source.OtherNames;
         }
 
         private string _FamilyName = string.Empty;
@@ -77,18 +76,11 @@ namespace MyOrg.Models.CSPoco
             set => _GivenName = IfNotFrozen(ref value);
         }
 
-        private string _OtherNames_Value = string.Empty;
-        public string OtherNames_Value
+        private string? _OtherNames;
+        public string? OtherNames
         {
-            get => _OtherNames_Value;
-            set => _OtherNames_Value = IfNotFrozen(ref value);
-        }
-
-        private Boolean _OtherNames_HasValue = default;
-        public Boolean OtherNames_HasValue
-        {
-            get => _OtherNames_HasValue;
-            set => _OtherNames_HasValue = IfNotFrozen(ref value);
+            get => _OtherNames;
+            set => _OtherNames = IfNotFrozen(ref value);
         }
 
 
@@ -99,8 +91,7 @@ namespace MyOrg.Models.CSPoco
             if (!base.Equals(other)) return false;
             if (_FamilyName != other.FamilyName) return false;
             if (_GivenName != other.GivenName) return false;
-            if (_OtherNames_Value != other.OtherNames_Value) return false;
-            if (_OtherNames_HasValue != other.OtherNames_HasValue) return false;
+            if (_OtherNames != other.OtherNames) return false;
             return true;
         }
 
@@ -114,8 +105,7 @@ namespace MyOrg.Models.CSPoco
             result.Add(base.GetHashCode());
             result.Add(_FamilyName);
             result.Add(_GivenName);
-            result.Add(_OtherNames_Value);
-            result.Add(_OtherNames_HasValue);
+            result.Add(_OtherNames);
             return result.ToHashCode();
         }
 

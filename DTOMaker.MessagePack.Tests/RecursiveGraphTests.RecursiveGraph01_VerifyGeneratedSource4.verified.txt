@@ -14,15 +14,15 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    [Union(DoubleNode.EntityKey, typeof(DoubleNode))]
-    [Union(Int64Node.EntityKey, typeof(Int64Node))]
+    [Union(DoubleNode.EntityId, typeof(DoubleNode))]
+    [Union(Int64Node.EntityId, typeof(Int64Node))]
     public abstract partial class NumericNode : MyOrg.Models.MessagePack.Node, INumericNode, IEquatable<NumericNode>
     {
         // Derived entities: 2
         // - DoubleNode
         // - Int64Node
 
-        public new const int EntityKey = 3;
+        public new const int EntityId = 3;
 
         public new static NumericNode CreateFrom(NumericNode source)
         {
@@ -46,17 +46,17 @@ namespace MyOrg.Models.MessagePack
             };
         }
 
-        public new static NumericNode CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static NumericNode CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            return entityKey switch
+            return entityId switch
             {
-                MyOrg.Models.MessagePack.DoubleNode.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.DoubleNode>(buffer, out var _),
-                MyOrg.Models.MessagePack.Int64Node.EntityKey => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Int64Node>(buffer, out var _),
-                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
+                MyOrg.Models.MessagePack.DoubleNode.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.DoubleNode>(buffer, out var _),
+                MyOrg.Models.MessagePack.Int64Node.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Int64Node>(buffer, out var _),
+                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }
 
-        protected override string OnGetEntityId() => EntityKey.ToString();
+        protected override int OnGetEntityId() => 3;
 
         protected override void OnFreeze()
         {

@@ -17,7 +17,7 @@ namespace MyOrg.Models.MessagePack
     public sealed partial class Square : MyOrg.Models.MessagePack.Quadrilateral, ISquare, IEquatable<Square>
     {
 
-        public new const int EntityKey = 6;
+        public new const int EntityId = 6;
 
         private static Square CreateEmpty()
         {
@@ -44,15 +44,15 @@ namespace MyOrg.Models.MessagePack
                 return new Square(source);
         }
 
-        public new static Square CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static Square CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            if (entityKey == MyOrg.Models.MessagePack.Square.EntityKey)
+            if (entityId == MyOrg.Models.MessagePack.Square.EntityId)
                 return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Square>(buffer, out var _);
             else
-                throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);
+                throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }
 
-        protected override string OnGetEntityId() => EntityKey.ToString();
+        protected override int OnGetEntityId() => 6;
 
         protected override void OnFreeze()
         {

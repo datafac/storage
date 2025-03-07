@@ -19,28 +19,15 @@ namespace DTOMaker.MemBlocks.Tests
             namespace MyOrg.Models
             {
                 [Entity] [Layout(LayoutMethod.Linear, 64)]
-                [Id("01234567-89ab-cdef-0123-456789abcdef")]
+                [Id(1)]
                 public interface IHeader
                 {
-                    [Member(1)]  byte  MarkerByte0 { get; set; } // '|'
-                    [Member(2)]  byte  MarkerByte1 { get; set; } // '_'
-                    [Member(3)]  byte  HeaderMajorVersion { get; set; }
-                    [Member(4)]  byte  HeaderMinorVersion { get; set; }
-                    [Member(5)]  byte  SpareByte0  { get; set; }
-                    [Member(6)]  byte  SpareByte1  { get; set; }
-                    [Member(7)]  byte  SpareByte2  { get; set; }
-                    [Member(8)]  byte  SpareByte3  { get; set; }
-                    [Member(9)]  byte  ClassHeight { get; set; }
-                    [Member(10)] byte  BlockSize1 { get; set; }
-                    [Member(11)] byte  BlockSize2 { get; set; }
-                    [Member(12)] byte  BlockSize3 { get; set; }
-                    [Member(13)] byte  BlockSize4 { get; set; }
-                    [Member(14)] byte  BlockSize5 { get; set; }
-                    [Member(15)] byte  BlockSize6 { get; set; }
-                    [Member(16)] byte  BlockSize7 { get; set; }
-                    [Member(17)] Guid  EntityGuid { get; set; }
-                    [Member(18)] Guid  SpareGuid0 { get; set; }
-                    [Member(19)] Guid  SpareGuid1 { get; set; }
+                    [Member(1)]  byte  Marker00  { get; set; } // '|'
+                    [Member(2)]  byte  Marker01  { get; set; } // '_'
+                    [Member(3)]  byte  MajorVer  { get; set; } // 1
+                    [Member(4)]  byte  MinorVer  { get; set; } // 1
+                    [Member(5)]  int   EntityId  { get; set; }
+                    [Member(6)]  long  Structure { get; set; }
                 }
             }
             """;

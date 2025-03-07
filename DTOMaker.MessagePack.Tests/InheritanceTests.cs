@@ -22,12 +22,13 @@ namespace DTOMaker.MessagePack.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [EntityKey(1)]
+                    [Id(1)]
                     public interface IMyBase
                     {
                     }
                     [Entity]
-                    [EntityKey(2, 10)]
+                    [Id(2)]
+                    [MemberKeyOffset(10)]
                     public interface IMyDTO : IMyBase
                     {
                     }
@@ -58,12 +59,13 @@ namespace DTOMaker.MessagePack.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [EntityKey(1)]
+                    [Id(1)]
                     public interface IMyBase
                     {
                     }
                     [Entity]
-                    [EntityKey(2, 10)]
+                    [Id(2)]
+                    [MemberKeyOffset(10)]
                     public interface IMyDTO : IMyBase
                     {
                     }
@@ -94,13 +96,14 @@ namespace DTOMaker.MessagePack.Tests
                 namespace MyOrg.Models
                 {
                     [Entity]
-                    [EntityKey(1)]
+                    [Id(1)]
                     public interface IMyBase
                     {
                         [Member(1)] double BaseField1 { get; set; }
                     }
                     [Entity]
-                    [EntityKey(2, 10)]
+                    [Id(2)]
+                    [MemberKeyOffset(10)]
                     public interface IMyDTO : IMyBase
                     {
                         [Member(1)] double DTOField1 { get; set; }

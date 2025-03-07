@@ -19,11 +19,11 @@ namespace DTOMaker.CSPoco.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity]
+                    [Entity][Id(2)]
                     public interface IMyBase
                     {
                     }
-                    [Entity]
+                    [Entity][Id(1)]
                     public interface IMyDTO : IMyBase
                     {
                     }
@@ -52,11 +52,11 @@ namespace DTOMaker.CSPoco.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity]
+                    [Entity][Id(2)]
                     public interface IMyBase
                     {
                     }
-                    [Entity]
+                    [Entity][Id(1)]
                     public interface IMyDTO : IMyBase
                     {
                     }

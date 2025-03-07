@@ -5,25 +5,15 @@ namespace DTOMaker.MemBlocks
 {
     internal sealed class MemBlocksModelScopeEntity : ModelScopeEntity
     {
-        private static Guid ParseEntityIdAsGuid(string entityId)
-        {
-            if (Guid.TryParse(entityId, out Guid result)) return result;
-
-            // Guid not supplied - generate a random - todo issue warning
-            return Guid.NewGuid();
-        }
-
         public MemBlocksModelScopeEntity(IModelScope parent, IScopeFactory factory, ILanguage language, TargetEntity baseEntity)
             : base(parent, factory, language, baseEntity)
         {
             MemBlockEntity entity = baseEntity as MemBlockEntity
                 ?? throw new ArgumentException("Expected baseEntity to be a MemBlocksEntity", nameof(baseEntity));
 
+            _tokens["EntityId"] = entity.EntityId;
             _tokens["BlockLength"] = entity.BlockLength;
             _tokens["BlockStructureCode"] = entity.BlockStructureCode; // todo format as hex eg. 0x0041L
-            Guid entityGuid = ParseEntityIdAsGuid(entity.EntityId);
-            _tokens["EntityId"] = entityGuid.ToString("D");
-            _tokens["EntityGuid"] = entityGuid;
         }
     }
 }

@@ -17,11 +17,11 @@ namespace DTOMaker.MessagePack.Tests
                 using DTOMaker.Models.MessagePack;
                 namespace MyOrg.DomainA
                 {
-                    [Entity] [EntityKey(1)] public interface IMyDTO { }
+                    [Entity] [Id(1)] public interface IMyDTO { }
                 }
                 namespace MyOrg.DomainB
                 {
-                    [Entity] [EntityKey(2)] public interface IMyDTO { }
+                    [Entity] [Id(2)] public interface IMyDTO { }
                 }
                 """;
 
@@ -70,11 +70,11 @@ namespace DTOMaker.MessagePack.Tests
                 using DTOMaker.Models.MessagePack;
                 namespace MyOrg.DomainA
                 {
-                    [Entity] [EntityKey(1)] public interface IMyBase { }
+                    [Entity] [Id(1)] public interface IMyBase { }
                 }
                 namespace MyOrg.DomainB
                 {
-                    [Entity] [EntityKey(2)] public interface IMyDTO : MyOrg.DomainA.IMyBase { }
+                    [Entity] [Id(2)] public interface IMyDTO : MyOrg.DomainA.IMyBase { }
                 }
                 """;
 

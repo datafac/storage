@@ -24,13 +24,14 @@ namespace T_MemberTypeNameSpace_.CSPoco
 {
     public class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_
     {
+        private const int T_EntityId_ = 1;
         private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();
         public static T_MemberTypeName_ Empty => _empty;
         public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source) => throw new NotImplementedException();
         public T_MemberTypeName_() { }
         public T_MemberTypeName_(IT_MemberTypeName_ source) { }
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
-        protected override string OnGetEntityId() => "T_MemberTypeName_";
+        protected override int OnGetEntityId() => T_EntityId_;
     }
 }
 namespace T_BaseNameSpace_
@@ -91,9 +92,10 @@ namespace T_NameSpace_.CSPoco
         private const string T_MemberObsoleteMessage_ = null;
         private const bool T_MemberObsoleteIsError_ = false;
         private const int T_MemberDefaultValue_ = 0;
+        private const int T_EntityId_ = 1;
         //##}
 
-        public new const string EntityId = "T_EntityId_";
+        private const int EntityId = T_EntityId_;
 
         private static T_EntityName_ CreateEmpty()
         {
@@ -130,7 +132,7 @@ namespace T_NameSpace_.CSPoco
             };
         }
 
-        protected override string OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {

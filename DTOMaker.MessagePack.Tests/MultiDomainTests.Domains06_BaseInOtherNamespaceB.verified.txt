@@ -17,7 +17,7 @@ namespace MyOrg.DomainB.MessagePack
     public sealed partial class MyDTO : MyOrg.DomainA.MessagePack.MyBase, IMyDTO, IEquatable<MyDTO>
     {
 
-        public new const int EntityKey = 2;
+        public new const int EntityId = 2;
 
         private static MyDTO CreateEmpty()
         {
@@ -44,15 +44,15 @@ namespace MyOrg.DomainB.MessagePack
                 return new MyDTO(source);
         }
 
-        public new static MyDTO CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static MyDTO CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            if (entityKey == MyOrg.DomainB.MessagePack.MyDTO.EntityKey)
+            if (entityId == MyOrg.DomainB.MessagePack.MyDTO.EntityId)
                 return MessagePackSerializer.Deserialize<MyOrg.DomainB.MessagePack.MyDTO>(buffer, out var _);
             else
-                throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);
+                throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }
 
-        protected override string OnGetEntityId() => EntityKey.ToString();
+        protected override int OnGetEntityId() => 2;
 
         protected override void OnFreeze()
         {

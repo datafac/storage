@@ -24,13 +24,12 @@ namespace MyOrg.Models.MemBlocks
 
         private const long BlockStructureCode = 113L;
         private const int ClassHeight = 1;
+        private const int EntityId = 2;
         private const int BlockLength = 64;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        public new const string EntityId = "01234567-89ab-cdef-1234-456789abcdef";
-        private static readonly Guid EntityGuid = new Guid("01234567-89ab-cdef-1234-456789abcdef");
-        private static readonly BlockHeader _header = BlockHeader.CreateNew(BlockStructureCode, EntityGuid);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(EntityId, BlockStructureCode);
 
         public new static MyOtherDTO CreateFrom(MyOtherDTO source)
         {
@@ -54,14 +53,13 @@ namespace MyOrg.Models.MemBlocks
         {
             ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
             BlockHeader header = BlockHeader.ParseFrom(buffer);
-            string entityIdStr = header.EntityGuid.ToString("D");
-            return entityIdStr switch
+            return header.EntityId switch
             {
                 _ => new MyOrg.Models.MemBlocks.MyOtherDTO(buffers)
             };
         }
 
-        protected override string OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => EntityId;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => new MyOtherDTO(this);
@@ -122,7 +120,7 @@ namespace MyOrg.Models.MemBlocks
             var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];
             if (sourceBlock.Length < BlockLength)
             {
-                // source too short - allocate new
+                // source too small - allocate new
                 Memory<byte> memory = new byte[BlockLength];
                 sourceBlock.CopyTo(memory);
                 _readonlyLocalBlock = memory;

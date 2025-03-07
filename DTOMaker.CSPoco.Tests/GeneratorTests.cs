@@ -19,7 +19,7 @@ namespace DTOMaker.CSPoco.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity]
+                    [Entity][Id(1)]
                     public interface IMyDTO
                     {
                     }
@@ -48,7 +48,7 @@ namespace DTOMaker.CSPoco.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity]
+                    [Entity][Id(1)]
                     public interface IMyDTO
                     {
                         [Member(1)] double Field1 { get; set; }
@@ -78,7 +78,7 @@ namespace DTOMaker.CSPoco.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity]
+                    [Entity][Id(1)]
                     public interface IMyDTO
                     {
                         [Member(1)] double Field1 { get; set; }
@@ -109,13 +109,13 @@ namespace DTOMaker.CSPoco.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity]
+                    [Entity][Id(1)]
                     public interface IMyFirstDTO
                     {
                         [Member(1)] double Field1 { get; set; }
                     }
 
-                    [Entity]
+                    [Entity][Id(2)]
                     public interface IMyOtherDTO
                     {
                         [Member(1)] long Field1 { get; set; }
@@ -151,7 +151,7 @@ namespace DTOMaker.CSPoco.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity]
+                    [Entity][Id(1)]
                     public interface IMyDTO
                     {
                         [Member(1)] ReadOnlyMemory<double> Field1 { get; set; }
@@ -181,14 +181,12 @@ namespace DTOMaker.CSPoco.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity]
+                    [Entity][Id(1)]
                     public interface IMyDTO
                     {
-                        [Member(1)] string FamilyName { get; set; }
-                        [Member(2)] string GivenName { get; set; }
-                        [Member(3)] string OtherNames_Value { get; set; }
-                        [Member(4)] bool   OtherNames_HasValue { get; set; }
-                                    string? OtherNames { get; set; }
+                        [Member(1)] string  FamilyName { get; set; }
+                        [Member(2)] string  GivenName  { get; set; }
+                        [Member(3)] string? OtherNames { get; set; }
                     }
                 }
                 """;

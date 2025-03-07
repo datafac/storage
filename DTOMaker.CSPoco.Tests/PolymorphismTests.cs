@@ -16,35 +16,35 @@ namespace DTOMaker.CSPoco.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity] [Id("35274af9-5245-4366-be3a-1d0c23343436")]
+                    [Entity] [Id(1)]
                     public interface IPolygon { }
 
-                    [Entity] [Id("ab43cde1-e7e3-45ee-a61d-ebf361c75d20")] 
+                    [Entity] [Id(2)] 
                     public interface ITriangle : IPolygon { }
 
-                    [Entity] [Id("5759ed59-eac7-4eb9-8fb7-3eb466bdb4a3")] 
+                    [Entity] [Id(3)] 
                     public interface IEquilateral : ITriangle
                     {
                         [Member(1)] double Length { get; set; }
                     }
 
-                    [Entity] [Id("9ea51512-7118-47ab-9ac1-0daa4c68bc87")] 
+                    [Entity] [Id(4)] 
                     public interface IRightTriangle : ITriangle
                     {
                         [Member(1)] double Length { get; set; }
                         [Member(2)] double Height { get; set; }
                     }
 
-                    [Entity] [Id("0b524606-ede1-4f9e-ae7d-34abbe67c911")] 
+                    [Entity] [Id(5)] 
                     public interface IQuadrilateral : IPolygon { }
 
-                    [Entity] [Id("931d0721-74be-41d3-bfb2-c5e8301162cf")] 
+                    [Entity] [Id(6)] 
                     public interface ISquare : IQuadrilateral
                     {
                         [Member(1)] double Length { get; set; }
                     }
 
-                    [Entity] [Id("8c866b2c-9500-4ebe-ac4f-7b0fc402fbee")] 
+                    [Entity] [Id(7)] 
                     public interface IRectangle : IQuadrilateral
                     {
                         [Member(1)] double Length { get; set; }

@@ -18,22 +18,22 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity][Layout(LayoutMethod.Linear)]
-                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
+                    [Id(1)]
                     public interface IPolygon { }
 
                     [Entity][Layout(LayoutMethod.Linear)] 
-                    [Id("01234567-89ab-cdef-0201-456789abcdef")]
+                    [Id(2)]
                     public interface ITriangle : IPolygon { }
 
                     [Entity][Layout(LayoutMethod.Linear)] 
-                    [Id("01234567-89ab-cdef-0202-456789abcdef")]
+                    [Id(3)]
                     public interface IEquilateral : ITriangle
                     {
                         [Member(1)] double Length { get; set; }
                     }
 
                     [Entity][Layout(LayoutMethod.Linear)] 
-                    [Id("01234567-89ab-cdef-0203-456789abcdef")]
+                    [Id(4)]
                     public interface IRightTriangle : ITriangle
                     {
                         [Member(1)] double Length { get; set; }
@@ -41,18 +41,18 @@ namespace DTOMaker.MemBlocks.Tests
                     }
 
                     [Entity][Layout(LayoutMethod.Linear)] 
-                    [Id("01234567-89ab-cdef-0204-456789abcdef")]
+                    [Id(5)]
                     public interface IQuadrilateral : IPolygon { }
 
                     [Entity][Layout(LayoutMethod.Linear)] 
-                    [Id("01234567-89ab-cdef-0205-456789abcdef")]
+                    [Id(6)]
                     public interface ISquare : IQuadrilateral
                     {
                         [Member(1)] double Length { get; set; }
                     }
 
                     [Entity][Layout(LayoutMethod.Linear)] 
-                    [Id("01234567-89ab-cdef-0206-456789abcdef")]
+                    [Id(7)]
                     public interface IRectangle : IQuadrilateral
                     {
                         [Member(1)] double Length { get; set; }

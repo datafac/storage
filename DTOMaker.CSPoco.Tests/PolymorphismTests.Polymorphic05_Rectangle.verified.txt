@@ -16,7 +16,7 @@ namespace MyOrg.Models.CSPoco
     {
         // Derived entities: 0
 
-        public new const string EntityId = "8c866b2c-9500-4ebe-ac4f-7b0fc402fbee";
+        private const int EntityId = 7;
 
         private static Rectangle CreateEmpty()
         {
@@ -45,7 +45,7 @@ namespace MyOrg.Models.CSPoco
             };
         }
 
-        protected override string OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {

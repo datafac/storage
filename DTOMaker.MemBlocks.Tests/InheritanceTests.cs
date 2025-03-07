@@ -21,12 +21,12 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity][Layout(LayoutMethod.Linear)]
-                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
+                    [Id(1)]
                     public interface IMyBase
                     {
                     }
                     [Entity][Layout(LayoutMethod.Linear)]
-                    [Id("01234567-89ab-cdef-1234-456789abcdef")]
+                    [Id(2)]
                     public interface IMyDTO : IMyBase
                     {
                     }
@@ -57,12 +57,12 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity][Layout(LayoutMethod.Linear)]
-                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
+                    [Id(1)]
                     public interface IMyBase
                     {
                     }
                     [Entity][Layout(LayoutMethod.Linear)]
-                    [Id("01234567-89ab-cdef-1234-456789abcdef")]
+                    [Id(2)]
                     public interface IMyDTO : IMyBase
                     {
                     }
@@ -93,13 +93,13 @@ namespace DTOMaker.MemBlocks.Tests
                 namespace MyOrg.Models
                 {
                     [Entity][Layout(LayoutMethod.Linear)]
-                    [Id("01234567-89ab-cdef-0123-456789abcdef")]
+                    [Id(1)]
                     public interface IMyBase
                     {
                         [Member(1)] double BaseField1 { get; set; }
                     }
                     [Entity][Layout(LayoutMethod.Linear)]
-                    [Id("01234567-89ab-cdef-1234-456789abcdef")]
+                    [Id(2)]
                     public interface IMyDTO : IMyBase
                     {
                         [Member(1)] double DTOField1 { get; set; }

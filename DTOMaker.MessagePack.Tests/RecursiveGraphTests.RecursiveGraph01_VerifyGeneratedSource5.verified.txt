@@ -17,7 +17,7 @@ namespace MyOrg.Models.MessagePack
     public sealed partial class StringNode : MyOrg.Models.MessagePack.Node, IStringNode, IEquatable<StringNode>
     {
 
-        public new const int EntityKey = 2;
+        public new const int EntityId = 2;
 
         private static StringNode CreateEmpty()
         {
@@ -44,15 +44,15 @@ namespace MyOrg.Models.MessagePack
                 return new StringNode(source);
         }
 
-        public new static StringNode CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static StringNode CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            if (entityKey == MyOrg.Models.MessagePack.StringNode.EntityKey)
+            if (entityId == MyOrg.Models.MessagePack.StringNode.EntityId)
                 return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.StringNode>(buffer, out var _);
             else
-                throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);
+                throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }
 
-        protected override string OnGetEntityId() => EntityKey.ToString();
+        protected override int OnGetEntityId() => 2;
 
         protected override void OnFreeze()
         {

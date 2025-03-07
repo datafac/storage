@@ -41,17 +41,17 @@ Emit("        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ sour
 Emit("        public T_MemberTypeName_() { }");
 Emit("        public T_MemberTypeName_(IT_MemberTypeName_ source) { }");
 Emit("        protected override IFreezable OnPartCopy() => throw new NotImplementedException();");
-Emit("        protected override string OnGetEntityId() => \"T_MemberTypeName_\";");
+Emit("        protected override int OnGetEntityId() => 3;");
 Emit("    }");
 Emit("}");
 Emit("namespace T_BaseNameSpace_.MessagePack");
 Emit("{");
 Emit("    public interface IT_BaseName_ { }");
 Emit("    [MessagePackObject]");
-Emit("    [Union(T_NameSpace_.MessagePack.T_ConcreteEntityName_.EntityKey, typeof(T_NameSpace_.MessagePack.T_ConcreteEntityName_))]");
+Emit("    [Union(T_NameSpace_.MessagePack.T_ConcreteEntityName_.EntityId, typeof(T_NameSpace_.MessagePack.T_ConcreteEntityName_))]");
 Emit("    public abstract class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>");
 Emit("    {");
-Emit("        public new const int EntityKey = 1;");
+Emit("        //private const int EntityId = 1;");
 Emit("");
 Emit("        public T_BaseName_() { }");
 Emit("        public T_BaseName_(IT_BaseName_ source) : base(source) { }");
@@ -94,7 +94,7 @@ Emit("    [MessagePackObject]");
     foreach (var derived in entity.DerivedEntities) {
     using var _ = NewScope(derived);
     if (derived.DerivedEntityCount == 0) {
-Emit("    [Union(T_ConcreteEntityName_.EntityKey, typeof(T_ConcreteEntityName_))]");
+Emit("    [Union(T_ConcreteEntityName_.EntityId, typeof(T_ConcreteEntityName_))]");
     }
     }
     if (entity.DerivedEntityCount > 0) {
@@ -112,7 +112,7 @@ Emit("        // - T_EntityName_ (abstract)");
         if (false) {
 Emit("        private const string T_MemberObsoleteMessage_ = null;");
 Emit("        private const bool T_MemberObsoleteIsError_ = false;");
-Emit("        private const int T_EntityKey_ = 2;");
+Emit("        private const int T_EntityId_ = 2;");
 Emit("        private const int T_MemberKeyOffset_ = 10;");
 Emit("        private const int T_NullableScalarMemberKey_ = T_MemberKeyOffset_ + 1;");
 Emit("        private const int T_RequiredScalarMemberKey_ = T_MemberKeyOffset_ + 2;");
@@ -126,7 +126,7 @@ Emit("        private const int T_RequiredStringMemberKey_ = T_MemberKeyOffset_ 
 Emit("        private const int T_MemberDefaultValue_ = 0;");
         }
 Emit("");
-Emit("        public new const int EntityKey = T_EntityKey_;");
+Emit("        public new const int EntityId = T_EntityId_;");
 Emit("");
 Emit("        public new static T_ConcreteEntityName_ CreateFrom(T_ConcreteEntityName_ source)");
 Emit("        {");
@@ -158,21 +158,21 @@ Emit("                _ => throw new ArgumentException($\"Unexpected type: {sour
 Emit("            };");
 Emit("        }");
 Emit("");
-Emit("        public new static T_ConcreteEntityName_ CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)");
+Emit("        public new static T_ConcreteEntityName_ CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)");
 Emit("        {");
-Emit("            return entityKey switch");
+Emit("            return entityId switch");
 Emit("            {");
                 foreach (var derived in entity.DerivedEntities) {
                 using var _ = NewScope(derived);
                 if (derived.DerivedEntityCount == 0) {
-Emit("                T_NameSpace_.MessagePack.T_ConcreteEntityName_.EntityKey => MessagePackSerializer.Deserialize<T_NameSpace_.MessagePack.T_ConcreteEntityName_>(buffer, out var _),");
+Emit("                T_NameSpace_.MessagePack.T_ConcreteEntityName_.EntityId => MessagePackSerializer.Deserialize<T_NameSpace_.MessagePack.T_ConcreteEntityName_>(buffer, out var _),");
                 }
                 }
-Emit("                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)");
+Emit("                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)");
 Emit("            };");
 Emit("        }");
 Emit("");
-Emit("        protected override string OnGetEntityId() => EntityKey.ToString();");
+Emit("        protected override int OnGetEntityId() => T_EntityId_;");
 Emit("");
 Emit("        protected override void OnFreeze()");
 Emit("        {");
@@ -572,7 +572,7 @@ Emit("    {");
         if (false) {
 Emit("        private const string T_MemberObsoleteMessage_ = null;");
 Emit("        private const bool T_MemberObsoleteIsError_ = false;");
-Emit("        private const int T_EntityKey_ = 2;");
+Emit("        private const int T_EntityId_ = 2;");
 Emit("        private const int T_MemberKeyOffset_ = 10;");
 Emit("        private const int T_NullableScalarMemberKey_ = T_MemberKeyOffset_ + 1;");
 Emit("        private const int T_RequiredScalarMemberKey_ = T_MemberKeyOffset_ + 2;");
@@ -586,7 +586,7 @@ Emit("        private const int T_RequiredStringMemberKey_ = T_MemberKeyOffset_ 
 Emit("        private const int T_MemberDefaultValue_ = 0;");
         }
 Emit("");
-Emit("        public new const int EntityKey = T_EntityKey_;");
+Emit("        public new const int EntityId = T_EntityId_;");
 Emit("");
 Emit("        private static T_ConcreteEntityName_ CreateEmpty()");
 Emit("        {");
@@ -613,15 +613,15 @@ Emit("            else");
 Emit("                return new T_ConcreteEntityName_(source);");
 Emit("        }");
 Emit("");
-Emit("        public new static T_ConcreteEntityName_ CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)");
+Emit("        public new static T_ConcreteEntityName_ CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)");
 Emit("        {");
-Emit("            if (entityKey == T_NameSpace_.MessagePack.T_ConcreteEntityName_.EntityKey)");
+Emit("            if (entityId == T_NameSpace_.MessagePack.T_ConcreteEntityName_.EntityId)");
 Emit("                return MessagePackSerializer.Deserialize<T_NameSpace_.MessagePack.T_ConcreteEntityName_>(buffer, out var _);");
 Emit("            else");
-Emit("                throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);");
+Emit("                throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);");
 Emit("        }");
 Emit("");
-Emit("        protected override string OnGetEntityId() => EntityKey.ToString();");
+Emit("        protected override int OnGetEntityId() => T_EntityId_;");
 Emit("");
 Emit("        protected override void OnFreeze()");
 Emit("        {");

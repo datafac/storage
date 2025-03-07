@@ -16,11 +16,11 @@ namespace DTOMaker.Gentime
 
         private SyntaxDiagnostic? CheckEntityIdsAreUnique()
         {
-            Dictionary<string, TargetEntity> idMap = new Dictionary<string, TargetEntity>();
+            var idMap = new Dictionary<int, TargetEntity>();
 
             foreach (var entity in this.Entities.Values.OrderBy(e => e.EntityName.FullName))
             {
-                string id = entity.EntityId;
+                int id = entity.EntityId;
                 if (idMap.TryGetValue(id, out var otherEntity))
                 {
                     return new SyntaxDiagnostic(

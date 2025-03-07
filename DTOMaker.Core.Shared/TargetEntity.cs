@@ -17,7 +17,7 @@ namespace DTOMaker.Gentime
             EntityName = new TypeFullName(nameSpace, name);
             _domain = domain;
         }
-        public string EntityId { get; set; } = "_undefined_entity_id_";
+        public int EntityId { get; set; }
         public bool HasEntityAttribute { get; set; }
         public TypeFullName BaseName { get; set; } = TypeFullName.DefaultBase;
         public TargetEntity? Base { get; set; }
@@ -47,11 +47,23 @@ namespace DTOMaker.Gentime
             return null;
         }
 
+        private SyntaxDiagnostic? CheckEntityIdIsValid()
+        {
+            if (!HasEntityAttribute) return null;
+
+            if (EntityId > 0) return null;
+
+            return new SyntaxDiagnostic(
+                DiagnosticId.DTOM0010, "Invalid entity identifier", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+                $"Entity identifier must be unique positive number. Have you forgotten the entity [Id] attribute?");
+        }
+
         protected override IEnumerable<SyntaxDiagnostic> OnGetValidationDiagnostics()
         {
             SyntaxDiagnostic? diagnostic;
             if ((diagnostic = CheckHasEntityAttribute()) is not null) yield return diagnostic;
             if ((diagnostic = CheckMemberSequenceIsValid()) is not null) yield return diagnostic;
+            if ((diagnostic = CheckEntityIdIsValid()) is not null) yield return diagnostic;
         }
     }
 }

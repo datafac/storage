@@ -17,7 +17,7 @@ namespace MyOrg.Models.MessagePack
     public sealed partial class DoubleNode : MyOrg.Models.MessagePack.NumericNode, IDoubleNode, IEquatable<DoubleNode>
     {
 
-        public new const int EntityKey = 5;
+        public new const int EntityId = 5;
 
         private static DoubleNode CreateEmpty()
         {
@@ -44,15 +44,15 @@ namespace MyOrg.Models.MessagePack
                 return new DoubleNode(source);
         }
 
-        public new static DoubleNode CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static DoubleNode CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            if (entityKey == MyOrg.Models.MessagePack.DoubleNode.EntityKey)
+            if (entityId == MyOrg.Models.MessagePack.DoubleNode.EntityId)
                 return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.DoubleNode>(buffer, out var _);
             else
-                throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);
+                throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }
 
-        protected override string OnGetEntityId() => EntityKey.ToString();
+        protected override int OnGetEntityId() => 5;
 
         protected override void OnFreeze()
         {

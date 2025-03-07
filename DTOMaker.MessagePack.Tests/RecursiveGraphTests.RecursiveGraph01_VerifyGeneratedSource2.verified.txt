@@ -17,7 +17,7 @@ namespace MyOrg.Models.MessagePack
     public sealed partial class Int64Node : MyOrg.Models.MessagePack.NumericNode, IInt64Node, IEquatable<Int64Node>
     {
 
-        public new const int EntityKey = 4;
+        public new const int EntityId = 4;
 
         private static Int64Node CreateEmpty()
         {
@@ -44,15 +44,15 @@ namespace MyOrg.Models.MessagePack
                 return new Int64Node(source);
         }
 
-        public new static Int64Node CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static Int64Node CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            if (entityKey == MyOrg.Models.MessagePack.Int64Node.EntityKey)
+            if (entityId == MyOrg.Models.MessagePack.Int64Node.EntityId)
                 return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Int64Node>(buffer, out var _);
             else
-                throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);
+                throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }
 
-        protected override string OnGetEntityId() => EntityKey.ToString();
+        protected override int OnGetEntityId() => 4;
 
         protected override void OnFreeze()
         {

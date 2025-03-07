@@ -25,7 +25,7 @@ namespace DTOMaker.MessagePack.Tests
                             // types for local tests
                             MetadataReference.CreateFromFile(typeof(DataFac.Memory.Octets).GetTypeInfo().Assembly.Location),
                             MetadataReference.CreateFromFile(typeof(DTOMaker.Models.EntityAttribute).GetTypeInfo().Assembly.Location),
-                            MetadataReference.CreateFromFile(typeof(DTOMaker.Models.MessagePack.EntityKeyAttribute).GetTypeInfo().Assembly.Location),
+                            MetadataReference.CreateFromFile(typeof(DTOMaker.Models.MessagePack.MemberKeyOffsetAttribute).GetTypeInfo().Assembly.Location),
                         };
 
             PortableExecutableReference[] metadataReferences = commonReferences.Concat(additionalReferences).ToArray();

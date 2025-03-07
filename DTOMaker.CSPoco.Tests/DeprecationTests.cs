@@ -20,7 +20,7 @@ namespace DTOMaker.CSPoco.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity]
+                    [Entity][Id(1)]
                     public interface IMyDTO
                     {
                         [Obsolete]
@@ -52,7 +52,7 @@ namespace DTOMaker.CSPoco.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity]
+                    [Entity][Id(1)]
                     public interface IMyDTO
                     {
                         [Obsolete("Removed")]
@@ -84,7 +84,7 @@ namespace DTOMaker.CSPoco.Tests
                 using DTOMaker.Models;
                 namespace MyOrg.Models
                 {
-                    [Entity]
+                    [Entity][Id(1)]
                     public interface IMyDTO
                     {
                         [Obsolete("Removed", true)]

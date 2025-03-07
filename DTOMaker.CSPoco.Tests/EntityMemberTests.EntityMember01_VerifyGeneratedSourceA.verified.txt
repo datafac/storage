@@ -16,7 +16,7 @@ namespace MyOrg.DomainA.CSPoco
     {
         // Derived entities: 0
 
-        public new const string EntityId = "MyOrg.DomainA.MyDTO1";
+        private const int EntityId = 1;
 
         private static MyDTO1 CreateEmpty()
         {
@@ -45,7 +45,7 @@ namespace MyOrg.DomainA.CSPoco
             };
         }
 
-        protected override string OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {

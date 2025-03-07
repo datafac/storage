@@ -17,7 +17,7 @@ namespace MyOrg.Models.MessagePack
     public sealed partial class BooleanNode : MyOrg.Models.MessagePack.Node, IBooleanNode, IEquatable<BooleanNode>
     {
 
-        public new const int EntityKey = 6;
+        public new const int EntityId = 6;
 
         private static BooleanNode CreateEmpty()
         {
@@ -44,15 +44,15 @@ namespace MyOrg.Models.MessagePack
                 return new BooleanNode(source);
         }
 
-        public new static BooleanNode CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static BooleanNode CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            if (entityKey == MyOrg.Models.MessagePack.BooleanNode.EntityKey)
+            if (entityId == MyOrg.Models.MessagePack.BooleanNode.EntityId)
                 return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.BooleanNode>(buffer, out var _);
             else
-                throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);
+                throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }
 
-        protected override string OnGetEntityId() => EntityKey.ToString();
+        protected override int OnGetEntityId() => 6;
 
         protected override void OnFreeze()
         {

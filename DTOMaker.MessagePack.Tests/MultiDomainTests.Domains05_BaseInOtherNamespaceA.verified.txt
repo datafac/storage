@@ -14,13 +14,13 @@ using System;
 namespace MyOrg.DomainA.MessagePack
 {
     [MessagePackObject]
-    [Union(MyDTO.EntityKey, typeof(MyDTO))]
+    [Union(MyDTO.EntityId, typeof(MyDTO))]
     public abstract partial class MyBase : DTOMaker.Runtime.MessagePack.EntityBase, IMyBase, IEquatable<MyBase>
     {
         // Derived entities: 1
         // - MyDTO
 
-        public new const int EntityKey = 1;
+        public new const int EntityId = 1;
 
         public new static MyBase CreateFrom(MyBase source)
         {
@@ -42,16 +42,16 @@ namespace MyOrg.DomainA.MessagePack
             };
         }
 
-        public new static MyBase CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static MyBase CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            return entityKey switch
+            return entityId switch
             {
-                MyOrg.DomainB.MessagePack.MyDTO.EntityKey => MessagePackSerializer.Deserialize<MyOrg.DomainB.MessagePack.MyDTO>(buffer, out var _),
-                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
+                MyOrg.DomainB.MessagePack.MyDTO.EntityId => MessagePackSerializer.Deserialize<MyOrg.DomainB.MessagePack.MyDTO>(buffer, out var _),
+                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }
 
-        protected override string OnGetEntityId() => EntityKey.ToString();
+        protected override int OnGetEntityId() => 1;
 
         protected override void OnFreeze()
         {

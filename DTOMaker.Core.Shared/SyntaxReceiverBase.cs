@@ -159,14 +159,13 @@ namespace DTOMaker.Gentime
                                 entity.BaseName = new TypeFullName(baseNameSpace, baseName.Substring(1));
                             }
                         }
-                        entity.EntityId = entity.EntityName.FullName;
                         if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == IdAttribute) is AttributeData idAttr)
                         {
                             // found entity id attribute
                             var attributeArguments = idAttr.ConstructorArguments;
                             if (CheckAttributeArguments(IdAttribute, attributeArguments, 1, entity, idsLocation))
                             {
-                                TryGetAttributeArgumentValue<string, Guid>(entity, idsLocation, attributeArguments, 0, TryParseGuid, (value) => { entity.EntityId = value.ToString("D"); });
+                                TryGetAttributeArgumentValue<int>(entity, idsLocation, attributeArguments, 0, (value) => { entity.EntityId = value; });
                             }
                         }
                         //var attributeArguments = entityAttr.ConstructorArguments;

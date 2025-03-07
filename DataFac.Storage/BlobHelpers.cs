@@ -9,7 +9,7 @@ public static class BlobHelpers
 {
     public static BlobIdV1 GetBlobId(this ReadOnlySpan<byte> blob)
     {
-        // embed short blobs directly into id
+        // embed small blobs directly into id
         if (blob.Length <= 62)
         {
             return new BlobIdV1(BlobCompAlgo.None, blob);

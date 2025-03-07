@@ -17,7 +17,7 @@ namespace MyOrg.Models.MessagePack
     public sealed partial class Equilateral : MyOrg.Models.MessagePack.Triangle, IEquilateral, IEquatable<Equilateral>
     {
 
-        public new const int EntityKey = 3;
+        public new const int EntityId = 3;
 
         private static Equilateral CreateEmpty()
         {
@@ -44,15 +44,15 @@ namespace MyOrg.Models.MessagePack
                 return new Equilateral(source);
         }
 
-        public new static Equilateral CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static Equilateral CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            if (entityKey == MyOrg.Models.MessagePack.Equilateral.EntityKey)
+            if (entityId == MyOrg.Models.MessagePack.Equilateral.EntityId)
                 return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Equilateral>(buffer, out var _);
             else
-                throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);
+                throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }
 
-        protected override string OnGetEntityId() => EntityKey.ToString();
+        protected override int OnGetEntityId() => 3;
 
         protected override void OnFreeze()
         {

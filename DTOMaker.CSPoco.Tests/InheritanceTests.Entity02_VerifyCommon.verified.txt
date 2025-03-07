@@ -17,7 +17,7 @@ namespace MyOrg.Models.CSPoco
         // Derived entities: 1
         // - MyDTO
 
-        public new const string EntityId = "MyOrg.Models.MyBase";
+        private const int EntityId = 2;
 
         private static MyBase CreateEmpty()
         {
@@ -48,7 +48,7 @@ namespace MyOrg.Models.CSPoco
             };
         }
 
-        protected override string OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {

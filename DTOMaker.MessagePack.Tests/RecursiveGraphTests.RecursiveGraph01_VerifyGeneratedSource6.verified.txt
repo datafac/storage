@@ -17,7 +17,7 @@ namespace MyOrg.Models.MessagePack
     public sealed partial class Tree : DTOMaker.Runtime.MessagePack.EntityBase, ITree, IEquatable<Tree>
     {
 
-        public new const int EntityKey = 10;
+        public new const int EntityId = 10;
 
         private static Tree CreateEmpty()
         {
@@ -44,15 +44,15 @@ namespace MyOrg.Models.MessagePack
                 return new Tree(source);
         }
 
-        public new static Tree CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static Tree CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            if (entityKey == MyOrg.Models.MessagePack.Tree.EntityKey)
+            if (entityId == MyOrg.Models.MessagePack.Tree.EntityId)
                 return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Tree>(buffer, out var _);
             else
-                throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);
+                throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }
 
-        protected override string OnGetEntityId() => EntityKey.ToString();
+        protected override int OnGetEntityId() => 10;
 
         protected override void OnFreeze()
         {

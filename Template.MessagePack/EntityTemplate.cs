@@ -31,17 +31,17 @@ namespace T_MemberTypeNameSpace_.MessagePack
         public T_MemberTypeName_() { }
         public T_MemberTypeName_(IT_MemberTypeName_ source) { }
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
-        protected override string OnGetEntityId() => "T_MemberTypeName_";
+        protected override int OnGetEntityId() => 3;
     }
 }
 namespace T_BaseNameSpace_.MessagePack
 {
     public interface IT_BaseName_ { }
     [MessagePackObject]
-    [Union(T_NameSpace_.MessagePack.T_ConcreteEntityName_.EntityKey, typeof(T_NameSpace_.MessagePack.T_ConcreteEntityName_))]
+    [Union(T_NameSpace_.MessagePack.T_ConcreteEntityName_.EntityId, typeof(T_NameSpace_.MessagePack.T_ConcreteEntityName_))]
     public abstract class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
-        public new const int EntityKey = 1;
+        //private const int EntityId = 1;
 
         public T_BaseName_() { }
         public T_BaseName_(IT_BaseName_ source) : base(source) { }
@@ -84,7 +84,7 @@ namespace T_NameSpace_.MessagePack
     //##foreach (var derived in entity.DerivedEntities) {
     //##using var _ = NewScope(derived);
     //##if (derived.DerivedEntityCount == 0) {
-    [Union(T_ConcreteEntityName_.EntityKey, typeof(T_ConcreteEntityName_))]
+    [Union(T_ConcreteEntityName_.EntityId, typeof(T_ConcreteEntityName_))]
     //##}
     //##}
     //##if (entity.DerivedEntityCount > 0) {
@@ -102,7 +102,7 @@ namespace T_NameSpace_.MessagePack
         //##if (false) {
         private const string T_MemberObsoleteMessage_ = null;
         private const bool T_MemberObsoleteIsError_ = false;
-        private const int T_EntityKey_ = 2;
+        private const int T_EntityId_ = 2;
         private const int T_MemberKeyOffset_ = 10;
         private const int T_NullableScalarMemberKey_ = T_MemberKeyOffset_ + 1;
         private const int T_RequiredScalarMemberKey_ = T_MemberKeyOffset_ + 2;
@@ -116,7 +116,7 @@ namespace T_NameSpace_.MessagePack
         private const int T_MemberDefaultValue_ = 0;
         //##}
 
-        public new const int EntityKey = T_EntityKey_;
+        public new const int EntityId = T_EntityId_;
 
         public new static T_ConcreteEntityName_ CreateFrom(T_ConcreteEntityName_ source)
         {
@@ -148,21 +148,21 @@ namespace T_NameSpace_.MessagePack
             };
         }
 
-        public new static T_ConcreteEntityName_ CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static T_ConcreteEntityName_ CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            return entityKey switch
+            return entityId switch
             {
                 //##foreach (var derived in entity.DerivedEntities) {
                 //##using var _ = NewScope(derived);
                 //##if (derived.DerivedEntityCount == 0) {
-                T_NameSpace_.MessagePack.T_ConcreteEntityName_.EntityKey => MessagePackSerializer.Deserialize<T_NameSpace_.MessagePack.T_ConcreteEntityName_>(buffer, out var _),
+                T_NameSpace_.MessagePack.T_ConcreteEntityName_.EntityId => MessagePackSerializer.Deserialize<T_NameSpace_.MessagePack.T_ConcreteEntityName_>(buffer, out var _),
                 //##}
                 //##}
-                _ => throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null)
+                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }
 
-        protected override string OnGetEntityId() => EntityKey.ToString();
+        protected override int OnGetEntityId() => T_EntityId_;
 
         protected override void OnFreeze()
         {
@@ -562,7 +562,7 @@ namespace T_NameSpace_.MessagePack
         //##if (false) {
         private const string T_MemberObsoleteMessage_ = null;
         private const bool T_MemberObsoleteIsError_ = false;
-        private const int T_EntityKey_ = 2;
+        private const int T_EntityId_ = 2;
         private const int T_MemberKeyOffset_ = 10;
         private const int T_NullableScalarMemberKey_ = T_MemberKeyOffset_ + 1;
         private const int T_RequiredScalarMemberKey_ = T_MemberKeyOffset_ + 2;
@@ -576,7 +576,7 @@ namespace T_NameSpace_.MessagePack
         private const int T_MemberDefaultValue_ = 0;
         //##}
 
-        public new const int EntityKey = T_EntityKey_;
+        public new const int EntityId = T_EntityId_;
 
         private static T_ConcreteEntityName_ CreateEmpty()
         {
@@ -603,15 +603,15 @@ namespace T_NameSpace_.MessagePack
                 return new T_ConcreteEntityName_(source);
         }
 
-        public new static T_ConcreteEntityName_ CreateFrom(int entityKey, ReadOnlyMemory<byte> buffer)
+        public new static T_ConcreteEntityName_ CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            if (entityKey == T_NameSpace_.MessagePack.T_ConcreteEntityName_.EntityKey)
+            if (entityId == T_NameSpace_.MessagePack.T_ConcreteEntityName_.EntityId)
                 return MessagePackSerializer.Deserialize<T_NameSpace_.MessagePack.T_ConcreteEntityName_>(buffer, out var _);
             else
-                throw new ArgumentOutOfRangeException(nameof(entityKey), entityKey, null);
+                throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }
 
-        protected override string OnGetEntityId() => EntityKey.ToString();
+        protected override int OnGetEntityId() => T_EntityId_;
 
         protected override void OnFreeze()
         {
