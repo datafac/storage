@@ -32,4 +32,6 @@
 	  <ProjectReference Include="..\DTOMaker.Runtime.MemBlocks\DTOMaker.Runtime.MemBlocks.csproj" />
 	</ItemGroup>
 
+	<Import Project="..\DTOMaker.MemBlocks.Shared\DTOMaker.MemBlocks.Shared.projitems" Label="Shared" />
+
 </Project>

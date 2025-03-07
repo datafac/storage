@@ -17,9 +17,7 @@ namespace DTOMaker.Runtime.MemBlocks
             Blocks = blocks;
         }
 
-        private static readonly int[] _blockSizes = [0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 * 1, 1024 * 2, 1024 * 4, 1024 * 8, 1024 * 16];
-
-        public static SourceBlocks ParseFrom(System.Buffers.ReadOnlySequence<byte> buffers)
+        public static SourceBlocks ParseFrom(ReadOnlySequence<byte> buffers)
         {
             int startPosition = 0;
             ReadOnlyMemory<byte> headerMemory = buffers.Slice(startPosition, Constants.HeaderSize).Compact();
@@ -29,7 +27,7 @@ namespace DTOMaker.Runtime.MemBlocks
             BlockHeader header = BlockHeader.ParseFrom(headerMemory);
 
             // get remaining blocks
-            ReadOnlySpan<int> blockSizes = _blockSizes.AsSpan();
+            //ReadOnlySpan<int> blockSizes = _blockSizes.AsSpan();
             // if the source is a single element or the source elements match the target
             // structure, then the slice compactions will not allocate new memory.
             long bits = header.StructureBits;
@@ -40,7 +38,7 @@ namespace DTOMaker.Runtime.MemBlocks
             {
                 bits = bits >> 4;
                 int blockSizeCode = (int)(bits & 0x0F);
-                int blockLength = blockSizes[blockSizeCode];
+                int blockLength = DTOMaker.MemBlocks.StructureCode.GetBlockSize(blockSizeCode);
                 ReadOnlyMemory<byte> block = buffers.Slice(startPosition, blockLength).Compact();
                 startPosition += blockLength;
                 blocks[h + 1] = block;
