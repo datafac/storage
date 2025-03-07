@@ -127,7 +127,6 @@ mitigate the single assembly constraint.
 - performance improvements
 
 ## Coming soon
-- unique entity ordinals
 - Json (NewtonSoft) generator
 - Json (System.Text) generator
 - upgrade source generators to IIncrementalGenerator
