@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace DTOMaker.Runtime.MessagePack
 {
     [MessagePackObject]
-    public abstract class EntityBase : IHasEntityId, IFreezable, IEquatable<EntityBase>
+    public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
     {
         public const int EntityId = 0;
         protected abstract int OnGetEntityId();
