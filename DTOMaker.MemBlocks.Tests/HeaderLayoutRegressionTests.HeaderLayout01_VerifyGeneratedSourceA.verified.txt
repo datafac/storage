@@ -136,7 +136,7 @@ namespace MyOrg.Models.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        private Header(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        internal Header(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
         public Header(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         public Byte Marker00

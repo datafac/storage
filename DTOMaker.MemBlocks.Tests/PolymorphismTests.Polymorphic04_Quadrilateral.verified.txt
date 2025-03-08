@@ -126,7 +126,7 @@ namespace MyOrg.Models.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        private Quadrilateral(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        internal Quadrilateral(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
         public Quadrilateral(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
 

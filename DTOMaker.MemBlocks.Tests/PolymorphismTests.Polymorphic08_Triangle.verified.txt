@@ -126,7 +126,7 @@ namespace MyOrg.Models.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        private Triangle(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        internal Triangle(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
         public Triangle(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
 

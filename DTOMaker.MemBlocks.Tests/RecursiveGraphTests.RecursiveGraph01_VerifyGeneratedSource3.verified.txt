@@ -143,7 +143,7 @@ namespace MyOrg.Models.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        private Node(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        internal Node(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
         public Node(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         private void Key_Pack()

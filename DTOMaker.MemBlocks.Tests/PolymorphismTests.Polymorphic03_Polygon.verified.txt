@@ -142,7 +142,7 @@ namespace MyOrg.Models.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        private Polygon(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        internal Polygon(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
         public Polygon(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
 

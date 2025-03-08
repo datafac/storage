@@ -121,7 +121,7 @@ namespace MyOrg.Models.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        private Int64Node(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        internal Int64Node(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
         public Int64Node(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         public Int64 Value

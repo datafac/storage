@@ -121,7 +121,7 @@ namespace MyOrg.Models.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        private Equilateral(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        internal Equilateral(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
         public Equilateral(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         public Double Length

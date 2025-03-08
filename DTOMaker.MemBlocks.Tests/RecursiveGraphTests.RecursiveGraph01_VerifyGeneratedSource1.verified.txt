@@ -121,7 +121,7 @@ namespace MyOrg.Models.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        private DoubleNode(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        internal DoubleNode(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
         public DoubleNode(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         public Double Value

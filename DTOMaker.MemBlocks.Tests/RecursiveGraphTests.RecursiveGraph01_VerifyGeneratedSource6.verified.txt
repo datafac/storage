@@ -136,7 +136,7 @@ namespace MyOrg.Models.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        private Tree(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        internal Tree(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
         public Tree(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         private async ValueTask Left_Pack(IDataStore dataStore)

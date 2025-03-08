@@ -563,7 +563,7 @@ namespace T_NameSpace_.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        private T_EntityName_(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        internal T_EntityName_(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
         public T_EntityName_(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         //##if(false) {

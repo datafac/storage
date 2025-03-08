@@ -573,7 +573,7 @@ Emit("                _readonlyLocalBlock = sourceBlock;");
 Emit("                _writableLocalBlock = Memory<byte>.Empty;");
 Emit("            }");
 Emit("        }");
-Emit("        private T_EntityName_(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }");
+Emit("        internal T_EntityName_(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }");
 Emit("        public T_EntityName_(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }");
 Emit("");
         if(false) {

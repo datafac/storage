@@ -121,7 +121,7 @@ namespace MyOrg.Models.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        private MyDTO(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        internal MyDTO(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
         public MyDTO(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         public ReadOnlyMemory<Byte> Values

@@ -121,7 +121,7 @@ namespace MyOrg.Models.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        private BooleanNode(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        internal BooleanNode(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
         public BooleanNode(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         public Boolean Value
