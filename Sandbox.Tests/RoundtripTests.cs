@@ -21,11 +21,6 @@ namespace Sandbox.Tests
                 octets.ShouldNotBeNull();
             }
             {
-                ReadOnlyMemory<byte> memory = new ReadOnlyMemory<byte>(data.ToArray());
-                Octets? octets = Octets.UnsafeWrap(memory);
-                octets.ShouldNotBeNull();
-            }
-            {
                 ReadOnlyMemory<byte>? memory = new ReadOnlyMemory<byte>(data.ToArray());
                 Octets? octets = memory is null ? null : Octets.UnsafeWrap(memory.Value);
                 octets.ShouldNotBeNull();
@@ -38,7 +33,34 @@ namespace Sandbox.Tests
         }
 
         [Fact]
-        public async Task Roundtrip_Octets_MemBlocks()
+        public async Task Roundtrip_Octets_MemBlocks_Direct()
+        {
+            using var dataStore = new DataFac.Storage.Testing.TestDataStore();
+
+            var orig = new MyOrg.Models.MemBlocks.MyDTO()
+            {
+                Other1 = new MyOrg.Models.MemBlocks.Other() { Value1 = 1, Value2 = 2 },
+                Field1 = Octets.UnsafeWrap(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }),
+                Field2 = null,
+            };
+            await orig.Pack(dataStore);
+
+            IMyDTO iorig = orig;
+            iorig.Field1.ShouldNotBeNull();
+            iorig.Field2.ShouldBeNull();
+
+            var copy = new MyOrg.Models.MemBlocks.MyDTO(orig);
+            await copy.Pack(dataStore);
+
+            (copy.Other1 == orig.Other1).ShouldBeTrue();
+            (copy.Field1 == orig.Field1).ShouldBeTrue();
+            (copy.Field2 == orig.Field2).ShouldBeTrue();
+            copy.Equals(orig).ShouldBeTrue();
+            (copy == orig).ShouldBeTrue();
+        }
+
+        [Fact]
+        public async Task Roundtrip_Octets_MemBlocks_ViaWire()
         {
             var orig = new MyOrg.Models.CSPoco.MyDTO()
             {
@@ -78,7 +100,7 @@ namespace Sandbox.Tests
         }
 
         [Fact]
-        public void Roundtrip_Octets_MessagePack()
+        public void Roundtrip_Octets_MessagePack_ViaWire()
         {
             var orig = new MyOrg.Models.CSPoco.MyDTO()
             {

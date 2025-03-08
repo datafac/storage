@@ -24,12 +24,11 @@ namespace MyOrg.Models.MemBlocks
 
         private const long BlockStructureCode = 20483L;
         private const int ClassHeight = 3;
-        public new const int EntityId = 7;
         private const int BlockLength = 16;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        private static readonly BlockHeader _header = BlockHeader.CreateNew(EntityId, BlockStructureCode);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(7, BlockStructureCode);
 
         public new static Rectangle CreateFrom(Rectangle source)
         {
@@ -51,15 +50,14 @@ namespace MyOrg.Models.MemBlocks
 
         public new static Rectangle CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
-            BlockHeader header = BlockHeader.ParseFrom(buffer);
-            return header.EntityId switch
+            SourceBlocks blocks = SourceBlocks.ParseFrom(buffers);
+            return blocks.Header.EntityId switch
             {
-                _ => new MyOrg.Models.MemBlocks.Rectangle(buffers)
+                _ => new MyOrg.Models.MemBlocks.Rectangle(blocks)
             };
         }
 
-        protected override int OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => 7;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => new Rectangle(this);
@@ -98,11 +96,10 @@ namespace MyOrg.Models.MemBlocks
         protected Rectangle(BlockHeader header, Rectangle source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
+            this.Length = source.Length;
+            this.Height = source.Height;
         }
-        public Rectangle(Rectangle source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-        }
+        public Rectangle(Rectangle source) : this(_header, source) { }
 
         protected Rectangle(BlockHeader header, IRectangle source) : base(header, source)
         {
@@ -110,13 +107,7 @@ namespace MyOrg.Models.MemBlocks
             this.Length = source.Length;
             this.Height = source.Height;
         }
-
-        public Rectangle(IRectangle source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-            this.Length = source.Length;
-            this.Height = source.Height;
-        }
+        public Rectangle(IRectangle source) : this(_header, source) { }
 
         protected Rectangle(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
@@ -124,19 +115,17 @@ namespace MyOrg.Models.MemBlocks
             if (sourceBlock.Length < BlockLength)
             {
                 // source too small - allocate new
-                Memory<byte> memory = new byte[BlockLength];
-                sourceBlock.CopyTo(memory);
-                _readonlyLocalBlock = memory;
+                _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
+                sourceBlock.CopyTo(_writableLocalBlock);
             }
             else
             {
                 _readonlyLocalBlock = sourceBlock;
+                _writableLocalBlock = Memory<byte>.Empty;
             }
-            _writableLocalBlock = Memory<byte>.Empty;
         }
-        public Rectangle(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
-        {
-        }
+        private Rectangle(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        public Rectangle(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         public Double Length
         {

@@ -24,12 +24,11 @@ namespace MyOrg.DomainB.MemBlocks
 
         private const long BlockStructureCode = 2L;
         private const int ClassHeight = 2;
-        public new const int EntityId = 2;
         private const int BlockLength = 0;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        private static readonly BlockHeader _header = BlockHeader.CreateNew(EntityId, BlockStructureCode);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(2, BlockStructureCode);
 
         public new static MyDTO CreateFrom(MyDTO source)
         {
@@ -51,15 +50,14 @@ namespace MyOrg.DomainB.MemBlocks
 
         public new static MyDTO CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
-            BlockHeader header = BlockHeader.ParseFrom(buffer);
-            return header.EntityId switch
+            SourceBlocks blocks = SourceBlocks.ParseFrom(buffers);
+            return blocks.Header.EntityId switch
             {
-                _ => new MyOrg.DomainB.MemBlocks.MyDTO(buffers)
+                _ => new MyOrg.DomainB.MemBlocks.MyDTO(blocks)
             };
         }
 
-        protected override int OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => 2;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => new MyDTO(this);
@@ -97,20 +95,13 @@ namespace MyOrg.DomainB.MemBlocks
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
-        public MyDTO(MyDTO source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-        }
+        public MyDTO(MyDTO source) : this(_header, source) { }
 
         protected MyDTO(BlockHeader header, IMyDTO source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
-
-        public MyDTO(IMyDTO source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-        }
+        public MyDTO(IMyDTO source) : this(_header, source) { }
 
         protected MyDTO(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
@@ -118,19 +109,17 @@ namespace MyOrg.DomainB.MemBlocks
             if (sourceBlock.Length < BlockLength)
             {
                 // source too small - allocate new
-                Memory<byte> memory = new byte[BlockLength];
-                sourceBlock.CopyTo(memory);
-                _readonlyLocalBlock = memory;
+                _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
+                sourceBlock.CopyTo(_writableLocalBlock);
             }
             else
             {
                 _readonlyLocalBlock = sourceBlock;
+                _writableLocalBlock = Memory<byte>.Empty;
             }
-            _writableLocalBlock = Memory<byte>.Empty;
         }
-        public MyDTO(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
-        {
-        }
+        private MyDTO(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        public MyDTO(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
 
         public bool Equals(MyDTO? other)

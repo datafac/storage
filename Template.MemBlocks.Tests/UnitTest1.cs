@@ -88,7 +88,41 @@ namespace Template.MemBlocks.Tests
     {
         [Fact]
 
-        public async Task RoundtripDTO()
+        public async Task RoundtripDTO1_Direct()
+        {
+            Octets smallBinary = new Octets(new byte[] { 1, 2, 3, 4, 5, 6, 7 });
+            Octets largeBinary = new Octets(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+
+            using var dataStore = new DataFac.Storage.Testing.TestDataStore();
+
+            var orig = new T_NameSpace_.MemBlocks.T_EntityName_();
+            orig.BaseField1 = 789;
+            orig.T_ScalarMemberName_ = 123;
+            orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
+            orig.T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_() { Field1 = 123 };
+            orig.T_RequiredFixLenBinaryMemberName_ = smallBinary;
+            orig.T_RequiredVarLenBinaryMemberName_ = largeBinary;
+            orig.T_NullableFixLenBinaryMemberName_ = null;
+            orig.T_NullableVarLenBinaryMemberName_ = smallBinary;
+            await orig.Pack(dataStore);
+
+            var copy = new T_NameSpace_.MemBlocks.T_EntityName_(orig);
+            copy.IsFrozen.ShouldBeFalse();
+            copy.BaseField1.ShouldBe(orig.BaseField1);
+            copy.T_ScalarMemberName_.ShouldBe(orig.T_ScalarMemberName_);
+            copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).ShouldBeTrue();
+            copy.T_RequiredEntityMemberName_.ShouldNotBeNull();
+            copy.T_RequiredFixLenBinaryMemberName_.ShouldBe(orig.T_RequiredFixLenBinaryMemberName_);
+            copy.T_RequiredVarLenBinaryMemberName_.ShouldBe(orig.T_RequiredVarLenBinaryMemberName_);
+            copy.T_NullableFixLenBinaryMemberName_.ShouldBe(orig.T_NullableFixLenBinaryMemberName_);
+            copy.T_NullableVarLenBinaryMemberName_.ShouldBe(orig.T_NullableVarLenBinaryMemberName_);
+            await copy.T_RequiredEntityMemberName_.Unpack(dataStore, 0);
+            copy.T_RequiredEntityMemberName_!.Field1.ShouldBe(orig.T_RequiredEntityMemberName_.Field1);
+        }
+
+        [Fact]
+
+        public async Task RoundtripDTO2_ViaWire()
         {
             Octets smallBinary = new Octets(new byte[] { 1, 2, 3, 4, 5, 6, 7 });
             Octets largeBinary = new Octets(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());

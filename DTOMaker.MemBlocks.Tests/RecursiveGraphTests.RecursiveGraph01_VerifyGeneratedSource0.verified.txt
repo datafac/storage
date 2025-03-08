@@ -24,12 +24,11 @@ namespace MyOrg.Models.MemBlocks
 
         private const long BlockStructureCode = 338L;
         private const int ClassHeight = 2;
-        public new const int EntityId = 6;
         private const int BlockLength = 1;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        private static readonly BlockHeader _header = BlockHeader.CreateNew(EntityId, BlockStructureCode);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(6, BlockStructureCode);
 
         public new static BooleanNode CreateFrom(BooleanNode source)
         {
@@ -51,15 +50,14 @@ namespace MyOrg.Models.MemBlocks
 
         public new static BooleanNode CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
-            BlockHeader header = BlockHeader.ParseFrom(buffer);
-            return header.EntityId switch
+            SourceBlocks blocks = SourceBlocks.ParseFrom(buffers);
+            return blocks.Header.EntityId switch
             {
-                _ => new MyOrg.Models.MemBlocks.BooleanNode(buffers)
+                _ => new MyOrg.Models.MemBlocks.BooleanNode(blocks)
             };
         }
 
-        protected override int OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => 6;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => new BooleanNode(this);
@@ -97,23 +95,16 @@ namespace MyOrg.Models.MemBlocks
         protected BooleanNode(BlockHeader header, BooleanNode source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
+            this.Value = source.Value;
         }
-        public BooleanNode(BooleanNode source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-        }
+        public BooleanNode(BooleanNode source) : this(_header, source) { }
 
         protected BooleanNode(BlockHeader header, IBooleanNode source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
             this.Value = source.Value;
         }
-
-        public BooleanNode(IBooleanNode source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-            this.Value = source.Value;
-        }
+        public BooleanNode(IBooleanNode source) : this(_header, source) { }
 
         protected BooleanNode(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
@@ -121,19 +112,17 @@ namespace MyOrg.Models.MemBlocks
             if (sourceBlock.Length < BlockLength)
             {
                 // source too small - allocate new
-                Memory<byte> memory = new byte[BlockLength];
-                sourceBlock.CopyTo(memory);
-                _readonlyLocalBlock = memory;
+                _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
+                sourceBlock.CopyTo(_writableLocalBlock);
             }
             else
             {
                 _readonlyLocalBlock = sourceBlock;
+                _writableLocalBlock = Memory<byte>.Empty;
             }
-            _writableLocalBlock = Memory<byte>.Empty;
         }
-        public BooleanNode(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
-        {
-        }
+        private BooleanNode(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        public BooleanNode(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         public Boolean Value
         {

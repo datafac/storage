@@ -30,12 +30,11 @@ namespace MyOrg.Models.MemBlocks
 
         private const long BlockStructureCode = 1L;
         private const int ClassHeight = 1;
-        public new const int EntityId = 1;
         private const int BlockLength = 0;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        private static readonly BlockHeader _header = BlockHeader.CreateNew(EntityId, BlockStructureCode);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(1, BlockStructureCode);
 
         public new static Polygon CreateFrom(Polygon source)
         {
@@ -69,21 +68,20 @@ namespace MyOrg.Models.MemBlocks
 
         public new static Polygon CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
-            BlockHeader header = BlockHeader.ParseFrom(buffer);
-            return header.EntityId switch
+            SourceBlocks blocks = SourceBlocks.ParseFrom(buffers);
+            return blocks.Header.EntityId switch
             {
-                MyOrg.Models.MemBlocks.Equilateral.EntityId => new MyOrg.Models.MemBlocks.Equilateral(buffers),
-                MyOrg.Models.MemBlocks.Quadrilateral.EntityId => new MyOrg.Models.MemBlocks.Quadrilateral(buffers),
-                MyOrg.Models.MemBlocks.Rectangle.EntityId => new MyOrg.Models.MemBlocks.Rectangle(buffers),
-                MyOrg.Models.MemBlocks.RightTriangle.EntityId => new MyOrg.Models.MemBlocks.RightTriangle(buffers),
-                MyOrg.Models.MemBlocks.Square.EntityId => new MyOrg.Models.MemBlocks.Square(buffers),
-                MyOrg.Models.MemBlocks.Triangle.EntityId => new MyOrg.Models.MemBlocks.Triangle(buffers),
-                _ => new MyOrg.Models.MemBlocks.Polygon(buffers)
+                3 => new MyOrg.Models.MemBlocks.Equilateral(blocks),
+                5 => new MyOrg.Models.MemBlocks.Quadrilateral(blocks),
+                7 => new MyOrg.Models.MemBlocks.Rectangle(blocks),
+                4 => new MyOrg.Models.MemBlocks.RightTriangle(blocks),
+                6 => new MyOrg.Models.MemBlocks.Square(blocks),
+                2 => new MyOrg.Models.MemBlocks.Triangle(blocks),
+                _ => new MyOrg.Models.MemBlocks.Polygon(blocks)
             };
         }
 
-        protected override int OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => 1;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => new Polygon(this);
@@ -121,20 +119,13 @@ namespace MyOrg.Models.MemBlocks
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
-        public Polygon(Polygon source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-        }
+        public Polygon(Polygon source) : this(_header, source) { }
 
         protected Polygon(BlockHeader header, IPolygon source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
-
-        public Polygon(IPolygon source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-        }
+        public Polygon(IPolygon source) : this(_header, source) { }
 
         protected Polygon(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
@@ -142,19 +133,17 @@ namespace MyOrg.Models.MemBlocks
             if (sourceBlock.Length < BlockLength)
             {
                 // source too small - allocate new
-                Memory<byte> memory = new byte[BlockLength];
-                sourceBlock.CopyTo(memory);
-                _readonlyLocalBlock = memory;
+                _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
+                sourceBlock.CopyTo(_writableLocalBlock);
             }
             else
             {
                 _readonlyLocalBlock = sourceBlock;
+                _writableLocalBlock = Memory<byte>.Empty;
             }
-            _writableLocalBlock = Memory<byte>.Empty;
         }
-        public Polygon(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
-        {
-        }
+        private Polygon(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        public Polygon(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
 
         public bool Equals(Polygon? other)

@@ -24,12 +24,11 @@ namespace MyOrg.Models.MemBlocks
 
         private const long BlockStructureCode = 145L;
         private const int ClassHeight = 1;
-        public new const int EntityId = 7;
         private const int BlockLength = 256;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        private static readonly BlockHeader _header = BlockHeader.CreateNew(EntityId, BlockStructureCode);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(7, BlockStructureCode);
 
         public new static Tree CreateFrom(Tree source)
         {
@@ -51,15 +50,14 @@ namespace MyOrg.Models.MemBlocks
 
         public new static Tree CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
-            BlockHeader header = BlockHeader.ParseFrom(buffer);
-            return header.EntityId switch
+            SourceBlocks blocks = SourceBlocks.ParseFrom(buffers);
+            return blocks.Header.EntityId switch
             {
-                _ => new MyOrg.Models.MemBlocks.Tree(buffers)
+                _ => new MyOrg.Models.MemBlocks.Tree(blocks)
             };
         }
 
-        protected override int OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => 7;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => new Tree(this);
@@ -108,11 +106,11 @@ namespace MyOrg.Models.MemBlocks
         protected Tree(BlockHeader header, Tree source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
+            _Left = source._Left;
+            _Right = source._Right;
+            _Node = source._Node;
         }
-        public Tree(Tree source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-        }
+        public Tree(Tree source) : this(_header, source) { }
 
         protected Tree(BlockHeader header, ITree source) : base(header, source)
         {
@@ -121,14 +119,7 @@ namespace MyOrg.Models.MemBlocks
             _Right = source.Right is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(source.Right);
             _Node = source.Node is null ? null : MyOrg.Models.MemBlocks.Node.CreateFrom(source.Node);
         }
-
-        public Tree(ITree source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-            _Left = source.Left is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(source.Left);
-            _Right = source.Right is null ? null : MyOrg.Models.MemBlocks.Tree.CreateFrom(source.Right);
-            _Node = source.Node is null ? null : MyOrg.Models.MemBlocks.Node.CreateFrom(source.Node);
-        }
+        public Tree(ITree source) : this(_header, source) { }
 
         protected Tree(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
@@ -136,19 +127,17 @@ namespace MyOrg.Models.MemBlocks
             if (sourceBlock.Length < BlockLength)
             {
                 // source too small - allocate new
-                Memory<byte> memory = new byte[BlockLength];
-                sourceBlock.CopyTo(memory);
-                _readonlyLocalBlock = memory;
+                _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
+                sourceBlock.CopyTo(_writableLocalBlock);
             }
             else
             {
                 _readonlyLocalBlock = sourceBlock;
+                _writableLocalBlock = Memory<byte>.Empty;
             }
-            _writableLocalBlock = Memory<byte>.Empty;
         }
-        public Tree(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
-        {
-        }
+        private Tree(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        public Tree(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         private async ValueTask Left_Pack(IDataStore dataStore)
         {

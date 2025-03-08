@@ -24,12 +24,11 @@ namespace MyOrg.Models.MemBlocks
 
         private const long BlockStructureCode = 81L;
         private const int ClassHeight = 1;
-        public new const int EntityId = 1;
         private const int BlockLength = 16;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        private static readonly BlockHeader _header = BlockHeader.CreateNew(EntityId, BlockStructureCode);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(1, BlockStructureCode);
 
         public new static Other CreateFrom(Other source)
         {
@@ -51,15 +50,14 @@ namespace MyOrg.Models.MemBlocks
 
         public new static Other CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
-            BlockHeader header = BlockHeader.ParseFrom(buffer);
-            return header.EntityId switch
+            SourceBlocks blocks = SourceBlocks.ParseFrom(buffers);
+            return blocks.Header.EntityId switch
             {
-                _ => new MyOrg.Models.MemBlocks.Other(buffers)
+                _ => new MyOrg.Models.MemBlocks.Other(blocks)
             };
         }
 
-        protected override int OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => 1;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => new Other(this);
@@ -98,11 +96,10 @@ namespace MyOrg.Models.MemBlocks
         protected Other(BlockHeader header, Other source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
+            this.Value1 = source.Value1;
+            this.Value2 = source.Value2;
         }
-        public Other(Other source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-        }
+        public Other(Other source) : this(_header, source) { }
 
         protected Other(BlockHeader header, IOther source) : base(header, source)
         {
@@ -110,13 +107,7 @@ namespace MyOrg.Models.MemBlocks
             this.Value1 = source.Value1;
             this.Value2 = source.Value2;
         }
-
-        public Other(IOther source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-            this.Value1 = source.Value1;
-            this.Value2 = source.Value2;
-        }
+        public Other(IOther source) : this(_header, source) { }
 
         protected Other(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
@@ -124,19 +115,17 @@ namespace MyOrg.Models.MemBlocks
             if (sourceBlock.Length < BlockLength)
             {
                 // source too small - allocate new
-                Memory<byte> memory = new byte[BlockLength];
-                sourceBlock.CopyTo(memory);
-                _readonlyLocalBlock = memory;
+                _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
+                sourceBlock.CopyTo(_writableLocalBlock);
             }
             else
             {
                 _readonlyLocalBlock = sourceBlock;
+                _writableLocalBlock = Memory<byte>.Empty;
             }
-            _writableLocalBlock = Memory<byte>.Empty;
         }
-        public Other(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
-        {
-        }
+        private Other(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        public Other(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         public Int64 Value1
         {

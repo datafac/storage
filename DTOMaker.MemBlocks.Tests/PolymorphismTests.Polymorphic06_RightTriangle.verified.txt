@@ -24,12 +24,11 @@ namespace MyOrg.Models.MemBlocks
 
         private const long BlockStructureCode = 20483L;
         private const int ClassHeight = 3;
-        public new const int EntityId = 4;
         private const int BlockLength = 16;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        private static readonly BlockHeader _header = BlockHeader.CreateNew(EntityId, BlockStructureCode);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(4, BlockStructureCode);
 
         public new static RightTriangle CreateFrom(RightTriangle source)
         {
@@ -51,15 +50,14 @@ namespace MyOrg.Models.MemBlocks
 
         public new static RightTriangle CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
-            BlockHeader header = BlockHeader.ParseFrom(buffer);
-            return header.EntityId switch
+            SourceBlocks blocks = SourceBlocks.ParseFrom(buffers);
+            return blocks.Header.EntityId switch
             {
-                _ => new MyOrg.Models.MemBlocks.RightTriangle(buffers)
+                _ => new MyOrg.Models.MemBlocks.RightTriangle(blocks)
             };
         }
 
-        protected override int OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => 4;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => new RightTriangle(this);
@@ -98,11 +96,10 @@ namespace MyOrg.Models.MemBlocks
         protected RightTriangle(BlockHeader header, RightTriangle source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
+            this.Length = source.Length;
+            this.Height = source.Height;
         }
-        public RightTriangle(RightTriangle source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-        }
+        public RightTriangle(RightTriangle source) : this(_header, source) { }
 
         protected RightTriangle(BlockHeader header, IRightTriangle source) : base(header, source)
         {
@@ -110,13 +107,7 @@ namespace MyOrg.Models.MemBlocks
             this.Length = source.Length;
             this.Height = source.Height;
         }
-
-        public RightTriangle(IRightTriangle source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-            this.Length = source.Length;
-            this.Height = source.Height;
-        }
+        public RightTriangle(IRightTriangle source) : this(_header, source) { }
 
         protected RightTriangle(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
@@ -124,19 +115,17 @@ namespace MyOrg.Models.MemBlocks
             if (sourceBlock.Length < BlockLength)
             {
                 // source too small - allocate new
-                Memory<byte> memory = new byte[BlockLength];
-                sourceBlock.CopyTo(memory);
-                _readonlyLocalBlock = memory;
+                _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
+                sourceBlock.CopyTo(_writableLocalBlock);
             }
             else
             {
                 _readonlyLocalBlock = sourceBlock;
+                _writableLocalBlock = Memory<byte>.Empty;
             }
-            _writableLocalBlock = Memory<byte>.Empty;
         }
-        public RightTriangle(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
-        {
-        }
+        private RightTriangle(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        public RightTriangle(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         public Double Length
         {

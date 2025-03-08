@@ -24,12 +24,11 @@ namespace MyOrg.Models.MemBlocks
 
         private const long BlockStructureCode = 145L;
         private const int ClassHeight = 1;
-        public new const int EntityId = 2;
         private const int BlockLength = 256;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        private static readonly BlockHeader _header = BlockHeader.CreateNew(EntityId, BlockStructureCode);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(2, BlockStructureCode);
 
         public new static MyDTO CreateFrom(MyDTO source)
         {
@@ -51,16 +50,14 @@ namespace MyOrg.Models.MemBlocks
 
         public new static MyDTO CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            SourceBlocks sourceBlocks = SourceBlocks.ParseFrom(buffers);
-            //ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
-            //BlockHeader header = BlockHeader.ParseFrom(buffer);
-            return sourceBlocks.Header.EntityId switch
+            SourceBlocks blocks = SourceBlocks.ParseFrom(buffers);
+            return blocks.Header.EntityId switch
             {
-                _ => new MyOrg.Models.MemBlocks.MyDTO(sourceBlocks)
+                _ => new MyOrg.Models.MemBlocks.MyDTO(blocks)
             };
         }
 
-        protected override int OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => 2;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => new MyDTO(this);
@@ -107,11 +104,11 @@ namespace MyOrg.Models.MemBlocks
         protected MyDTO(BlockHeader header, MyDTO source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
+            _Other1 = source._Other1;
+            _Field1 = source._Field1;
+            _Field2 = source._Field2;
         }
-        public MyDTO(MyDTO source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-        }
+        public MyDTO(MyDTO source) : this(_header, source) { }
 
         protected MyDTO(BlockHeader header, IMyDTO source) : base(header, source)
         {
@@ -120,14 +117,7 @@ namespace MyOrg.Models.MemBlocks
             _Field1 = source.Field1;
             _Field2 = source.Field2;
         }
-
-        public MyDTO(IMyDTO source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-            _Other1 = source.Other1 is null ? null : MyOrg.Models.MemBlocks.Other.CreateFrom(source.Other1);
-            _Field1 = source.Field1;
-            _Field2 = source.Field2;
-        }
+        public MyDTO(IMyDTO source) : this(_header, source) { }
 
         protected MyDTO(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
@@ -144,7 +134,7 @@ namespace MyOrg.Models.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        public MyDTO(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        private MyDTO(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
         public MyDTO(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         private async ValueTask Other1_Pack(IDataStore dataStore)

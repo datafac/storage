@@ -53,9 +53,8 @@ Emit("    public class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_");
 Emit("    {");
 Emit("        private const int ClassHeight = 1;");
 Emit("        private const int BlockLength = 8;");
-Emit("        public new const int EntityId = 3;");
 Emit("        private const long StructureCode = 0x00_41L;");
-Emit("        private static readonly BlockHeader _header = BlockHeader.CreateNew(EntityId, StructureCode);");
+Emit("        private static readonly BlockHeader _header = BlockHeader.CreateNew(3, StructureCode);");
 Emit("");
 Emit("        public static T_MemberTypeName_ CreateFrom(T_MemberTypeName_ source)");
 Emit("        {");
@@ -105,7 +104,7 @@ Emit("        public T_MemberTypeName_(ReadOnlySequence<byte> buffers) : this(_h
 Emit("");
 Emit("        protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);");
 Emit("        protected override IFreezable OnPartCopy() => throw new NotImplementedException();");
-Emit("        protected override int OnGetEntityId() => EntityId;");
+Emit("        protected override int OnGetEntityId() => 3;");
 Emit("        protected override int OnGetClassHeight() => ClassHeight;");
 Emit("        protected override ValueTask OnPack(IDataStore dataStore) => default;");
 Emit("        protected override ValueTask OnUnpack(IDataStore dataStore, int depth) => default;");
@@ -126,12 +125,11 @@ Emit("    }");
 Emit("    public class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>");
 Emit("    {");
 Emit("        private const int ClassHeight = 1;");
-Emit("        public new const int EntityId = 1;");
 Emit("        private const int BlockLength = 4; // structure code = 0x0031L;");
 Emit("        private readonly Memory<byte> _writableLocalBlock;");
 Emit("        private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;");
 Emit("");
-Emit("        protected override int OnGetEntityId() => EntityId;");
+Emit("        protected override int OnGetEntityId() => 1;");
 Emit("        protected override int OnGetClassHeight() => ClassHeight;");
 Emit("        protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);");
 Emit("        protected override void OnFreeze()");
@@ -157,6 +155,7 @@ Emit("");
 Emit("        protected T_BaseName_(BlockHeader header, T_BaseName_ source) : base(header, source)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];");
+Emit("            this.BaseField1 = source.BaseField1;");
 Emit("        }");
 Emit("");
 Emit("        protected T_BaseName_(BlockHeader header, IT_BaseName_ source) : base(header, source)");
@@ -241,12 +240,11 @@ Emit("        private const long T_BlockStructureCode_ = 0x0B00 + 0x0030 + 0x000
         }
 Emit("        private const long BlockStructureCode = T_BlockStructureCode_;");
 Emit("        private const int ClassHeight = T_ClassHeight_;");
-Emit("        public new const int EntityId = T_EntityId_;");
 Emit("        private const int BlockLength = T_BlockLength_;");
 Emit("        private readonly Memory<byte> _writableLocalBlock;");
 Emit("        private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;");
 Emit("");
-Emit("        private static readonly BlockHeader _header = BlockHeader.CreateNew(EntityId, BlockStructureCode);");
+Emit("        private static readonly BlockHeader _header = BlockHeader.CreateNew(T_EntityId_, BlockStructureCode);");
 Emit("");
 Emit("        public new static T_EntityName_ CreateFrom(T_EntityName_ source)");
 Emit("        {");
@@ -276,19 +274,18 @@ Emit("        }");
 Emit("");
 Emit("        public new static T_EntityName_ CreateFrom(ReadOnlySequence<byte> buffers)");
 Emit("        {");
-Emit("            ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();");
-Emit("            BlockHeader header = BlockHeader.ParseFrom(buffer);");
-Emit("            return header.EntityId switch");
+Emit("            SourceBlocks blocks = SourceBlocks.ParseFrom(buffers);");
+Emit("            return blocks.Header.EntityId switch");
 Emit("            {");
                 foreach(var derived in entity.DerivedEntities) {
                 using var _ = NewScope(derived);
-Emit("                T_NameSpace_.MemBlocks.T_EntityName_.EntityId => new T_NameSpace_.MemBlocks.T_EntityName_(buffers),");
+Emit("                T_EntityId_ => new T_NameSpace_.MemBlocks.T_EntityName_(blocks),");
                 }
-Emit("                _ => new T_NameSpace_.MemBlocks.T_EntityName_(buffers)");
+Emit("                _ => new T_NameSpace_.MemBlocks.T_EntityName_(blocks)");
 Emit("            };");
 Emit("        }");
 Emit("");
-Emit("        protected override int OnGetEntityId() => EntityId;");
+Emit("        protected override int OnGetEntityId() => T_EntityId_;");
 Emit("        protected override int OnGetClassHeight() => ClassHeight;");
 Emit("        protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);");
 Emit("        protected override IFreezable OnPartCopy() => new T_EntityName_(this);");
@@ -450,11 +447,59 @@ Emit("");
 Emit("        protected T_EntityName_(BlockHeader header, T_EntityName_ source) : base(header, source)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];");
+            foreach(var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
+            using var _ = NewScope(member);
+            switch(member.Kind) {
+            case MemberKind.Scalar:
+Emit("            this.T_ScalarMemberName_ = source.T_ScalarMemberName_;");
+            break;
+            case MemberKind.Vector:
+Emit("            this.T_VectorMemberName_ = source.T_VectorMemberName_;");
+            break;
+            case MemberKind.Entity:
+            if (member.IsNullable) {
+Emit("            _T_NullableEntityMemberName_ = source._T_NullableEntityMemberName_;");
+            } else {
+Emit("            _T_RequiredEntityMemberName_ = source._T_RequiredEntityMemberName_;");
+            }
+            break;
+            case MemberKind.Binary:
+            if (member.IsNullable) {
+            if (member.IsFixedLength) {
+Emit("            _T_NullableFixLenBinaryMemberName_ = source._T_NullableFixLenBinaryMemberName_;");
+            } else {
+Emit("            _T_NullableVarLenBinaryMemberName_ = source._T_NullableVarLenBinaryMemberName_;");
+            }
+            } else {
+            if (member.IsFixedLength) {
+Emit("            _T_RequiredFixLenBinaryMemberName_ = source._T_RequiredFixLenBinaryMemberName_;");
+            } else {
+Emit("            _T_RequiredVarLenBinaryMemberName_ = source._T_RequiredVarLenBinaryMemberName_;");
+            }
+            }
+            break;
+            case MemberKind.String:
+            if (member.IsNullable) {
+            if (member.IsFixedLength) {
+Emit("            _T_NullableFixLenStringMemberName_ = source._T_NullableFixLenStringMemberName_;");
+            } else {
+Emit("            _T_NullableVarLenStringMemberName_ = source._T_NullableVarLenStringMemberName_;");
+            }
+            } else {
+            if (member.IsFixedLength) {
+Emit("            _T_RequiredFixLenStringMemberName_ = source._T_RequiredFixLenStringMemberName_;");
+            } else {
+Emit("            _T_RequiredVarLenStringMemberName_ = source._T_RequiredVarLenStringMemberName_;");
+            }
+            }
+            break;
+            default:
+            Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
+            break;
+            } // switch
+            }
 Emit("        }");
-Emit("        public T_EntityName_(T_EntityName_ source) : base(_header, source)");
-Emit("        {");
-Emit("            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];");
-Emit("        }");
+Emit("        public T_EntityName_(T_EntityName_ source) : this(_header, source) { }");
 Emit("");
 Emit("        protected T_EntityName_(BlockHeader header, IT_EntityName_ source) : base(header, source)");
 Emit("        {");
@@ -511,62 +556,7 @@ Emit("            _T_RequiredVarLenStringMemberName_ = source.T_RequiredVarLenSt
             } // switch
             }
 Emit("        }");
-Emit("");
-Emit("        public T_EntityName_(IT_EntityName_ source) : base(_header, source)");
-Emit("        {");
-Emit("            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];");
-            foreach(var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
-            using var _ = NewScope(member);
-            switch(member.Kind) {
-            case MemberKind.Scalar:
-Emit("            this.T_ScalarMemberName_ = source.T_ScalarMemberName_;");
-            break;
-            case MemberKind.Vector:
-Emit("            this.T_VectorMemberName_ = source.T_VectorMemberName_;");
-            break;
-            case MemberKind.Entity:
-            if (member.IsNullable) {
-Emit("            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);");
-            } else {
-Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);");
-            }
-            break;
-            case MemberKind.Binary:
-            if (member.IsNullable) {
-            if (member.IsFixedLength) {
-Emit("            _T_NullableFixLenBinaryMemberName_ = source.T_NullableFixLenBinaryMemberName_;");
-            } else {
-Emit("            _T_NullableVarLenBinaryMemberName_ = source.T_NullableVarLenBinaryMemberName_;");
-            }
-            } else {
-            if (member.IsFixedLength) {
-Emit("            _T_RequiredFixLenBinaryMemberName_ = source.T_RequiredFixLenBinaryMemberName_;");
-            } else {
-Emit("            _T_RequiredVarLenBinaryMemberName_ = source.T_RequiredVarLenBinaryMemberName_;");
-            }
-            }
-            break;
-            case MemberKind.String:
-            if (member.IsNullable) {
-            if (member.IsFixedLength) {
-Emit("            _T_NullableFixLenStringMemberName_ = source.T_NullableFixLenStringMemberName_;");
-            } else {
-Emit("            _T_NullableVarLenStringMemberName_ = source.T_NullableVarLenStringMemberName_;");
-            }
-            } else {
-            if (member.IsFixedLength) {
-Emit("            _T_RequiredFixLenStringMemberName_ = source.T_RequiredFixLenStringMemberName_;");
-            } else {
-Emit("            _T_RequiredVarLenStringMemberName_ = source.T_RequiredVarLenStringMemberName_;");
-            }
-            }
-            break;
-            default:
-            Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
-            break;
-            } // switch
-            }
-Emit("        }");
+Emit("        public T_EntityName_(IT_EntityName_ source) : this(_header, source) { }");
 Emit("");
 Emit("        protected T_EntityName_(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)");
 Emit("        {");
@@ -574,19 +564,17 @@ Emit("            var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];");
 Emit("            if (sourceBlock.Length < BlockLength)");
 Emit("            {");
 Emit("                // source too small - allocate new");
-Emit("                Memory<byte> memory = new byte[BlockLength];");
-Emit("                sourceBlock.CopyTo(memory);");
-Emit("                _readonlyLocalBlock = memory;");
+Emit("                _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];");
+Emit("                sourceBlock.CopyTo(_writableLocalBlock);");
 Emit("            }");
 Emit("            else");
 Emit("            {");
 Emit("                _readonlyLocalBlock = sourceBlock;");
+Emit("                _writableLocalBlock = Memory<byte>.Empty;");
 Emit("            }");
-Emit("            _writableLocalBlock = Memory<byte>.Empty;");
 Emit("        }");
-Emit("        public T_EntityName_(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))");
-Emit("        {");
-Emit("        }");
+Emit("        private T_EntityName_(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }");
+Emit("        public T_EntityName_(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }");
 Emit("");
         if(false) {
 Emit("        private const int T_ScalarFieldOffset_ = 0;");

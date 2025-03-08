@@ -26,12 +26,11 @@ namespace MyOrg.Models.MemBlocks
 
         private const long BlockStructureCode = 2L;
         private const int ClassHeight = 2;
-        public new const int EntityId = 2;
         private const int BlockLength = 0;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        private static readonly BlockHeader _header = BlockHeader.CreateNew(EntityId, BlockStructureCode);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(2, BlockStructureCode);
 
         public new static Triangle CreateFrom(Triangle source)
         {
@@ -57,17 +56,16 @@ namespace MyOrg.Models.MemBlocks
 
         public new static Triangle CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
-            BlockHeader header = BlockHeader.ParseFrom(buffer);
-            return header.EntityId switch
+            SourceBlocks blocks = SourceBlocks.ParseFrom(buffers);
+            return blocks.Header.EntityId switch
             {
-                MyOrg.Models.MemBlocks.Equilateral.EntityId => new MyOrg.Models.MemBlocks.Equilateral(buffers),
-                MyOrg.Models.MemBlocks.RightTriangle.EntityId => new MyOrg.Models.MemBlocks.RightTriangle(buffers),
-                _ => new MyOrg.Models.MemBlocks.Triangle(buffers)
+                3 => new MyOrg.Models.MemBlocks.Equilateral(blocks),
+                4 => new MyOrg.Models.MemBlocks.RightTriangle(blocks),
+                _ => new MyOrg.Models.MemBlocks.Triangle(blocks)
             };
         }
 
-        protected override int OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => 2;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => new Triangle(this);
@@ -105,20 +103,13 @@ namespace MyOrg.Models.MemBlocks
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
-        public Triangle(Triangle source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-        }
+        public Triangle(Triangle source) : this(_header, source) { }
 
         protected Triangle(BlockHeader header, ITriangle source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
-
-        public Triangle(ITriangle source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-        }
+        public Triangle(ITriangle source) : this(_header, source) { }
 
         protected Triangle(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
@@ -126,19 +117,17 @@ namespace MyOrg.Models.MemBlocks
             if (sourceBlock.Length < BlockLength)
             {
                 // source too small - allocate new
-                Memory<byte> memory = new byte[BlockLength];
-                sourceBlock.CopyTo(memory);
-                _readonlyLocalBlock = memory;
+                _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
+                sourceBlock.CopyTo(_writableLocalBlock);
             }
             else
             {
                 _readonlyLocalBlock = sourceBlock;
+                _writableLocalBlock = Memory<byte>.Empty;
             }
-            _writableLocalBlock = Memory<byte>.Empty;
         }
-        public Triangle(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
-        {
-        }
+        private Triangle(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        public Triangle(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
 
         public bool Equals(Triangle? other)

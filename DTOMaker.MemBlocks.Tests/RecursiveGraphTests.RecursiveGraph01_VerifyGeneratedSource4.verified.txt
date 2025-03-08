@@ -26,12 +26,11 @@ namespace MyOrg.Models.MemBlocks
 
         private const long BlockStructureCode = 82L;
         private const int ClassHeight = 2;
-        public new const int EntityId = 3;
         private const int BlockLength = 0;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        private static readonly BlockHeader _header = BlockHeader.CreateNew(EntityId, BlockStructureCode);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(3, BlockStructureCode);
 
         public new static NumericNode CreateFrom(NumericNode source)
         {
@@ -57,17 +56,16 @@ namespace MyOrg.Models.MemBlocks
 
         public new static NumericNode CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
-            BlockHeader header = BlockHeader.ParseFrom(buffer);
-            return header.EntityId switch
+            SourceBlocks blocks = SourceBlocks.ParseFrom(buffers);
+            return blocks.Header.EntityId switch
             {
-                MyOrg.Models.MemBlocks.DoubleNode.EntityId => new MyOrg.Models.MemBlocks.DoubleNode(buffers),
-                MyOrg.Models.MemBlocks.Int64Node.EntityId => new MyOrg.Models.MemBlocks.Int64Node(buffers),
-                _ => new MyOrg.Models.MemBlocks.NumericNode(buffers)
+                5 => new MyOrg.Models.MemBlocks.DoubleNode(blocks),
+                4 => new MyOrg.Models.MemBlocks.Int64Node(blocks),
+                _ => new MyOrg.Models.MemBlocks.NumericNode(blocks)
             };
         }
 
-        protected override int OnGetEntityId() => EntityId;
+        protected override int OnGetEntityId() => 3;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => new NumericNode(this);
@@ -105,20 +103,13 @@ namespace MyOrg.Models.MemBlocks
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
-        public NumericNode(NumericNode source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-        }
+        public NumericNode(NumericNode source) : this(_header, source) { }
 
         protected NumericNode(BlockHeader header, INumericNode source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
-
-        public NumericNode(INumericNode source) : base(_header, source)
-        {
-            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-        }
+        public NumericNode(INumericNode source) : this(_header, source) { }
 
         protected NumericNode(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
@@ -126,19 +117,17 @@ namespace MyOrg.Models.MemBlocks
             if (sourceBlock.Length < BlockLength)
             {
                 // source too small - allocate new
-                Memory<byte> memory = new byte[BlockLength];
-                sourceBlock.CopyTo(memory);
-                _readonlyLocalBlock = memory;
+                _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
+                sourceBlock.CopyTo(_writableLocalBlock);
             }
             else
             {
                 _readonlyLocalBlock = sourceBlock;
+                _writableLocalBlock = Memory<byte>.Empty;
             }
-            _writableLocalBlock = Memory<byte>.Empty;
         }
-        public NumericNode(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
-        {
-        }
+        private NumericNode(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        public NumericNode(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
 
         public bool Equals(NumericNode? other)

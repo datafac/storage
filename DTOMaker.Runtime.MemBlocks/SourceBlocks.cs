@@ -32,8 +32,9 @@ namespace DTOMaker.Runtime.MemBlocks
             // structure, then the slice compactions will not allocate new memory.
             long bits = header.StructureBits;
             int classHeight = (int)(bits & 0x0F);
-            ReadOnlyMemory<byte>[] blocks = new ReadOnlyMemory<byte>[classHeight + 1];
-            blocks[0] = headerMemory;
+            Memory<ReadOnlyMemory<byte>> blocks = new ReadOnlyMemory<byte>[classHeight + 1];
+            var blockSpan = blocks.Span;
+            blockSpan[0] = headerMemory;
             for (int h = 0; h < classHeight && h < 15; h++)
             {
                 bits = bits >> 4;
@@ -41,7 +42,7 @@ namespace DTOMaker.Runtime.MemBlocks
                 int blockLength = DTOMaker.MemBlocks.StructureCode.GetBlockSize(blockSizeCode);
                 ReadOnlyMemory<byte> block = buffers.Slice(startPosition, blockLength).Compact();
                 startPosition += blockLength;
-                blocks[h + 1] = block;
+                blockSpan[h + 1] = block;
             }
 
             return new SourceBlocks(header, classHeight, blocks);
