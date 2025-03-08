@@ -51,11 +51,12 @@ namespace MyOrg.Models.MemBlocks
 
         public new static MyDTO CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
-            BlockHeader header = BlockHeader.ParseFrom(buffer);
-            return header.EntityId switch
+            SourceBlocks sourceBlocks = SourceBlocks.ParseFrom(buffers);
+            //ReadOnlyMemory<byte> buffer = buffers.Slice(0, Constants.HeaderSize).Compact();
+            //BlockHeader header = BlockHeader.ParseFrom(buffer);
+            return sourceBlocks.Header.EntityId switch
             {
-                _ => new MyOrg.Models.MemBlocks.MyDTO(buffers)
+                _ => new MyOrg.Models.MemBlocks.MyDTO(sourceBlocks)
             };
         }
 
@@ -134,19 +135,17 @@ namespace MyOrg.Models.MemBlocks
             if (sourceBlock.Length < BlockLength)
             {
                 // source too small - allocate new
-                Memory<byte> memory = new byte[BlockLength];
-                sourceBlock.CopyTo(memory);
-                _readonlyLocalBlock = memory;
+                _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
+                sourceBlock.CopyTo(_writableLocalBlock);
             }
             else
             {
                 _readonlyLocalBlock = sourceBlock;
+                _writableLocalBlock = Memory<byte>.Empty;
             }
-            _writableLocalBlock = Memory<byte>.Empty;
         }
-        public MyDTO(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers))
-        {
-        }
+        public MyDTO(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        public MyDTO(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         private async ValueTask Other1_Pack(IDataStore dataStore)
         {
