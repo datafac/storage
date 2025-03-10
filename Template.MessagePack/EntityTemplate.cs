@@ -66,15 +66,15 @@ namespace T_NameSpace_
 {
     public interface IT_EntityName_ : T_BaseNameSpace_.MessagePack.IT_BaseName_
     {
-        T_MemberType_? T_NullableScalarMemberName_ { get; set; }
-        T_MemberType_ T_RequiredScalarMemberName_ { get; set; }
-        ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberName_ { get; set; }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; set; }
-        Octets? T_NullableBinaryMemberName_ { get; set; }
-        Octets T_RequiredBinaryMemberName_ { get; set; }
-        string? T_NullableStringMemberName_ { get; set; }
-        string T_RequiredStringMemberName_ { get; set; }
+        T_MemberType_? T_NullableScalarMemberName_ { get; }
+        T_MemberType_ T_RequiredScalarMemberName_ { get; }
+        ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; }
+        T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberName_ { get; }
+        T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; }
+        Octets? T_NullableBinaryMemberName_ { get; }
+        Octets T_RequiredBinaryMemberName_ { get; }
+        string? T_NullableStringMemberName_ { get; }
+        string T_RequiredStringMemberName_ { get; }
     }
 }
 //##}
@@ -341,15 +341,7 @@ namespace T_NameSpace_.MessagePack
             get => _T_NullableEntityMemberName_;
             set => _T_NullableEntityMemberName_ = IfNotFrozen(value);
         }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityName_.T_NullableEntityMemberName_
-        {
-            get => _T_NullableEntityMemberName_;
-            set
-            {
-                ThrowIfFrozen();
-                _T_NullableEntityMemberName_ = value is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(value);
-            }
-        }
+        T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityName_.T_NullableEntityMemberName_ => _T_NullableEntityMemberName_;
         //##} else {
         [IgnoreMember]
         private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.Empty;
@@ -362,15 +354,7 @@ namespace T_NameSpace_.MessagePack
             get => _T_RequiredEntityMemberName_;
             set => _T_RequiredEntityMemberName_ = IfNotFrozen(value);
         }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityName_.T_RequiredEntityMemberName_
-        {
-            get => _T_RequiredEntityMemberName_;
-            set
-            {
-                ThrowIfFrozen();
-                _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(value);
-            }
-        }
+        T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityName_.T_RequiredEntityMemberName_ => _T_RequiredEntityMemberName_;
         //##}
         //##break;
         //##case MemberKind.Binary:
@@ -389,7 +373,6 @@ namespace T_NameSpace_.MessagePack
         Octets? IT_EntityName_.T_NullableBinaryMemberName_
         {
             get => _T_NullableBinaryMemberName_ is null ? null : Octets.UnsafeWrap(_T_NullableBinaryMemberName_.Value);
-            set => _T_NullableBinaryMemberName_ = IfNotFrozen(value is null ? null : value.Memory);
         }
         //##} else {
         [IgnoreMember]
@@ -406,7 +389,6 @@ namespace T_NameSpace_.MessagePack
         Octets IT_EntityName_.T_RequiredBinaryMemberName_
         {
             get => Octets.UnsafeWrap(_T_RequiredBinaryMemberName_);
-            set => _T_RequiredBinaryMemberName_ = IfNotFrozen(value.Memory);
         }
         //##}
         //##break;
@@ -793,11 +775,6 @@ namespace T_NameSpace_.MessagePack
         T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityName_.T_NullableEntityMemberName_
         {
             get => _T_NullableEntityMemberName_;
-            set
-            {
-                ThrowIfFrozen();
-                _T_NullableEntityMemberName_ = value is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(value);
-            }
         }
         //##} else {
         [IgnoreMember]
@@ -811,11 +788,6 @@ namespace T_NameSpace_.MessagePack
         T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityName_.T_RequiredEntityMemberName_
         {
             get => _T_RequiredEntityMemberName_;
-            set
-            {
-                ThrowIfFrozen();
-                _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(value);
-            }
         }
         //##}
         //##break;
@@ -835,7 +807,6 @@ namespace T_NameSpace_.MessagePack
         Octets? IT_EntityName_.T_NullableBinaryMemberName_
         {
             get => _T_NullableBinaryMemberName_ is null ? null : Octets.UnsafeWrap(_T_NullableBinaryMemberName_.Value);
-            set => _T_NullableBinaryMemberName_ = IfNotFrozen(value is null ? null : value.Memory);
         }
         //##} else {
         [IgnoreMember]
@@ -852,7 +823,6 @@ namespace T_NameSpace_.MessagePack
         Octets IT_EntityName_.T_RequiredBinaryMemberName_
         {
             get => Octets.UnsafeWrap(_T_RequiredBinaryMemberName_);
-            set => _T_RequiredBinaryMemberName_ = IfNotFrozen(value.Memory);
         }
         //##}
         //##break;

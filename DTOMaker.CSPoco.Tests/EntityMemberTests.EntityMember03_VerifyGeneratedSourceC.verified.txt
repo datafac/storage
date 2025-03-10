@@ -69,15 +69,7 @@ namespace MyOrg.DomainC.CSPoco
             get => _Member1;
             set => _Member1 = IfNotFrozen(ref value);
         }
-        MyOrg.DomainA.IMyDTO1? IMyDTO2.Member1
-        {
-            get => _Member1;
-            set
-            {
-                ThrowIfFrozen();
-                _Member1 = value is null ? null : MyOrg.DomainA.CSPoco.MyDTO1.CreateFrom(value);
-            }
-        }
+        MyOrg.DomainA.IMyDTO1? IMyDTO2.Member1 => _Member1;
 
         private MyOrg.DomainB.CSPoco.MyDTO1 _Member2 = MyOrg.DomainB.CSPoco.MyDTO1.Empty;
         public MyOrg.DomainB.CSPoco.MyDTO1 Member2
@@ -85,15 +77,7 @@ namespace MyOrg.DomainC.CSPoco
             get => _Member2;
             set => _Member2 = IfNotFrozen(ref value);
         }
-        MyOrg.DomainB.IMyDTO1 IMyDTO2.Member2
-        {
-            get => _Member2;
-            set
-            {
-                ThrowIfFrozen();
-                _Member2 = MyOrg.DomainB.CSPoco.MyDTO1.CreateFrom(value);
-            }
-        }
+        MyOrg.DomainB.IMyDTO1 IMyDTO2.Member2 => _Member2;
 
 
         public bool Equals(MyDTO2? other)

@@ -69,15 +69,7 @@ namespace MyOrg.Models.CSPoco
             get => _Other1;
             set => _Other1 = IfNotFrozen(ref value);
         }
-        MyOrg.Models.IOther? IMyDTO.Other1
-        {
-            get => _Other1;
-            set
-            {
-                ThrowIfFrozen();
-                _Other1 = value is null ? null : MyOrg.Models.CSPoco.Other.CreateFrom(value);
-            }
-        }
+        MyOrg.Models.IOther? IMyDTO.Other1 => _Other1;
 
         private Octets _Field1 = Octets.Empty;
         public Octets Field1

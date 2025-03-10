@@ -94,11 +94,6 @@ namespace MyOrg.Models.MessagePack
         MyOrg.Models.ITree? ITree.Left
         {
             get => _Left;
-            set
-            {
-                ThrowIfFrozen();
-                _Left = value is null ? null : MyOrg.Models.MessagePack.Tree.CreateFrom(value);
-            }
         }
 
         [IgnoreMember]
@@ -112,11 +107,6 @@ namespace MyOrg.Models.MessagePack
         MyOrg.Models.ITree? ITree.Right
         {
             get => _Right;
-            set
-            {
-                ThrowIfFrozen();
-                _Right = value is null ? null : MyOrg.Models.MessagePack.Tree.CreateFrom(value);
-            }
         }
 
         [IgnoreMember]
@@ -130,11 +120,6 @@ namespace MyOrg.Models.MessagePack
         MyOrg.Models.INode? ITree.Node
         {
             get => _Node;
-            set
-            {
-                ThrowIfFrozen();
-                _Node = value is null ? null : MyOrg.Models.MessagePack.Node.CreateFrom(value);
-            }
         }
 
 
