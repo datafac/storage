@@ -44,7 +44,7 @@ namespace DTOMaker.MemBlocks
                 // encoded as BlobIdV1
                 case FullTypeName.SystemString:
                 case FullTypeName.MemoryOctets:
-                    return Constants.BlobIdV1Size; 
+                    return Constants.BlobIdV1Size;
                 default:
                     return 0;
             }
@@ -122,7 +122,7 @@ namespace DTOMaker.MemBlocks
         }
 
         public void BuildStructureCodes()
-        { 
+        {
             // calculate structure code
             int thisClassHeight = GetClassHeight();
             var structureCode = new StructureCode(thisClassHeight, this.BlockLength);

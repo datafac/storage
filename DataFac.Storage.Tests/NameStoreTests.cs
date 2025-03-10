@@ -1,7 +1,7 @@
-﻿using Xunit;
-using Shouldly;
-using System.Linq;
+﻿using Shouldly;
 using System;
+using System.Linq;
+using Xunit;
 
 #pragma warning disable CA1707 // Identifiers should not contain underscores
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task

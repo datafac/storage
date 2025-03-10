@@ -6,7 +6,7 @@ namespace DTOMaker.Models
     public class IdAttribute : Attribute
     {
         public readonly int EntityId;
-        
+
         public IdAttribute(int entityId)
         {
             EntityId = entityId;

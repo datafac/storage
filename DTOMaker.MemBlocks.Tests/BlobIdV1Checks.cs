@@ -1,9 +1,9 @@
-﻿using Shouldly;
-using Xunit;
+﻿using DataFac.Memory;
 using DataFac.Storage;
 using DTOMaker.Runtime.MemBlocks;
+using Shouldly;
 using System;
-using DataFac.Memory;
+using Xunit;
 
 namespace DTOMaker.MemBlocks.Tests
 {

@@ -37,7 +37,7 @@ namespace Template.CSPoco.Tests
         [Fact]
         public void Equality03_VectorData()
         {
-            var orig = new T_NameSpace_.CSPoco.T_EntityName_() { T_VectorMemberName_ = new int[] { 123, 456, 789} };
+            var orig = new T_NameSpace_.CSPoco.T_EntityName_() { T_VectorMemberName_ = new int[] { 123, 456, 789 } };
             orig.Freeze();
             int origHash = orig.GetHashCode();
 

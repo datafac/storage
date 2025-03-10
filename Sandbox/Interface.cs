@@ -1,5 +1,5 @@
-﻿using System;
-using DataFac.Memory;
+﻿using DataFac.Memory;
+using System;
 namespace MyOrg.Models
 {
     public interface IOther

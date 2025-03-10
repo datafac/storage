@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis;
+using System;
 using System.Collections.Immutable;
 using System.Text;
-using Microsoft.CodeAnalysis;
 
 namespace DTOMaker.Gentime
 {

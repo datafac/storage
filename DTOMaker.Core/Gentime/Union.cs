@@ -39,8 +39,8 @@ namespace DTOMaker.Gentime
 
         public TResult Match<TResult>(Func<T0, TResult> action0, Func<T1, TResult> action1)
         {
-            return Index == 0 
-                ? action0(Value0) 
+            return Index == 0
+                ? action0(Value0)
                 : action1(Value1);
         }
     }

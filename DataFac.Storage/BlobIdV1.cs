@@ -57,7 +57,7 @@ namespace DataFac.Storage
                 {
                     'U' => true, // embedded, uncompressed
                     'B' => true,    // embedded, Brotli
-                    'G'=> true,     // embedded, GZip
+                    'G' => true,     // embedded, GZip
                     _ => false
                 };
             }

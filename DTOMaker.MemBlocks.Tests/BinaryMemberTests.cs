@@ -1,12 +1,11 @@
-﻿using Shouldly;
-using Microsoft.CodeAnalysis;
-using System.Linq;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Shouldly;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using VerifyXunit;
 using Xunit;
-using Microsoft.CodeAnalysis.CSharp;
-using DataFac.Storage;
 
 namespace DTOMaker.MemBlocks.Tests
 {

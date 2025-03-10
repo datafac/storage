@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RocksDbSharp;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +8,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using RocksDbSharp;
 
 namespace DataFac.Storage.RocksDbStore;
 
@@ -46,7 +46,7 @@ public sealed class RocksDbDataStore : IDataStore
     private volatile bool _disposed;
     public void Dispose()
     {
-        if(_disposed) return;
+        if (_disposed) return;
         _disposed = true;
         _writer.TryComplete();
         _rocksNameDb.Dispose();

@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.Linq;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace DTOMaker.Gentime
 {
@@ -49,7 +49,7 @@ namespace DTOMaker.Gentime
                     errorMessage));
         }
 
-        protected static void TryGetAttributeArgumentValue<TInp, TOut>(TargetBase target, Location location, ImmutableArray<TypedConstant> attributeArguments, int index, Func<TInp, (bool,TOut)> parser, Action<TOut> action)
+        protected static void TryGetAttributeArgumentValue<TInp, TOut>(TargetBase target, Location location, ImmutableArray<TypedConstant> attributeArguments, int index, Func<TInp, (bool, TOut)> parser, Action<TOut> action)
         {
             string? errorMessage = null;
             object? input = attributeArguments[index].Value;
@@ -198,12 +198,12 @@ namespace DTOMaker.Gentime
                         Location pdsLocation = Location.Create(pds.SyntaxTree, pds.Span);
                         var member = entity.Members.GetOrAdd(pds.Identifier.Text, (n) => _memberFactory(entity, n, pdsLocation));
                         member.MemberType = new TypeFullName(memberTypeNameSpace, memberTypeName);
-                        if(member.MemberType.FullName == FullTypeName.MemoryOctets)
+                        if (member.MemberType.FullName == FullTypeName.MemoryOctets)
                         {
                             // binary
                             member.Kind = MemberKind.Binary;
                         }
-                        else if(member.MemberType.FullName == FullTypeName.SystemString)
+                        else if (member.MemberType.FullName == FullTypeName.SystemString)
                         {
                             // string
                             member.Kind = MemberKind.String;

@@ -34,7 +34,7 @@ namespace Template.CSRecord.Tests
         [Fact(Skip = "todo we need an array-like structure that implements IEquatable")]
         public void Equality03_VectorData()
         {
-            var orig = new T_NameSpace_.CSRecord.T_EntityName_() { T_VectorMemberName_ = new int[] { 123, 456, 789} };
+            var orig = new T_NameSpace_.CSRecord.T_EntityName_() { T_VectorMemberName_ = new int[] { 123, 456, 789 } };
             int origHash = orig.GetHashCode();
 
             var copy = new T_NameSpace_.CSRecord.T_EntityName_() { T_VectorMemberName_ = new int[] { 123, 456, 789 } };
