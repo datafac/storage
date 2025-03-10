@@ -12,7 +12,7 @@ using System;
 
 namespace MyOrg.Models.CSRecord
 {
-    public partial class Equilateral : MyOrg.Models.CSRecord.Triangle, IEquilateral, IEquatable<Equilateral>
+    public partial record Equilateral : MyOrg.Models.CSRecord.Triangle, IEquilateral, IEquatable<Equilateral>
     {
         // Derived entities: 0
 
@@ -21,7 +21,6 @@ namespace MyOrg.Models.CSRecord
         private static Equilateral CreateEmpty()
         {
             var empty = new Equilateral();
-            empty.Freeze();
             return empty;
         }
         private static readonly Equilateral _empty = CreateEmpty();
@@ -47,13 +46,6 @@ namespace MyOrg.Models.CSRecord
 
         protected override int OnGetEntityId() => EntityId;
 
-        protected override void OnFreeze()
-        {
-            base.OnFreeze();
-        }
-
-        protected override IFreezable OnPartCopy() => new Equilateral(this);
-
         public Equilateral() { }
         public Equilateral(IEquilateral source) : base(source)
         {
@@ -64,38 +56,7 @@ namespace MyOrg.Models.CSRecord
         public Double Length
         {
             get => _Length;
-            set => _Length = IfNotFrozen(ref value);
-        }
-
-
-        public bool Equals(Equilateral? other)
-        {
-            if (ReferenceEquals(this, other)) return true;
-            if (other is null) return false;
-            if (!base.Equals(other)) return false;
-            if (_Length != other.Length) return false;
-            return true;
-        }
-
-        public override bool Equals(object? obj) => obj is Equilateral other && Equals(other);
-        public static bool operator ==(Equilateral? left, Equilateral? right) => left is not null ? left.Equals(right) : (right is null);
-        public static bool operator !=(Equilateral? left, Equilateral? right) => left is not null ? !left.Equals(right) : (right is not null);
-
-        private int CalcHashCode()
-        {
-            HashCode result = new HashCode();
-            result.Add(base.GetHashCode());
-            result.Add(_Length);
-            return result.ToHashCode();
-        }
-
-        private int? _hashCode;
-        public override int GetHashCode()
-        {
-            if (!IsFrozen) return CalcHashCode();
-            if (_hashCode.HasValue) return _hashCode.Value;
-            _hashCode = CalcHashCode();
-            return _hashCode.Value;
+            init => _Length = value;
         }
 
     }

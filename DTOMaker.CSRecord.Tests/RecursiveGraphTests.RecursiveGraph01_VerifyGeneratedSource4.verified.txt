@@ -12,7 +12,7 @@ using System;
 
 namespace MyOrg.Models.CSRecord
 {
-    public partial class NumericNode : MyOrg.Models.CSRecord.Node, INumericNode, IEquatable<NumericNode>
+    public partial record NumericNode : MyOrg.Models.CSRecord.Node, INumericNode, IEquatable<NumericNode>
     {
         // Derived entities: 2
         // - DoubleNode
@@ -23,7 +23,6 @@ namespace MyOrg.Models.CSRecord
         private static NumericNode CreateEmpty()
         {
             var empty = new NumericNode();
-            empty.Freeze();
             return empty;
         }
         private static readonly NumericNode _empty = CreateEmpty();
@@ -53,45 +52,9 @@ namespace MyOrg.Models.CSRecord
 
         protected override int OnGetEntityId() => EntityId;
 
-        protected override void OnFreeze()
-        {
-            base.OnFreeze();
-        }
-
-        protected override IFreezable OnPartCopy() => new NumericNode(this);
-
         public NumericNode() { }
         public NumericNode(INumericNode source) : base(source)
         {
-        }
-
-
-        public bool Equals(NumericNode? other)
-        {
-            if (ReferenceEquals(this, other)) return true;
-            if (other is null) return false;
-            if (!base.Equals(other)) return false;
-            return true;
-        }
-
-        public override bool Equals(object? obj) => obj is NumericNode other && Equals(other);
-        public static bool operator ==(NumericNode? left, NumericNode? right) => left is not null ? left.Equals(right) : (right is null);
-        public static bool operator !=(NumericNode? left, NumericNode? right) => left is not null ? !left.Equals(right) : (right is not null);
-
-        private int CalcHashCode()
-        {
-            HashCode result = new HashCode();
-            result.Add(base.GetHashCode());
-            return result.ToHashCode();
-        }
-
-        private int? _hashCode;
-        public override int GetHashCode()
-        {
-            if (!IsFrozen) return CalcHashCode();
-            if (_hashCode.HasValue) return _hashCode.Value;
-            _hashCode = CalcHashCode();
-            return _hashCode.Value;
         }
 
     }

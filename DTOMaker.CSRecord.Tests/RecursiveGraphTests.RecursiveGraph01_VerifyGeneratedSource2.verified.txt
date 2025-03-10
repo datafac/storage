@@ -12,7 +12,7 @@ using System;
 
 namespace MyOrg.Models.CSRecord
 {
-    public partial class Int64Node : MyOrg.Models.CSRecord.NumericNode, IInt64Node, IEquatable<Int64Node>
+    public partial record Int64Node : MyOrg.Models.CSRecord.NumericNode, IInt64Node, IEquatable<Int64Node>
     {
         // Derived entities: 0
 
@@ -21,7 +21,6 @@ namespace MyOrg.Models.CSRecord
         private static Int64Node CreateEmpty()
         {
             var empty = new Int64Node();
-            empty.Freeze();
             return empty;
         }
         private static readonly Int64Node _empty = CreateEmpty();
@@ -47,13 +46,6 @@ namespace MyOrg.Models.CSRecord
 
         protected override int OnGetEntityId() => EntityId;
 
-        protected override void OnFreeze()
-        {
-            base.OnFreeze();
-        }
-
-        protected override IFreezable OnPartCopy() => new Int64Node(this);
-
         public Int64Node() { }
         public Int64Node(IInt64Node source) : base(source)
         {
@@ -64,38 +56,7 @@ namespace MyOrg.Models.CSRecord
         public Int64 Value
         {
             get => _Value;
-            set => _Value = IfNotFrozen(ref value);
-        }
-
-
-        public bool Equals(Int64Node? other)
-        {
-            if (ReferenceEquals(this, other)) return true;
-            if (other is null) return false;
-            if (!base.Equals(other)) return false;
-            if (_Value != other.Value) return false;
-            return true;
-        }
-
-        public override bool Equals(object? obj) => obj is Int64Node other && Equals(other);
-        public static bool operator ==(Int64Node? left, Int64Node? right) => left is not null ? left.Equals(right) : (right is null);
-        public static bool operator !=(Int64Node? left, Int64Node? right) => left is not null ? !left.Equals(right) : (right is not null);
-
-        private int CalcHashCode()
-        {
-            HashCode result = new HashCode();
-            result.Add(base.GetHashCode());
-            result.Add(_Value);
-            return result.ToHashCode();
-        }
-
-        private int? _hashCode;
-        public override int GetHashCode()
-        {
-            if (!IsFrozen) return CalcHashCode();
-            if (_hashCode.HasValue) return _hashCode.Value;
-            _hashCode = CalcHashCode();
-            return _hashCode.Value;
+            init => _Value = value;
         }
 
     }

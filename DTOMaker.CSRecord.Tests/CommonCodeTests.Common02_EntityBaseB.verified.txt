@@ -12,7 +12,7 @@ using System;
 
 namespace MyOrg.Models.CSRecord
 {
-    public partial class MyBase : DTOMaker.Runtime.CSRecord.EntityBase, IMyBase, IEquatable<MyBase>
+    public partial record MyBase : DTOMaker.Runtime.CSRecord.EntityBase, IMyBase, IEquatable<MyBase>
     {
         // Derived entities: 1
         // - MyDTO
@@ -22,7 +22,6 @@ namespace MyOrg.Models.CSRecord
         private static MyBase CreateEmpty()
         {
             var empty = new MyBase();
-            empty.Freeze();
             return empty;
         }
         private static readonly MyBase _empty = CreateEmpty();
@@ -50,45 +49,9 @@ namespace MyOrg.Models.CSRecord
 
         protected override int OnGetEntityId() => EntityId;
 
-        protected override void OnFreeze()
-        {
-            base.OnFreeze();
-        }
-
-        protected override IFreezable OnPartCopy() => new MyBase(this);
-
         public MyBase() { }
         public MyBase(IMyBase source) : base(source)
         {
-        }
-
-
-        public bool Equals(MyBase? other)
-        {
-            if (ReferenceEquals(this, other)) return true;
-            if (other is null) return false;
-            if (!base.Equals(other)) return false;
-            return true;
-        }
-
-        public override bool Equals(object? obj) => obj is MyBase other && Equals(other);
-        public static bool operator ==(MyBase? left, MyBase? right) => left is not null ? left.Equals(right) : (right is null);
-        public static bool operator !=(MyBase? left, MyBase? right) => left is not null ? !left.Equals(right) : (right is not null);
-
-        private int CalcHashCode()
-        {
-            HashCode result = new HashCode();
-            result.Add(base.GetHashCode());
-            return result.ToHashCode();
-        }
-
-        private int? _hashCode;
-        public override int GetHashCode()
-        {
-            if (!IsFrozen) return CalcHashCode();
-            if (_hashCode.HasValue) return _hashCode.Value;
-            _hashCode = CalcHashCode();
-            return _hashCode.Value;
         }
 
     }

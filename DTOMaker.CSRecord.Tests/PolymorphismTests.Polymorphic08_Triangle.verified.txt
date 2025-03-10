@@ -12,7 +12,7 @@ using System;
 
 namespace MyOrg.Models.CSRecord
 {
-    public partial class Triangle : MyOrg.Models.CSRecord.Polygon, ITriangle, IEquatable<Triangle>
+    public partial record Triangle : MyOrg.Models.CSRecord.Polygon, ITriangle, IEquatable<Triangle>
     {
         // Derived entities: 2
         // - Equilateral
@@ -23,7 +23,6 @@ namespace MyOrg.Models.CSRecord
         private static Triangle CreateEmpty()
         {
             var empty = new Triangle();
-            empty.Freeze();
             return empty;
         }
         private static readonly Triangle _empty = CreateEmpty();
@@ -53,45 +52,9 @@ namespace MyOrg.Models.CSRecord
 
         protected override int OnGetEntityId() => EntityId;
 
-        protected override void OnFreeze()
-        {
-            base.OnFreeze();
-        }
-
-        protected override IFreezable OnPartCopy() => new Triangle(this);
-
         public Triangle() { }
         public Triangle(ITriangle source) : base(source)
         {
-        }
-
-
-        public bool Equals(Triangle? other)
-        {
-            if (ReferenceEquals(this, other)) return true;
-            if (other is null) return false;
-            if (!base.Equals(other)) return false;
-            return true;
-        }
-
-        public override bool Equals(object? obj) => obj is Triangle other && Equals(other);
-        public static bool operator ==(Triangle? left, Triangle? right) => left is not null ? left.Equals(right) : (right is null);
-        public static bool operator !=(Triangle? left, Triangle? right) => left is not null ? !left.Equals(right) : (right is not null);
-
-        private int CalcHashCode()
-        {
-            HashCode result = new HashCode();
-            result.Add(base.GetHashCode());
-            return result.ToHashCode();
-        }
-
-        private int? _hashCode;
-        public override int GetHashCode()
-        {
-            if (!IsFrozen) return CalcHashCode();
-            if (_hashCode.HasValue) return _hashCode.Value;
-            _hashCode = CalcHashCode();
-            return _hashCode.Value;
         }
 
     }

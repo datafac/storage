@@ -12,7 +12,7 @@ using System;
 
 namespace MyOrg.Models.CSRecord
 {
-    public partial class Rectangle : MyOrg.Models.CSRecord.Quadrilateral, IRectangle, IEquatable<Rectangle>
+    public partial record Rectangle : MyOrg.Models.CSRecord.Quadrilateral, IRectangle, IEquatable<Rectangle>
     {
         // Derived entities: 0
 
@@ -21,7 +21,6 @@ namespace MyOrg.Models.CSRecord
         private static Rectangle CreateEmpty()
         {
             var empty = new Rectangle();
-            empty.Freeze();
             return empty;
         }
         private static readonly Rectangle _empty = CreateEmpty();
@@ -47,13 +46,6 @@ namespace MyOrg.Models.CSRecord
 
         protected override int OnGetEntityId() => EntityId;
 
-        protected override void OnFreeze()
-        {
-            base.OnFreeze();
-        }
-
-        protected override IFreezable OnPartCopy() => new Rectangle(this);
-
         public Rectangle() { }
         public Rectangle(IRectangle source) : base(source)
         {
@@ -65,47 +57,14 @@ namespace MyOrg.Models.CSRecord
         public Double Length
         {
             get => _Length;
-            set => _Length = IfNotFrozen(ref value);
+            init => _Length = value;
         }
 
         private Double _Height = default;
         public Double Height
         {
             get => _Height;
-            set => _Height = IfNotFrozen(ref value);
-        }
-
-
-        public bool Equals(Rectangle? other)
-        {
-            if (ReferenceEquals(this, other)) return true;
-            if (other is null) return false;
-            if (!base.Equals(other)) return false;
-            if (_Length != other.Length) return false;
-            if (_Height != other.Height) return false;
-            return true;
-        }
-
-        public override bool Equals(object? obj) => obj is Rectangle other && Equals(other);
-        public static bool operator ==(Rectangle? left, Rectangle? right) => left is not null ? left.Equals(right) : (right is null);
-        public static bool operator !=(Rectangle? left, Rectangle? right) => left is not null ? !left.Equals(right) : (right is not null);
-
-        private int CalcHashCode()
-        {
-            HashCode result = new HashCode();
-            result.Add(base.GetHashCode());
-            result.Add(_Length);
-            result.Add(_Height);
-            return result.ToHashCode();
-        }
-
-        private int? _hashCode;
-        public override int GetHashCode()
-        {
-            if (!IsFrozen) return CalcHashCode();
-            if (_hashCode.HasValue) return _hashCode.Value;
-            _hashCode = CalcHashCode();
-            return _hashCode.Value;
+            init => _Height = value;
         }
 
     }
