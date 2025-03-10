@@ -4,6 +4,7 @@
 
 <!--TOC-->
 - [DTOMaker](#dtomaker)
+  - [Workflow](#workflow)
 - [Included Packages](#included-packages)
   - [DTOMaker.Models](#dtomaker.models)
   - [DTOMaker.MessagePack](#dtomaker.messagepack)
@@ -31,6 +32,7 @@ serialization schemes:
 
 and related POCOs (Plain Old C# Objects).
 
+## Workflow
 ```mermaid
 ---
 title: Workflow
@@ -125,6 +127,7 @@ mitigate the single assembly constraint.
 # Development
 ## In progress
 - performance improvements
+- CSRecord
 
 ## Coming soon
 - Json (NewtonSoft) generator
