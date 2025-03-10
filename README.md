@@ -1,4 +1,4 @@
-[![Build-Deploy](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml)
+![Build-Deploy](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml)
 
 *Warning: This is pre-release software under active development. Breaking changes may occur.*
 
@@ -11,7 +11,7 @@
   - [DTOMaker.Models.MessagePack](#dtomaker.models.messagepack)
   - [DTOMaker.MemBlocks](#dtomaker.memblocks)
   - [DTOMaker.Models.MemBlocks](#dtomaker.models.memblocks)
-  - [DTOMaker.CSPoco](#dtomaker.cspoco)
+  - [DTOMaker.CSRecord](#dtomaker.cspoco)
   - [DTOMaker.Runtime](#dtomaker.runtime)
 - [Model features](#model-features)
   - [MemBlocks features](#memblocks-features)
@@ -93,7 +93,7 @@ values directly to the block with little-endian (default) or big-endian byte ord
 Additional attributes used by the DTOMaker.MemBlocks source generator, to 
 manage entity and member memory layout.
 
-## DTOMaker.CSPoco
+## DTOMaker.CSRecord
 Generates basic POCOs (Plain Old C# Objects) that implement the model interfaces.
 
 ## DTOMaker.Runtime
@@ -103,7 +103,7 @@ Common types used at runtime by DTOMaker generated entities.
 - Member value types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
 - String member types.
 - Binary member types:
-  - Octets (model interfaces, CSPoco, MemBlocks)
+  - Octets (model interfaces, CSRecord, MemBlocks)
   - ReadOnlyMemory\<byte\> (MessagePack)
 - polymorphic types
 - entity members
