@@ -132,7 +132,7 @@ namespace T_NameSpace_.CSRecord
             //##}
             //##break;
             //##case MemberKind.Vector:
-            _T_VectorMemberName_ = source.T_VectorMemberName_;
+            _T_VectorMemberName_ = new ReadOnlyMemoryWrapper<T_MemberType_>(source.T_VectorMemberName_);
             //##break;
             //##case MemberKind.Entity:
             //##if (member.IsNullable) {
@@ -189,14 +189,14 @@ namespace T_NameSpace_.CSRecord
         //##}
         //##break;
         //##case MemberKind.Vector:
-        private ReadOnlyMemory<T_MemberType_> _T_VectorMemberName_;
+        private ReadOnlyMemoryWrapper<T_MemberType_> _T_VectorMemberName_;
         //##if (member.IsObsolete) {
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##}
         public ReadOnlyMemory<T_MemberType_> T_VectorMemberName_
         {
-            get => _T_VectorMemberName_;
-            init => _T_VectorMemberName_ = value;
+            get => _T_VectorMemberName_.Memory;
+            init => _T_VectorMemberName_ = new ReadOnlyMemoryWrapper<T_MemberType_>(value);
         }
         //##break;
         //##case MemberKind.Entity:

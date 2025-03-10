@@ -142,7 +142,7 @@ Emit("            _T_RequiredScalarMemberName_ = source.T_RequiredScalarMemberNa
             }
             break;
             case MemberKind.Vector:
-Emit("            _T_VectorMemberName_ = source.T_VectorMemberName_;");
+Emit("            _T_VectorMemberName_ = new ReadOnlyMemoryWrapper<T_MemberType_>(source.T_VectorMemberName_);");
             break;
             case MemberKind.Entity:
             if (member.IsNullable) {
@@ -199,14 +199,14 @@ Emit("        }");
         }
         break;
         case MemberKind.Vector:
-Emit("        private ReadOnlyMemory<T_MemberType_> _T_VectorMemberName_;");
+Emit("        private ReadOnlyMemoryWrapper<T_MemberType_> _T_VectorMemberName_;");
         if (member.IsObsolete) {
 Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
         }
 Emit("        public ReadOnlyMemory<T_MemberType_> T_VectorMemberName_");
 Emit("        {");
-Emit("            get => _T_VectorMemberName_;");
-Emit("            init => _T_VectorMemberName_ = value;");
+Emit("            get => _T_VectorMemberName_.Memory;");
+Emit("            init => _T_VectorMemberName_ = new ReadOnlyMemoryWrapper<T_MemberType_>(value);");
 Emit("        }");
         break;
         case MemberKind.Entity:

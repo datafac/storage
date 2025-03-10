@@ -49,14 +49,14 @@ namespace MyOrg.Models.CSRecord
         public MyDTO() { }
         public MyDTO(IMyDTO source) : base(source)
         {
-            _Field1 = source.Field1;
+            _Field1 = new ReadOnlyMemoryWrapper<Double>(source.Field1);
         }
 
-        private ReadOnlyMemory<Double> _Field1;
+        private ReadOnlyMemoryWrapper<Double> _Field1;
         public ReadOnlyMemory<Double> Field1
         {
-            get => _Field1;
-            init => _Field1 = value;
+            get => _Field1.Memory;
+            init => _Field1 = new ReadOnlyMemoryWrapper<Double>(value);
         }
 
     }

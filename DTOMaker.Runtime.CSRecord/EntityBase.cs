@@ -1,4 +1,7 @@
-﻿namespace DTOMaker.Runtime.CSRecord
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+
+namespace DTOMaker.Runtime.CSRecord
 {
     public abstract record EntityBase : IImmutable
     {
