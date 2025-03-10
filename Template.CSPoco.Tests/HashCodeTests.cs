@@ -3,7 +3,7 @@ using Xunit;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 
-namespace Template_CSPoco.Tests
+namespace Template.CSPoco.Tests
 {
     public class EqualityTests
     {

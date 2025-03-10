@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace Template_CSPoco.Tests
+namespace Template.CSPoco.Tests
 {
     public class TemplateRoundtripTests
     {

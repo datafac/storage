@@ -6,7 +6,6 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<WarningsAsErrors>nullable</WarningsAsErrors>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageProjectUrl>https://github.com/datafac/dtomaker-core</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/datafac/dtomaker-core</RepositoryUrl>
 		<Company>DataFac</Company>

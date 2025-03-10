@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace Template_CSRecord.Tests
+namespace Template.CSRecord.Tests
 {
     public class TemplateRoundtripTests
     {
