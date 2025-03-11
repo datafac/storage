@@ -22,9 +22,9 @@ namespace MyOrg.Models.MemBlocks
     {
         // Derived entities: 0
 
-        private const long BlockStructureCode = 2386L;
+        private const long BlockStructureCode = 1874L;
         private const int ClassHeight = 2;
-        private const int BlockLength = 256;
+        private const int BlockLength = 64;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
@@ -70,19 +70,19 @@ namespace MyOrg.Models.MemBlocks
         protected override async ValueTask OnPack(IDataStore dataStore)
         {
             await base.OnPack(dataStore);
-            Value_Pack();
+            await Value_Pack(dataStore);
         }
 
         protected override async ValueTask OnUnpack(IDataStore dataStore, int depth)
         {
             await base.OnUnpack(dataStore, depth);
-            Value_Unpack();
+            await Value_Unpack(dataStore);
         }
 
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
         //  ----  ----  ----  ----  ------- ----  -------
-        //     1     0   256        String  LE    Value
+        //     1     0    64        String  LE    Value
         // ------------------------------------------------------------
 
         protected StringNode(BlockHeader header) : base(header)
@@ -126,18 +126,21 @@ namespace MyOrg.Models.MemBlocks
         internal StringNode(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
         public StringNode(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
-        private void Value_Pack()
+        private async ValueTask Value_Pack(IDataStore dataStore)
         {
-            Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(0, 256),
-                System.Text.Encoding.UTF8.GetBytes(_Value));
+            BlobIdV1 blobId = default;
+            var buffer = System.Text.Encoding.UTF8.GetBytes(_Value);
+            blobId = await dataStore.PutBlob(buffer);
+            blobId.WriteTo(_writableLocalBlock.Slice(0, 64).Span);
         }
-        private void Value_Unpack()
+        private async ValueTask Value_Unpack(IDataStore dataStore)
         {
-            ReadOnlyMemory<byte>? memory = Codec_Memory_NE.ReadFromMemory(_readonlyLocalBlock.Slice(0, 256));
+            BlobIdV1 blobId = BlobIdV1.UnsafeWrap(_readonlyLocalBlock.Slice(0, 64));
+            var blob = await dataStore.GetBlob(blobId);
 #if NET8_0_OR_GREATER
-            _Value = memory is null ? string.Empty : System.Text.Encoding.UTF8.GetString(memory.Value.Span);
+            _Value = blob is null ? string.Empty : System.Text.Encoding.UTF8.GetString(blob.Value.Span);
 #else
-            _Value = memory is null ? string.Empty : System.Text.Encoding.UTF8.GetString(memory.Value.ToArray());
+            _Value = blob is null ? string.Empty : System.Text.Encoding.UTF8.GetString(blob.Value.ToArray());
 #endif
         }
         private string _Value = string.Empty;

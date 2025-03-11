@@ -102,9 +102,11 @@ namespace DTOMaker.MemBlocks
             }
         }
 
-        private SyntaxDiagnostic? CheckStringLengthIsValid()
+        private SyntaxDiagnostic? CheckFixedLengthIsValid()
         {
-            if (MemberType.FullName != FullTypeName.SystemString) return null;
+            if (MemberType.FullName != FullTypeName.SystemString
+                && MemberType.FullName != FullTypeName.MemoryOctets) return null;
+            if (FixedLength == 0) return null;
             if (IsPowerOf2(FixedLength, 1, 1024)) return null;
             return new SyntaxDiagnostic(
                         DiagnosticId.DMMB0009, "Invalid length", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
@@ -151,7 +153,7 @@ namespace DTOMaker.MemBlocks
             if ((diagnostic2 = CheckHasOffsetAttribute()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckFieldOffsetIsValid()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckFieldLengthIsValid()) is not null) yield return diagnostic2;
-            if ((diagnostic2 = CheckStringLengthIsValid()) is not null) yield return diagnostic2;
+            if ((diagnostic2 = CheckFixedLengthIsValid()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckArrayCapacityIsValid()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckTotalLengthIsValid()) is not null) yield return diagnostic2;
             // todo check binary fixed length >= 4

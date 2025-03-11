@@ -22,14 +22,14 @@ namespace DTOMaker.MemBlocks.Tests
                 [Id(1)]
                 public interface INode
                 {
-                    [Member(1)][FixedLength(16)] String Key { get; set; }
+                    [Member(1)][FixedLength(16)] string Key { get; set; }
                 }
 
                 [Entity][Layout(LayoutMethod.Linear)]
                 [Id(2)]
                 public interface IStringNode : INode
                 {
-                    [Member(1)][FixedLength(256)] String Value { get; set; }
+                    [Member(1)] string Value { get; set; }
                 }
 
                 [Entity][Layout(LayoutMethod.Linear)]
