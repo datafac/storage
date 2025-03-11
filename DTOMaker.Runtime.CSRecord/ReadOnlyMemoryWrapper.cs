@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace DTOMaker.Runtime.CSRecord
 {
@@ -14,7 +13,7 @@ namespace DTOMaker.Runtime.CSRecord
         public readonly ReadOnlyMemory<T> Memory;
         public ReadOnlyMemoryWrapper(ReadOnlyMemory<T> memory) => Memory = memory;
         public bool Equals(ReadOnlyMemoryWrapper<T> other) => other.Memory.Span.SequenceEqual(Memory.Span);
-        public override bool Equals([NotNullWhen(true)] object? obj) => obj is ReadOnlyMemoryWrapper<T> other && Equals(other);
+        public override bool Equals(object? obj) => obj is ReadOnlyMemoryWrapper<T> other && Equals(other);
         public override int GetHashCode()
         {
             HashCode result = new HashCode();

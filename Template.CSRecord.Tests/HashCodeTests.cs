@@ -5,6 +5,7 @@ using Xunit;
 
 namespace Template.CSRecord.Tests
 {
+#if NET8_0_OR_GREATER
     public class EqualityTests
     {
         [Fact]
@@ -45,4 +46,5 @@ namespace Template.CSRecord.Tests
             copy.Equals(orig).ShouldBeTrue();
         }
     }
+#endif
 }

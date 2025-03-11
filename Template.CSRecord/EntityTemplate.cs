@@ -14,6 +14,7 @@ using DTOMaker.Runtime;
 using DTOMaker.Runtime.CSRecord;
 using System;
 
+#if NET8_0_OR_GREATER
 //##if (false) {
 using T_MemberType_ = System.Int32;
 namespace T_MemberTypeNameSpace_
@@ -260,3 +261,6 @@ namespace T_NameSpace_.CSRecord
         //##}
     }
 }
+#else
+#warning This template targets .NET 8.0+
+#endif
