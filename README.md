@@ -11,7 +11,7 @@
   - [DTOMaker.Models.MessagePack](#dtomaker.models.messagepack)
   - [DTOMaker.MemBlocks](#dtomaker.memblocks)
   - [DTOMaker.Models.MemBlocks](#dtomaker.models.memblocks)
-  - [DTOMaker.CSRecord](#dtomaker.cspoco)
+  - [DTOMaker.CSRecord](#dtomaker.csrecord)
   - [DTOMaker.Runtime](#dtomaker.runtime)
 - [Model features](#model-features)
   - [MemBlocks features](#memblocks-features)
@@ -59,7 +59,7 @@ Models are defined as C# interfaces with additional attributes. Here's a trivial
 [Entity]
 public interface IMyFirstDTO
 {
-    [Member(1)] string Name { get; set; }
+    [Member(1)] string Name { get; }
 }
 ```
 If using the MessagePack source generator, the following implmentation will be 
@@ -126,8 +126,7 @@ mitigate the single assembly constraint.
 
 # Development
 ## In progress
-- performance improvements
-- CSRecord
+- C# records generator
 
 ## Coming soon
 - Json (NewtonSoft) generator
