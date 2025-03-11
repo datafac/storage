@@ -10,6 +10,7 @@ using DTOMaker.Runtime;
 using DTOMaker.Runtime.CSRecord;
 using System;
 
+#if NET8_0_OR_GREATER
 namespace MyOrg.DomainA.CSRecord
 {
     public partial record MyBase : DTOMaker.Runtime.CSRecord.EntityBase, IMyBase, IEquatable<MyBase>
@@ -19,13 +20,8 @@ namespace MyOrg.DomainA.CSRecord
 
         public new const int EntityId = 2;
 
-        private static MyBase CreateEmpty()
-        {
-            var empty = new MyBase();
-            return empty;
-        }
-        private static readonly MyBase _empty = CreateEmpty();
-        public static MyBase Empty => _empty;
+        private static readonly MyBase _empty = new MyBase();
+        public static new MyBase Empty => _empty;
 
         public new static MyBase CreateFrom(MyBase source)
         {
@@ -56,3 +52,6 @@ namespace MyOrg.DomainA.CSRecord
 
     }
 }
+#else
+#warning This template targets .NET 8.0+
+#endif

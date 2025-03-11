@@ -10,6 +10,7 @@ using DTOMaker.Runtime;
 using DTOMaker.Runtime.CSRecord;
 using System;
 
+#if NET8_0_OR_GREATER
 namespace MyOrg.Models.CSRecord
 {
     public partial record BooleanNode : MyOrg.Models.CSRecord.Node, IBooleanNode, IEquatable<BooleanNode>
@@ -18,13 +19,8 @@ namespace MyOrg.Models.CSRecord
 
         public new const int EntityId = 4;
 
-        private static BooleanNode CreateEmpty()
-        {
-            var empty = new BooleanNode();
-            return empty;
-        }
-        private static readonly BooleanNode _empty = CreateEmpty();
-        public static BooleanNode Empty => _empty;
+        private static readonly BooleanNode _empty = new BooleanNode();
+        public static new BooleanNode Empty => _empty;
 
         public new static BooleanNode CreateFrom(BooleanNode source)
         {
@@ -61,3 +57,6 @@ namespace MyOrg.Models.CSRecord
 
     }
 }
+#else
+#warning This template targets .NET 8.0+
+#endif

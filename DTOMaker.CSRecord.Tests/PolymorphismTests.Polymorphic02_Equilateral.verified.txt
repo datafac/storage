@@ -10,6 +10,7 @@ using DTOMaker.Runtime;
 using DTOMaker.Runtime.CSRecord;
 using System;
 
+#if NET8_0_OR_GREATER
 namespace MyOrg.Models.CSRecord
 {
     public partial record Equilateral : MyOrg.Models.CSRecord.Triangle, IEquilateral, IEquatable<Equilateral>
@@ -18,13 +19,8 @@ namespace MyOrg.Models.CSRecord
 
         public new const int EntityId = 3;
 
-        private static Equilateral CreateEmpty()
-        {
-            var empty = new Equilateral();
-            return empty;
-        }
-        private static readonly Equilateral _empty = CreateEmpty();
-        public static Equilateral Empty => _empty;
+        private static readonly Equilateral _empty = new Equilateral();
+        public static new Equilateral Empty => _empty;
 
         public new static Equilateral CreateFrom(Equilateral source)
         {
@@ -61,3 +57,6 @@ namespace MyOrg.Models.CSRecord
 
     }
 }
+#else
+#warning This template targets .NET 8.0+
+#endif

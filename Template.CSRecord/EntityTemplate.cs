@@ -23,9 +23,9 @@ namespace T_MemberTypeNameSpace_
 }
 namespace T_MemberTypeNameSpace_.CSRecord
 {
-    public record T_MemberTypeName_ : EntityBase, IT_MemberTypeName_
+    public record class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_
     {
-        private const int T_EntityId_ = 1;
+        private const int T_EntityId_ = 3;
         private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();
         public static T_MemberTypeName_ Empty => _empty;
         public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source) => throw new NotImplementedException();
@@ -40,8 +40,12 @@ namespace T_BaseNameSpace_
 }
 namespace T_BaseNameSpace_.CSRecord
 {
-    public abstract record T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
+    public record class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
+        private const int T_EntityId_ = 2;
+        private static readonly T_BaseName_ _empty = new T_BaseName_();
+        public static new T_BaseName_ Empty => _empty;
+        protected override int OnGetEntityId() => T_EntityId_;
         public T_BaseName_() { }
         public T_BaseName_(IT_BaseName_ source) : base(source) { }
         public T_MemberType_ BaseField1 { get; set; }
@@ -67,7 +71,7 @@ namespace T_NameSpace_.CSRecord
 {
     //##if (false) {
     //##}
-    public partial record T_EntityName_ : T_BaseNameSpace_.CSRecord.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>
+    public partial record class T_EntityName_ : T_BaseNameSpace_.CSRecord.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>
     {
         // Derived entities: T_DerivedEntityCount_
         //##foreach (var derived in entity.DerivedEntities) {
@@ -81,15 +85,10 @@ namespace T_NameSpace_.CSRecord
         private const int T_EntityId_ = 1;
         //##}
 
-        public new const int EntityId = T_EntityId_;
+        private static readonly T_EntityName_ _empty = new T_EntityName_();
+        public static new T_EntityName_ Empty => _empty;
 
-        private static T_EntityName_ CreateEmpty()
-        {
-            var empty = new T_EntityName_();
-            return empty;
-        }
-        private static readonly T_EntityName_ _empty = CreateEmpty();
-        public static T_EntityName_ Empty => _empty;
+        protected override int OnGetEntityId() => T_EntityId_;
 
         public new static T_EntityName_ CreateFrom(T_EntityName_ source)
         {
@@ -116,8 +115,6 @@ namespace T_NameSpace_.CSRecord
                 _ => new T_NameSpace_.CSRecord.T_EntityName_(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         public T_EntityName_() { }
         public T_EntityName_(IT_EntityName_ source) : base(source)

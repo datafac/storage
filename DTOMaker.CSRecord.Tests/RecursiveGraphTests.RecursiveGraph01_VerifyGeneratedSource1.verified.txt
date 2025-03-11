@@ -10,6 +10,7 @@ using DTOMaker.Runtime;
 using DTOMaker.Runtime.CSRecord;
 using System;
 
+#if NET8_0_OR_GREATER
 namespace MyOrg.Models.CSRecord
 {
     public partial record DoubleNode : MyOrg.Models.CSRecord.NumericNode, IDoubleNode, IEquatable<DoubleNode>
@@ -18,13 +19,8 @@ namespace MyOrg.Models.CSRecord
 
         public new const int EntityId = 6;
 
-        private static DoubleNode CreateEmpty()
-        {
-            var empty = new DoubleNode();
-            return empty;
-        }
-        private static readonly DoubleNode _empty = CreateEmpty();
-        public static DoubleNode Empty => _empty;
+        private static readonly DoubleNode _empty = new DoubleNode();
+        public static new DoubleNode Empty => _empty;
 
         public new static DoubleNode CreateFrom(DoubleNode source)
         {
@@ -61,3 +57,6 @@ namespace MyOrg.Models.CSRecord
 
     }
 }
+#else
+#warning This template targets .NET 8.0+
+#endif

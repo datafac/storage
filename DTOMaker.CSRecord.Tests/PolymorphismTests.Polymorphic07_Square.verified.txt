@@ -10,6 +10,7 @@ using DTOMaker.Runtime;
 using DTOMaker.Runtime.CSRecord;
 using System;
 
+#if NET8_0_OR_GREATER
 namespace MyOrg.Models.CSRecord
 {
     public partial record Square : MyOrg.Models.CSRecord.Quadrilateral, ISquare, IEquatable<Square>
@@ -18,13 +19,8 @@ namespace MyOrg.Models.CSRecord
 
         public new const int EntityId = 6;
 
-        private static Square CreateEmpty()
-        {
-            var empty = new Square();
-            return empty;
-        }
-        private static readonly Square _empty = CreateEmpty();
-        public static Square Empty => _empty;
+        private static readonly Square _empty = new Square();
+        public static new Square Empty => _empty;
 
         public new static Square CreateFrom(Square source)
         {
@@ -61,3 +57,6 @@ namespace MyOrg.Models.CSRecord
 
     }
 }
+#else
+#warning This template targets .NET 8.0+
+#endif
