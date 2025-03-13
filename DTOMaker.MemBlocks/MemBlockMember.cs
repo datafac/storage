@@ -92,12 +92,8 @@ namespace DTOMaker.MemBlocks
             int comparand = 1;
             while (true)
             {
-                if (comparand > maximum) return false;
-                if (comparand >= minimum)
-                {
-                    // compare
-                    if (value == comparand) return true;
-                }
+                if (comparand > value) return false;
+                if (value == comparand) return true;
                 comparand = comparand * 2;
             }
         }
@@ -107,10 +103,10 @@ namespace DTOMaker.MemBlocks
             if (MemberType.FullName != FullTypeName.SystemString
                 && MemberType.FullName != FullTypeName.MemoryOctets) return null;
             if (FixedLength == 0) return null;
-            if (IsPowerOf2(FixedLength, 1, 1024)) return null;
+            if (IsPowerOf2(FixedLength, 4, 1024)) return null;
             return new SyntaxDiagnostic(
                         DiagnosticId.DMMB0009, "Invalid length", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                        $"Length ({FixedLength}) is invalid. Length must be a whole power of 2 between 1 and 1024.");
+                        $"FixedLength ({FixedLength}) is invalid. FixedLength must be a whole power of 2 between 4 and 1024.");
         }
 
         private SyntaxDiagnostic? CheckArrayCapacityIsValid()

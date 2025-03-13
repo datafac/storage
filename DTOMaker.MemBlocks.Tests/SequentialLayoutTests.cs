@@ -352,7 +352,7 @@ namespace DTOMaker.MemBlocks.Tests
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
             errors.Length.ShouldBe(2);
             errors[0].GetMessage().ShouldBe("FieldLength (31) is invalid. FieldLength must be a whole power of 2 between 1 and 1024.");
-            errors[1].GetMessage().ShouldBe("Length (31) is invalid. Length must be a whole power of 2 between 1 and 1024.");
+            errors[1].GetMessage().ShouldBe("FixedLength (31) is invalid. FixedLength must be a whole power of 2 between 4 and 1024.");
         }
 
         [Fact]
