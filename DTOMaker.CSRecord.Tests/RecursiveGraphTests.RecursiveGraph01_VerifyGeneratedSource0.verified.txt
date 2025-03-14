@@ -13,14 +13,14 @@ using System;
 #if NET8_0_OR_GREATER
 namespace MyOrg.Models.CSRecord
 {
-    public partial record BooleanNode : MyOrg.Models.CSRecord.Node, IBooleanNode, IEquatable<BooleanNode>
+    public partial record class BooleanNode : MyOrg.Models.CSRecord.Node, IBooleanNode, IEquatable<BooleanNode>
     {
         // Derived entities: 0
 
-        public new const int EntityId = 4;
-
         private static readonly BooleanNode _empty = new BooleanNode();
         public static new BooleanNode Empty => _empty;
+
+        protected override int OnGetEntityId() => 4;
 
         public new static BooleanNode CreateFrom(BooleanNode source)
         {
@@ -39,8 +39,6 @@ namespace MyOrg.Models.CSRecord
                 _ => new MyOrg.Models.CSRecord.BooleanNode(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         public BooleanNode() { }
         public BooleanNode(IBooleanNode source) : base(source)

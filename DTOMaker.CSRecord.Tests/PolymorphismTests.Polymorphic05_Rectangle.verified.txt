@@ -13,14 +13,14 @@ using System;
 #if NET8_0_OR_GREATER
 namespace MyOrg.Models.CSRecord
 {
-    public partial record Rectangle : MyOrg.Models.CSRecord.Quadrilateral, IRectangle, IEquatable<Rectangle>
+    public partial record class Rectangle : MyOrg.Models.CSRecord.Quadrilateral, IRectangle, IEquatable<Rectangle>
     {
         // Derived entities: 0
 
-        public new const int EntityId = 7;
-
         private static readonly Rectangle _empty = new Rectangle();
         public static new Rectangle Empty => _empty;
+
+        protected override int OnGetEntityId() => 7;
 
         public new static Rectangle CreateFrom(Rectangle source)
         {
@@ -39,8 +39,6 @@ namespace MyOrg.Models.CSRecord
                 _ => new MyOrg.Models.CSRecord.Rectangle(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         public Rectangle() { }
         public Rectangle(IRectangle source) : base(source)

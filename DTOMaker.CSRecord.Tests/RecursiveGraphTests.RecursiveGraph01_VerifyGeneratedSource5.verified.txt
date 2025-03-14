@@ -13,14 +13,14 @@ using System;
 #if NET8_0_OR_GREATER
 namespace MyOrg.Models.CSRecord
 {
-    public partial record StringNode : MyOrg.Models.CSRecord.Node, IStringNode, IEquatable<StringNode>
+    public partial record class StringNode : MyOrg.Models.CSRecord.Node, IStringNode, IEquatable<StringNode>
     {
         // Derived entities: 0
 
-        public new const int EntityId = 2;
-
         private static readonly StringNode _empty = new StringNode();
         public static new StringNode Empty => _empty;
+
+        protected override int OnGetEntityId() => 2;
 
         public new static StringNode CreateFrom(StringNode source)
         {
@@ -39,8 +39,6 @@ namespace MyOrg.Models.CSRecord
                 _ => new MyOrg.Models.CSRecord.StringNode(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         public StringNode() { }
         public StringNode(IStringNode source) : base(source)

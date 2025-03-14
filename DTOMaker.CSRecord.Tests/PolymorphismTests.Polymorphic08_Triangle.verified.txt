@@ -13,16 +13,16 @@ using System;
 #if NET8_0_OR_GREATER
 namespace MyOrg.Models.CSRecord
 {
-    public partial record Triangle : MyOrg.Models.CSRecord.Polygon, ITriangle, IEquatable<Triangle>
+    public partial record class Triangle : MyOrg.Models.CSRecord.Polygon, ITriangle, IEquatable<Triangle>
     {
         // Derived entities: 2
         // - Equilateral
         // - RightTriangle
 
-        public new const int EntityId = 2;
-
         private static readonly Triangle _empty = new Triangle();
         public static new Triangle Empty => _empty;
+
+        protected override int OnGetEntityId() => 2;
 
         public new static Triangle CreateFrom(Triangle source)
         {
@@ -45,8 +45,6 @@ namespace MyOrg.Models.CSRecord
                 _ => new MyOrg.Models.CSRecord.Triangle(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         public Triangle() { }
         public Triangle(ITriangle source) : base(source)

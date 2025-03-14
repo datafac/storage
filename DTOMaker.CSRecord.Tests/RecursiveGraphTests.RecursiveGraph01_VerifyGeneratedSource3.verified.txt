@@ -13,7 +13,7 @@ using System;
 #if NET8_0_OR_GREATER
 namespace MyOrg.Models.CSRecord
 {
-    public partial record Node : DTOMaker.Runtime.CSRecord.EntityBase, INode, IEquatable<Node>
+    public partial record class Node : DTOMaker.Runtime.CSRecord.EntityBase, INode, IEquatable<Node>
     {
         // Derived entities: 5
         // - BooleanNode
@@ -22,10 +22,10 @@ namespace MyOrg.Models.CSRecord
         // - NumericNode
         // - StringNode
 
-        public new const int EntityId = 1;
-
         private static readonly Node _empty = new Node();
         public static new Node Empty => _empty;
+
+        protected override int OnGetEntityId() => 1;
 
         public new static Node CreateFrom(Node source)
         {
@@ -54,8 +54,6 @@ namespace MyOrg.Models.CSRecord
                 _ => new MyOrg.Models.CSRecord.Node(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         public Node() { }
         public Node(INode source) : base(source)

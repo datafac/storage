@@ -13,14 +13,14 @@ using System;
 #if NET8_0_OR_GREATER
 namespace MyOrg.Models.CSRecord
 {
-    public partial record Square : MyOrg.Models.CSRecord.Quadrilateral, ISquare, IEquatable<Square>
+    public partial record class Square : MyOrg.Models.CSRecord.Quadrilateral, ISquare, IEquatable<Square>
     {
         // Derived entities: 0
 
-        public new const int EntityId = 6;
-
         private static readonly Square _empty = new Square();
         public static new Square Empty => _empty;
+
+        protected override int OnGetEntityId() => 6;
 
         public new static Square CreateFrom(Square source)
         {
@@ -39,8 +39,6 @@ namespace MyOrg.Models.CSRecord
                 _ => new MyOrg.Models.CSRecord.Square(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         public Square() { }
         public Square(ISquare source) : base(source)

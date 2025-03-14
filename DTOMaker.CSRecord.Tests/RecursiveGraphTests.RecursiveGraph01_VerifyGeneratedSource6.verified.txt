@@ -13,14 +13,14 @@ using System;
 #if NET8_0_OR_GREATER
 namespace MyOrg.Models.CSRecord
 {
-    public partial record Tree : DTOMaker.Runtime.CSRecord.EntityBase, ITree, IEquatable<Tree>
+    public partial record class Tree : DTOMaker.Runtime.CSRecord.EntityBase, ITree, IEquatable<Tree>
     {
         // Derived entities: 0
 
-        public new const int EntityId = 7;
-
         private static readonly Tree _empty = new Tree();
         public static new Tree Empty => _empty;
+
+        protected override int OnGetEntityId() => 7;
 
         public new static Tree CreateFrom(Tree source)
         {
@@ -39,8 +39,6 @@ namespace MyOrg.Models.CSRecord
                 _ => new MyOrg.Models.CSRecord.Tree(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         public Tree() { }
         public Tree(ITree source) : base(source)

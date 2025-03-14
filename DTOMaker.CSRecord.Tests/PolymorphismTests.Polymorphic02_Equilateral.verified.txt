@@ -13,14 +13,14 @@ using System;
 #if NET8_0_OR_GREATER
 namespace MyOrg.Models.CSRecord
 {
-    public partial record Equilateral : MyOrg.Models.CSRecord.Triangle, IEquilateral, IEquatable<Equilateral>
+    public partial record class Equilateral : MyOrg.Models.CSRecord.Triangle, IEquilateral, IEquatable<Equilateral>
     {
         // Derived entities: 0
 
-        public new const int EntityId = 3;
-
         private static readonly Equilateral _empty = new Equilateral();
         public static new Equilateral Empty => _empty;
+
+        protected override int OnGetEntityId() => 3;
 
         public new static Equilateral CreateFrom(Equilateral source)
         {
@@ -39,8 +39,6 @@ namespace MyOrg.Models.CSRecord
                 _ => new MyOrg.Models.CSRecord.Equilateral(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         public Equilateral() { }
         public Equilateral(IEquilateral source) : base(source)

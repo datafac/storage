@@ -13,16 +13,16 @@ using System;
 #if NET8_0_OR_GREATER
 namespace MyOrg.Models.CSRecord
 {
-    public partial record Quadrilateral : MyOrg.Models.CSRecord.Polygon, IQuadrilateral, IEquatable<Quadrilateral>
+    public partial record class Quadrilateral : MyOrg.Models.CSRecord.Polygon, IQuadrilateral, IEquatable<Quadrilateral>
     {
         // Derived entities: 2
         // - Rectangle
         // - Square
 
-        public new const int EntityId = 5;
-
         private static readonly Quadrilateral _empty = new Quadrilateral();
         public static new Quadrilateral Empty => _empty;
+
+        protected override int OnGetEntityId() => 5;
 
         public new static Quadrilateral CreateFrom(Quadrilateral source)
         {
@@ -45,8 +45,6 @@ namespace MyOrg.Models.CSRecord
                 _ => new MyOrg.Models.CSRecord.Quadrilateral(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         public Quadrilateral() { }
         public Quadrilateral(IQuadrilateral source) : base(source)

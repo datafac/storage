@@ -33,7 +33,7 @@ Emit("    public interface IT_MemberTypeName_ { }");
 Emit("}");
 Emit("namespace T_MemberTypeNameSpace_.CSRecord");
 Emit("{");
-Emit("    public record T_MemberTypeName_ : EntityBase, IT_MemberTypeName_");
+Emit("    public record class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_");
 Emit("    {");
 Emit("        private const int T_EntityId_ = 3;");
 Emit("        private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();");
@@ -50,7 +50,7 @@ Emit("    public interface IT_BaseName_ { }");
 Emit("}");
 Emit("namespace T_BaseNameSpace_.CSRecord");
 Emit("{");
-Emit("    public record T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>");
+Emit("    public record class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>");
 Emit("    {");
 Emit("        private const int T_EntityId_ = 2;");
 Emit("        private static readonly T_BaseName_ _empty = new T_BaseName_();");
@@ -81,7 +81,7 @@ Emit("namespace T_NameSpace_.CSRecord");
 Emit("{");
     if (false) {
     }
-Emit("    public partial record T_EntityName_ : T_BaseNameSpace_.CSRecord.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>");
+Emit("    public partial record class T_EntityName_ : T_BaseNameSpace_.CSRecord.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>");
 Emit("    {");
 Emit("        // Derived entities: T_DerivedEntityCount_");
         foreach (var derived in entity.DerivedEntities) {
@@ -95,10 +95,10 @@ Emit("        private const int T_MemberDefaultValue_ = 0;");
 Emit("        private const int T_EntityId_ = 1;");
         }
 Emit("");
-Emit("        public new const int EntityId = T_EntityId_;");
-Emit("");
 Emit("        private static readonly T_EntityName_ _empty = new T_EntityName_();");
 Emit("        public static new T_EntityName_ Empty => _empty;");
+Emit("");
+Emit("        protected override int OnGetEntityId() => T_EntityId_;");
 Emit("");
 Emit("        public new static T_EntityName_ CreateFrom(T_EntityName_ source)");
 Emit("        {");
@@ -125,8 +125,6 @@ Emit("                T_NameSpace_.IT_EntityName_ source2 => new T_NameSpace_.CS
 Emit("                _ => new T_NameSpace_.CSRecord.T_EntityName_(source)");
 Emit("            };");
 Emit("        }");
-Emit("");
-Emit("        protected override int OnGetEntityId() => EntityId;");
 Emit("");
 Emit("        public T_EntityName_() { }");
 Emit("        public T_EntityName_(IT_EntityName_ source) : base(source)");

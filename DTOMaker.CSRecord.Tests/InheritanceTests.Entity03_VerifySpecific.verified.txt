@@ -13,14 +13,14 @@ using System;
 #if NET8_0_OR_GREATER
 namespace MyOrg.Models.CSRecord
 {
-    public partial record MyDTO : MyOrg.Models.CSRecord.MyBase, IMyDTO, IEquatable<MyDTO>
+    public partial record class MyDTO : MyOrg.Models.CSRecord.MyBase, IMyDTO, IEquatable<MyDTO>
     {
         // Derived entities: 0
 
-        public new const int EntityId = 1;
-
         private static readonly MyDTO _empty = new MyDTO();
         public static new MyDTO Empty => _empty;
+
+        protected override int OnGetEntityId() => 1;
 
         public new static MyDTO CreateFrom(MyDTO source)
         {
@@ -39,8 +39,6 @@ namespace MyOrg.Models.CSRecord
                 _ => new MyOrg.Models.CSRecord.MyDTO(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         public MyDTO() { }
         public MyDTO(IMyDTO source) : base(source)

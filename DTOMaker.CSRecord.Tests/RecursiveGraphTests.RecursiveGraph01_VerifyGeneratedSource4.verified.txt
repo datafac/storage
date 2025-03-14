@@ -13,16 +13,16 @@ using System;
 #if NET8_0_OR_GREATER
 namespace MyOrg.Models.CSRecord
 {
-    public partial record NumericNode : MyOrg.Models.CSRecord.Node, INumericNode, IEquatable<NumericNode>
+    public partial record class NumericNode : MyOrg.Models.CSRecord.Node, INumericNode, IEquatable<NumericNode>
     {
         // Derived entities: 2
         // - DoubleNode
         // - Int64Node
 
-        public new const int EntityId = 3;
-
         private static readonly NumericNode _empty = new NumericNode();
         public static new NumericNode Empty => _empty;
+
+        protected override int OnGetEntityId() => 3;
 
         public new static NumericNode CreateFrom(NumericNode source)
         {
@@ -45,8 +45,6 @@ namespace MyOrg.Models.CSRecord
                 _ => new MyOrg.Models.CSRecord.NumericNode(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         public NumericNode() { }
         public NumericNode(INumericNode source) : base(source)

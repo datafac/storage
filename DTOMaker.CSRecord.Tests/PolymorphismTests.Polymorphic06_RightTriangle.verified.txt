@@ -13,14 +13,14 @@ using System;
 #if NET8_0_OR_GREATER
 namespace MyOrg.Models.CSRecord
 {
-    public partial record RightTriangle : MyOrg.Models.CSRecord.Triangle, IRightTriangle, IEquatable<RightTriangle>
+    public partial record class RightTriangle : MyOrg.Models.CSRecord.Triangle, IRightTriangle, IEquatable<RightTriangle>
     {
         // Derived entities: 0
 
-        public new const int EntityId = 4;
-
         private static readonly RightTriangle _empty = new RightTriangle();
         public static new RightTriangle Empty => _empty;
+
+        protected override int OnGetEntityId() => 4;
 
         public new static RightTriangle CreateFrom(RightTriangle source)
         {
@@ -39,8 +39,6 @@ namespace MyOrg.Models.CSRecord
                 _ => new MyOrg.Models.CSRecord.RightTriangle(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         public RightTriangle() { }
         public RightTriangle(IRightTriangle source) : base(source)

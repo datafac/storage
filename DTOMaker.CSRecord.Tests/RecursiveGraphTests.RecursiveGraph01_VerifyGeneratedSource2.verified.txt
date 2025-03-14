@@ -13,14 +13,14 @@ using System;
 #if NET8_0_OR_GREATER
 namespace MyOrg.Models.CSRecord
 {
-    public partial record Int64Node : MyOrg.Models.CSRecord.NumericNode, IInt64Node, IEquatable<Int64Node>
+    public partial record class Int64Node : MyOrg.Models.CSRecord.NumericNode, IInt64Node, IEquatable<Int64Node>
     {
         // Derived entities: 0
 
-        public new const int EntityId = 5;
-
         private static readonly Int64Node _empty = new Int64Node();
         public static new Int64Node Empty => _empty;
+
+        protected override int OnGetEntityId() => 5;
 
         public new static Int64Node CreateFrom(Int64Node source)
         {
@@ -39,8 +39,6 @@ namespace MyOrg.Models.CSRecord
                 _ => new MyOrg.Models.CSRecord.Int64Node(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         public Int64Node() { }
         public Int64Node(IInt64Node source) : base(source)
