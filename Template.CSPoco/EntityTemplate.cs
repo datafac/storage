@@ -24,14 +24,21 @@ namespace T_MemberTypeNameSpace_.CSPoco
 {
     public class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_
     {
-        private const int T_EntityId_ = 1;
-        private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();
-        public static T_MemberTypeName_ Empty => _empty;
+        protected override int OnGetEntityId() => 3;
+
+        private static T_MemberTypeName_ CreateEmpty()
+        {
+            var empty = new T_MemberTypeName_();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly T_MemberTypeName_ _empty = CreateEmpty();
+        public static new T_MemberTypeName_ Empty => _empty;
+
         public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source) => throw new NotImplementedException();
         public T_MemberTypeName_() { }
         public T_MemberTypeName_(IT_MemberTypeName_ source) { }
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
-        protected override int OnGetEntityId() => T_EntityId_;
     }
 }
 namespace T_BaseNameSpace_
@@ -40,8 +47,19 @@ namespace T_BaseNameSpace_
 }
 namespace T_BaseNameSpace_.CSPoco
 {
-    public abstract class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
+    public class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
+        protected override int OnGetEntityId() => 2;
+
+        private static T_BaseName_ CreateEmpty()
+        {
+            var empty = new T_BaseName_();
+            empty.Freeze();
+            return empty;
+        }
+        private static readonly T_BaseName_ _empty = CreateEmpty();
+        public static new T_BaseName_ Empty => _empty;
+
         public T_BaseName_() { }
         public T_BaseName_(IT_BaseName_ source) : base(source) { }
 
@@ -95,7 +113,7 @@ namespace T_NameSpace_.CSPoco
         private const int T_EntityId_ = 1;
         //##}
 
-        public new const int EntityId = T_EntityId_;
+        protected override int OnGetEntityId() => T_EntityId_;
 
         private static T_EntityName_ CreateEmpty()
         {
@@ -104,7 +122,7 @@ namespace T_NameSpace_.CSPoco
             return empty;
         }
         private static readonly T_EntityName_ _empty = CreateEmpty();
-        public static T_EntityName_ Empty => _empty;
+        public static new T_EntityName_ Empty => _empty;
 
         public new static T_EntityName_ CreateFrom(T_EntityName_ source)
         {
@@ -131,8 +149,6 @@ namespace T_NameSpace_.CSPoco
                 _ => new T_NameSpace_.CSPoco.T_EntityName_(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {

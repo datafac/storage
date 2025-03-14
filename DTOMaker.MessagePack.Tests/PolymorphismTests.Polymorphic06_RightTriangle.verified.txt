@@ -26,7 +26,7 @@ namespace MyOrg.Models.MessagePack
             return empty;
         }
         private static readonly RightTriangle _empty = CreateEmpty();
-        public static RightTriangle Empty => _empty;
+        public static new RightTriangle Empty => _empty;
 
         public new static RightTriangle CreateFrom(RightTriangle source)
         {

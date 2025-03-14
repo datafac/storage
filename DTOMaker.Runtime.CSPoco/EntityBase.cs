@@ -19,7 +19,7 @@ namespace DTOMaker.Runtime.CSPoco
             OnFreeze();
             _frozen = true;
         }
-        protected virtual IFreezable OnPartCopy() => throw new NotImplementedException();
+        protected abstract IFreezable OnPartCopy();
         public IFreezable PartCopy() => OnPartCopy();
 
         [MethodImpl(MethodImplOptions.NoInlining)]

@@ -26,7 +26,7 @@ namespace MyOrg.Models.MessagePack
             return empty;
         }
         private static readonly Square _empty = CreateEmpty();
-        public static Square Empty => _empty;
+        public static new Square Empty => _empty;
 
         public new static Square CreateFrom(Square source)
         {

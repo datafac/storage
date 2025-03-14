@@ -18,7 +18,7 @@ namespace MyOrg.Models.CSPoco
         // - Equilateral
         // - RightTriangle
 
-        public new const int EntityId = 2;
+        protected override int OnGetEntityId() => 2;
 
         private static Triangle CreateEmpty()
         {
@@ -27,7 +27,7 @@ namespace MyOrg.Models.CSPoco
             return empty;
         }
         private static readonly Triangle _empty = CreateEmpty();
-        public static Triangle Empty => _empty;
+        public static new Triangle Empty => _empty;
 
         public new static Triangle CreateFrom(Triangle source)
         {
@@ -50,8 +50,6 @@ namespace MyOrg.Models.CSPoco
                 _ => new MyOrg.Models.CSPoco.Triangle(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {

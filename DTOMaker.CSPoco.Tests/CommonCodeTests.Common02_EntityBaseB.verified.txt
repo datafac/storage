@@ -17,7 +17,7 @@ namespace MyOrg.Models.CSPoco
         // Derived entities: 1
         // - MyDTO
 
-        public new const int EntityId = 2;
+        protected override int OnGetEntityId() => 2;
 
         private static MyBase CreateEmpty()
         {
@@ -26,7 +26,7 @@ namespace MyOrg.Models.CSPoco
             return empty;
         }
         private static readonly MyBase _empty = CreateEmpty();
-        public static MyBase Empty => _empty;
+        public static new MyBase Empty => _empty;
 
         public new static MyBase CreateFrom(MyBase source)
         {
@@ -47,8 +47,6 @@ namespace MyOrg.Models.CSPoco
                 _ => new MyOrg.Models.CSPoco.MyBase(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {

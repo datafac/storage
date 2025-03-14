@@ -21,7 +21,7 @@ namespace MyOrg.Models.CSPoco
         // - NumericNode
         // - StringNode
 
-        public new const int EntityId = 1;
+        protected override int OnGetEntityId() => 1;
 
         private static Node CreateEmpty()
         {
@@ -30,7 +30,7 @@ namespace MyOrg.Models.CSPoco
             return empty;
         }
         private static readonly Node _empty = CreateEmpty();
-        public static Node Empty => _empty;
+        public static new Node Empty => _empty;
 
         public new static Node CreateFrom(Node source)
         {
@@ -59,8 +59,6 @@ namespace MyOrg.Models.CSPoco
                 _ => new MyOrg.Models.CSPoco.Node(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {

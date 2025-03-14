@@ -25,7 +25,7 @@ namespace MyOrg.Models.CSPoco
             return empty;
         }
         private static readonly MyDTO _empty = CreateEmpty();
-        public static MyDTO Empty => _empty;
+        public static new MyDTO Empty => _empty;
 
         public new static MyDTO CreateFrom(MyDTO source)
         {

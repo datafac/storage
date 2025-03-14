@@ -16,7 +16,7 @@ namespace MyOrg.Models.CSPoco
     {
         // Derived entities: 0
 
-        public new const int EntityId = 4;
+        protected override int OnGetEntityId() => 4;
 
         private static BooleanNode CreateEmpty()
         {
@@ -25,7 +25,7 @@ namespace MyOrg.Models.CSPoco
             return empty;
         }
         private static readonly BooleanNode _empty = CreateEmpty();
-        public static BooleanNode Empty => _empty;
+        public static new BooleanNode Empty => _empty;
 
         public new static BooleanNode CreateFrom(BooleanNode source)
         {
@@ -44,8 +44,6 @@ namespace MyOrg.Models.CSPoco
                 _ => new MyOrg.Models.CSPoco.BooleanNode(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {

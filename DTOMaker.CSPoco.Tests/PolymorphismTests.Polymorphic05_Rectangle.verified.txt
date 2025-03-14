@@ -16,7 +16,7 @@ namespace MyOrg.Models.CSPoco
     {
         // Derived entities: 0
 
-        public new const int EntityId = 7;
+        protected override int OnGetEntityId() => 7;
 
         private static Rectangle CreateEmpty()
         {
@@ -25,7 +25,7 @@ namespace MyOrg.Models.CSPoco
             return empty;
         }
         private static readonly Rectangle _empty = CreateEmpty();
-        public static Rectangle Empty => _empty;
+        public static new Rectangle Empty => _empty;
 
         public new static Rectangle CreateFrom(Rectangle source)
         {
@@ -44,8 +44,6 @@ namespace MyOrg.Models.CSPoco
                 _ => new MyOrg.Models.CSPoco.Rectangle(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {

@@ -18,7 +18,7 @@ namespace MyOrg.Models.CSPoco
         // - Rectangle
         // - Square
 
-        public new const int EntityId = 5;
+        protected override int OnGetEntityId() => 5;
 
         private static Quadrilateral CreateEmpty()
         {
@@ -27,7 +27,7 @@ namespace MyOrg.Models.CSPoco
             return empty;
         }
         private static readonly Quadrilateral _empty = CreateEmpty();
-        public static Quadrilateral Empty => _empty;
+        public static new Quadrilateral Empty => _empty;
 
         public new static Quadrilateral CreateFrom(Quadrilateral source)
         {
@@ -50,8 +50,6 @@ namespace MyOrg.Models.CSPoco
                 _ => new MyOrg.Models.CSPoco.Quadrilateral(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {

@@ -16,7 +16,7 @@ namespace MyOrg.Models.CSPoco
     {
         // Derived entities: 0
 
-        public new const int EntityId = 5;
+        protected override int OnGetEntityId() => 5;
 
         private static Int64Node CreateEmpty()
         {
@@ -25,7 +25,7 @@ namespace MyOrg.Models.CSPoco
             return empty;
         }
         private static readonly Int64Node _empty = CreateEmpty();
-        public static Int64Node Empty => _empty;
+        public static new Int64Node Empty => _empty;
 
         public new static Int64Node CreateFrom(Int64Node source)
         {
@@ -44,8 +44,6 @@ namespace MyOrg.Models.CSPoco
                 _ => new MyOrg.Models.CSPoco.Int64Node(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {

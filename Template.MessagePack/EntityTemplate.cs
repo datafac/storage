@@ -28,10 +28,10 @@ namespace T_MemberTypeNameSpace_.MessagePack
         private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();
         public static T_MemberTypeName_ Empty => _empty;
         public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source) => throw new NotImplementedException();
+        protected override int OnGetEntityId() => 3;
         public T_MemberTypeName_() { }
         public T_MemberTypeName_(IT_MemberTypeName_ source) { }
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
-        protected override int OnGetEntityId() => 3;
     }
 }
 namespace T_BaseNameSpace_.MessagePack
@@ -41,13 +41,8 @@ namespace T_BaseNameSpace_.MessagePack
     [Union(T_NameSpace_.MessagePack.T_ConcreteEntityName_.EntityId, typeof(T_NameSpace_.MessagePack.T_ConcreteEntityName_))]
     public abstract class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
-        //public new const int EntityId = 1;
-
         public T_BaseName_() { }
         public T_BaseName_(IT_BaseName_ source) : base(source) { }
-
-        protected override void OnFreeze() => base.OnFreeze();
-        protected override IFreezable OnPartCopy() => throw new NotImplementedException();
 
         [Key(1)] public T_MemberType_ BaseField1 { get; set; }
 
@@ -567,7 +562,7 @@ namespace T_NameSpace_.MessagePack
             return empty;
         }
         private static readonly T_ConcreteEntityName_ _empty = CreateEmpty();
-        public static T_ConcreteEntityName_ Empty => _empty;
+        public static new T_ConcreteEntityName_ Empty => _empty;
 
         public new static T_ConcreteEntityName_ CreateFrom(T_ConcreteEntityName_ source)
         {

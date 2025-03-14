@@ -22,7 +22,7 @@ namespace MyOrg.Models.CSPoco
         // - Square
         // - Triangle
 
-        public new const int EntityId = 1;
+        protected override int OnGetEntityId() => 1;
 
         private static Polygon CreateEmpty()
         {
@@ -31,7 +31,7 @@ namespace MyOrg.Models.CSPoco
             return empty;
         }
         private static readonly Polygon _empty = CreateEmpty();
-        public static Polygon Empty => _empty;
+        public static new Polygon Empty => _empty;
 
         public new static Polygon CreateFrom(Polygon source)
         {
@@ -62,8 +62,6 @@ namespace MyOrg.Models.CSPoco
                 _ => new MyOrg.Models.CSPoco.Polygon(source)
             };
         }
-
-        protected override int OnGetEntityId() => EntityId;
 
         protected override void OnFreeze()
         {

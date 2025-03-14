@@ -26,7 +26,7 @@ namespace MyOrg.DomainB.MessagePack
             return empty;
         }
         private static readonly MyDTO2 _empty = CreateEmpty();
-        public static MyDTO2 Empty => _empty;
+        public static new MyDTO2 Empty => _empty;
 
         public new static MyDTO2 CreateFrom(MyDTO2 source)
         {
