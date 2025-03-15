@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data;
+using System.Drawing.Imaging;
+using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -620,5 +622,35 @@ namespace Sandbox.Tests
             });
             ex.Message.ShouldBe("Unknown field name 'FieldX' at position 6.");
         }
+
+        [Fact]
+        public void Load4_IndentedInput()
+        {
+            const string encoded =
+                """
+                {
+                    Id   = i32 (123)
+                    ,
+                    Name = str (Field1)
+                    ,
+                    Type = str (System.String)
+                }
+                """;
+                
+            Member orig = new Member()
+            {
+                Id = 123,
+                Name = "Field1",
+                Type = typeof(string).FullName!,
+                Nullable = false,
+            };
+
+            Member copy = new Member();
+            bool loaded = copy.Load(encoded);
+            loaded.ShouldBeTrue();
+
+            copy.ShouldBe(orig);
+        }
+
     }
 }
