@@ -159,8 +159,9 @@ namespace Sandbox.Tests
             StringBuilder matched = new StringBuilder();
 
             // match begin char
-            if (remaining.Length < 2 || remaining[0] != beginGroup) return ReadResult.Fail();
-            position++;
+            var parsed = ConsumeChar(remaining, beginGroup);
+            if (parsed.Failed) return ReadResult.Fail();
+            position += parsed.Consumed;
             remaining = source.Slice(position);
 
             while (remaining.Length > 0 && remaining[0] != closeGroup)
@@ -183,6 +184,13 @@ namespace Sandbox.Tests
             int position = 0;
             var remaining = source.Slice(position);
             StringBuilder matched = new StringBuilder();
+
+            // consume any leading whitespace
+            while (remaining.Length > 0 && char.IsWhiteSpace(remaining[0]))
+            {
+                position++;
+                remaining = source.Slice(position);
+            }
 
             // 1st 3 chars must be an encoded value
             if (remaining.Length < 3) return ReadResult.Fail();
@@ -249,8 +257,23 @@ namespace Sandbox.Tests
 
         public static ReadResult ConsumeChar(ReadOnlySpan<char> source, char ch)
         {
-            if (source.Length >= 1 && source[0] == ch)
-                return ReadResult.Good(1);
+            int position = 0;
+            ReadOnlySpan<char> remaining = source.Slice(position);
+
+            // consume any leading whitespace
+            while (remaining.Length > 0 && char.IsWhiteSpace(remaining[0]))
+            {
+                position++;
+                remaining = source.Slice(position);
+            }
+
+            // consume ch
+            if (remaining.Length > 0 && remaining[0] == ch)
+            {
+                position++;
+                remaining = source.Slice(position);
+                return ReadResult.Good(position);
+            }
             else
                 return ReadResult.Fail();
         }
@@ -274,7 +297,7 @@ namespace Sandbox.Tests
                 position++;
             }
 
-            if (position == matched.Length)
+            if (position == matchSpan.Length)
             {
                 // matched all
                 return ReadResult.Good(position, matched.ToString());
@@ -289,6 +312,12 @@ namespace Sandbox.Tests
         {
             int position = 0;
             StringBuilder matched = new StringBuilder();
+
+            // consume any leading whitespace
+            while (source.Length > position && char.IsWhiteSpace(source[position]))
+            {
+                position++;
+            }
 
             // 1st char must be letter or '_'
             if (source.Length > position && source[position].IsLetterOrUnderscore())
@@ -312,21 +341,27 @@ namespace Sandbox.Tests
             return ReadResult.Good(position, matched.ToString());
         }
 
-        public static ReadResult LoadField(this ReadOnlySpan<char> source, IField field)
+        public static ReadResult LoadField(this ReadOnlySpan<char> source, Dictionary<string, IField> fieldMap)
         {
             int position = 0;
             ReadOnlySpan<char> remaining = source.Slice(position);
 
             // consume Name
-            var parsed = ConsumeExactString(remaining, field.Name);
+            var parsed = ConsumeAnyIdentifier(remaining);
             if (parsed.Failed) return ReadResult.Fail();
             position += parsed.Consumed;
             remaining = source.Slice(position);
-            if (parsed.Value is not string fieldId) return ReadResult.Fail();
+            if (parsed.Value is not string fieldName) return ReadResult.Fail();
+            if (!fieldMap.TryGetValue(fieldName, out IField? field))
+            {
+                // unknown field - todo? ignore (old?) value
+                throw new InvalidDataException($"Unknown field name '{fieldName}' at position {position}.");
+            }
 
             // consume '='
-            if (remaining.Length == 0 || remaining[0] != '=') return ReadResult.Fail();
-            position++;
+            parsed = ConsumeChar(remaining, '=');
+            if (parsed.Failed) return ReadResult.Fail();
+            position += parsed.Consumed;
             remaining = source.Slice(position);
 
             // consume value
@@ -345,35 +380,52 @@ namespace Sandbox.Tests
             int position = 0;
             ReadOnlySpan<char> remaining = source.Slice(position);
 
+            var fieldMap = new Dictionary<string, IField>();
+            foreach (var field in fields)
+            {
+                fieldMap[field.Name] = field;
+            }
+
             // consume first '{'
-            if (remaining.Length == 0 || remaining[0] != '{') return ReadResult.Fail();
-            position++;
+            var parsed = ConsumeChar(remaining, '{');
+            if (parsed.Failed) return ReadResult.Fail();
+            position += parsed.Consumed;
             remaining = source.Slice(position);
 
             // consume fields
-            for (int i = 0; i < fields.Length; i++)
+            int fieldsConsumed = 0;
+            while (true)
             {
-                if (i > 0)
+                if (remaining.Length == 0) return ReadResult.Fail();
+
+                // try consume final '}'
+                parsed = ConsumeChar(remaining, '}');
+                if (parsed.Success)
                 {
-                    // consume ','
-                    if (remaining.Length == 0 || remaining[0] != ',') return ReadResult.Fail();
-                    position++;
+                    position += parsed.Consumed;
                     remaining = source.Slice(position);
+                    return ReadResult.Good(position);
+                }
+                else
+                {
+                    // ignore
                 }
 
                 // consume field
-                var parsed1 = LoadField(remaining, fields[i]);
-                if (parsed1.Failed) return ReadResult.Fail();
-                position += parsed1.Consumed;
+                if (fieldsConsumed > 0)
+                {
+                    // consume ','
+                    parsed = ConsumeChar(remaining, ',');
+                    if (parsed.Failed) return ReadResult.Fail();
+                    position += parsed.Consumed;
+                    remaining = source.Slice(position);
+                }
+                parsed = LoadField(remaining, fieldMap);
+                if (parsed.Failed) return ReadResult.Fail();
+                position += parsed.Consumed;
                 remaining = source.Slice(position);
+                fieldsConsumed++;
             }
-
-            // consume final '}'
-            if (remaining.Length == 0 || remaining[0] != '}') return ReadResult.Fail();
-            position++;
-            remaining = source.Slice(position);
-
-            return ReadResult.Good(position);
         }
 
         public static string ToText(this ITextable source)
@@ -444,33 +496,17 @@ namespace Sandbox.Tests
 
     internal sealed class Member : ITextable, IEquatable<Member>
     {
-        private Field<int> _id = new Field<int>(nameof(Id), 0, (i) => i == 0);
-        public int Id
-        {
-            get => _id.Value; 
-            set => _id.Value = value;
-        }
+        private readonly Field<int> _id = new Field<int>(nameof(Id), 0, (i) => i == 0);
+        public int Id { get => _id.Value; set => _id.Value = value; }
 
-        private Field<string> _name = new Field<string>(nameof(Name), string.Empty, (s) => s == string.Empty);
-        public string Name
-        {
-            get => _name.Value;
-            set => _name.Value = value;
-        }
+        private readonly Field<string> _name = new Field<string>(nameof(Name), string.Empty, (s) => s == string.Empty);
+        public string Name { get => _name.Value; set => _name.Value = value; }
 
-        private Field<string> _type = new Field<string>(nameof(Type), string.Empty, (s) => s == string.Empty);
-        public string Type
-        {
-            get => _type.Value;
-            set => _type.Value = value;
-        }
+        private readonly Field<string> _type = new Field<string>(nameof(Type), string.Empty, (s) => s == string.Empty);
+        public string Type { get => _type.Value; set => _type.Value = value; }
 
-        private Field<bool> _nullable = new Field<bool>(nameof(Nullable), false, (i) => i == false);
-        public bool Nullable
-        {
-            get => _nullable.Value;
-            set => _nullable.Value = value;
-        }
+        private readonly Field<bool> _nullable = new Field<bool>(nameof(Nullable), false, (i) => i == false);
+        public bool Nullable { get => _nullable.Value; set => _nullable.Value = value; }
 
         public void Emit(StringBuilder builder) => builder.EmitFields(_id, _name, _type, _nullable);
         public bool Load(string source) => source.AsSpan().LoadFields(_id, _name, _type, _nullable).Success;
@@ -510,21 +546,79 @@ namespace Sandbox.Tests
         }
 
         [Fact]
-        public void Roundtrip1_SingleObject()
+        public void Emit1_SimpleObject()
         {
-            Member orig = new Member() { 
-                Id = 123, 
+            Member orig = new Member()
+            {
+                Id = 123,
                 Name = "Field1",
                 Type = typeof(string).FullName!,
-                Nullable = true,
+                Nullable = false,
             };
-            string encoded = orig.ToText();
-            encoded.ShouldBe("{Id=i32(123),Name=str(Field1),Type=str(System.String),Nullable=log(True)}");
+            string encoded1 = orig.ToText();
+            encoded1.ShouldBe("{Id=i32(123),Name=str(Field1),Type=str(System.String)}");
+        }
+
+        [Theory]
+        [InlineData(1, "{Id=i32(123),Name=str(Field1),Type=str(System.String)}")] // original encoding
+        [InlineData(2, "{Id=i32(123),Type=str(System.String),Name=str(Field1)}")] // field order re-arranged
+        public void Load1_RearrangedEncoding(int id, string encoded)
+        {
+            Member orig = new Member()
+            {
+                Id = 123,
+                Name = "Field1",
+                Type = typeof(string).FullName!,
+                Nullable = false,
+            };
 
             Member copy = new Member();
-            copy.Load(encoded);
+            bool loaded = copy.Load(encoded);
+            loaded.ShouldBeTrue();
 
             copy.ShouldBe(orig);
+        }
+
+        [Theory]
+        [InlineData(1, " {Id=i32(123),Name=str(Field1),Type=str(System.String)}")] // random whitespace
+        [InlineData(2, "{ Id=i32(123),Name=str(Field1),Type=str(System.String)}")] // random whitespace
+        [InlineData(3, "{Id =i32(123),Name=str(Field1),Type=str(System.String)}")] // random whitespace
+        [InlineData(4, "{Id= i32(123),Name=str(Field1),Type=str(System.String)}")] // random whitespace
+        [InlineData(5, "{Id=i32 (123),Name=str(Field1),Type=str(System.String)}")] // random whitespace
+        [InlineData(6, "{Id=i32( 123),Name=str(Field1),Type=str(System.String)}")] // random whitespace
+        [InlineData(7, "{Id=i32(123 ),Name=str(Field1),Type=str(System.String)}")] // random whitespace
+        [InlineData(8, "{Id=i32(123) ,Name=str(Field1),Type=str(System.String)}")] // random whitespace
+        [InlineData(9, "{Id=i32(123), Name=str(Field1),Type=str(System.String)}")] // random whitespace
+        [InlineData(10, "{Id=i32(123),Name=str(Field1),Type=str(System.String) }")] // random whitespace
+        [InlineData(11, "{Id=i32(123),Name=str(Field1),Type=str(System.String)} ")] // random whitespace
+        public void Load2_RandomExtraWhitespace(int id, string encoded)
+        {
+            Member orig = new Member()
+            {
+                Id = 123,
+                Name = "Field1",
+                Type = typeof(string).FullName!,
+                Nullable = false,
+            };
+
+            Member copy = new Member();
+            bool loaded = copy.Load(encoded);
+            loaded.ShouldBeTrue();
+
+            copy.ShouldBe(orig);
+        }
+
+        [Fact]
+        public void Load3_UnknownField()
+        {
+            string encoded = "{Id=i32(123),Name=str(Field1),Type=str(System.String),FieldX=str(abcdef)}";
+            var ex = Assert.Throws<InvalidDataException>(() =>
+            {
+                Member copy = new Member();
+                bool loaded = copy.Load(encoded);
+                loaded.ShouldBeTrue();
+            });
+            ex.Message.ShouldBe("Unknown field name 'FieldX' at position 6.");
         }
     }
 }
