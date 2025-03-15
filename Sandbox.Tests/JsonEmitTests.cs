@@ -598,7 +598,7 @@ namespace Sandbox.Tests
         public override bool Equals(object? obj) => obj is Member other && Equals(other);
         public override int GetHashCode() => HashCode.Combine(_id, _name, _type, _nullable, _descqqq, _arrayLen);
     }
-    public class TextIOTests
+    public class TextableTests
     {
         [Theory]
         [InlineData("abc", "abc")]
@@ -678,10 +678,25 @@ namespace Sandbox.Tests
             encoded1.ShouldBe("{Id=i32(123),Name=str(Field1),Type=str(System.String)}");
         }
 
+        [Fact]
+        public void Emit5_OptValTypeB()
+        {
+            Member orig = new Member()
+            {
+                Id = 123,
+                Name = "Field1",
+                Type = typeof(string).FullName!,
+                Nullable = false,
+                ArrayLen = 42,
+            };
+            string encoded1 = orig.ToText();
+            encoded1.ShouldBe("{Id=i32(123),Name=str(Field1),Type=str(System.String),ArrayLen=i32(42)}");
+        }
+
         [Theory]
         [InlineData(1, "{Id=i32(123),Name=str(Field1),Type=str(System.String)}")] // original encoding
         [InlineData(2, "{Id=i32(123),Type=str(System.String),Name=str(Field1)}")] // field order re-arranged
-        public void Load1_RearrangedEncoding(int id, string encoded)
+        public void Load1_RearrangedEncoding(int _, string encoded)
         {
             Member orig = new Member()
             {
@@ -710,7 +725,7 @@ namespace Sandbox.Tests
         [InlineData(9, "{Id=i32(123), Name=str(Field1),Type=str(System.String)}")] // random whitespace
         [InlineData(10, "{Id=i32(123),Name=str(Field1),Type=str(System.String) }")] // random whitespace
         [InlineData(11, "{Id=i32(123),Name=str(Field1),Type=str(System.String)} ")] // random whitespace
-        public void Load2_RandomExtraWhitespace(int id, string encoded)
+        public void Load2_RandomExtraWhitespace(int _, string encoded)
         {
             Member orig = new Member()
             {
