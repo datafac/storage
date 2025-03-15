@@ -2,17 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Data;
-using System.Data.SqlTypes;
-using System.Drawing.Imaging;
-using System.Drawing.Text;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Text;
-using System.Xml.Linq;
-using System.Xml.Schema;
 using Xunit;
 
 namespace Sandbox.Tests
@@ -43,7 +35,7 @@ namespace Sandbox.Tests
             Value = value;
         }
     }
-    internal static class TextIOExtensions
+    internal static class TextableExtensions
     {
         private static Dictionary<char, string> _map = new Dictionary<char, string>()
         {
@@ -144,12 +136,14 @@ namespace Sandbox.Tests
             string formatted = value switch
             {
                 null => "nul",
-                bool b => $"log({b})",
-                int i => $"i32({i})",
-                long l => $"i64({l})",
-                float f => $"r32({f.ToString("R")})",
-                double d => $"r64({d.ToString("R")})",
-                string s => $"str({s.Escaped()})",
+                bool log => $"log({log})",
+                sbyte i08 => $"i08({i08})",
+                short i16 => $"i16({i16})",
+                int i32 => $"i32({i32})",
+                long i64 => $"i64({i64})",
+                float r32 => $"r32({r32.ToString("R")})",
+                double r64 => $"r64({r64.ToString("R")})",
+                string str => $"str({str.Escaped()})",
                 _ => $"unk({(value?.ToString() ?? "").Escaped()})"
             };
             builder.Append(formatted);
@@ -209,6 +203,8 @@ namespace Sandbox.Tests
             bool valid = prefix switch
             {
                 "log" => true,
+                "i08" => true,
+                "i16" => true,
                 "i32" => true,
                 "i64" => true,
                 "r32" => true,
@@ -230,13 +226,15 @@ namespace Sandbox.Tests
             string unparsed = (parsed.Value as string ?? "").UnEscape();
             object? value = prefix switch
             {
-                "log" => bool.TryParse(unparsed, out bool bValue) ? bValue : null,
-                "i32" => int.TryParse(unparsed, out int iValue) ? iValue : null,
-                "i64" => long.TryParse(unparsed, out long lValue) ? lValue : null,
-                "r32" => float.TryParse(unparsed, out float fValue) ? fValue : null,
-                "r64" => double.TryParse(unparsed, out double dValue) ? dValue : null,
+                "log" => bool.TryParse(unparsed, out bool log) ? log : null,
+                "i08" => sbyte.TryParse(unparsed, out sbyte i08) ? i08 : null,
+                "i16" => short.TryParse(unparsed, out short i16) ? i16 : null,
+                "i32" => int.TryParse(unparsed, out int i32) ? i32 : null,
+                "i64" => long.TryParse(unparsed, out long i64) ? i64 : null,
+                "r32" => float.TryParse(unparsed, out float r32) ? r32 : null,
+                "r64" => double.TryParse(unparsed, out double r64) ? r64 : null,
                 "str" => unparsed,
-                _ => false,
+                _ => null,
             };
             return value is null ? ReadResult.Fail() : ReadResult.Good(position, value);
         }
