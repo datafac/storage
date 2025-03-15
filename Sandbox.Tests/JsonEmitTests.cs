@@ -445,7 +445,7 @@ namespace Sandbox.Tests
         object? UntypedValue { get; set; }
         bool IsDefault { get; }
     }
-    internal sealed class Field<T> : IField, IEquatable<Field<T>> where T: IEquatable<T>
+    internal sealed class ValType<T> : IField, IEquatable<ValType<T>> where T : struct, IEquatable<T>
     {
         private readonly string _name;
         private readonly Func<T?, bool> _isDefault;
@@ -476,7 +476,7 @@ namespace Sandbox.Tests
             }
         }
 
-        public Field(string name, T? value, Func<T?, bool> isDefault)
+        public ValType(string name, T? value, Func<T?, bool> isDefault)
         {
             _name = name;
             _isDefault = isDefault;
@@ -489,7 +489,7 @@ namespace Sandbox.Tests
             return (right is null) ? false : left.Equals(right);
         }
 
-        public bool Equals(Field<T>? other)
+        public bool Equals(ValType<T>? other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -498,30 +498,90 @@ namespace Sandbox.Tests
             return true;
         }
 
-        public override bool Equals(object? obj) => obj is Field<T> other && Equals(other);
+        public override bool Equals(object? obj) => obj is ValType<T> other && Equals(other);
+        public override int GetHashCode() => HashCode.Combine(_name, _value);
+        public override string ToString() => $"{_name}<{typeof(T).Name}>={_value}";
+    }
+    internal sealed class RefType<T> : IField, IEquatable<RefType<T>> where T : class, IEquatable<T>
+    {
+        private readonly string _name;
+        private readonly Func<T?, bool> _isDefault;
+        private T? _value;
+
+        public string Name => _name;
+        public Type Type => typeof(T);
+        public bool IsDefault => _isDefault(_value);
+        public T? Value
+        {
+            get { return _value; }
+            set { _value = value; }
+        }
+
+        public object? UntypedValue
+        {
+            get => _value;
+            set
+            {
+                if (value is T tValue)
+                {
+                    _value = tValue;
+                }
+                else
+                {
+                    throw new InvalidOperationException($"Value ({value}) type is not {typeof(T)}");
+                }
+            }
+        }
+
+        public RefType(string name, T? value, Func<T?, bool> isDefault)
+        {
+            _name = name;
+            _isDefault = isDefault;
+            _value = value;
+        }
+
+        private static bool ValuesAreEqual(T? left, T? right)
+        {
+            if (left is null) return (right is null);
+            return (right is null) ? false : left.Equals(right);
+        }
+
+        public bool Equals(RefType<T>? other)
+        {
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            if (!other._name.Equals(_name)) return false;
+            if (!ValuesAreEqual(other._value, _value)) return false;
+            return true;
+        }
+
+        public override bool Equals(object? obj) => obj is RefType<T> other && Equals(other);
         public override int GetHashCode() => HashCode.Combine(_name, _value);
         public override string ToString() => $"{_name}<{typeof(T).Name}>={_value}";
     }
 
     internal sealed class Member : ITextable, IEquatable<Member>
     {
-        private readonly Field<int> _id = new Field<int>(nameof(Id), 0, (i) => i == 0);
-        public int Id { get => _id.Value; set => _id.Value = value; }
+        private readonly ValType<int> _id = new ValType<int>(nameof(Id), 0, (i) => i == 0);
+        public int Id { get => _id.Value ?? 0; set => _id.Value = value; }
 
-        private readonly Field<string> _name = new Field<string>(nameof(Name), string.Empty, (s) => s == string.Empty);
+        private readonly RefType<string> _name = new RefType<string>(nameof(Name), string.Empty, (s) => s == string.Empty);
         public string Name { get => _name.Value ?? ""; set => _name.Value = value; }
 
-        private readonly Field<string> _type = new Field<string>(nameof(Type), string.Empty, (s) => s == string.Empty);
+        private readonly RefType<string> _type = new RefType<string>(nameof(Type), string.Empty, (s) => s == string.Empty);
         public string Type { get => _type.Value ?? ""; set => _type.Value = value; }
 
-        private readonly Field<bool> _nullable = new Field<bool>(nameof(Nullable), false, (i) => i == false);
-        public bool Nullable { get => _nullable.Value; set => _nullable.Value = value; }
+        private readonly ValType<bool> _nullable = new ValType<bool>(nameof(Nullable), false, (i) => i == false);
+        public bool Nullable { get => _nullable.Value ?? false; set => _nullable.Value = value; }
 
-        private readonly Field<string> _desc = new Field<string>(nameof(Description), null, (i) => i is null);
-        public string? Description { get => _desc.Value; set => _desc.Value = value; }
+        private readonly RefType<string> _descqqq = new RefType<string>(nameof(Description), null, (i) => i is null);
+        public string? Description { get => _descqqq.Value; set => _descqqq.Value = value; }
 
-        public void Emit(StringBuilder builder) => builder.EmitFields(_id, _name, _type, _nullable, _desc);
-        public bool Load(string source) => source.AsSpan().LoadFields(_id, _name, _type, _nullable, _desc).Success;
+        private readonly ValType<int> _arrayLen = new ValType<int>(nameof(ArrayLen), null, (i) => i is null);
+        public int? ArrayLen { get => _arrayLen.Value; set => _arrayLen.Value = value; }
+
+        public void Emit(StringBuilder builder) => builder.EmitFields(_id, _name, _type, _nullable, _descqqq, _arrayLen);
+        public bool Load(string source) => source.AsSpan().LoadFields(_id, _name, _type, _nullable, _descqqq, _arrayLen).Success;
 
         public bool Equals(Member? other)
         {
@@ -531,12 +591,12 @@ namespace Sandbox.Tests
             if (!other._name.Equals(_name)) return false;
             if (!other._type.Equals(_type)) return false;
             if (!other._nullable.Equals(_nullable)) return false;
-            if (!other._desc.Equals(_desc)) return false;
-            //if (!other._arrayLen.Equals(_arrayLen)) return false;
+            if (!other._descqqq.Equals(_descqqq)) return false;
+            if (!other._arrayLen.Equals(_arrayLen)) return false;
             return true;
         }
         public override bool Equals(object? obj) => obj is Member other && Equals(other);
-        public override int GetHashCode() => HashCode.Combine(_id, _name, _type, _nullable, _desc);
+        public override int GetHashCode() => HashCode.Combine(_id, _name, _type, _nullable, _descqqq, _arrayLen);
     }
     public class TextIOTests
     {
@@ -612,7 +672,7 @@ namespace Sandbox.Tests
                 Name = "Field1",
                 Type = typeof(string).FullName!,
                 Nullable = false,
-                //ArrayLen = null,
+                ArrayLen = null,
             };
             string encoded1 = orig.ToText();
             encoded1.ShouldBe("{Id=i32(123),Name=str(Field1),Type=str(System.String)}");
