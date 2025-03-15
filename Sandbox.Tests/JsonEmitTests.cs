@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data;
+using System.Data.SqlTypes;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.IO;
@@ -447,13 +448,13 @@ namespace Sandbox.Tests
     internal sealed class Field<T> : IField, IEquatable<Field<T>> where T: IEquatable<T>
     {
         private readonly string _name;
-        private readonly Func<T,bool> _isDefault;
-        private T _value;
+        private readonly Func<T?, bool> _isDefault;
+        private T? _value;
 
         public string Name => _name;
         public Type Type => typeof(T);
         public bool IsDefault => _isDefault(_value);
-        public T Value
+        public T? Value
         {
             get { return _value; }
             set { _value = value; }
@@ -475,11 +476,17 @@ namespace Sandbox.Tests
             }
         }
 
-        public Field(string name, T value, Func<T, bool> isDefault)
+        public Field(string name, T? value, Func<T?, bool> isDefault)
         {
             _name = name;
             _isDefault = isDefault;
             _value = value;
+        }
+
+        private static bool ValuesAreEqual(T? left, T? right)
+        {
+            if (left is null) return (right is null);
+            return (right is null) ? false : left.Equals(right);
         }
 
         public bool Equals(Field<T>? other)
@@ -487,7 +494,7 @@ namespace Sandbox.Tests
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
             if (!other._name.Equals(_name)) return false;
-            if (!other._value.Equals(_value)) return false;
+            if (!ValuesAreEqual(other._value, _value)) return false;
             return true;
         }
 
@@ -502,16 +509,19 @@ namespace Sandbox.Tests
         public int Id { get => _id.Value; set => _id.Value = value; }
 
         private readonly Field<string> _name = new Field<string>(nameof(Name), string.Empty, (s) => s == string.Empty);
-        public string Name { get => _name.Value; set => _name.Value = value; }
+        public string Name { get => _name.Value ?? ""; set => _name.Value = value; }
 
         private readonly Field<string> _type = new Field<string>(nameof(Type), string.Empty, (s) => s == string.Empty);
-        public string Type { get => _type.Value; set => _type.Value = value; }
+        public string Type { get => _type.Value ?? ""; set => _type.Value = value; }
 
         private readonly Field<bool> _nullable = new Field<bool>(nameof(Nullable), false, (i) => i == false);
         public bool Nullable { get => _nullable.Value; set => _nullable.Value = value; }
 
-        public void Emit(StringBuilder builder) => builder.EmitFields(_id, _name, _type, _nullable);
-        public bool Load(string source) => source.AsSpan().LoadFields(_id, _name, _type, _nullable).Success;
+        private readonly Field<string> _desc = new Field<string>(nameof(Description), null, (i) => i is null);
+        public string? Description { get => _desc.Value; set => _desc.Value = value; }
+
+        public void Emit(StringBuilder builder) => builder.EmitFields(_id, _name, _type, _nullable, _desc);
+        public bool Load(string source) => source.AsSpan().LoadFields(_id, _name, _type, _nullable, _desc).Success;
 
         public bool Equals(Member? other)
         {
@@ -521,10 +531,12 @@ namespace Sandbox.Tests
             if (!other._name.Equals(_name)) return false;
             if (!other._type.Equals(_type)) return false;
             if (!other._nullable.Equals(_nullable)) return false;
+            if (!other._desc.Equals(_desc)) return false;
+            //if (!other._arrayLen.Equals(_arrayLen)) return false;
             return true;
         }
         public override bool Equals(object? obj) => obj is Member other && Equals(other);
-        public override int GetHashCode() => HashCode.Combine(_id, _name, _type, _nullable);
+        public override int GetHashCode() => HashCode.Combine(_id, _name, _type, _nullable, _desc);
     }
     public class TextIOTests
     {
@@ -556,6 +568,51 @@ namespace Sandbox.Tests
                 Name = "Field1",
                 Type = typeof(string).FullName!,
                 Nullable = false,
+            };
+            string encoded1 = orig.ToText();
+            encoded1.ShouldBe("{Id=i32(123),Name=str(Field1),Type=str(System.String)}");
+        }
+
+        [Fact]
+        public void Emit2_OptRefTypeA()
+        {
+            Member orig = new Member()
+            {
+                Id = 123,
+                Name = "Field1",
+                Type = typeof(string).FullName!,
+                Nullable = false,
+                Description = null,
+            };
+            string encoded1 = orig.ToText();
+            encoded1.ShouldBe("{Id=i32(123),Name=str(Field1),Type=str(System.String)}");
+        }
+
+        [Fact]
+        public void Emit3_OptRefTypeB()
+        {
+            Member orig = new Member()
+            {
+                Id = 123,
+                Name = "Field1",
+                Type = typeof(string).FullName!,
+                Nullable = false,
+                Description = "abc",
+            };
+            string encoded1 = orig.ToText();
+            encoded1.ShouldBe("{Id=i32(123),Name=str(Field1),Type=str(System.String),Description=str(abc)}");
+        }
+
+        [Fact]
+        public void Emit4_OptValTypeA()
+        {
+            Member orig = new Member()
+            {
+                Id = 123,
+                Name = "Field1",
+                Type = typeof(string).FullName!,
+                Nullable = false,
+                //ArrayLen = null,
             };
             string encoded1 = orig.ToText();
             encoded1.ShouldBe("{Id=i32(123),Name=str(Field1),Type=str(System.String)}");
