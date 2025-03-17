@@ -1,0 +1,5 @@
+﻿{
+    Id = i32(123),
+    Name = str(Field1),
+    Type = str(System.String)
+}

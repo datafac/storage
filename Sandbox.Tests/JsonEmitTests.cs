@@ -4,17 +4,18 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Security.Policy;
 using System.Text;
+using System.Threading.Tasks;
+using VerifyXunit;
 using Xunit;
 
 namespace Sandbox.Tests
 {
     internal interface ITextable
     {
-        void Emit(StringBuilder builder);
-        bool Load(string source);
+        bool Load1(string source);
+        bool Load2(TextReader reader);
+        void Emit(TextWriter writer, int indent);
     }
     public readonly struct ReadResult
     {
@@ -130,6 +131,24 @@ namespace Sandbox.Tests
             return result.ToString();
         }
 
+        public static void EmitValue(this TextWriter writer, int indent, object? value)
+        {
+            string formatted = value switch
+            {
+                null => "nul",
+                bool log => $"log({log})",
+                sbyte i08 => $"i08({i08})",
+                short i16 => $"i16({i16})",
+                int i32 => $"i32({i32})",
+                long i64 => $"i64({i64})",
+                float r32 => $"r32({r32.ToString("R")})",
+                double r64 => $"r64({r64.ToString("R")})",
+                string str => $"str({str.Escaped()})",
+                _ => $"unk({(value?.ToString() ?? "").Escaped()})"
+            };
+            writer.Write(formatted);
+        }
+
         public static void EmitValue(this StringBuilder builder, object? value)
         {
             string formatted = value switch
@@ -146,6 +165,112 @@ namespace Sandbox.Tests
                 _ => $"unk({(value?.ToString() ?? "").Escaped()})"
             };
             builder.Append(formatted);
+        }
+
+        public static void EmitArray(this TextWriter writer, int indent, object? untypedArray)
+        {
+            switch (untypedArray)
+            {
+                case ValueArray<bool> array:
+                    {
+                        writer.Write("log[");
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            var value = array.Values[i];
+                            if (i > 0) writer.Write(',');
+                            writer.Write(value);
+                        }
+                        writer.Write(']');
+                    }
+                    break;
+                case ValueArray<sbyte> array:
+                    {
+                        writer.Write("i08[");
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            var value = array.Values[i];
+                            if (i > 0) writer.Write(',');
+                            writer.Write(value);
+                        }
+                        writer.Write(']');
+                    }
+                    break;
+                case ValueArray<short> array:
+                    {
+                        writer.Write("i16[");
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            var value = array.Values[i];
+                            if (i > 0) writer.Write(',');
+                            writer.Write(value);
+                        }
+                        writer.Write(']');
+                    }
+                    break;
+                case ValueArray<int> array:
+                    {
+                        writer.Write("i32[");
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            var value = array.Values[i];
+                            if (i > 0) writer.Write(',');
+                            writer.Write(value);
+                        }
+                        writer.Write(']');
+                    }
+                    break;
+                case ValueArray<long> array:
+                    {
+                        writer.Write("i64[");
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            var value = array.Values[i];
+                            if (i > 0) writer.Write(',');
+                            writer.Write(value);
+                        }
+                        writer.Write(']');
+                    }
+                    break;
+                case ValueArray<float> array:
+                    {
+                        writer.Write("r32[");
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            var value = array.Values[i];
+                            if (i > 0) writer.Write(',');
+                            writer.Write(value.ToString("R"));
+                        }
+                        writer.Write(']');
+                    }
+                    break;
+                case ValueArray<double> array:
+                    {
+                        writer.Write("r64[");
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            var value = array.Values[i];
+                            if (i > 0) writer.Write(',');
+                            writer.Write(value.ToString("R"));
+                        }
+                        writer.Write(']');
+                    }
+                    break;
+                case ValueArray<string> array:
+                    {
+                        writer.Write("str[");
+                        for (int i = 0; i < array.Length; i++)
+                        {
+                            var value = array.Values[i];
+                            if (i > 0) writer.Write(',');
+                            writer.Write(value.Escaped());
+                        }
+                        writer.Write(']');
+                    }
+                    break;
+                default:
+                    writer.Write($"unk({(untypedArray?.ToString() ?? "").Escaped()})");
+                    break;
+            }
         }
 
         public static void EmitArray(this StringBuilder builder, object? untypedArray)
@@ -254,6 +379,32 @@ namespace Sandbox.Tests
             }
         }
 
+        public static void EmitField(this TextWriter writer, int indent, IField field)
+        {
+            writer.WriteLine();
+            writer.Write(new string(' ', indent));
+            writer.Write(field.Name);
+            writer.Write(" = ");
+            object? value = field.UntypedValue;
+            if (value is null)
+            {
+                writer.Write("nul");
+                return;
+            }
+            // check if field is ValueArray<T>
+            Type type = value.GetType();
+            if (type.IsGenericType && type.GenericTypeArguments.Length == 1 && type.Name == "ValueArray`1")
+            {
+                // vector
+                writer.EmitArray(indent, value);
+            }
+            else
+            {
+                // scalar
+                writer.EmitValue(indent, value);
+            }
+        }
+
         public static void EmitField(this StringBuilder builder, IField field)
         {
             builder.Append(field.Name);
@@ -269,12 +420,12 @@ namespace Sandbox.Tests
             if(type.IsGenericType && type.GenericTypeArguments.Length == 1 && type.Name == "ValueArray`1")
             {
                 // vector
-                EmitArray(builder, value);
+                builder.EmitArray(value);
             }
             else
             {
                 // scalar
-                EmitValue(builder, value);
+                builder.EmitValue(value);
             }
         }
 
@@ -479,6 +630,27 @@ namespace Sandbox.Tests
             builder.Append('}');
         }
 
+        public static void EmitFields(this TextWriter writer, int indent, params IField[] fields)
+        {
+            writer.Write('{');
+            indent += 4;
+            int emitted = 0;
+            for (int i = 0; i < fields.Length; i++)
+            {
+                var field = fields[i];
+                if (!field.IsDefault)
+                {
+                    if (emitted > 0) writer.Write(',');
+                    writer.EmitField(indent, field);
+                    emitted++;
+                }
+            }
+            indent -= 4;
+            writer.WriteLine();
+            writer.Write(new string(' ', indent));
+            writer.Write('}');
+        }
+
         public static ReadResult ConsumeChar(ReadOnlySpan<char> source, char ch)
         {
             int position = 0;
@@ -654,9 +826,9 @@ namespace Sandbox.Tests
 
         public static string ToText(this ITextable source)
         {
-            StringBuilder builder = new StringBuilder();
-            source.Emit(builder);
-            return builder.ToString();
+            using var sw = new StringWriter();
+            source.Emit(sw, 0);
+            return sw.ToString();
         }
     }
     internal interface IField
@@ -830,8 +1002,8 @@ namespace Sandbox.Tests
         }
         public int Rank => _dims.Value?.Length ?? 0;
 
-        public void Emit(StringBuilder builder) => builder.EmitFields(_id, _name, _type, _nullable, _desc, _dims);
-        public bool Load(string source) => source.AsSpan().LoadFields(_id, _name, _type, _nullable, _desc, _dims).Success;
+        public void Emit(TextWriter writer, int indent) => writer.EmitFields(indent, _id, _name, _type, _nullable, _desc, _dims);
+        public bool Load1(string source) => source.AsSpan().LoadFields(_id, _name, _type, _nullable, _desc, _dims).Success;
 
         public bool Equals(Member? other)
         {
@@ -847,6 +1019,11 @@ namespace Sandbox.Tests
         }
         public override bool Equals(object? obj) => obj is Member other && Equals(other);
         public override int GetHashCode() => HashCode.Combine(_id, _name, _type, _nullable, _desc, _dims);
+
+        public bool Load2(TextReader reader)
+        {
+            throw new NotImplementedException();
+        }
     }
     public class TextableTests
     {
@@ -870,7 +1047,8 @@ namespace Sandbox.Tests
         }
 
         [Fact]
-        public void Emit1_SimpleObject()
+
+        public async Task Emit1_SimpleObject()
         {
             Member orig = new Member()
             {
@@ -879,12 +1057,14 @@ namespace Sandbox.Tests
                 Type = typeof(string).FullName!,
                 Nullable = false,
             };
-            string encoded1 = orig.ToText();
-            encoded1.ShouldBe("{Id=i32(123),Name=str(Field1),Type=str(System.String),Nullable=log(False)}");
+
+            string emitted = orig.ToText();
+            await Verifier.Verify(emitted);
         }
 
         [Fact]
-        public void Emit2_OptRefTypeA()
+
+        public async Task Emit2_OptRefTypeA()
         {
             Member orig = new Member()
             {
@@ -894,12 +1074,12 @@ namespace Sandbox.Tests
                 Nullable = false,
                 Description = null,
             };
-            string encoded1 = orig.ToText();
-            encoded1.ShouldBe("{Id=i32(123),Name=str(Field1),Type=str(System.String),Nullable=log(False)}");
+            string emitted = orig.ToText();
+            await Verifier.Verify(emitted);
         }
 
         [Fact]
-        public void Emit3_OptRefTypeB()
+        public async Task Emit3_OptRefTypeB()
         {
             Member orig = new Member()
             {
@@ -909,12 +1089,12 @@ namespace Sandbox.Tests
                 Nullable = false,
                 Description = "abc",
             };
-            string encoded1 = orig.ToText();
-            encoded1.ShouldBe("{Id=i32(123),Name=str(Field1),Type=str(System.String),Nullable=log(False),Description=str(abc)}");
+            string emitted = orig.ToText();
+            await Verifier.Verify(emitted);
         }
 
         [Fact]
-        public void Emit4_OptValTypeA()
+        public async Task Emit4_OptValTypeA()
         {
             Member orig = new Member()
             {
@@ -923,12 +1103,12 @@ namespace Sandbox.Tests
                 Type = typeof(string).FullName!,
                 Nullable = null,
             };
-            string encoded1 = orig.ToText();
-            encoded1.ShouldBe("{Id=i32(123),Name=str(Field1),Type=str(System.String)}");
+            string emitted = orig.ToText();
+            await Verifier.Verify(emitted);
         }
 
         [Fact]
-        public void Emit5_OptValTypeB()
+        public async Task Emit5_OptValTypeB()
         {
             Member orig = new Member()
             {
@@ -937,12 +1117,12 @@ namespace Sandbox.Tests
                 Type = typeof(string).FullName!,
                 Nullable = true,
             };
-            string encoded1 = orig.ToText();
-            encoded1.ShouldBe("{Id=i32(123),Name=str(Field1),Type=str(System.String),Nullable=log(True)}");
+            string emitted = orig.ToText();
+            await Verifier.Verify(emitted);
         }
 
         [Fact]
-        public void Emit6_VectorValType()
+        public async Task Emit6_VectorValType()
         {
             Member orig = new Member()
             {
@@ -951,8 +1131,8 @@ namespace Sandbox.Tests
                 Type = typeof(string).FullName!,
                 Dims = new int[] { 2, 2, 2 },
             };
-            string encoded1 = orig.ToText();
-            encoded1.ShouldBe("{Id=i32(123),Name=str(Field1),Type=str(System.String),Dims=i32[2,2,2]}");
+            string emitted = orig.ToText();
+            await Verifier.Verify(emitted);
         }
 
         [Theory]
@@ -969,7 +1149,7 @@ namespace Sandbox.Tests
             };
 
             Member copy = new Member();
-            bool loaded = copy.Load(encoded);
+            bool loaded = copy.Load1(encoded);
             loaded.ShouldBeTrue();
 
             copy.ShouldBe(orig);
@@ -998,7 +1178,7 @@ namespace Sandbox.Tests
             };
 
             Member copy = new Member();
-            bool loaded = copy.Load(encoded);
+            bool loaded = copy.Load1(encoded);
             loaded.ShouldBeTrue();
 
             copy.ShouldBe(orig);
@@ -1011,7 +1191,7 @@ namespace Sandbox.Tests
             var ex = Assert.Throws<InvalidDataException>(() =>
             {
                 Member copy = new Member();
-                bool loaded = copy.Load(encoded);
+                bool loaded = copy.Load1(encoded);
                 loaded.ShouldBeTrue();
             });
             ex.Message.ShouldBe("Unknown field name 'FieldX' at position 6.");
@@ -1040,32 +1220,32 @@ namespace Sandbox.Tests
             };
 
             Member copy = new Member();
-            bool loaded = copy.Load(encoded);
+            bool loaded = copy.Load1(encoded);
             loaded.ShouldBeTrue();
 
             copy.ShouldBe(orig);
         }
 
         [Fact]
-        public void Load5_Scalar()
+        public async Task Load5_Scalar()
         {
             Member orig = new Member()
             {
                 Id = 123,
             };
 
-            string encoded = orig.ToText();
-            encoded.ShouldBe("{Id=i32(123)}");
+            string emitted = orig.ToText();
+            await Verifier.Verify(emitted);
 
             Member copy = new Member();
-            bool loaded = copy.Load(encoded);
+            bool loaded = copy.Load1(emitted);
             loaded.ShouldBeTrue();
 
             copy.ShouldBe(orig);
         }
 
         [Fact]
-        public void Load6_Vector()
+        public async Task Load6_Vector()
         {
             Member orig = new Member()
             {
@@ -1074,11 +1254,11 @@ namespace Sandbox.Tests
                 Dims = new int[] { 2, 2, 2 },
             };
 
-            string encoded = orig.ToText();
-            encoded.ShouldBe("{Id=i32(123),Name=str(Field1),Dims=i32[2,2,2]}");
+            string emitted = orig.ToText();
+            await Verifier.Verify(emitted);
 
             Member copy = new Member();
-            bool loaded = copy.Load(encoded);
+            bool loaded = copy.Load1(emitted);
             loaded.ShouldBeTrue();
 
             copy.ShouldBe(orig);
