@@ -1,5 +1,4 @@
 ﻿{
     Id = i32(123),
-    Name = str(Field1),
-    Dims = i32[2,2,2]
+    Name = str(Field1)
 }

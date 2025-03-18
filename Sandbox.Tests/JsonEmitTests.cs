@@ -1,4 +1,5 @@
-﻿using Shouldly;
+﻿using Argon;
+using Shouldly;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -11,6 +12,59 @@ using Xunit;
 
 namespace Sandbox.Tests
 {
+    public readonly struct SourceLine
+    {
+        private readonly static SourceLine _empty = new SourceLine(0, string.Empty);
+        public static SourceLine Empty => _empty;
+
+        public readonly int Line;
+        public readonly string Text;
+
+        public SourceLine(int line, string text)
+        {
+            Line = line;
+            Text = text;
+        }
+
+        public override string ToString() => Text;
+    }
+
+    internal enum TokenKind
+    {
+        None,
+        Whitespace,
+        String,
+        Number,
+        Identifier,
+        LeftCurly,
+        RightCurly,
+        Comma,
+        Equals,
+        LeftSquare,
+        RightSquare,
+        // todo more special chars
+    }
+
+    internal readonly struct SourceToken
+    {
+        public readonly TokenKind Kind;
+        public readonly SourceLine Source;
+        public readonly int Offset;
+        public readonly int Length;
+
+        public SourceToken(TokenKind kind, SourceLine source, int offset, int length)
+        {
+            Kind = kind;
+            Source = source;
+            Offset = offset;
+            Length = length;
+        }
+
+        public string StringValue => Source.Text.Substring(Offset, Length);
+
+        public SourceToken Extend() => new SourceToken(Kind, Source, Offset, Length + 1);
+    }
+
     internal interface ITextable
     {
         bool Load1(string source);
@@ -129,6 +183,126 @@ namespace Sandbox.Tests
                 }
             }
             return result.ToString();
+        }
+
+        public static IEnumerable<SourceLine> GetSourceLines(this TextReader reader)
+        {
+            string? text;
+            int line = 0;
+            while ((text = reader.ReadLine()) is not null)
+            {
+                yield return new SourceLine(line, text);
+                line++;
+            }
+        }
+
+        public static IEnumerable<SourceToken> GetSourceTokens(this SourceLine sourceLine)
+        {
+            SourceToken token = default;
+            int offset = -1;
+            foreach (char ch in sourceLine.Text)
+            {
+                offset++;
+                // try consume whitespace
+                if (token.Kind == TokenKind.Whitespace)
+                {
+                    if (char.IsWhiteSpace(ch))
+                    {
+                        token = token.Extend();
+                    }
+                    else
+                    {
+                        yield return token;
+                        token = default;
+                    }
+                }
+
+                // try consume string
+                if (token.Kind == TokenKind.String)
+                {
+                    if (ch == '"')
+                    {
+                        // end of string
+                        yield return token;
+                        token = default;
+                    }
+                    else
+                    {
+                        token = token.Extend();
+                    }
+                }
+
+                // try consume number
+                if (token.Kind == TokenKind.Number)
+                {
+                    if (char.IsDigit(ch) || ch == '.')
+                    {
+                        token = token.Extend();
+                    }
+                    else
+                    {
+                        yield return token;
+                        token = default;
+                    }
+                }
+
+                // try consume identifier
+                if (token.Kind == TokenKind.Identifier)
+                {
+                    if (char.IsLetterOrDigit(ch) || ch == '_')
+                    {
+                        token = token.Extend();
+                    }
+                    else
+                    {
+                        yield return token;
+                        token = default;
+                    }
+                }
+
+                if (token.Kind ==  TokenKind.None)
+                {
+                    if (char.IsWhiteSpace(ch))
+                    {
+                        // start of whitespace
+                        token = new SourceToken(TokenKind.Whitespace, sourceLine, offset, 1);
+                    }
+                    else if (char.IsDigit(ch))
+                    {
+                        // start of number
+                        token = new SourceToken(TokenKind.Number, sourceLine, offset, 1);
+                    }
+                    else if (char.IsLetter(ch) || ch == '_')
+                    {
+                        // start of identifier
+                        token = new SourceToken(TokenKind.Identifier, sourceLine, offset, 1);
+                    }
+                    else if (ch == '"')
+                    {
+                        // start of string
+                        token = new SourceToken(TokenKind.String, sourceLine, offset + 1, 0);
+                    }
+                    else
+                    {
+                        yield return ch switch
+                        {
+                            '{' => new SourceToken(TokenKind.LeftCurly, sourceLine, offset, 1),
+                            '}' => new SourceToken(TokenKind.RightCurly, sourceLine, offset, 1),
+                            ',' => new SourceToken(TokenKind.Comma, sourceLine, offset, 1),
+                            '[' => new SourceToken(TokenKind.LeftSquare, sourceLine, offset, 1),
+                            ']' => new SourceToken(TokenKind.RightSquare, sourceLine, offset, 1),
+                            '=' => new SourceToken(TokenKind.Equals, sourceLine, offset, 1),
+                            _ => throw new NotImplementedException($"Unhandled char '{ch}'")
+                        };
+                    }
+                }
+            }
+
+            // emit remaining token (if any)
+            if (token.Kind != TokenKind.None)
+            {
+                yield return token;
+            }
         }
 
         public static void EmitValue(this TextWriter writer, int indent, object? value)
@@ -620,7 +794,7 @@ namespace Sandbox.Tests
             for (int i = 0; i < fields.Length; i++)
             {
                 var field = fields[i];
-                if (!field.IsDefault)
+                if (!field.IsDefaultValue)
                 {
                     if (emitted > 0) builder.Append(',');
                     builder.EmitField(field);
@@ -638,7 +812,7 @@ namespace Sandbox.Tests
             for (int i = 0; i < fields.Length; i++)
             {
                 var field = fields[i];
-                if (!field.IsDefault)
+                if (!field.IsDefaultValue)
                 {
                     if (emitted > 0) writer.Write(',');
                     writer.EmitField(indent, field);
@@ -771,6 +945,186 @@ namespace Sandbox.Tests
             return ReadResult.Good(position);
         }
 
+        private static bool TryConsumeOneToken(ReadOnlySpan<SourceToken> tokens, TokenKind tokenKind) => tokens.Length > 0 && tokens[0].Kind == tokenKind;
+
+        private static bool TryConsumeOneToken(ReadOnlySpan<SourceToken> tokens, TokenKind tokenKind, out SourceToken token)
+        {
+            token = default;
+            if (tokens.Length == 0 || tokens[0].Kind != tokenKind) return false;
+            token = tokens[0];
+            return true;
+        }
+
+        public static bool TryConsumeScalar(ReadOnlySpan<SourceToken> remaining, out int result, Func<string, bool> valueHandler)
+        {
+            result = 0;
+
+            // try consume string value
+            if (TryConsumeOneToken(remaining, TokenKind.String, out SourceToken token1) && valueHandler(token1.StringValue))
+            {
+                result = 1;
+                return true;
+            }
+
+            // try consume number value
+            if (TryConsumeOneToken(remaining, TokenKind.Number, out SourceToken token2) && valueHandler(token2.StringValue))
+            {
+                result = 1;
+                return true;
+            }
+
+            // todo bools
+
+            return false;
+        }
+
+        public static bool TryConsumeVector(ReadOnlySpan<SourceToken> remaining, out int result, Func<string, bool> valueHandler)
+        {
+            result = 0;
+            int tokensConsumed = 0;
+
+            // try consume begin vector
+            if (!TryConsumeOneToken(remaining, TokenKind.LeftSquare)) return false;
+            remaining = remaining.Slice(1);
+            tokensConsumed += 1;
+
+            int fieldsConsumed = 0;
+            while (true)
+            {
+                if (remaining.Length == 0) return false;
+
+                // try consume close vector
+                if (TryConsumeOneToken(remaining, TokenKind.RightSquare))
+                {
+                    remaining = remaining.Slice(1);
+                    tokensConsumed += 1;
+                    result = tokensConsumed;
+                    return true;
+                }
+
+                // try consume value separator
+                if (fieldsConsumed > 0)
+                {
+                    if (!TryConsumeOneToken(remaining, TokenKind.Comma)) return false;
+                    remaining = remaining.Slice(1);
+                    tokensConsumed += 1;
+                }
+
+                // try consume scalar
+                if (!TryConsumeScalar(remaining, out int consumed2, valueHandler)) return false;
+                remaining = remaining.Slice(consumed2);
+                tokensConsumed += consumed2;
+                fieldsConsumed++;
+            }
+        }
+
+        private static bool TryConsumeField(ReadOnlySpan<SourceToken> remaining, Dictionary<string, IField> fieldMap, out int result)
+        {
+            result = 0;
+            int tokensConsumed = 0;
+
+            // try consume field
+            if (!TryConsumeOneToken(remaining, TokenKind.Identifier, out SourceToken token)) return false;
+            remaining = remaining.Slice(1);
+            tokensConsumed += 1;
+
+            // check field name
+            string fieldName = token.StringValue;
+            if (!fieldMap.TryGetValue(fieldName, out IField? field)) return false;
+
+            // try consume equals
+            if (!TryConsumeOneToken(remaining, TokenKind.Equals)) return false;
+            remaining = remaining.Slice(1);
+            tokensConsumed += 1;
+
+            // try consume value as vector
+            if (TryConsumeVector(remaining, out int consumed2, field.ValueHandler))
+            {
+                remaining = remaining.Slice(consumed2);
+                tokensConsumed += consumed2;
+                result = tokensConsumed;
+                return true;
+            }
+
+            // try consume value as scalar
+            if (TryConsumeScalar(remaining, out int consumed3, field.ValueHandler))
+            {
+                remaining = remaining.Slice(consumed3);
+                tokensConsumed += consumed3;
+                result = tokensConsumed;
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool TryConsumeFields(ReadOnlySpan<SourceToken> remaining, Dictionary<string, IField> fieldMap, out int consumed)
+        {
+            consumed = 0;
+            int position = 0;
+
+            // consume begin field group
+            if (!TryConsumeOneToken(remaining, TokenKind.LeftCurly)) return false;
+            remaining = remaining.Slice(1);
+            position += 1;
+
+            // consume fields
+            int fieldsConsumed = 0;
+            while (true)
+            {
+                if (remaining.Length == 0) return false;
+
+                // try consume close field group
+                if (TryConsumeOneToken(remaining, TokenKind.RightCurly))
+                {
+                    remaining = remaining.Slice(1);
+                    position += 1;
+                    consumed = position;
+                    return true;
+                }
+
+                // try consume field separator
+                if (fieldsConsumed > 0)
+                {
+                    if (!TryConsumeOneToken(remaining, TokenKind.Comma)) return false;
+                    remaining = remaining.Slice(1);
+                    position += 1;
+                }
+
+                // try consume field
+                if (!TryConsumeField(remaining, fieldMap, out int consumed2)) return false;
+                remaining = remaining.Slice(consumed2);
+                position += consumed2;
+                fieldsConsumed++;
+            }
+        }
+
+        public static ReadResult LoadFields(this TextReader reader, params IField[] fields)
+        {
+            var fieldMap = new Dictionary<string, IField>();
+            foreach (var field in fields)
+            {
+                fieldMap[field.Name] = field;
+            }
+
+            List<SourceToken> tokenList = new List<SourceToken>();
+            foreach(var sourceLine in reader.GetSourceLines())
+            {
+                foreach(var token in sourceLine.GetSourceTokens())
+                {
+                    tokenList.Add(token);
+                }
+            }
+
+            // ignore whitespace
+            ReadOnlySpan<SourceToken> tokens = tokenList.Where(t => t.Kind != TokenKind.Whitespace).ToArray().AsSpan();
+
+            // consume token stream
+            return TryConsumeFields(tokens, fieldMap, out int consumed) 
+                ? ReadResult.Good(consumed) 
+                : ReadResult.Fail();
+        }
+
         public static ReadResult LoadFields(this ReadOnlySpan<char> source, params IField[] fields)
         {
             int position = 0;
@@ -802,10 +1156,6 @@ namespace Sandbox.Tests
                     remaining = source.Slice(position);
                     return ReadResult.Good(position);
                 }
-                else
-                {
-                    // ignore
-                }
 
                 // consume field
                 if (fieldsConsumed > 0)
@@ -831,25 +1181,59 @@ namespace Sandbox.Tests
             return sw.ToString();
         }
     }
+    internal interface IFieldMeta<T>
+    {
+        bool IsDefaultValue(T value);
+        bool TryParseValue(string input, out T result);
+    }
+    internal sealed class FieldMetaInt : IFieldMeta<int>
+    {
+        public bool IsDefaultValue(int value) => value == default;
+        public bool TryParseValue(string input, out int result) => int.TryParse(input, out result);
+    }
+    internal sealed class FieldMetaBool : IFieldMeta<bool>
+    {
+        public bool IsDefaultValue(bool value) => value == default;
+        public bool TryParseValue(string input, out bool result) => bool.TryParse(input, out result);
+    }
+    internal static class MetaHelper
+    {
+        public static IFieldMeta<T> GetMeta<T>()
+        {
+            if (typeof(T) == typeof(int))
+                return (IFieldMeta<T>)(IFieldMeta<int>)(new FieldMetaInt());
+            else if (typeof(T) == typeof(bool))
+                return (IFieldMeta<T>)(IFieldMeta<bool>)(new FieldMetaBool());
+            else
+                throw new NotSupportedException($"IFieldMeta<{typeof(T).Name}>");
+        }
+    }
     internal interface IField
     {
         string Name { get; }
         Type Type { get; }
         object? UntypedValue { get; set; }
-        bool IsDefault { get; }
+        bool IsDefaultValue { get; }
+        bool ValueHandler(string value);
     }
     internal sealed class ValType<T> : IField, IEquatable<ValType<T>> where T : struct, IEquatable<T>
     {
+        private readonly IFieldMeta<T> _meta;
         private readonly string _name;
-        private readonly Func<T?, bool> _isDefault;
+        private readonly bool _nullable;
         private T? _value;
 
         public string Name => _name;
         public Type Type => typeof(T);
-        public bool IsDefault => _isDefault(_value);
-        public T? Value
+        public bool IsDefaultValue => _nullable ? _value is null : _value is null ? false : _meta.IsDefaultValue(_value.Value);
+        public T? NullableValue
         {
             get { return _value; }
+            set { _value = value; }
+        }
+        public T RequiredValue
+        {
+            get { return _value ?? default(T); }
             set { _value = value; }
         }
 
@@ -869,11 +1253,20 @@ namespace Sandbox.Tests
             }
         }
 
-        public ValType(string name, T? value, Func<T?, bool> isDefault)
+
+        public bool ValueHandler(string input)
         {
+            if (!_meta.TryParseValue(input, out T result)) return false;
+            _value = result;
+            return true;
+        }
+
+        public ValType(string name, bool nullable)
+        {
+            _meta = MetaHelper.GetMeta<T>();
             _name = name;
-            _isDefault = isDefault;
-            _value = value;
+            _nullable = nullable;
+            _value = nullable ? null : default(T);
         }
 
         private static bool ValuesAreEqual(T? left, T? right)
@@ -903,7 +1296,7 @@ namespace Sandbox.Tests
 
         public string Name => _name;
         public Type Type => typeof(T);
-        public bool IsDefault => _isDefault(_value);
+        public bool IsDefaultValue => _isDefault(_value);
         public T? Value
         {
             get { return _value; }
@@ -924,6 +1317,11 @@ namespace Sandbox.Tests
                     throw new InvalidOperationException($"Value ({value}) type is not {typeof(T)}");
                 }
             }
+        }
+
+        public bool ValueHandler(string value)
+        {
+            throw new NotImplementedException();
         }
 
         public RefType(string name, T? value, Func<T?, bool> isDefault)
@@ -979,8 +1377,8 @@ namespace Sandbox.Tests
 
     internal sealed class Member : ITextable, IEquatable<Member>
     {
-        private readonly ValType<int> _id = new ValType<int>(nameof(Id), 0, (i) => i == 0);
-        public int Id { get => _id.Value ?? 0; set => _id.Value = value; }
+        private readonly ValType<int> _id = new ValType<int>(nameof(Id), false);
+        public int Id { get => _id.RequiredValue; set => _id.RequiredValue = value; }
 
         private readonly RefType<string> _name = new RefType<string>(nameof(Name), string.Empty, (s) => s == string.Empty);
         public string Name { get => _name.Value ?? ""; set => _name.Value = value; }
@@ -988,22 +1386,23 @@ namespace Sandbox.Tests
         private readonly RefType<string> _type = new RefType<string>(nameof(Type), string.Empty, (s) => s == string.Empty);
         public string Type { get => _type.Value ?? ""; set => _type.Value = value; }
 
-        private readonly ValType<bool> _nullable = new ValType<bool>(nameof(Nullable), null, (i) => i is null);
-        public bool? Nullable { get => _nullable.Value; set => _nullable.Value = value; }
+        private readonly ValType<bool> _nullable = new ValType<bool>(nameof(Nullable), true);
+        public bool? Nullable { get => _nullable.NullableValue; set => _nullable.NullableValue = value; }
 
         private readonly RefType<string> _desc = new RefType<string>(nameof(Description), null, (i) => i is null);
         public string? Description { get => _desc.Value; set => _desc.Value = value; }
 
-        private readonly ValType<ValueArray<int>> _dims = new ValType<ValueArray<int>>(nameof(Dims), ValueArray<int>.Empty, (va) => (va?.Length ?? 0) == 0);
-        public int[] Dims
-        {
-            get => (_dims.Value ?? ValueArray<int>.Empty).Values;
-            set => _dims.Value = new ValueArray<int>(value);
-        }
-        public int Rank => _dims.Value?.Length ?? 0;
+        //private readonly ValType<ValueArray<int>> _dims = new ValType<ValueArray<int>>(nameof(Dims), ValueArray<int>.Empty, (va) => (va?.Length ?? 0) == 0, xxx);
+        //public int[] Dims
+        //{
+        //    get => (_dims.Value ?? ValueArray<int>.Empty).Values;
+        //    set => _dims.Value = new ValueArray<int>(value);
+        //}
+        //public int Rank => _dims.Value?.Length ?? 0;
 
-        public void Emit(TextWriter writer, int indent) => writer.EmitFields(indent, _id, _name, _type, _nullable, _desc, _dims);
-        public bool Load1(string source) => source.AsSpan().LoadFields(_id, _name, _type, _nullable, _desc, _dims).Success;
+        public void Emit(TextWriter writer, int indent) => writer.EmitFields(indent, _id, _name, _type, _nullable, _desc);
+        public bool Load1(string source) => source.AsSpan().LoadFields(_id, _name, _type, _nullable, _desc).Success;
+        public bool Load2(TextReader reader) => reader.LoadFields(_id, _name, _type, _nullable, _desc).Success;
 
         public bool Equals(Member? other)
         {
@@ -1014,16 +1413,12 @@ namespace Sandbox.Tests
             if (!other._type.Equals(_type)) return false;
             if (!other._nullable.Equals(_nullable)) return false;
             if (!other._desc.Equals(_desc)) return false;
-            if (!other._dims.Equals(_dims)) return false;
+            //if (!other._dims.Equals(_dims)) return false;
             return true;
         }
         public override bool Equals(object? obj) => obj is Member other && Equals(other);
-        public override int GetHashCode() => HashCode.Combine(_id, _name, _type, _nullable, _desc, _dims);
+        public override int GetHashCode() => HashCode.Combine(_id, _name, _type, _nullable, _desc);
 
-        public bool Load2(TextReader reader)
-        {
-            throw new NotImplementedException();
-        }
     }
     public class TextableTests
     {
@@ -1129,7 +1524,7 @@ namespace Sandbox.Tests
                 Id = 123,
                 Name = "Field1",
                 Type = typeof(string).FullName!,
-                Dims = new int[] { 2, 2, 2 },
+                //Dims = new int[] { 2, 2, 2 },
             };
             string emitted = orig.ToText();
             await Verifier.Verify(emitted);
@@ -1251,7 +1646,7 @@ namespace Sandbox.Tests
             {
                 Id = 123,
                 Name = "Field1",
-                Dims = new int[] { 2, 2, 2 },
+                //Dims = new int[] { 2, 2, 2 },
             };
 
             string emitted = orig.ToText();
