@@ -1183,18 +1183,31 @@ namespace Sandbox.Tests
     }
     internal interface IFieldMeta<T>
     {
+        T DefaultValue { get; }
         bool IsDefaultValue(T value);
         bool TryParseValue(string input, out T result);
     }
     internal sealed class FieldMetaInt : IFieldMeta<int>
     {
+        public int DefaultValue => default;
         public bool IsDefaultValue(int value) => value == default;
         public bool TryParseValue(string input, out int result) => int.TryParse(input, out result);
     }
     internal sealed class FieldMetaBool : IFieldMeta<bool>
     {
+        public bool DefaultValue => default;
         public bool IsDefaultValue(bool value) => value == default;
         public bool TryParseValue(string input, out bool result) => bool.TryParse(input, out result);
+    }
+    internal sealed class FieldMetaString : IFieldMeta<string>
+    {
+        public string DefaultValue => string.Empty;
+        public bool IsDefaultValue(string value) => value == string.Empty;
+        public bool TryParseValue(string input, out string result)
+        {
+            result = input;
+            return true;
+        }
     }
     internal static class MetaHelper
     {
@@ -1204,6 +1217,8 @@ namespace Sandbox.Tests
                 return (IFieldMeta<T>)(IFieldMeta<int>)(new FieldMetaInt());
             else if (typeof(T) == typeof(bool))
                 return (IFieldMeta<T>)(IFieldMeta<bool>)(new FieldMetaBool());
+            else if (typeof(T) == typeof(string))
+                return (IFieldMeta<T>)(IFieldMeta<string>)(new FieldMetaString());
             else
                 throw new NotSupportedException($"IFieldMeta<{typeof(T).Name}>");
         }
@@ -1231,7 +1246,7 @@ namespace Sandbox.Tests
             get { return _value; }
             set { _value = value; }
         }
-        public T RequiredValue
+        public T Value
         {
             get { return _value ?? default(T); }
             set { _value = value; }
@@ -1261,7 +1276,7 @@ namespace Sandbox.Tests
             return true;
         }
 
-        public ValType(string name, bool nullable)
+        public ValType(string name, bool nullable = false)
         {
             _meta = MetaHelper.GetMeta<T>();
             _name = name;
@@ -1290,16 +1305,22 @@ namespace Sandbox.Tests
     }
     internal sealed class RefType<T> : IField, IEquatable<RefType<T>> where T : class, IEquatable<T>
     {
+        private readonly IFieldMeta<T> _meta;
         private readonly string _name;
-        private readonly Func<T?, bool> _isDefault;
+        private readonly bool _nullable;
         private T? _value;
 
         public string Name => _name;
         public Type Type => typeof(T);
-        public bool IsDefaultValue => _isDefault(_value);
-        public T? Value
+        public bool IsDefaultValue => _nullable ? _value is null : _value is null ? false : _meta.IsDefaultValue(_value);
+        public T? NullableValue
         {
             get { return _value; }
+            set { _value = value; }
+        }
+        public T Value
+        {
+            get { return _value ?? _meta.DefaultValue; }
             set { _value = value; }
         }
 
@@ -1324,11 +1345,12 @@ namespace Sandbox.Tests
             throw new NotImplementedException();
         }
 
-        public RefType(string name, T? value, Func<T?, bool> isDefault)
+        public RefType(string name, bool nullable = false)
         {
+            _meta = MetaHelper.GetMeta<T>();
             _name = name;
-            _isDefault = isDefault;
-            _value = value;
+            _nullable = nullable;
+            _value = nullable ? null : _meta.DefaultValue;
         }
 
         private static bool ValuesAreEqual(T? left, T? right)
@@ -1378,19 +1400,19 @@ namespace Sandbox.Tests
     internal sealed class Member : ITextable, IEquatable<Member>
     {
         private readonly ValType<int> _id = new ValType<int>(nameof(Id), false);
-        public int Id { get => _id.RequiredValue; set => _id.RequiredValue = value; }
+        public int Id { get => _id.Value; set => _id.Value = value; }
 
-        private readonly RefType<string> _name = new RefType<string>(nameof(Name), string.Empty, (s) => s == string.Empty);
-        public string Name { get => _name.Value ?? ""; set => _name.Value = value; }
+        private readonly RefType<string> _name = new RefType<string>(nameof(Name));
+        public string Name { get => _name.Value; set => _name.Value = value; }
 
-        private readonly RefType<string> _type = new RefType<string>(nameof(Type), string.Empty, (s) => s == string.Empty);
-        public string Type { get => _type.Value ?? ""; set => _type.Value = value; }
+        private readonly RefType<string> _type = new RefType<string>(nameof(Type));
+        public string Type { get => _type.Value; set => _type.Value = value; }
 
         private readonly ValType<bool> _nullable = new ValType<bool>(nameof(Nullable), true);
         public bool? Nullable { get => _nullable.NullableValue; set => _nullable.NullableValue = value; }
 
-        private readonly RefType<string> _desc = new RefType<string>(nameof(Description), null, (i) => i is null);
-        public string? Description { get => _desc.Value; set => _desc.Value = value; }
+        private readonly RefType<string> _desc = new RefType<string>(nameof(Description), true);
+        public string? Description { get => _desc.NullableValue; set => _desc.NullableValue = value; }
 
         //private readonly ValType<ValueArray<int>> _dims = new ValType<ValueArray<int>>(nameof(Dims), ValueArray<int>.Empty, (va) => (va?.Length ?? 0) == 0, xxx);
         //public int[] Dims
