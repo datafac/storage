@@ -1,4 +1,4 @@
 ﻿{
-    Id = i32(123),
-    Name = str(Field1)
+    Id = 123,
+    Name = "Field1"
 }
