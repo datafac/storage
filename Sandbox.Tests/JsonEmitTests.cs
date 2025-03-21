@@ -593,15 +593,31 @@ namespace Sandbox.Tests
         void WriteValue(TextWriter writer, int indent);
         bool ValueParser(string value);
     }
-    internal sealed class ValType<T> : IField, IEquatable<ValType<T>> where T : struct, IEquatable<T>
+    internal abstract class AnyType<T>
     {
-        private readonly IFieldMeta<T> _meta;
-        private readonly string _name;
-        private readonly bool _nullable;
-        private T? _value;
+        protected readonly IFieldMeta<T> _meta;
+        protected readonly string _name;
+        protected readonly bool _nullable;
+
+        protected AnyType(string name, bool nullable)
+        {
+            _meta = MetaHelper.GetMeta<T>();
+            _name = name;
+            _nullable = nullable;
+        }
 
         public string Name => _name;
         public Type Type => typeof(T);
+    }
+    internal sealed class ScalarValType<T> : AnyType<T>, IField, IEquatable<ScalarValType<T>> where T : struct, IEquatable<T>
+    {
+        private T? _value;
+
+        public ScalarValType(string name, bool nullable = false) : base(name, nullable)
+        {
+            _value = nullable ? null : default(T);
+        }
+
         public bool IsDefaultValue => _nullable ? _value is null : _value is null ? false : _meta.IsDefaultValue(_value.Value);
         public T? NullableValue
         {
@@ -614,36 +630,11 @@ namespace Sandbox.Tests
             set { _value = value; }
         }
 
-        public object? UntypedValue
-        {
-            get => _value;
-            set
-            {
-                if (value is T tValue)
-                {
-                    _value = tValue;
-                }
-                else
-                {
-                    throw new InvalidOperationException($"Value ({value}) type is not {typeof(T)}");
-                }
-            }
-        }
-
-
         public bool ValueParser(string input)
         {
             if (!_meta.TryParseValue(input, out T result)) return false;
             _value = result;
             return true;
-        }
-
-        public ValType(string name, bool nullable = false)
-        {
-            _meta = MetaHelper.GetMeta<T>();
-            _name = name;
-            _nullable = nullable;
-            _value = nullable ? null : default(T);
         }
 
         private static bool ValuesAreEqual(T? left, T? right)
@@ -652,7 +643,7 @@ namespace Sandbox.Tests
             return (right is null) ? false : left.Equals(right);
         }
 
-        public bool Equals(ValType<T>? other)
+        public bool Equals(ScalarValType<T>? other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -661,7 +652,7 @@ namespace Sandbox.Tests
             return true;
         }
 
-        public override bool Equals(object? obj) => obj is ValType<T> other && Equals(other);
+        public override bool Equals(object? obj) => obj is ScalarValType<T> other && Equals(other);
         public override int GetHashCode() => HashCode.Combine(_name, _value);
         public override string ToString() => $"{_name}<{typeof(T).Name}>={_value}";
 
@@ -671,15 +662,15 @@ namespace Sandbox.Tests
             writer.Write(formatted);
         }
     }
-    internal sealed class RefType<T> : IField, IEquatable<RefType<T>> where T : class, IEquatable<T>
+    internal sealed class ScalarRefType<T> : AnyType<T>, IField, IEquatable<ScalarRefType<T>> where T : class, IEquatable<T>
     {
-        private readonly IFieldMeta<T> _meta;
-        private readonly string _name;
-        private readonly bool _nullable;
         private T? _value;
 
-        public string Name => _name;
-        public Type Type => typeof(T);
+        public ScalarRefType(string name, bool nullable = false) : base(name, nullable)
+        {
+            _value = nullable ? null : _meta.DefaultValue;
+        }
+
         public bool IsDefaultValue => _nullable ? _value is null : _value is null ? false : _meta.IsDefaultValue(_value);
         public T? NullableValue
         {
@@ -703,21 +694,13 @@ namespace Sandbox.Tests
             return _meta.TryParseValue(value, out _value);
         }
 
-        public RefType(string name, bool nullable = false)
-        {
-            _meta = MetaHelper.GetMeta<T>();
-            _name = name;
-            _nullable = nullable;
-            _value = nullable ? null : _meta.DefaultValue;
-        }
-
         private static bool ValuesAreEqual(T? left, T? right)
         {
             if (left is null) return (right is null);
             return (right is null) ? false : left.Equals(right);
         }
 
-        public bool Equals(RefType<T>? other)
+        public bool Equals(ScalarRefType<T>? other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -726,7 +709,7 @@ namespace Sandbox.Tests
             return true;
         }
 
-        public override bool Equals(object? obj) => obj is RefType<T> other && Equals(other);
+        public override bool Equals(object? obj) => obj is ScalarRefType<T> other && Equals(other);
         public override int GetHashCode() => HashCode.Combine(_name, _value);
         public override string ToString() => $"{_name}<{typeof(T).Name}>={_value}";
     }
@@ -757,19 +740,19 @@ namespace Sandbox.Tests
 
     internal sealed class Member : ITextable, IEquatable<Member>
     {
-        private readonly ValType<int> _id = new ValType<int>(nameof(Id), false);
+        private readonly ScalarValType<int> _id = new ScalarValType<int>(nameof(Id), false);
         public int Id { get => _id.Value; set => _id.Value = value; }
 
-        private readonly RefType<string> _name = new RefType<string>(nameof(Name));
+        private readonly ScalarRefType<string> _name = new ScalarRefType<string>(nameof(Name));
         public string Name { get => _name.Value; set => _name.Value = value; }
 
-        private readonly RefType<string> _type = new RefType<string>(nameof(Type));
+        private readonly ScalarRefType<string> _type = new ScalarRefType<string>(nameof(Type));
         public string Type { get => _type.Value; set => _type.Value = value; }
 
-        private readonly ValType<bool> _nullable = new ValType<bool>(nameof(Nullable), true);
+        private readonly ScalarValType<bool> _nullable = new ScalarValType<bool>(nameof(Nullable), true);
         public bool? Nullable { get => _nullable.NullableValue; set => _nullable.NullableValue = value; }
 
-        private readonly RefType<string> _desc = new RefType<string>(nameof(Description), true);
+        private readonly ScalarRefType<string> _desc = new ScalarRefType<string>(nameof(Description), true);
         public string? Description { get => _desc.NullableValue; set => _desc.NullableValue = value; }
 
         //private readonly ValType<ValueArray<int>> _dims = new ValType<ValueArray<int>>(nameof(Dims), ValueArray<int>.Empty, (va) => (va?.Length ?? 0) == 0, xxx);
