@@ -1,0 +1,6 @@
+﻿{
+    Id = 123,
+    Name = "Field1",
+    Type = "Sandbox.Tests.MyEnum1",
+    Kind1 = First
+}

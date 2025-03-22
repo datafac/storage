@@ -2,8 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using VerifyXunit;
@@ -132,6 +134,10 @@ namespace Sandbox.Tests
         public static string UnEscape(this string value)
         {
             ReadOnlySpan<char> span = value.AsSpan();
+
+            // shortcuts
+            if (span.IndexOf('%') < 0) return value;
+
             StringBuilder result = new StringBuilder();
             int pos = 0;
             while (pos < span.Length)
@@ -581,6 +587,11 @@ namespace Sandbox.Tests
                 return (IFieldMeta<T>)(IFieldMeta<bool>)(new FieldMetaBool());
             else if (typeof(T) == typeof(string))
                 return (IFieldMeta<T>)(IFieldMeta<string>)(new FieldMetaString());
+            //else if (typeof(Enum).IsAssignableFrom(typeof(T)))
+            //{
+            //    // enumeration
+            //    return new FieldMetaEnum<T>();
+            //}
             else
                 throw new NotSupportedException($"IFieldMeta<{typeof(T).Name}>");
         }
@@ -599,6 +610,13 @@ namespace Sandbox.Tests
         protected readonly string _name;
         protected readonly bool _nullable;
 
+        protected AnyType(IFieldMeta<T> meta, string name, bool nullable)
+        {
+            _meta = meta;
+            _name = name;
+            _nullable = nullable;
+        }
+
         protected AnyType(string name, bool nullable)
         {
             _meta = MetaHelper.GetMeta<T>();
@@ -609,6 +627,67 @@ namespace Sandbox.Tests
         public string Name => _name;
         public Type Type => typeof(T);
     }
+    internal sealed class FieldMetaEnum<T> : IFieldMeta<T> where T : struct, Enum
+    {
+        public T DefaultValue => default;
+        public string FormatValue(T value) => value.ToString();
+        public bool IsDefaultValue(T value) => Convert.ToInt32(value) == 0;
+        public bool TryParseValue(string input, out T result) => Enum.TryParse<T>(input, out result);
+    }
+    internal sealed class ScalarEnumType<T> : AnyType<T>, IField, IEquatable<ScalarEnumType<T>> where T : struct, Enum
+    {
+        private T? _value;
+
+        public ScalarEnumType(string name, bool nullable = false) : base(new FieldMetaEnum<T>(), name, nullable)
+        {
+            _value = nullable ? null : default(T);
+        }
+
+        public bool IsDefaultValue => _nullable ? _value is null : _value is null ? false : _meta.IsDefaultValue(_value.Value);
+        public T? NullableValue
+        {
+            get { return _value; }
+            set { _value = value; }
+        }
+        public T Value
+        {
+            get { return _value ?? default(T); }
+            set { _value = value; }
+        }
+
+        public bool ValueParser(string input)
+        {
+            if (!_meta.TryParseValue(input, out T result)) return false;
+            _value = result;
+            return true;
+        }
+
+        private static bool ValuesAreEqual(T? left, T? right)
+        {
+            if (left is null) return (right is null);
+            return (right is null) ? false : left.Value.Equals(right.Value);
+        }
+
+        public bool Equals(ScalarEnumType<T>? other)
+        {
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            if (!other._name.Equals(_name)) return false;
+            if (!ValuesAreEqual(other._value, _value)) return false;
+            return true;
+        }
+
+        public override bool Equals(object? obj) => obj is ScalarEnumType<T> other && Equals(other);
+        public override int GetHashCode() => HashCode.Combine(_name, _value);
+        public override string ToString() => $"{_name}<{typeof(T).Name}>={_value}";
+
+        public void WriteValue(TextWriter writer, int indent)
+        {
+            string formatted = _value is null ? "nul" : _meta.FormatValue(_value.Value);
+            writer.Write(formatted);
+        }
+    }
+
     internal sealed class ScalarValType<T> : AnyType<T>, IField, IEquatable<ScalarValType<T>> where T : struct, IEquatable<T>
     {
         private T? _value;
@@ -640,7 +719,7 @@ namespace Sandbox.Tests
         private static bool ValuesAreEqual(T? left, T? right)
         {
             if (left is null) return (right is null);
-            return (right is null) ? false : left.Equals(right);
+            return (right is null) ? false : left.Value.Equals(right.Value);
         }
 
         public bool Equals(ScalarValType<T>? other)
@@ -738,6 +817,35 @@ namespace Sandbox.Tests
         }
     }
 
+    internal enum MyEnum1 : byte
+    {
+        None = 0,
+        First = 1,
+        Other = 3,
+        Final = 9,
+    }
+
+    internal enum MyEnum2 : byte
+    {
+        First = 1,
+        Other = 3,
+        Final = 9,
+    }
+
+    internal readonly struct EnumValue<T> : IEquatable<EnumValue<T>> where T :struct, Enum
+    {
+        public readonly T Value;
+        public EnumValue(T value)
+        {
+            Value = value;
+        }
+
+        public bool Equals(EnumValue<T> other)
+        {
+            return Enum.Equals(other.Value, Value);
+        }
+    }
+
     internal sealed class Member : ITextable, IEquatable<Member>
     {
         private readonly ScalarValType<int> _id = new ScalarValType<int>(nameof(Id), false);
@@ -755,6 +863,12 @@ namespace Sandbox.Tests
         private readonly ScalarRefType<string> _desc = new ScalarRefType<string>(nameof(Description), true);
         public string? Description { get => _desc.NullableValue; set => _desc.NullableValue = value; }
 
+        private readonly ScalarEnumType<MyEnum1> _kind1 = new ScalarEnumType<MyEnum1>(nameof(Kind1), false);
+        public MyEnum1 Kind1 { get => _kind1.Value; set => _kind1.Value = value; }
+
+        private readonly ScalarEnumType<MyEnum2> _kind2 = new ScalarEnumType<MyEnum2>(nameof(Kind2), true);
+        public MyEnum2? Kind2 { get => _kind2.NullableValue; set => _kind2.NullableValue = value; }
+
         //private readonly ValType<ValueArray<int>> _dims = new ValType<ValueArray<int>>(nameof(Dims), ValueArray<int>.Empty, (va) => (va?.Length ?? 0) == 0, xxx);
         //public int[] Dims
         //{
@@ -763,8 +877,8 @@ namespace Sandbox.Tests
         //}
         //public int Rank => _dims.Value?.Length ?? 0;
 
-        public void Emit(TextWriter writer, int indent) => writer.EmitFields(indent, _id, _name, _type, _nullable, _desc);
-        public bool Load(TextReader reader) => reader.LoadFields(_id, _name, _type, _nullable, _desc);
+        public void Emit(TextWriter writer, int indent) => writer.EmitFields(indent, _id, _name, _type, _nullable, _desc, _kind1, _kind2);
+        public bool Load(TextReader reader) => reader.LoadFields(_id, _name, _type, _nullable, _desc, _kind1, _kind2);
 
         public bool Equals(Member? other)
         {
@@ -775,23 +889,27 @@ namespace Sandbox.Tests
             if (!other._type.Equals(_type)) return false;
             if (!other._nullable.Equals(_nullable)) return false;
             if (!other._desc.Equals(_desc)) return false;
+            if (!other._kind1.Equals(_kind1)) return false;
+            if (!other._kind2.Equals(_kind2)) return false;
             //if (!other._dims.Equals(_dims)) return false;
             return true;
         }
         public override bool Equals(object? obj) => obj is Member other && Equals(other);
-        public override int GetHashCode() => HashCode.Combine(_id, _name, _type, _nullable, _desc);
+        public override int GetHashCode() => HashCode.Combine(_id, _name, _type, _nullable, _desc, _kind1, _kind2);
 
     }
     public class TextableTests
     {
         [Theory]
         [InlineData("abc", "abc")]
+        [InlineData("abc.def", "abc.def")]
         [InlineData("10%", "10%pc;")]
         [InlineData("{abc}", "%lc;abc%rc;")]
         [InlineData("(abc)", "%lp;abc%rp;")]
         [InlineData("[abc]", "%ls;abc%rs;")]
         [InlineData("<abc>", "%la;abc%ra;")]
         [InlineData("abc\\def", "abc%bs;def")]
+        [InlineData("abc\"def", "abc%dq;def")]
         public void StringEscaping(string value, string expectedEncoding)
         {
             // encode
@@ -804,8 +922,23 @@ namespace Sandbox.Tests
         }
 
         [Fact]
+        public async Task EmitLoad0_EmptyObject()
+        {
+            Member orig = new Member();
 
-        public async Task Emit1_SimpleObject()
+            string emitted = orig.ToText();
+            await Verifier.Verify(emitted);
+
+            Member copy = new Member();
+            using var reader = new StringReader(emitted);
+            bool loaded = copy.Load(reader);
+            loaded.ShouldBeTrue();
+
+            copy.ShouldBe(orig);
+        }
+
+        [Fact]
+        public async Task EmitLoad1_SimpleObject()
         {
             Member orig = new Member()
             {
@@ -817,11 +950,18 @@ namespace Sandbox.Tests
 
             string emitted = orig.ToText();
             await Verifier.Verify(emitted);
+
+            Member copy = new Member();
+            using var reader = new StringReader(emitted);
+            bool loaded = copy.Load(reader);
+            loaded.ShouldBeTrue();
+
+            copy.ShouldBe(orig);
         }
 
         [Fact]
 
-        public async Task Emit2_OptRefTypeA()
+        public async Task EmitLoad2_OptRefTypeA()
         {
             Member orig = new Member()
             {
@@ -833,10 +973,17 @@ namespace Sandbox.Tests
             };
             string emitted = orig.ToText();
             await Verifier.Verify(emitted);
+
+            Member copy = new Member();
+            using var reader = new StringReader(emitted);
+            bool loaded = copy.Load(reader);
+            loaded.ShouldBeTrue();
+
+            copy.ShouldBe(orig);
         }
 
         [Fact]
-        public async Task Emit3_OptRefTypeB()
+        public async Task EmitLoad3_OptRefTypeB()
         {
             Member orig = new Member()
             {
@@ -848,10 +995,17 @@ namespace Sandbox.Tests
             };
             string emitted = orig.ToText();
             await Verifier.Verify(emitted);
+
+            Member copy = new Member();
+            using var reader = new StringReader(emitted);
+            bool loaded = copy.Load(reader);
+            loaded.ShouldBeTrue();
+
+            copy.ShouldBe(orig);
         }
 
         [Fact]
-        public async Task Emit4_OptValTypeA()
+        public async Task EmitLoad4_OptValTypeA()
         {
             Member orig = new Member()
             {
@@ -862,10 +1016,17 @@ namespace Sandbox.Tests
             };
             string emitted = orig.ToText();
             await Verifier.Verify(emitted);
+
+            Member copy = new Member();
+            using var reader = new StringReader(emitted);
+            bool loaded = copy.Load(reader);
+            loaded.ShouldBeTrue();
+
+            copy.ShouldBe(orig);
         }
 
         [Fact]
-        public async Task Emit5_OptValTypeB()
+        public async Task EmitLoad5_OptValTypeB()
         {
             Member orig = new Member()
             {
@@ -876,10 +1037,66 @@ namespace Sandbox.Tests
             };
             string emitted = orig.ToText();
             await Verifier.Verify(emitted);
+
+            Member copy = new Member();
+            using var reader = new StringReader(emitted);
+            bool loaded = copy.Load(reader);
+            loaded.ShouldBeTrue();
+
+            copy.ShouldBe(orig);
         }
 
         [Fact]
-        public async Task Emit6_VectorValType()
+        public async Task EmitLoad6_ReqEnumType()
+        {
+            Member orig = new Member()
+            {
+                Id = 123,
+                Name = "Field1",
+                Type = typeof(MyEnum1).FullName!,
+                //Nullable = true,
+                Kind1 = MyEnum1.First,
+            };
+            string emitted = orig.ToText();
+            await Verifier.Verify(emitted);
+
+            Member copy = new Member();
+            using var reader = new StringReader(emitted);
+            bool loaded = copy.Load(reader);
+            loaded.ShouldBeTrue();
+
+            copy.ShouldBe(orig);
+
+            copy.Kind1.ShouldBe(MyEnum1.First);
+        }
+
+        [Fact]
+        public async Task EmitLoad7_OptEnumType()
+        {
+            Member orig = new Member()
+            {
+                Id = 123,
+                Name = "Field1",
+                Type = typeof(MyEnum2).FullName!,
+                //Nullable = true,
+                //Kind2 = MyEnum2.First,
+            };
+            string emitted = orig.ToText();
+            await Verifier.Verify(emitted);
+
+            Member copy = new Member();
+            using var reader = new StringReader(emitted);
+            bool loaded = copy.Load(reader);
+            loaded.ShouldBeTrue();
+
+            copy.ShouldBe(orig);
+
+            copy.Kind2.HasValue.ShouldBeFalse();
+            copy.Kind2.ShouldBeNull();
+        }
+
+        [Fact]
+        public async Task EmitLoad8_VectorValType()
         {
             Member orig = new Member()
             {
@@ -890,6 +1107,13 @@ namespace Sandbox.Tests
             };
             string emitted = orig.ToText();
             await Verifier.Verify(emitted);
+
+            Member copy = new Member();
+            using var reader = new StringReader(emitted);
+            bool loaded = copy.Load(reader);
+            loaded.ShouldBeTrue();
+
+            copy.ShouldBe(orig);
         }
 
         [Theory]
