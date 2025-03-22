@@ -439,14 +439,17 @@ namespace Sandbox.Tests
 
         private static LoadResult MustLoadOneToken(ReadOnlySpan<SourceToken> tokens, TokenKind tokenKind)
         {
-            if (tokens.Length <= 0) return new LoadResult(new SourceToken(TokenKind.Error, default, 0, 0, "End of input reached."));
+            if (tokens.Length <= 0)
+                return new LoadResult(new SourceToken(TokenKind.Error, default, 0, 0,
+                    $"Unexpected EOF. Expected '{tokenKind}'."));
+
             var token = tokens[0];
             if (token.Kind == TokenKind.Error) return new LoadResult(token);
             if (token.Kind == tokenKind)
                 return new LoadResult(1, token);
             else
                 return new LoadResult(new SourceToken(TokenKind.Error, token.Source, token.Offset, token.Length,
-                    $"Unexpected token. Expected '{tokenKind}', received '{token.Kind}'."));
+                    $"Unexpected token. Expected '{tokenKind}', received '{token.Kind}' at (L{token.Source.Line},C{token.Offset})."));
         }
 
         public static LoadResult TryLoadScalar(ReadOnlySpan<SourceToken> remaining, Func<string, bool> valueHandler)
@@ -1329,7 +1332,7 @@ namespace Sandbox.Tests
             LoadResult result = copy.Load(reader);
             result.Success.ShouldBeFalse();
             result.Token.Kind.ShouldBe(TokenKind.Error);
-            result.Token.Message.ShouldBe("Unexpected token. Expected 'Comma', received 'Identifier'.");
+            result.Token.Message.ShouldBe("Unexpected token. Expected 'Comma', received 'Identifier' at (L2,C4).");
         }
 
         [Fact]
@@ -1347,8 +1350,6 @@ namespace Sandbox.Tests
             using var reader = new StringReader(encoded);
             LoadResult result = copy.Load(reader);
             result.Success.ShouldBeTrue();
-            //result.Token.Kind.ShouldBe(TokenKind.Error);
-            //result.Token.Message.ShouldBe("Unexpected token. Expected 'Comma', received 'Identifier'.");
         }
 
     }
