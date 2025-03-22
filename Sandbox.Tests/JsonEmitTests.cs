@@ -387,12 +387,12 @@ namespace Sandbox.Tests
             writer.Write('}');
         }
 
-        private static LoadResult TryConsumeOneToken(ReadOnlySpan<SourceToken> tokens, TokenKind tokenKind)
+        private static LoadResult TryLoadOneToken(ReadOnlySpan<SourceToken> tokens, TokenKind tokenKind)
         {
-            if (tokens.Length <= 0) 
+            if (tokens.Length <= 0)
                 return new LoadResult(default);
             var token = tokens[0];
-            if (token.Kind == TokenKind.Error) 
+            if (token.Kind == TokenKind.Error)
                 return new LoadResult(token);
             if (token.Kind == tokenKind)
                 return new LoadResult(1, token);
@@ -400,20 +400,32 @@ namespace Sandbox.Tests
                 return new LoadResult(default);
         }
 
+        private static LoadResult MustLoadOneToken(ReadOnlySpan<SourceToken> tokens, TokenKind tokenKind)
+        {
+            if (tokens.Length <= 0) return new LoadResult(new SourceToken(TokenKind.Error, default, 0, 0, "End of input reached."));
+            var token = tokens[0];
+            if (token.Kind == TokenKind.Error) return new LoadResult(token);
+            if (token.Kind == tokenKind)
+                return new LoadResult(1, token);
+            else
+                return new LoadResult(new SourceToken(TokenKind.Error, token.Source, token.Offset, token.Length,
+                    $"Unexpected token. Expected '{tokenKind}', received '{token.Kind}'."));
+        }
+
         public static LoadResult TryLoadScalar(ReadOnlySpan<SourceToken> remaining, Func<string, bool> valueHandler)
         {
             // try consume string value
-            var result = TryConsumeOneToken(remaining, TokenKind.String);
+            var result = TryLoadOneToken(remaining, TokenKind.String);
             if (result.IsError) return result;
             if (result.Success && valueHandler(result.Token.StringValue)) return new LoadResult(1, result.Token);
 
             // try consume number value
-            result = TryConsumeOneToken(remaining, TokenKind.Number);
+            result = TryLoadOneToken(remaining, TokenKind.Number);
             if (result.IsError) return result;
             if (result.Success && valueHandler(result.Token.StringValue)) return new LoadResult(1, result.Token);
 
             // try consume identifier value e.g. true or false
-            result = TryConsumeOneToken(remaining, TokenKind.Identifier);
+            result = TryLoadOneToken(remaining, TokenKind.Identifier);
             if (result.IsError) return result;
             if (result.Success && valueHandler(result.Token.StringValue)) return new LoadResult(1, result.Token);
 
@@ -425,7 +437,7 @@ namespace Sandbox.Tests
             int tokensConsumed = 0;
 
             // try consume begin vector
-            var result = TryConsumeOneToken(remaining, TokenKind.LeftSquare);
+            var result = TryLoadOneToken(remaining, TokenKind.LeftSquare);
             if (result.IsError) return result;
             if (!result.Success) return result;
             remaining = remaining.Slice(1);
@@ -437,7 +449,7 @@ namespace Sandbox.Tests
                 if (remaining.Length == 0) return new LoadResult(default);
 
                 // try consume close vector
-                result = TryConsumeOneToken(remaining, TokenKind.RightSquare);
+                result = TryLoadOneToken(remaining, TokenKind.RightSquare);
                 if (result.IsError) return result;
                 if (result.Success)
                 {
@@ -449,7 +461,7 @@ namespace Sandbox.Tests
                 // try consume value separator
                 if (fieldsConsumed > 0)
                 {
-                    result = TryConsumeOneToken(remaining, TokenKind.Comma);
+                    result = TryLoadOneToken(remaining, TokenKind.Comma);
                     if (result.IsError) return result;
                     if (!result.Success) return new LoadResult(default);
                     remaining = remaining.Slice(1);
@@ -471,7 +483,7 @@ namespace Sandbox.Tests
             int tokensConsumed = 0;
 
             // try consume field
-            var result = TryConsumeOneToken(remaining, TokenKind.Identifier);
+            var result = MustLoadOneToken(remaining, TokenKind.Identifier);
             if (result.IsError) return result;
             if (!result.Success) return new LoadResult(default);
             remaining = remaining.Slice(1);
@@ -490,7 +502,7 @@ namespace Sandbox.Tests
             }
 
             // try consume equals
-            result = TryConsumeOneToken(remaining, TokenKind.Equals);
+            result = MustLoadOneToken(remaining, TokenKind.Equals);
             if(result.IsError) return result;
             if (!result.Success) return new LoadResult(default);
             remaining = remaining.Slice(1);
@@ -524,7 +536,7 @@ namespace Sandbox.Tests
             int position = 0;
 
             // consume begin field group
-            var result = TryConsumeOneToken(remaining, TokenKind.LeftCurly);
+            var result = TryLoadOneToken(remaining, TokenKind.LeftCurly);
             if(result.IsError) return result;
             if (!result.Success) return new LoadResult(default);
             remaining = remaining.Slice(1);
@@ -537,7 +549,7 @@ namespace Sandbox.Tests
                 if (remaining.Length == 0) return new LoadResult(default);
 
                 // try consume close field group
-                result = TryConsumeOneToken(remaining, TokenKind.RightCurly);
+                result = TryLoadOneToken(remaining, TokenKind.RightCurly);
                 if (result.IsError) return result;
                 if (result.Success)
                 {
@@ -549,7 +561,7 @@ namespace Sandbox.Tests
                 // try consume field separator
                 if (fieldsConsumed > 0)
                 {
-                    result = TryConsumeOneToken(remaining, TokenKind.Comma);
+                    result = MustLoadOneToken(remaining, TokenKind.Comma);
                     if (result.IsError) return result;
                     if (!result.Success) return new LoadResult(default);
                     remaining = remaining.Slice(1);
@@ -1270,7 +1282,7 @@ namespace Sandbox.Tests
             string encoded =
                 """
                 {
-                    Id=123,
+                    Id=123
                     Name="Field1",
                 }
                 """;
@@ -1278,9 +1290,9 @@ namespace Sandbox.Tests
             Member copy = new Member();
             using var reader = new StringReader(encoded);
             LoadResult result = copy.Load(reader);
-            result.Success.ShouldBeTrue();
-            //result.Token.Kind.ShouldBe(TokenKind.Error);
-            //result.Token.Message.ShouldBe("Unterminated string");
+            result.Success.ShouldBeFalse();
+            result.Token.Kind.ShouldBe(TokenKind.Error);
+            result.Token.Message.ShouldBe("Unexpected token. Expected 'Comma', received 'Identifier'.");
         }
 
     }
