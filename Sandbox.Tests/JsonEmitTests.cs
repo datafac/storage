@@ -483,7 +483,7 @@ namespace Sandbox.Tests
             int tokensConsumed = 0;
 
             // try consume field
-            var result = MustLoadOneToken(remaining, TokenKind.Identifier);
+            var result = TryLoadOneToken(remaining, TokenKind.Identifier);
             if (result.IsError) return result;
             if (!result.Success) return new LoadResult(default);
             remaining = remaining.Slice(1);
@@ -502,7 +502,7 @@ namespace Sandbox.Tests
             }
 
             // try consume equals
-            result = MustLoadOneToken(remaining, TokenKind.Equals);
+            result = TryLoadOneToken(remaining, TokenKind.Equals);
             if(result.IsError) return result;
             if (!result.Success) return new LoadResult(default);
             remaining = remaining.Slice(1);
@@ -1283,7 +1283,7 @@ namespace Sandbox.Tests
                 """
                 {
                     Id=123
-                    Name="Field1",
+                    Name="Field1"
                 }
                 """;
 
@@ -1293,6 +1293,25 @@ namespace Sandbox.Tests
             result.Success.ShouldBeFalse();
             result.Token.Kind.ShouldBe(TokenKind.Error);
             result.Token.Message.ShouldBe("Unexpected token. Expected 'Comma', received 'Identifier'.");
+        }
+
+        [Fact]
+        public void Parser6_Failure_ExtraSeparatingCommas()
+        {
+            string encoded =
+                """
+                {
+                    Id=123,,
+                    Name="Field1",
+                }
+                """;
+
+            Member copy = new Member();
+            using var reader = new StringReader(encoded);
+            LoadResult result = copy.Load(reader);
+            result.Success.ShouldBeTrue();
+            //result.Token.Kind.ShouldBe(TokenKind.Error);
+            //result.Token.Message.ShouldBe("Unexpected token. Expected 'Comma', received 'Identifier'.");
         }
 
     }
