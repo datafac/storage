@@ -310,22 +310,6 @@ namespace Sandbox.Tests
             field.WriteValue(writer, indent);
         }
 
-        private static object? TryParseValue(string prefix, string unparsed)
-        {
-            return prefix switch
-            {
-                "log" => bool.TryParse(unparsed, out bool log) ? log : null,
-                "i08" => sbyte.TryParse(unparsed, out sbyte i08) ? i08 : null,
-                "i16" => short.TryParse(unparsed, out short i16) ? i16 : null,
-                "i32" => int.TryParse(unparsed, out int i32) ? i32 : null,
-                "i64" => long.TryParse(unparsed, out long i64) ? i64 : null,
-                "r32" => float.TryParse(unparsed, out float r32) ? r32 : null,
-                "r64" => double.TryParse(unparsed, out double r64) ? r64 : null,
-                "str" => unparsed,
-                _ => null,
-            };
-        }
-
         public static void EmitFields(this TextWriter writer, int indent, params IField[] fields)
         {
             writer.Write('{');
@@ -559,6 +543,13 @@ namespace Sandbox.Tests
         public bool IsDefaultValue(bool value) => value == default;
         public bool TryParseValue(string input, out bool result) => bool.TryParse(input, out result);
     }
+    internal sealed class FieldMetaByte : IFieldMeta<byte>
+    {
+        public byte DefaultValue => default;
+        public string FormatValue(byte value) => value.ToString().ToLower();
+        public bool IsDefaultValue(byte value) => value == default;
+        public bool TryParseValue(string input, out byte result) => byte.TryParse(input, out result);
+    }
     internal sealed class FieldMetaString : IFieldMeta<string>
     {
         public string DefaultValue => string.Empty;
@@ -587,11 +578,8 @@ namespace Sandbox.Tests
                 return (IFieldMeta<T>)(IFieldMeta<bool>)(new FieldMetaBool());
             else if (typeof(T) == typeof(string))
                 return (IFieldMeta<T>)(IFieldMeta<string>)(new FieldMetaString());
-            //else if (typeof(Enum).IsAssignableFrom(typeof(T)))
-            //{
-            //    // enumeration
-            //    return new FieldMetaEnum<T>();
-            //}
+            else if (typeof(T) == typeof(byte))
+                return (IFieldMeta<T>)(IFieldMeta<byte>)(new FieldMetaByte());
             else
                 throw new NotSupportedException($"IFieldMeta<{typeof(T).Name}>");
         }
@@ -627,67 +615,6 @@ namespace Sandbox.Tests
         public string Name => _name;
         public Type Type => typeof(T);
     }
-    internal sealed class FieldMetaEnum<T> : IFieldMeta<T> where T : struct, Enum
-    {
-        public T DefaultValue => default;
-        public string FormatValue(T value) => value.ToString();
-        public bool IsDefaultValue(T value) => Convert.ToInt32(value) == 0;
-        public bool TryParseValue(string input, out T result) => Enum.TryParse<T>(input, out result);
-    }
-    internal sealed class ScalarEnumType<T> : AnyType<T>, IField, IEquatable<ScalarEnumType<T>> where T : struct, Enum
-    {
-        private T? _value;
-
-        public ScalarEnumType(string name, bool nullable = false) : base(new FieldMetaEnum<T>(), name, nullable)
-        {
-            _value = nullable ? null : default(T);
-        }
-
-        public bool IsDefaultValue => _nullable ? _value is null : _value is null ? false : _meta.IsDefaultValue(_value.Value);
-        public T? NullableValue
-        {
-            get { return _value; }
-            set { _value = value; }
-        }
-        public T Value
-        {
-            get { return _value ?? default(T); }
-            set { _value = value; }
-        }
-
-        public bool ValueParser(string input)
-        {
-            if (!_meta.TryParseValue(input, out T result)) return false;
-            _value = result;
-            return true;
-        }
-
-        private static bool ValuesAreEqual(T? left, T? right)
-        {
-            if (left is null) return (right is null);
-            return (right is null) ? false : left.Value.Equals(right.Value);
-        }
-
-        public bool Equals(ScalarEnumType<T>? other)
-        {
-            if (other is null) return false;
-            if (ReferenceEquals(this, other)) return true;
-            if (!other._name.Equals(_name)) return false;
-            if (!ValuesAreEqual(other._value, _value)) return false;
-            return true;
-        }
-
-        public override bool Equals(object? obj) => obj is ScalarEnumType<T> other && Equals(other);
-        public override int GetHashCode() => HashCode.Combine(_name, _value);
-        public override string ToString() => $"{_name}<{typeof(T).Name}>={_value}";
-
-        public void WriteValue(TextWriter writer, int indent)
-        {
-            string formatted = _value is null ? "nul" : _meta.FormatValue(_value.Value);
-            writer.Write(formatted);
-        }
-    }
-
     internal sealed class ScalarValType<T> : AnyType<T>, IField, IEquatable<ScalarValType<T>> where T : struct, IEquatable<T>
     {
         private T? _value;
@@ -825,7 +752,7 @@ namespace Sandbox.Tests
         Final = 9,
     }
 
-    internal enum MyEnum2 : byte
+    internal enum MyEnum2 : int
     {
         First = 1,
         Other = 3,
@@ -863,11 +790,11 @@ namespace Sandbox.Tests
         private readonly ScalarRefType<string> _desc = new ScalarRefType<string>(nameof(Description), true);
         public string? Description { get => _desc.NullableValue; set => _desc.NullableValue = value; }
 
-        private readonly ScalarEnumType<MyEnum1> _kind1 = new ScalarEnumType<MyEnum1>(nameof(Kind1), false);
-        public MyEnum1 Kind1 { get => _kind1.Value; set => _kind1.Value = value; }
+        private readonly ScalarValType<byte> _kind1 = new ScalarValType<byte>(nameof(Kind1), false);
+        public MyEnum1 Kind1 { get => (MyEnum1)_kind1.Value; set => _kind1.Value = (byte)value; }
 
-        private readonly ScalarEnumType<MyEnum2> _kind2 = new ScalarEnumType<MyEnum2>(nameof(Kind2), true);
-        public MyEnum2? Kind2 { get => _kind2.NullableValue; set => _kind2.NullableValue = value; }
+        private readonly ScalarValType<int> _kind2 = new ScalarValType<int>(nameof(Kind2), true);
+        public MyEnum2? Kind2 { get => (MyEnum2?)_kind2.NullableValue; set => _kind2.NullableValue = (int?)value; }
 
         //private readonly ValType<ValueArray<int>> _dims = new ValType<ValueArray<int>>(nameof(Dims), ValueArray<int>.Empty, (va) => (va?.Length ?? 0) == 0, xxx);
         //public int[] Dims
