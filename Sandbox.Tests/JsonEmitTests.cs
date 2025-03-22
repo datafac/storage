@@ -45,26 +45,26 @@ namespace Sandbox.Tests
         Error,
     }
 
-    internal readonly struct SourceToken
+    public readonly struct SourceToken
     {
         public readonly TokenKind Kind;
         public readonly SourceLine Source;
         public readonly int Offset;
         public readonly int Length;
-        public readonly string? Error;
+        public readonly string Message;
 
-        public SourceToken(TokenKind kind, SourceLine source, int offset, int length, string? error = null)
+        public SourceToken(TokenKind kind, SourceLine source, int offset, int length, string message = "")
         {
             Kind = kind;
             Source = source;
             Offset = offset;
             Length = length;
-            Error = error;
+            Message = message;
         }
 
         public string StringValue => Source.Text.Substring(Offset, Length);
 
-        public SourceToken Extend() => new SourceToken(Kind, Source, Offset, Length + 1, null);
+        public SourceToken Extend() => new SourceToken(Kind, Source, Offset, Length + 1);
 
         public override string ToString()
         {
@@ -76,9 +76,42 @@ namespace Sandbox.Tests
         }
     }
 
+    public readonly struct LoadResult
+    {
+        public readonly bool Success;
+        public readonly int Consumed;
+        public readonly SourceToken Token;
+
+        public bool IsError => Token.Kind == TokenKind.Error;
+
+        /// <summary>
+        /// Returns a successful result.
+        /// </summary>
+        /// <param name="success"></param>
+        /// <param name="consumed"></param>
+        /// <param name="token"></param>
+        public LoadResult(int consumed, SourceToken token)
+        {
+            Success = true;
+            Consumed = consumed;
+            Token = token;
+        }
+
+        /// <summary>
+        /// Returns a failed result with an error message
+        /// </summary>
+        /// <param name="message"></param>
+        public LoadResult(SourceToken token)
+        {
+            Success = false;
+            Consumed = 0;
+            Token = token;
+        }
+    }
+
     internal interface ITextable
     {
-        bool Load(TextReader reader);
+        LoadResult Load(TextReader reader);
         void Emit(TextWriter writer, int indent);
     }
     internal static class TextableExtensions
@@ -354,97 +387,99 @@ namespace Sandbox.Tests
             writer.Write('}');
         }
 
-        private static bool TryConsumeOneToken(ReadOnlySpan<SourceToken> tokens, TokenKind tokenKind) => tokens.Length > 0 && tokens[0].Kind == tokenKind;
-
-        private static bool TryConsumeOneToken(ReadOnlySpan<SourceToken> tokens, TokenKind tokenKind, out SourceToken token)
+        private static LoadResult TryConsumeOneToken(ReadOnlySpan<SourceToken> tokens, TokenKind tokenKind)
         {
-            token = default;
-            if (tokens.Length == 0 || tokens[0].Kind != tokenKind) return false;
-            token = tokens[0];
-            return true;
+            if (tokens.Length <= 0) 
+                return new LoadResult(default);
+            var token = tokens[0];
+            if (token.Kind == TokenKind.Error) 
+                return new LoadResult(token);
+            if (token.Kind == tokenKind)
+                return new LoadResult(1, token);
+            else
+                return new LoadResult(default);
         }
 
-        public static bool TryConsumeScalar(ReadOnlySpan<SourceToken> remaining, out int result, Func<string, bool> valueHandler)
+        public static LoadResult TryLoadScalar(ReadOnlySpan<SourceToken> remaining, Func<string, bool> valueHandler)
         {
-            result = 0;
-
             // try consume string value
-            if (TryConsumeOneToken(remaining, TokenKind.String, out SourceToken token1) && valueHandler(token1.StringValue))
-            {
-                result = 1;
-                return true;
-            }
+            var result = TryConsumeOneToken(remaining, TokenKind.String);
+            if (result.IsError) return result;
+            if (result.Success && valueHandler(result.Token.StringValue)) return new LoadResult(1, result.Token);
 
             // try consume number value
-            if (TryConsumeOneToken(remaining, TokenKind.Number, out SourceToken token2) && valueHandler(token2.StringValue))
-            {
-                result = 1;
-                return true;
-            }
+            result = TryConsumeOneToken(remaining, TokenKind.Number);
+            if (result.IsError) return result;
+            if (result.Success && valueHandler(result.Token.StringValue)) return new LoadResult(1, result.Token);
 
             // try consume identifier value e.g. true or false
-            if (TryConsumeOneToken(remaining, TokenKind.Identifier, out SourceToken token3) && valueHandler(token3.StringValue))
-            {
-                result = 1;
-                return true;
-            }
+            result = TryConsumeOneToken(remaining, TokenKind.Identifier);
+            if (result.IsError) return result;
+            if (result.Success && valueHandler(result.Token.StringValue)) return new LoadResult(1, result.Token);
 
-            return false;
+            return new LoadResult(default);
         }
 
-        public static bool TryConsumeVector(ReadOnlySpan<SourceToken> remaining, out int result, Func<string, bool> valueHandler)
+        public static LoadResult TryLoadVector(ReadOnlySpan<SourceToken> remaining, Func<string, bool> valueHandler)
         {
-            result = 0;
             int tokensConsumed = 0;
 
             // try consume begin vector
-            if (!TryConsumeOneToken(remaining, TokenKind.LeftSquare)) return false;
+            var result = TryConsumeOneToken(remaining, TokenKind.LeftSquare);
+            if (result.IsError) return result;
+            if (!result.Success) return result;
             remaining = remaining.Slice(1);
             tokensConsumed += 1;
 
             int fieldsConsumed = 0;
             while (true)
             {
-                if (remaining.Length == 0) return false;
+                if (remaining.Length == 0) return new LoadResult(default);
 
                 // try consume close vector
-                if (TryConsumeOneToken(remaining, TokenKind.RightSquare))
+                result = TryConsumeOneToken(remaining, TokenKind.RightSquare);
+                if (result.IsError) return result;
+                if (result.Success)
                 {
                     remaining = remaining.Slice(1);
                     tokensConsumed += 1;
-                    result = tokensConsumed;
-                    return true;
+                    return new LoadResult(tokensConsumed, default);
                 }
 
                 // try consume value separator
                 if (fieldsConsumed > 0)
                 {
-                    if (!TryConsumeOneToken(remaining, TokenKind.Comma)) return false;
+                    result = TryConsumeOneToken(remaining, TokenKind.Comma);
+                    if (result.IsError) return result;
+                    if (!result.Success) return new LoadResult(default);
                     remaining = remaining.Slice(1);
                     tokensConsumed += 1;
                 }
 
                 // try consume scalar
-                if (!TryConsumeScalar(remaining, out int consumed2, valueHandler)) return false;
-                remaining = remaining.Slice(consumed2);
-                tokensConsumed += consumed2;
+                result = TryLoadScalar(remaining, valueHandler);
+                if (result.IsError) return result;
+                if (!result.Success) return result;
+                remaining = remaining.Slice(result.Consumed);
+                tokensConsumed += result.Consumed;
                 fieldsConsumed++;
             }
         }
 
-        private static bool TryConsumeField(ReadOnlySpan<SourceToken> remaining, Dictionary<string, IField> fieldMap, out int result)
+        private static LoadResult TryLoadField(ReadOnlySpan<SourceToken> remaining, Dictionary<string, IField> fieldMap)
         {
-            result = 0;
             int tokensConsumed = 0;
 
             // try consume field
-            if (!TryConsumeOneToken(remaining, TokenKind.Identifier, out SourceToken token)) return false;
+            var result = TryConsumeOneToken(remaining, TokenKind.Identifier);
+            if (result.IsError) return result;
+            if (!result.Success) return new LoadResult(default);
             remaining = remaining.Slice(1);
             tokensConsumed += 1;
 
             // check field name
             Func<string, bool> valueParser = (string s) => { return true; };
-            string fieldName = token.StringValue;
+            string fieldName = result.Token.StringValue;
             if (fieldMap.TryGetValue(fieldName, out IField? field))
             {
                 valueParser = field.ValueParser;
@@ -455,38 +490,43 @@ namespace Sandbox.Tests
             }
 
             // try consume equals
-            if (!TryConsumeOneToken(remaining, TokenKind.Equals)) return false;
+            result = TryConsumeOneToken(remaining, TokenKind.Equals);
+            if(result.IsError) return result;
+            if (!result.Success) return new LoadResult(default);
             remaining = remaining.Slice(1);
             tokensConsumed += 1;
 
             // try consume value as vector
-            if (TryConsumeVector(remaining, out int consumed2, valueParser))
+            result = TryLoadVector(remaining, valueParser);
+            if (result.IsError) return result;
+            if (result.Success)
             {
-                remaining = remaining.Slice(consumed2);
-                tokensConsumed += consumed2;
-                result = tokensConsumed;
-                return true;
+                remaining = remaining.Slice(result.Consumed);
+                tokensConsumed += result.Consumed;
+                return new LoadResult(tokensConsumed, default);
             }
 
             // try consume value as scalar
-            if (TryConsumeScalar(remaining, out int consumed3, valueParser))
+            result = TryLoadScalar(remaining, valueParser);
+            if (result.IsError) return result;
+            if (result.Success)
             {
-                remaining = remaining.Slice(consumed3);
-                tokensConsumed += consumed3;
-                result = tokensConsumed;
-                return true;
+                remaining = remaining.Slice(result.Consumed);
+                tokensConsumed += result.Consumed;
+                return new LoadResult(tokensConsumed, default);
             }
 
-            return false;
+            return new LoadResult(default);
         }
 
-        private static bool TryConsumeFields(ReadOnlySpan<SourceToken> remaining, Dictionary<string, IField> fieldMap, out int consumed)
+        private static LoadResult TryLoadFields(ReadOnlySpan<SourceToken> remaining, Dictionary<string, IField> fieldMap)
         {
-            consumed = 0;
             int position = 0;
 
             // consume begin field group
-            if (!TryConsumeOneToken(remaining, TokenKind.LeftCurly)) return false;
+            var result = TryConsumeOneToken(remaining, TokenKind.LeftCurly);
+            if(result.IsError) return result;
+            if (!result.Success) return new LoadResult(default);
             remaining = remaining.Slice(1);
             position += 1;
 
@@ -494,34 +534,41 @@ namespace Sandbox.Tests
             int fieldsConsumed = 0;
             while (true)
             {
-                if (remaining.Length == 0) return false;
+                if (remaining.Length == 0) return new LoadResult(default);
 
                 // try consume close field group
-                if (TryConsumeOneToken(remaining, TokenKind.RightCurly))
+                result = TryConsumeOneToken(remaining, TokenKind.RightCurly);
+                if (result.IsError) return result;
+                if (result.Success)
                 {
                     remaining = remaining.Slice(1);
                     position += 1;
-                    consumed = position;
-                    return true;
+                    return new LoadResult(position, default);
                 }
 
                 // try consume field separator
                 if (fieldsConsumed > 0)
                 {
-                    if (!TryConsumeOneToken(remaining, TokenKind.Comma)) return false;
+                    result = TryConsumeOneToken(remaining, TokenKind.Comma);
+                    if (result.IsError) return result;
+                    if (!result.Success) return new LoadResult(default);
                     remaining = remaining.Slice(1);
                     position += 1;
                 }
 
                 // try consume field
-                if (!TryConsumeField(remaining, fieldMap, out int consumed2)) return false;
-                remaining = remaining.Slice(consumed2);
-                position += consumed2;
-                fieldsConsumed++;
+                result = TryLoadField(remaining, fieldMap);
+                if (result.IsError) return result;
+                if (result.Success)
+                {
+                    remaining = remaining.Slice(result.Consumed);
+                    position += result.Consumed;
+                    fieldsConsumed++;
+                }
             }
         }
 
-        public static bool LoadFields(this TextReader reader, params IField[] fields)
+        public static LoadResult LoadFields(this TextReader reader, params IField[] fields)
         {
             var fieldMap = new Dictionary<string, IField>();
             foreach (var field in fields)
@@ -533,7 +580,7 @@ namespace Sandbox.Tests
             ReadOnlySpan<SourceToken> tokens = reader.ReadAllTokens().Where(t => t.Kind != TokenKind.Whitespace).ToArray().AsSpan();
 
             // consume token stream
-            return TryConsumeFields(tokens, fieldMap, out int _);
+            return TryLoadFields(tokens, fieldMap);
         }
 
         public static string ToText(this ITextable source)
@@ -826,7 +873,7 @@ namespace Sandbox.Tests
         //public int Rank => _dims.Value?.Length ?? 0;
 
         public void Emit(TextWriter writer, int indent) => writer.EmitFields(indent, _id, _name, _type, _nullable, _desc, _kind1, _kind2);
-        public bool Load(TextReader reader) => reader.LoadFields(_id, _name, _type, _nullable, _desc, _kind1, _kind2);
+        public LoadResult Load(TextReader reader) => reader.LoadFields(_id, _name, _type, _nullable, _desc, _kind1, _kind2);
 
         public bool Equals(Member? other)
         {
@@ -879,7 +926,7 @@ namespace Sandbox.Tests
 
             Member copy = new Member();
             using var reader = new StringReader(emitted);
-            bool loaded = copy.Load(reader);
+            bool loaded = copy.Load(reader).Success;
             loaded.ShouldBeTrue();
 
             copy.ShouldBe(orig);
@@ -901,7 +948,7 @@ namespace Sandbox.Tests
 
             Member copy = new Member();
             using var reader = new StringReader(emitted);
-            bool loaded = copy.Load(reader);
+            bool loaded = copy.Load(reader).Success;
             loaded.ShouldBeTrue();
 
             copy.ShouldBe(orig);
@@ -924,7 +971,7 @@ namespace Sandbox.Tests
 
             Member copy = new Member();
             using var reader = new StringReader(emitted);
-            bool loaded = copy.Load(reader);
+            bool loaded = copy.Load(reader).Success;
             loaded.ShouldBeTrue();
 
             copy.ShouldBe(orig);
@@ -946,7 +993,7 @@ namespace Sandbox.Tests
 
             Member copy = new Member();
             using var reader = new StringReader(emitted);
-            bool loaded = copy.Load(reader);
+            bool loaded = copy.Load(reader).Success;
             loaded.ShouldBeTrue();
 
             copy.ShouldBe(orig);
@@ -967,7 +1014,7 @@ namespace Sandbox.Tests
 
             Member copy = new Member();
             using var reader = new StringReader(emitted);
-            bool loaded = copy.Load(reader);
+            bool loaded = copy.Load(reader).Success;
             loaded.ShouldBeTrue();
 
             copy.ShouldBe(orig);
@@ -988,7 +1035,7 @@ namespace Sandbox.Tests
 
             Member copy = new Member();
             using var reader = new StringReader(emitted);
-            bool loaded = copy.Load(reader);
+            bool loaded = copy.Load(reader).Success;
             loaded.ShouldBeTrue();
 
             copy.ShouldBe(orig);
@@ -1010,7 +1057,7 @@ namespace Sandbox.Tests
 
             Member copy = new Member();
             using var reader = new StringReader(emitted);
-            bool loaded = copy.Load(reader);
+            bool loaded = copy.Load(reader).Success;
             loaded.ShouldBeTrue();
 
             copy.ShouldBe(orig);
@@ -1034,7 +1081,7 @@ namespace Sandbox.Tests
 
             Member copy = new Member();
             using var reader = new StringReader(emitted);
-            bool loaded = copy.Load(reader);
+            bool loaded = copy.Load(reader).Success;
             loaded.ShouldBeTrue();
 
             copy.ShouldBe(orig);
@@ -1058,133 +1105,7 @@ namespace Sandbox.Tests
 
             Member copy = new Member();
             using var reader = new StringReader(emitted);
-            bool loaded = copy.Load(reader);
-            loaded.ShouldBeTrue();
-
-            copy.ShouldBe(orig);
-        }
-
-        [Theory]
-        [InlineData(1, """{Id=123,Name="Field1",Type="System.String"}""")] // original encoding
-        [InlineData(2, """{Id=123,Type="System.String",Name="Field1"}""")] // field order re-arranged
-        [InlineData(3, """ {Id=123,Name="Field1",Type="System.String"}""")] // random whitespace
-        [InlineData(4, """{ Id=123,Name="Field1",Type="System.String"}""")] // random whitespace
-        [InlineData(5, """{Id =123,Name="Field1",Type="System.String"}""")] // random whitespace
-        [InlineData(6, """{Id= 123,Name="Field1",Type="System.String"}""")] // random whitespace
-        [InlineData(7, """{Id=123 ,Name="Field1",Type="System.String"}""")] // random whitespace
-        [InlineData(8, """{Id=123, Name="Field1",Type="System.String"}""")] // random whitespace
-        [InlineData(9, """{Id=123,Name="Field1",Type="System.String" }""")] // random whitespace
-        public void Parser1_Success(int _, string encoded)
-        {
-            Member orig = new Member()
-            {
-                Id = 123,
-                Name = "Field1",
-                Type = typeof(string).FullName!,
-                Nullable = null,
-            };
-
-            Member copy = new Member();
-            using var reader = new StringReader(encoded);
-            bool loaded = copy.Load(reader);
-            loaded.ShouldBeTrue();
-
-            copy.ShouldBe(orig);
-        }
-
-        [Fact]
-        public void Parser2_Success_IndentedInput()
-        {
-            const string encoded =
-                """
-                {
-                    Id   = 123
-                    ,
-                    Name = "Field1"
-                    ,
-                    Type = "System.String"
-                }
-                """;
-
-            Member orig = new Member()
-            {
-                Id = 123,
-                Name = "Field1",
-                Type = typeof(string).FullName!,
-                Nullable = null,
-            };
-
-            Member copy = new Member();
-            using var reader = new StringReader(encoded);
-            bool loaded = copy.Load(reader);
-            loaded.ShouldBeTrue();
-
-            copy.ShouldBe(orig);
-        }
-
-        [Fact]
-        public void Parser3_UnknownFieldsAreIgnored()
-        {
-            string encoded =
-                """
-                {
-                    Id=123,
-                    Name="Field1",
-                    Type="System.String",
-                    FieldX="abcdef"
-                }
-                """;
-
-            Member orig = new Member()
-            {
-                Id = 123,
-                Name = "Field1",
-                Type = typeof(string).FullName!,
-            };
-
-            Member copy = new Member();
-            using var reader = new StringReader(encoded);
-            bool loaded = copy.Load(reader);
-            loaded.ShouldBeTrue();
-
-            copy.ShouldBe(orig);
-        }
-
-        [Fact]
-        public async Task Load5_Scalar()
-        {
-            Member orig = new Member()
-            {
-                Id = 123,
-            };
-
-            string emitted = orig.ToText();
-            await Verifier.Verify(emitted);
-
-            Member copy = new Member();
-            using var reader = new StringReader(emitted);
-            bool loaded = copy.Load(reader);
-            loaded.ShouldBeTrue();
-
-            copy.ShouldBe(orig);
-        }
-
-        [Fact]
-        public async Task Load6_Vector()
-        {
-            Member orig = new Member()
-            {
-                Id = 123,
-                Name = "Field1",
-                //Dims = new int[] { 2, 2, 2 },
-            };
-
-            string emitted = orig.ToText();
-            await Verifier.Verify(emitted);
-
-            Member copy = new Member();
-            using var reader = new StringReader(emitted);
-            bool loaded = copy.Load(reader);
+            bool loaded = copy.Load(reader).Success;
             loaded.ShouldBeTrue();
 
             copy.ShouldBe(orig);
@@ -1218,7 +1139,7 @@ namespace Sandbox.Tests
             tokens.Count.ShouldBeGreaterThan(0);
             var token = tokens.Last();
             token.Kind.ShouldBe(TokenKind.Error);
-            token.Error.ShouldBe("Unexpected character");
+            token.Message.ShouldBe("Unexpected character");
         }
 
         [Fact]
@@ -1234,7 +1155,132 @@ namespace Sandbox.Tests
             tokens.Count.ShouldBeGreaterThan(0);
             var token = tokens.Last();
             token.Kind.ShouldBe(TokenKind.Error);
-            token.Error.ShouldBe("Unterminated string");
+            token.Message.ShouldBe("Unterminated string");
+        }
+
+        [Theory]
+        [InlineData(1, """{Id=123,Name="Field1",Type="System.String"}""")] // original encoding
+        [InlineData(2, """{Id=123,Type="System.String",Name="Field1"}""")] // field order re-arranged
+        [InlineData(3, """ {Id=123,Name="Field1",Type="System.String"}""")] // random whitespace
+        [InlineData(4, """{ Id=123,Name="Field1",Type="System.String"}""")] // random whitespace
+        [InlineData(5, """{Id =123,Name="Field1",Type="System.String"}""")] // random whitespace
+        [InlineData(6, """{Id= 123,Name="Field1",Type="System.String"}""")] // random whitespace
+        [InlineData(7, """{Id=123 ,Name="Field1",Type="System.String"}""")] // random whitespace
+        [InlineData(8, """{Id=123, Name="Field1",Type="System.String"}""")] // random whitespace
+        [InlineData(9, """{Id=123,Name="Field1",Type="System.String" }""")] // random whitespace
+        public void Parser1_Success(int _, string encoded)
+        {
+            Member orig = new Member()
+            {
+                Id = 123,
+                Name = "Field1",
+                Type = typeof(string).FullName!,
+                Nullable = null,
+            };
+
+            Member copy = new Member();
+            using var reader = new StringReader(encoded);
+            bool loaded = copy.Load(reader).Success;
+            loaded.ShouldBeTrue();
+
+            copy.ShouldBe(orig);
+        }
+
+        [Fact]
+        public void Parser2_Success_IndentedInput()
+        {
+            const string encoded =
+                """
+                {
+                    Id   = 123
+                    ,
+                    Name = "Field1"
+                    ,
+                    Type = "System.String"
+                }
+                """;
+
+            Member orig = new Member()
+            {
+                Id = 123,
+                Name = "Field1",
+                Type = typeof(string).FullName!,
+                Nullable = null,
+            };
+
+            Member copy = new Member();
+            using var reader = new StringReader(encoded);
+            bool loaded = copy.Load(reader).Success;
+            loaded.ShouldBeTrue();
+
+            copy.ShouldBe(orig);
+        }
+
+        [Fact]
+        public void Parser3_Success_UnknownFieldsAreIgnored()
+        {
+            string encoded =
+                """
+                {
+                    Id=123,
+                    Name="Field1",
+                    Type="System.String",
+                    FieldX="abcdef"
+                }
+                """;
+
+            Member orig = new Member()
+            {
+                Id = 123,
+                Name = "Field1",
+                Type = typeof(string).FullName!,
+            };
+
+            Member copy = new Member();
+            using var reader = new StringReader(encoded);
+            bool loaded = copy.Load(reader).Success;
+            loaded.ShouldBeTrue();
+
+            copy.ShouldBe(orig);
+        }
+
+        [Fact]
+        public void Parser4_Failure_UnterminatedStringValue()
+        {
+            string encoded =
+                """
+                {
+                    Id=123,
+                    Name="Field1",
+                    Type="System.String
+                }
+                """;
+
+            Member copy = new Member();
+            using var reader = new StringReader(encoded);
+            LoadResult result = copy.Load(reader);
+            result.Success.ShouldBeFalse();
+            result.Token.Kind.ShouldBe(TokenKind.Error);
+            result.Token.Message.ShouldBe("Unterminated string");
+        }
+
+        [Fact]
+        public void Parser5_Failure_MissingSeparatingComma()
+        {
+            string encoded =
+                """
+                {
+                    Id=123,
+                    Name="Field1",
+                }
+                """;
+
+            Member copy = new Member();
+            using var reader = new StringReader(encoded);
+            LoadResult result = copy.Load(reader);
+            result.Success.ShouldBeTrue();
+            //result.Token.Kind.ShouldBe(TokenKind.Error);
+            //result.Token.Message.ShouldBe("Unterminated string");
         }
 
     }
