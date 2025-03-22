@@ -1,12 +1,9 @@
 ﻿using Shouldly;
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using VerifyXunit;
@@ -31,7 +28,7 @@ namespace Sandbox.Tests
         public override string ToString() => Text;
     }
 
-    internal enum TokenKind
+    public enum TokenKind
     {
         None,
         Whitespace,
@@ -45,6 +42,7 @@ namespace Sandbox.Tests
         LeftSquare,
         RightSquare,
         // todo more special chars
+        Error,
     }
 
     internal readonly struct SourceToken
@@ -53,18 +51,20 @@ namespace Sandbox.Tests
         public readonly SourceLine Source;
         public readonly int Offset;
         public readonly int Length;
+        public readonly string? Error;
 
-        public SourceToken(TokenKind kind, SourceLine source, int offset, int length)
+        public SourceToken(TokenKind kind, SourceLine source, int offset, int length, string? error = null)
         {
             Kind = kind;
             Source = source;
             Offset = offset;
             Length = length;
+            Error = error;
         }
 
         public string StringValue => Source.Text.Substring(Offset, Length);
 
-        public SourceToken Extend() => new SourceToken(Kind, Source, Offset, Length + 1);
+        public SourceToken Extend() => new SourceToken(Kind, Source, Offset, Length + 1, null);
 
         public override string ToString()
         {
@@ -179,18 +179,22 @@ namespace Sandbox.Tests
             return result.ToString();
         }
 
-        public static IEnumerable<SourceLine> GetSourceLines(this TextReader reader)
+        public static IEnumerable<SourceToken> ReadAllTokens(this TextReader reader)
         {
             string? text;
             int line = 0;
             while ((text = reader.ReadLine()) is not null)
             {
-                yield return new SourceLine(line, text);
+                var sourceLine = new SourceLine(line, text);
+                foreach(var token in sourceLine.ReadLineTokens())
+                {
+                    yield return token;
+                }
                 line++;
             }
         }
 
-        public static IEnumerable<SourceToken> GetSourceTokens(this SourceLine sourceLine)
+        private static IEnumerable<SourceToken> ReadLineTokens(this SourceLine sourceLine)
         {
             SourceToken token = default;
             int offset = -1;
@@ -234,7 +238,7 @@ namespace Sandbox.Tests
                                 '[' => new SourceToken(TokenKind.LeftSquare, sourceLine, offset, 1),
                                 ']' => new SourceToken(TokenKind.RightSquare, sourceLine, offset, 1),
                                 '=' => new SourceToken(TokenKind.Equals, sourceLine, offset, 1),
-                                _ => throw new NotImplementedException($"Unhandled char '{ch}'")
+                                _ => new SourceToken(TokenKind.Error, sourceLine, offset, 1, "Unexpected character"),
                             };
                         }
                     }
@@ -296,17 +300,20 @@ namespace Sandbox.Tests
                     }
                     else
                     {
-                        throw new NotImplementedException($"Unhandled char '{ch}' in state '{token.Kind}'");
+                        yield return new SourceToken(TokenKind.Error, sourceLine, offset, 1, "Unexpected state");
+                        token = default;
                     }
                 } // while !consumed
 
             } // foreach ch
 
-            // todo?
-            // - non-terminated strings
-
-            // emit remaining token (if any)
-            if (token.Kind != TokenKind.None)
+            // emit remaining token
+            if (token.Kind == TokenKind.String)
+            {
+                // non-terminated string!
+                yield return new SourceToken(TokenKind.Error, sourceLine, offset, 1, "Unterminated string");
+            }
+            else if (token.Kind != TokenKind.None)
             {
                 yield return token;
             }
@@ -510,17 +517,8 @@ namespace Sandbox.Tests
                 fieldMap[field.Name] = field;
             }
 
-            List<SourceToken> tokenList = new List<SourceToken>();
-            foreach(var sourceLine in reader.GetSourceLines())
-            {
-                foreach(var token in sourceLine.GetSourceTokens())
-                {
-                    tokenList.Add(token);
-                }
-            }
-
             // ignore whitespace
-            ReadOnlySpan<SourceToken> tokens = tokenList.Where(t => t.Kind != TokenKind.Whitespace).ToArray().AsSpan();
+            ReadOnlySpan<SourceToken> tokens = reader.ReadAllTokens().Where(t => t.Kind != TokenKind.Whitespace).ToArray().AsSpan();
 
             // consume token stream
             return TryConsumeFields(tokens, fieldMap, out int _);
@@ -848,7 +846,7 @@ namespace Sandbox.Tests
         [InlineData("<abc>", "%la;abc%ra;")]
         [InlineData("abc\\def", "abc%bs;def")]
         [InlineData("abc\"def", "abc%dq;def")]
-        public void StringEscaping(string value, string expectedEncoding)
+        public void Lexer0_StringEscaping(string value, string expectedEncoding)
         {
             // encode
             string encoded = value.Escaped();
@@ -1055,35 +1053,16 @@ namespace Sandbox.Tests
         }
 
         [Theory]
-        [InlineData(1, """{Id=123,Name="Field1",Type="System.String",Nullable=false}""")] // original encoding
-        [InlineData(2, """{Id=123,Type="System.String",Name="Field1",Nullable=false}""")] // field order re-arranged
-        public void Load1_RearrangedEncoding(int _, string encoded)
-        {
-            Member orig = new Member()
-            {
-                Id = 123,
-                Name = "Field1",
-                Type = typeof(string).FullName!,
-                Nullable = false,
-            };
-
-            Member copy = new Member();
-            using var reader = new StringReader(encoded);
-            bool loaded = copy.Load(reader);
-            loaded.ShouldBeTrue();
-
-            copy.ShouldBe(orig);
-        }
-
-        [Theory]
-        [InlineData(1, """ {Id=123,Name="Field1",Type="System.String"}""")] // random whitespace
-        [InlineData(2, """{ Id=123,Name="Field1",Type="System.String"}""")] // random whitespace
-        [InlineData(3, """{Id =123,Name="Field1",Type="System.String"}""")] // random whitespace
-        [InlineData(4, """{Id= 123,Name="Field1",Type="System.String"}""")] // random whitespace
-        [InlineData(5, """{Id=123 ,Name="Field1",Type="System.String"}""")] // random whitespace
-        [InlineData(6, """{Id=123, Name="Field1",Type="System.String"}""")] // random whitespace
-        [InlineData(7, """{Id=123,Name="Field1",Type="System.String" }""")] // random whitespace
-        public void Load2_RandomExtraWhitespace(int _, string encoded)
+        [InlineData(1, """{Id=123,Name="Field1",Type="System.String"}""")] // original encoding
+        [InlineData(2, """{Id=123,Type="System.String",Name="Field1"}""")] // field order re-arranged
+        [InlineData(3, """ {Id=123,Name="Field1",Type="System.String"}""")] // random whitespace
+        [InlineData(4, """{ Id=123,Name="Field1",Type="System.String"}""")] // random whitespace
+        [InlineData(5, """{Id =123,Name="Field1",Type="System.String"}""")] // random whitespace
+        [InlineData(6, """{Id= 123,Name="Field1",Type="System.String"}""")] // random whitespace
+        [InlineData(7, """{Id=123 ,Name="Field1",Type="System.String"}""")] // random whitespace
+        [InlineData(8, """{Id=123, Name="Field1",Type="System.String"}""")] // random whitespace
+        [InlineData(9, """{Id=123,Name="Field1",Type="System.String" }""")] // random whitespace
+        public void Parser1_Success(int _, string encoded)
         {
             Member orig = new Member()
             {
@@ -1102,9 +1081,39 @@ namespace Sandbox.Tests
         }
 
         [Fact]
-        public void Load3_UnknownField()
+        public void Parser2_Success_IndentedInput()
         {
-            string encoded = 
+            const string encoded =
+                """
+                {
+                    Id   = 123
+                    ,
+                    Name = "Field1"
+                    ,
+                    Type = "System.String"
+                }
+                """;
+
+            Member orig = new Member()
+            {
+                Id = 123,
+                Name = "Field1",
+                Type = typeof(string).FullName!,
+                Nullable = null,
+            };
+
+            Member copy = new Member();
+            using var reader = new StringReader(encoded);
+            bool loaded = copy.Load(reader);
+            loaded.ShouldBeTrue();
+
+            copy.ShouldBe(orig);
+        }
+
+        [Fact]
+        public void Parser3_Failure_UnknownField()
+        {
+            string encoded =
                 """
                 {
                     Id=123,
@@ -1121,36 +1130,6 @@ namespace Sandbox.Tests
                 loaded.ShouldBeTrue();
             });
             ex.Message.ShouldBe("Unknown field name 'FieldX' at position 4 on line 4.");
-        }
-
-        [Fact]
-        public void Load4_IndentedInput()
-        {
-            const string encoded =
-                """
-                {
-                    Id   = 123
-                    ,
-                    Name = "Field1"
-                    ,
-                    Type = "System.String"
-                }
-                """;
-                
-            Member orig = new Member()
-            {
-                Id = 123,
-                Name = "Field1",
-                Type = typeof(string).FullName!,
-                Nullable = null,
-            };
-
-            Member copy = new Member();
-            using var reader = new StringReader(encoded);
-            bool loaded = copy.Load(reader);
-            loaded.ShouldBeTrue();
-
-            copy.ShouldBe(orig);
         }
 
         [Fact]
@@ -1191,6 +1170,53 @@ namespace Sandbox.Tests
             loaded.ShouldBeTrue();
 
             copy.ShouldBe(orig);
+        }
+
+        [Theory]
+        [InlineData(0, """{""", TokenKind.LeftCurly)]
+        [InlineData(1, """}""", TokenKind.RightCurly)]
+        [InlineData(2, """ """, TokenKind.Whitespace)]
+        [InlineData(3, """abc""", TokenKind.Identifier)]
+        [InlineData(4, """123""", TokenKind.Number)]
+        [InlineData(5, """=""", TokenKind.Equals)]
+        public void Lexer1_Success(int _, string encoded, TokenKind expectedTokenKind)
+        {
+            using var reader = new StringReader(encoded);
+            var tokens = reader.ReadAllTokens().ToList();
+            tokens.Count.ShouldBeGreaterThanOrEqualTo(1);
+            tokens[0].Kind.ShouldBe(expectedTokenKind);
+        }
+
+        [Fact]
+        public void Lexer2_Failure_UnexpectedChar()
+        {
+            string encoded =
+                """
+                .
+                """;
+
+            using var reader = new StringReader(encoded);
+            var tokens = reader.ReadAllTokens().ToList();
+            tokens.Count.ShouldBeGreaterThan(0);
+            var token = tokens.Last();
+            token.Kind.ShouldBe(TokenKind.Error);
+            token.Error.ShouldBe("Unexpected character");
+        }
+
+        [Fact]
+        public void Lexer3_Failure_UnterminatedString()
+        {
+            string encoded =
+                """
+                "abc
+                """;
+
+            using var reader = new StringReader(encoded);
+            var tokens = reader.ReadAllTokens().ToList();
+            tokens.Count.ShouldBeGreaterThan(0);
+            var token = tokens.Last();
+            token.Kind.ShouldBe(TokenKind.Error);
+            token.Error.ShouldBe("Unterminated string");
         }
 
     }
