@@ -1,5 +1,6 @@
 ﻿using Shouldly;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Drawing.Imaging;
@@ -39,7 +40,7 @@ namespace Sandbox.Tests
         Identifier,
         LeftCurly,
         RightCurly,
-        Commaqqq,
+        Comma,
         Equals,
         LeftSquare,
         RightSquare,
@@ -193,106 +194,116 @@ namespace Sandbox.Tests
         {
             SourceToken token = default;
             int offset = -1;
-            bool discardCh = false;
             foreach (char ch in sourceLine.Text)
             {
-                discardCh = false;
                 offset++;
-                // try consume whitespace
-                if (token.Kind == TokenKind.Whitespace)
-                {
-                    if (char.IsWhiteSpace(ch))
-                    {
-                        token = token.Extend();
-                    }
-                    else
-                    {
-                        yield return token;
-                        token = default;
-                    }
-                }
 
-                // try consume string
-                if (token.Kind == TokenKind.String)
+                bool consumed = false;
+                while (!consumed)
                 {
-                    if (ch == '"')
+                    consumed = true;
+                    if (token.Kind == TokenKind.None)
                     {
-                        // end of string
-                        yield return token;
-                        token = default;
-                        discardCh = true;
-                    }
-                    else
-                    {
-                        token = token.Extend();
-                    }
-                }
-
-                // try consume number
-                if (token.Kind == TokenKind.Number)
-                {
-                    if (char.IsDigit(ch) || ch == '.')
-                    {
-                        token = token.Extend();
-                    }
-                    else
-                    {
-                        yield return token;
-                        token = default;
-                    }
-                }
-
-                // try consume identifier
-                if (token.Kind == TokenKind.Identifier)
-                {
-                    if (char.IsLetterOrDigit(ch) || ch == '_')
-                    {
-                        token = token.Extend();
-                    }
-                    else
-                    {
-                        yield return token;
-                        token = default;
-                    }
-                }
-
-                if (!discardCh && token.Kind ==  TokenKind.None)
-                {
-                    if (char.IsWhiteSpace(ch))
-                    {
-                        // start of whitespace
-                        token = new SourceToken(TokenKind.Whitespace, sourceLine, offset, 1);
-                    }
-                    else if (char.IsDigit(ch))
-                    {
-                        // start of number
-                        token = new SourceToken(TokenKind.Number, sourceLine, offset, 1);
-                    }
-                    else if (char.IsLetter(ch) || ch == '_')
-                    {
-                        // start of identifier
-                        token = new SourceToken(TokenKind.Identifier, sourceLine, offset, 1);
-                    }
-                    else if (ch == '"')
-                    {
-                        // start of string
-                        token = new SourceToken(TokenKind.String, sourceLine, offset + 1, 0);
-                    }
-                    else
-                    {
-                        yield return ch switch
+                        if (char.IsWhiteSpace(ch))
                         {
-                            '{' => new SourceToken(TokenKind.LeftCurly, sourceLine, offset, 1),
-                            '}' => new SourceToken(TokenKind.RightCurly, sourceLine, offset, 1),
-                            ',' => new SourceToken(TokenKind.Commaqqq, sourceLine, offset, 1),
-                            '[' => new SourceToken(TokenKind.LeftSquare, sourceLine, offset, 1),
-                            ']' => new SourceToken(TokenKind.RightSquare, sourceLine, offset, 1),
-                            '=' => new SourceToken(TokenKind.Equals, sourceLine, offset, 1),
-                            _ => throw new NotImplementedException($"Unhandled char '{ch}'")
-                        };
+                            // start of whitespace
+                            token = new SourceToken(TokenKind.Whitespace, sourceLine, offset, 1);
+                        }
+                        else if (char.IsDigit(ch))
+                        {
+                            // start of number
+                            token = new SourceToken(TokenKind.Number, sourceLine, offset, 1);
+                        }
+                        else if (char.IsLetter(ch) || ch == '_')
+                        {
+                            // start of identifier
+                            token = new SourceToken(TokenKind.Identifier, sourceLine, offset, 1);
+                        }
+                        else if (ch == '"')
+                        {
+                            // start of string
+                            token = new SourceToken(TokenKind.String, sourceLine, offset + 1, 0);
+                        }
+                        else
+                        {
+                            yield return ch switch
+                            {
+                                '{' => new SourceToken(TokenKind.LeftCurly, sourceLine, offset, 1),
+                                '}' => new SourceToken(TokenKind.RightCurly, sourceLine, offset, 1),
+                                ',' => new SourceToken(TokenKind.Comma, sourceLine, offset, 1),
+                                '[' => new SourceToken(TokenKind.LeftSquare, sourceLine, offset, 1),
+                                ']' => new SourceToken(TokenKind.RightSquare, sourceLine, offset, 1),
+                                '=' => new SourceToken(TokenKind.Equals, sourceLine, offset, 1),
+                                _ => throw new NotImplementedException($"Unhandled char '{ch}'")
+                            };
+                        }
                     }
-                }
-            }
+                    else if (token.Kind == TokenKind.Whitespace)
+                    {
+                        // try consume whitespace
+                        if (char.IsWhiteSpace(ch))
+                        {
+                            token = token.Extend();
+                        }
+                        else
+                        {
+                            yield return token;
+                            token = default;
+                            consumed = false;
+                        }
+                    }
+                    else if (token.Kind == TokenKind.Number)
+                    {
+                        // try consume number
+                        if (char.IsDigit(ch) || ch == '.')
+                        {
+                            token = token.Extend();
+                        }
+                        else
+                        {
+                            yield return token;
+                            token = default;
+                            consumed = false;
+                        }
+                    }
+                    else if (token.Kind == TokenKind.Identifier)
+                    {
+                        // try consume identifier
+                        if (char.IsLetterOrDigit(ch) || ch == '_')
+                        {
+                            token = token.Extend();
+                        }
+                        else
+                        {
+                            yield return token;
+                            token = default;
+                            consumed = false;
+                        }
+                    }
+                    else if (token.Kind == TokenKind.String)
+                    {
+                        // try consume string
+                        if (ch == '"')
+                        {
+                            // end of string
+                            yield return token;
+                            token = default;
+                        }
+                        else
+                        {
+                            token = token.Extend();
+                        }
+                    }
+                    else
+                    {
+                        throw new NotImplementedException($"Unhandled char '{ch}' in state '{token.Kind}'");
+                    }
+                } // while !consumed
+
+            } // foreach ch
+
+            // todo?
+            // - non-terminated strings
 
             // emit remaining token (if any)
             if (token.Kind != TokenKind.None)
@@ -396,7 +407,7 @@ namespace Sandbox.Tests
                 // try consume value separator
                 if (fieldsConsumed > 0)
                 {
-                    if (!TryConsumeOneToken(remaining, TokenKind.Commaqqq)) return false;
+                    if (!TryConsumeOneToken(remaining, TokenKind.Comma)) return false;
                     remaining = remaining.Slice(1);
                     tokensConsumed += 1;
                 }
@@ -478,7 +489,7 @@ namespace Sandbox.Tests
                 // try consume field separator
                 if (fieldsConsumed > 0)
                 {
-                    if (!TryConsumeOneToken(remaining, TokenKind.Commaqqq)) return false;
+                    if (!TryConsumeOneToken(remaining, TokenKind.Comma)) return false;
                     remaining = remaining.Slice(1);
                     position += 1;
                 }
