@@ -158,15 +158,20 @@ namespace Sandbox.Tests
                         }
                         else
                         {
-                            throw new InvalidDataException($"Invalid escape code '{code}' at position {pos} in '{value}'");
+                            // invalid escape code - just emit as is
+                            result.Append('%');
+                            result.Append(code);
+                            result.Append(';');
                         }
                         // next
                         pos = pos + 4;
                     }
                     else
                     {
-                        // bad format
-                        throw new InvalidDataException($"Invalid escape code at position {pos} in '{value}'");
+                        // bad format - just emit as is
+                        result.Append(ch);
+                        //next
+                        pos++;
                     }
                 }
                 else
@@ -438,9 +443,16 @@ namespace Sandbox.Tests
             tokensConsumed += 1;
 
             // check field name
+            Func<string, bool> valueParser = (string s) => { return true; };
             string fieldName = token.StringValue;
-            if (!fieldMap.TryGetValue(fieldName, out IField? field)) 
-                throw new InvalidDataException($"Unknown field name '{fieldName}' at position {token.Offset} on line {token.Source.Line}.");
+            if (fieldMap.TryGetValue(fieldName, out IField? field))
+            {
+                valueParser = field.ValueParser;
+            }
+            else
+            {
+                // ignore unknown (old? or new/) field name
+            }
 
             // try consume equals
             if (!TryConsumeOneToken(remaining, TokenKind.Equals)) return false;
@@ -448,7 +460,7 @@ namespace Sandbox.Tests
             tokensConsumed += 1;
 
             // try consume value as vector
-            if (TryConsumeVector(remaining, out int consumed2, field.ValueParser))
+            if (TryConsumeVector(remaining, out int consumed2, valueParser))
             {
                 remaining = remaining.Slice(consumed2);
                 tokensConsumed += consumed2;
@@ -457,7 +469,7 @@ namespace Sandbox.Tests
             }
 
             // try consume value as scalar
-            if (TryConsumeScalar(remaining, out int consumed3, field.ValueParser))
+            if (TryConsumeScalar(remaining, out int consumed3, valueParser))
             {
                 remaining = remaining.Slice(consumed3);
                 tokensConsumed += consumed3;
@@ -1111,7 +1123,7 @@ namespace Sandbox.Tests
         }
 
         [Fact]
-        public void Parser3_Failure_UnknownField()
+        public void Parser3_UnknownFieldsAreIgnored()
         {
             string encoded =
                 """
@@ -1122,14 +1134,20 @@ namespace Sandbox.Tests
                     FieldX="abcdef"
                 }
                 """;
-            var ex = Assert.Throws<InvalidDataException>(() =>
+
+            Member orig = new Member()
             {
-                Member copy = new Member();
-                using var reader = new StringReader(encoded);
-                bool loaded = copy.Load(reader);
-                loaded.ShouldBeTrue();
-            });
-            ex.Message.ShouldBe("Unknown field name 'FieldX' at position 4 on line 4.");
+                Id = 123,
+                Name = "Field1",
+                Type = typeof(string).FullName!,
+            };
+
+            Member copy = new Member();
+            using var reader = new StringReader(encoded);
+            bool loaded = copy.Load(reader);
+            loaded.ShouldBeTrue();
+
+            copy.ShouldBe(orig);
         }
 
         [Fact]
