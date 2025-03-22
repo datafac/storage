@@ -114,33 +114,50 @@ namespace Sandbox.Tests
         LoadResult Load(TextReader reader);
         void Emit(TextWriter writer, int indent);
     }
+    internal static class LexChar
+    {
+        public const char Percent = '%';
+        public const char SemiColon = ';';
+        public const char DblQuote = '"';
+        public const char BackSlash = '\\';
+        public const char EqualCh = '=';
+        public const char Comma = ',';
+        public const char LeftParen = '(';
+        public const char RightParen = ')';
+        public const char LeftCurly = '{';
+        public const char RightCurly = '}';
+        public const char LeftSquare = '[';
+        public const char RightSquare = ']';
+        public const char LeftAngle = '<';
+        public const char RightAngle = '>';
+    }
     internal static class TextableExtensions
     {
-        private static Dictionary<char, string> _map = new Dictionary<char, string>()
+        private static readonly Dictionary<string, char> _map = new Dictionary<string, char>()
         {
-            // ch   code    // symbol
-            ['%'] = "pc",   // percent
-            [';'] = "sc",   // semi-colon
-            ['"'] = "dq",   // double-quote
-            ['\\'] = "bs",  // back-slash
-            ['='] = "eq",   // equals
-            [','] = "cm",   // comma
-            ['('] = "lp",   // left-paren
-            [')'] = "rp",   // right-paren
-            ['{'] = "lc",   // left-curly
-            ['}'] = "rc",   // right-curly
-            ['['] = "ls",   // left-square
-            [']'] = "rs",   // left-square
-            ['<'] = "la",   // left-angle
-            ['>'] = "ra",   // left-angle
+            // code  char
+            ["pc"] = LexChar.Percent,
+            ["sc"] = LexChar.SemiColon,
+            ["dq"] = LexChar.DblQuote,
+            ["bs"] = LexChar.BackSlash,
+            ["eq"] = LexChar.EqualCh,   
+            ["cm"] = LexChar.Comma,
+            ["lp"] = LexChar.LeftParen,
+            ["rp"] = LexChar.RightParen,
+            ["lc"] = LexChar.LeftCurly,
+            ["rc"] = LexChar.RightCurly,
+            ["ls"] = LexChar.LeftSquare,
+            ["rs"] = LexChar.RightSquare,
+            ["la"] = LexChar.LeftAngle,
+            ["ra"] = LexChar.RightAngle,
         };
         private static ImmutableDictionary<char, string> BuildCharToCodeMap()
         {
-            return ImmutableDictionary<char, string>.Empty.AddRange(_map);
+            return ImmutableDictionary<char, string>.Empty.AddRange(_map.Select(kvp => new KeyValuePair<char, string>(kvp.Value, kvp.Key)));
         }
         private static ImmutableDictionary<string, char> BuildCodeToCharMap()
         {
-            return ImmutableDictionary<string, char>.Empty.AddRange(_map.Select(kvp => new KeyValuePair<string, char>(kvp.Value, kvp.Key)));
+            return ImmutableDictionary<string, char>.Empty.AddRange(_map);
         }
         private static readonly ImmutableDictionary<char, string> escapeCharToCode = BuildCharToCodeMap();
         private static readonly ImmutableDictionary<string, char> escapeCodeToChar = BuildCodeToCharMap();
@@ -170,16 +187,16 @@ namespace Sandbox.Tests
             ReadOnlySpan<char> span = value.AsSpan();
 
             // shortcuts
-            if (span.IndexOf('%') < 0) return value;
+            if (span.IndexOf(LexChar.Percent) < 0) return value;
 
             StringBuilder result = new StringBuilder();
             int pos = 0;
             while (pos < span.Length)
             {
                 char ch = span[pos];
-                if (ch == '%')
+                if (ch == LexChar.Percent)
                 {
-                    if (pos + 3 < span.Length && span[pos + 3] == ';')
+                    if (pos + 3 < span.Length && span[pos + 3] == LexChar.SemiColon)
                     {
                         // ok
                         char ch1 = span[pos + 1];
@@ -192,9 +209,9 @@ namespace Sandbox.Tests
                         else
                         {
                             // invalid escape code - just emit as is
-                            result.Append('%');
+                            result.Append(LexChar.Percent);
                             result.Append(code);
-                            result.Append(';');
+                            result.Append(LexChar.SemiColon);
                         }
                         // next
                         pos = pos + 4;
@@ -261,7 +278,7 @@ namespace Sandbox.Tests
                             // start of identifier
                             token = new SourceToken(TokenKind.Identifier, sourceLine, offset, 1);
                         }
-                        else if (ch == '"')
+                        else if (ch == LexChar.DblQuote)
                         {
                             // start of string
                             token = new SourceToken(TokenKind.String, sourceLine, offset + 1, 0);
@@ -270,12 +287,12 @@ namespace Sandbox.Tests
                         {
                             yield return ch switch
                             {
-                                '{' => new SourceToken(TokenKind.LeftCurly, sourceLine, offset, 1),
-                                '}' => new SourceToken(TokenKind.RightCurly, sourceLine, offset, 1),
-                                ',' => new SourceToken(TokenKind.Comma, sourceLine, offset, 1),
-                                '[' => new SourceToken(TokenKind.LeftSquare, sourceLine, offset, 1),
-                                ']' => new SourceToken(TokenKind.RightSquare, sourceLine, offset, 1),
-                                '=' => new SourceToken(TokenKind.Equals, sourceLine, offset, 1),
+                                LexChar.LeftCurly => new SourceToken(TokenKind.LeftCurly, sourceLine, offset, 1),
+                                LexChar.RightCurly => new SourceToken(TokenKind.RightCurly, sourceLine, offset, 1),
+                                LexChar.Comma => new SourceToken(TokenKind.Comma, sourceLine, offset, 1),
+                                LexChar.LeftSquare => new SourceToken(TokenKind.LeftSquare, sourceLine, offset, 1),
+                                LexChar.RightSquare => new SourceToken(TokenKind.RightSquare, sourceLine, offset, 1),
+                                LexChar.EqualCh => new SourceToken(TokenKind.Equals, sourceLine, offset, 1),
                                 _ => new SourceToken(TokenKind.Error, sourceLine, offset, 1, "Unexpected character"),
                             };
                         }
@@ -325,7 +342,7 @@ namespace Sandbox.Tests
                     else if (token.Kind == TokenKind.String)
                     {
                         // try consume string
-                        if (ch == '"')
+                        if (ch == LexChar.DblQuote)
                         {
                             // end of string
                             yield return token;
@@ -368,7 +385,7 @@ namespace Sandbox.Tests
 
         public static void EmitFields(this TextWriter writer, int indent, params IField[] fields)
         {
-            writer.Write('{');
+            writer.Write(LexChar.LeftCurly);
             indent += 4;
             int emitted = 0;
             for (int i = 0; i < fields.Length; i++)
@@ -376,7 +393,7 @@ namespace Sandbox.Tests
                 var field = fields[i];
                 if (!field.IsDefaultValue)
                 {
-                    if (emitted > 0) writer.Write(',');
+                    if (emitted > 0) writer.Write(LexChar.Comma);
                     writer.EmitField(indent, field);
                     emitted++;
                 }
@@ -384,7 +401,7 @@ namespace Sandbox.Tests
             indent -= 4;
             writer.WriteLine();
             writer.Write(new string(' ', indent));
-            writer.Write('}');
+            writer.Write(LexChar.RightCurly);
         }
 
         private static LoadResult TryLoadOneToken(ReadOnlySpan<SourceToken> tokens, TokenKind tokenKind)
@@ -636,9 +653,9 @@ namespace Sandbox.Tests
         public string FormatValue(string value)
         {
             StringBuilder result = new StringBuilder();
-            result.Append('"');
+            result.Append(LexChar.DblQuote);
             result.Append(value.Escaped());
-            result.Append('"');
+            result.Append(LexChar.DblQuote);
             return result.ToString();
         }
         public bool IsDefaultValue(string value) => value == string.Empty;
