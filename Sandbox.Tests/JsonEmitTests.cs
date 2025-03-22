@@ -131,33 +131,53 @@ namespace Sandbox.Tests
         public const char LeftAngle = '<';
         public const char RightAngle = '>';
     }
+    internal static class EscCode
+    {
+        public const string Percent = "pc";
+        public const string SemiColon = "sc";
+        public const string DblQuote = "dq";
+        public const string BackSlash = "bs";
+        public const string EqualCh = "eq";
+        public const string Comma = "cm";
+        public const string LeftParen = "lp";
+        public const string RightParen = "rp";
+        public const string LeftCurly = "lc";
+        public const string RightCurly = "rc";
+        public const string LeftSquare = "ls";
+        public const string RightSquare = "rs";
+        public const string LeftAngle = "la";
+        public const string RightAngle = "ra";
+    }
     internal static class TextableExtensions
     {
-        private static readonly Dictionary<string, char> _map = new Dictionary<string, char>()
+        private static readonly Dictionary<char, string> _map = new Dictionary<char, string>()
         {
-            // code  char
-            ["pc"] = LexChar.Percent,
-            ["sc"] = LexChar.SemiColon,
-            ["dq"] = LexChar.DblQuote,
-            ["bs"] = LexChar.BackSlash,
-            ["eq"] = LexChar.EqualCh,   
-            ["cm"] = LexChar.Comma,
-            ["lp"] = LexChar.LeftParen,
-            ["rp"] = LexChar.RightParen,
-            ["lc"] = LexChar.LeftCurly,
-            ["rc"] = LexChar.RightCurly,
-            ["ls"] = LexChar.LeftSquare,
-            ["rs"] = LexChar.RightSquare,
-            ["la"] = LexChar.LeftAngle,
-            ["ra"] = LexChar.RightAngle,
+            // char             code
+            [LexChar.Percent] = EscCode.Percent,
+            [LexChar.SemiColon] = EscCode.SemiColon,
+            [LexChar.DblQuote] = EscCode.DblQuote,
+            [LexChar.BackSlash] = EscCode.BackSlash,
+            [LexChar.EqualCh] = EscCode.EqualCh,   
+            [LexChar.Comma] = EscCode.Comma,
+            [LexChar.LeftParen] = EscCode.LeftParen,
+            [LexChar.RightParen] = EscCode.RightParen,
+            [LexChar.LeftCurly] = EscCode.LeftCurly,
+            [LexChar.RightCurly] = EscCode.RightCurly,
+            [LexChar.LeftSquare] = EscCode.LeftSquare,
+            [LexChar.RightSquare] = EscCode.RightSquare,
+            [LexChar.LeftAngle] = EscCode.LeftAngle,
+            [LexChar.RightAngle] = EscCode.RightAngle,
         };
         private static ImmutableDictionary<char, string> BuildCharToCodeMap()
         {
-            return ImmutableDictionary<char, string>.Empty.AddRange(_map.Select(kvp => new KeyValuePair<char, string>(kvp.Value, kvp.Key)));
+            return ImmutableDictionary<char, string>.Empty.AddRange(_map
+                .Where(kvp => kvp.Value.Length == 2));
         }
         private static ImmutableDictionary<string, char> BuildCodeToCharMap()
         {
-            return ImmutableDictionary<string, char>.Empty.AddRange(_map);
+            return ImmutableDictionary<string, char>.Empty.AddRange(_map
+                .Where(kvp => kvp.Value.Length == 2)
+                .Select(kvp => new KeyValuePair<string, char>(kvp.Value, kvp.Key)));
         }
         private static readonly ImmutableDictionary<char, string> escapeCharToCode = BuildCharToCodeMap();
         private static readonly ImmutableDictionary<string, char> escapeCodeToChar = BuildCodeToCharMap();
