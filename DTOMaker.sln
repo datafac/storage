@@ -95,6 +95,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.CSRecord.Tests", "
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DTOMaker.Models.Shared", "DTOMaker.Models.Shared\DTOMaker.Models.Shared.shproj", "{3447BA3D-088A-4724-BE9D-037C0388B0DA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynaText", "DynaText\DynaText.csproj", "{4537EB74-3188-436D-939D-3E5B28FD9451}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynaText.Tests", "DynaText.Tests\DynaText.Tests.csproj", "{FE740A1F-CF62-4ECB-B896-AC1169D27127}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -233,6 +237,14 @@ Global
 		{C37B32C4-FEEF-2352-4F01-B55140CFA0E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C37B32C4-FEEF-2352-4F01-B55140CFA0E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C37B32C4-FEEF-2352-4F01-B55140CFA0E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4537EB74-3188-436D-939D-3E5B28FD9451}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4537EB74-3188-436D-939D-3E5B28FD9451}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4537EB74-3188-436D-939D-3E5B28FD9451}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4537EB74-3188-436D-939D-3E5B28FD9451}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE740A1F-CF62-4ECB-B896-AC1169D27127}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE740A1F-CF62-4ECB-B896-AC1169D27127}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE740A1F-CF62-4ECB-B896-AC1169D27127}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE740A1F-CF62-4ECB-B896-AC1169D27127}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
