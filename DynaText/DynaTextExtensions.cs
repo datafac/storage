@@ -328,17 +328,12 @@ namespace DynaText
         /// <param name="exitToken"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public static ParseResult ParseArray(this ReadOnlySpan<SourceToken> tokens)
+        internal static ParseResult ParseArray(this ReadOnlySpan<SourceToken> tokens)
         {
             int curlyCount = 0;
             int squareCount = 0;
             int consumed = 0;
 
-            // parse states
-            //  0   init
-            //  1   seen identifier
-            //  2   seen identifier=
-            //int parseState = 0;
             if (tokens.Length == 0) return new ParseResult("Unexpected EOF.");
 
             DynaTextVec output = new DynaTextVec();
@@ -369,7 +364,7 @@ namespace DynaText
                         break;
                     case TokenKind.LeftCurly:
                         // nested object
-                        result = tokens.Slice(consumed).ParseFieldsqqq();
+                        result = tokens.Slice(consumed).ParseFields();
                         if (result.IsError) return result;
                         consumed += result.Consumed;
                         output.Add(result.Output);
@@ -428,7 +423,7 @@ namespace DynaText
             Value,
         }
 
-        public static ParseResult ParseFieldsqqq(this ReadOnlySpan<SourceToken> tokens)
+        internal static ParseResult ParseFields(this ReadOnlySpan<SourceToken> tokens)
         {
             TokenKind exitToken = TokenKind.RightCurly;
 
@@ -486,7 +481,7 @@ namespace DynaText
                         if (parseState != ParseState_Map.Equals)
                             return new ParseResult($"Unexpected token: {token.Kind}({token.StringValue}) found at (L{token.Number},C{token.Offset}).");
                         parseState = ParseState_Map.Value;
-                        result = tokens.Slice(consumed).ParseFieldsqqq();
+                        result = tokens.Slice(consumed).ParseFields();
                         if (result.IsError) return result;
                         consumed += result.Consumed;
                         output.Add(fieldName, result.Output);
@@ -560,7 +555,7 @@ namespace DynaText
                 switch (token.Kind)
                 {
                     case TokenKind.LeftCurly:
-                        result = tokens.Slice(consumed).ParseFieldsqqq();
+                        result = tokens.Slice(consumed).ParseFields();
                         if (result.IsError) return result;
                         consumed += result.Consumed;
                         output = result.Output;
