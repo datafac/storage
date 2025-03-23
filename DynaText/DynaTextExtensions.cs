@@ -118,7 +118,12 @@ namespace DynaText
             writer.Write("null");
             return true;
         }
-        public static bool EmitBool(this TextWriter writer, bool value)
+        public static bool EmitBoolean(this TextWriter writer, bool value)
+        {
+            writer.Write(value);
+            return true;
+        }
+        public static bool EmitInt64(this TextWriter writer, long value)
         {
             writer.Write(value);
             return true;
@@ -137,7 +142,8 @@ namespace DynaText
                 null => writer.EmitNull(),
                 DynaTextVec array => array.Emit(writer, indent),
                 DynaTextMap child => child.Emit(writer, indent),
-                bool log => writer.EmitBool(log),
+                bool log => writer.EmitBoolean(log),
+                long i64 => writer.EmitInt64(i64),
                 // todo byte, short, int, long
                 string str => writer.EmitString(str),
                 _ => throw new NotSupportedException($"Emit: Unsupported type: {value.GetType().FullName}")
@@ -353,14 +359,9 @@ namespace DynaText
                 switch (token.Kind)
                 {
                     case TokenKind.Identifier:
-                        if (TryParseConst(token.StringValue, out object? value1))
-                        {
-                            output.Add(value1);
-                        }
-                        else
-                        {
+                        if (!TryParseConst(token.StringValue, out object? value1))
                             return new ParseResult($"Unexpected identifier: '{token.StringValue}' found at (L{token.Number},C{token.Offset}).");
-                        }
+                        output.Add(value1);
                         break;
                     case TokenKind.LeftCurly:
                         // nested object
@@ -382,16 +383,14 @@ namespace DynaText
                     case TokenKind.RightSquare:
                         squareCount--;
                         break;
-                    // todo other value tokens: string bool int
                     case TokenKind.Number:
-                        if (TryParseNumber(token.StringValue, out object? value2))
-                        {
-                            output.Add(value2);
-                        }
-                        else
-                        {
+                        if (!TryParseNumber(token.StringValue, out object? value2))
                             return new ParseResult($"Invalid number: '{token.StringValue}' found at (L{token.Number},C{token.Offset}).");
-                        }
+                        output.Add(value2);
+                        break;
+                    case TokenKind.String:
+                        object? value3 = token.StringValue;
+                        output.Add(value3);
                         break;
                     case TokenKind.Comma:
                         // todo reset state
@@ -501,7 +500,6 @@ namespace DynaText
                     case TokenKind.RightSquare:
                         squareCount--;
                         break;
-                    // todo other value tokens: string bool int
                     case TokenKind.Number:
                         if (parseState != ParseState_Map.Equals)
                             return new ParseResult($"Unexpected token:  {token.Kind}({token.StringValue}) found at (L{token.Number},C{token.Offset}).");
@@ -509,6 +507,13 @@ namespace DynaText
                         if (!TryParseNumber(token.StringValue, out object? value2))
                             return new ParseResult($"Invalid number: '{token.StringValue}' found at (L{token.Number},C{token.Offset}).");
                         output.Add(fieldName, value2);
+                        break;
+                    case TokenKind.String:
+                        if (parseState != ParseState_Map.Equals)
+                            return new ParseResult($"Unexpected token:  {token.Kind}({token.StringValue}) found at (L{token.Number},C{token.Offset}).");
+                        parseState = ParseState_Map.Value;
+                        object? value3 = token.StringValue;
+                        output.Add(fieldName, value3);
                         break;
                     case TokenKind.Comma:
                         parseState = default;

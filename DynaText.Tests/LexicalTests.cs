@@ -129,5 +129,109 @@ namespace DynaText.Tests
             copy.ShouldBe(orig);
         }
 
+        [Fact]
+        public async Task Roundtrip1a_Shallow_Bool()
+        {
+            DynaTextMap orig = new DynaTextMap();
+            orig.Add("Field1", true);
+
+            using var writer = new StringWriter();
+            bool emitted = orig.Emit(writer, 0);
+            string buffer = writer.ToString();
+
+            await Verifier.Verify(buffer);
+
+            using var reader = new StringReader(buffer);
+            ReadOnlySpan<SourceToken> tokens = reader.ReadAllTokens().ToArray().AsSpan();
+            ParseResult result = tokens.ParseTokens();
+            result.Message.ShouldBeNull();
+            result.IsError.ShouldBeFalse();
+            result.Consumed.ShouldBeGreaterThan(0);
+
+            DynaTextMap? copy = result.Output as DynaTextMap;
+
+            copy.ShouldNotBeNull();
+            copy.ShouldBeOfType<DynaTextMap>();
+            copy.ShouldBe(orig);
+        }
+
+        [Fact]
+        public async Task Roundtrip1b_Shallow_Number()
+        {
+            DynaTextMap orig = new DynaTextMap();
+            orig.Add("Field2", 123456L);
+
+            using var writer = new StringWriter();
+            bool emitted = orig.Emit(writer, 0);
+            string buffer = writer.ToString();
+
+            await Verifier.Verify(buffer);
+
+            using var reader = new StringReader(buffer);
+            ReadOnlySpan<SourceToken> tokens = reader.ReadAllTokens().ToArray().AsSpan();
+            ParseResult result = tokens.ParseTokens();
+            result.Message.ShouldBeNull();
+            result.IsError.ShouldBeFalse();
+            result.Consumed.ShouldBeGreaterThan(0);
+
+            DynaTextMap? copy = result.Output as DynaTextMap;
+
+            copy.ShouldNotBeNull();
+            copy.ShouldBeOfType<DynaTextMap>();
+            copy.ShouldBe(orig);
+        }
+
+        [Fact]
+        public async Task Roundtrip1c_Shallow_String()
+        {
+            DynaTextMap orig = new DynaTextMap();
+            orig.Add("Field3", "abcdef");
+
+            using var writer = new StringWriter();
+            bool emitted = orig.Emit(writer, 0);
+            string buffer = writer.ToString();
+
+            await Verifier.Verify(buffer);
+
+            using var reader = new StringReader(buffer);
+            ReadOnlySpan<SourceToken> tokens = reader.ReadAllTokens().ToArray().AsSpan();
+            ParseResult result = tokens.ParseTokens();
+            result.Message.ShouldBeNull();
+            result.IsError.ShouldBeFalse();
+            result.Consumed.ShouldBeGreaterThan(0);
+
+            DynaTextMap? copy = result.Output as DynaTextMap;
+
+            copy.ShouldNotBeNull();
+            copy.ShouldBeOfType<DynaTextMap>();
+            copy.ShouldBe(orig);
+        }
+
+        [Fact]
+        public async Task Roundtrip1d_Shallow_Null()
+        {
+            DynaTextMap orig = new DynaTextMap();
+            orig.Add("Field4", null);
+
+            using var writer = new StringWriter();
+            bool emitted = orig.Emit(writer, 0);
+            string buffer = writer.ToString();
+
+            await Verifier.Verify(buffer);
+
+            using var reader = new StringReader(buffer);
+            ReadOnlySpan<SourceToken> tokens = reader.ReadAllTokens().ToArray().AsSpan();
+            ParseResult result = tokens.ParseTokens();
+            result.Message.ShouldBeNull();
+            result.IsError.ShouldBeFalse();
+            result.Consumed.ShouldBeGreaterThan(0);
+
+            DynaTextMap? copy = result.Output as DynaTextMap;
+
+            copy.ShouldNotBeNull();
+            copy.ShouldBeOfType<DynaTextMap>();
+            copy.ShouldBe(orig);
+        }
+
     }
 }
