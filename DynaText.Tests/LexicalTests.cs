@@ -2,6 +2,8 @@ using Shouldly;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using VerifyXunit;
 
 namespace DynaText.Tests
 {
@@ -79,7 +81,7 @@ namespace DynaText.Tests
         [InlineData(1, """{}""")]
         [InlineData(2, """{A=1,B=2}""")]
         [InlineData(3, """{A=[],B=[1],C=[1,2]}""")]
-        [InlineData(4, """{A={X=1,Y,2}}""")]
+        [InlineData(4, """{A={X=1,Y=2}}""")]
         public void Parse0_Success_InputIsValid(int _, string input)
         {
             using var reader = new StringReader(input);
@@ -90,16 +92,41 @@ namespace DynaText.Tests
 
         [Theory]
         [InlineData(0, """{""", "Unexpected EOF.")]
-        [InlineData(1, """A=1,B=2}""", "Unbalanced {} found at (L0,C7).")]
-        [InlineData(2, """{A=[],B=[1,C=[1,2]}""", "Unbalanced {} found at (L0,C18).")]
+        [InlineData(1, """A=1,B=2}""", "Unexpected token: Identifier(A) found at (L0,C0).")]
+        [InlineData(2, """{A=[],B=[1,C=[1,2]}""", "Unexpected identifier: 'C' found at (L0,C11).")]
         [InlineData(3, """{A={X=1,Y=2}""", "Unexpected EOF.")]
-        [InlineData(4, """{[}]""", "Unbalanced {} found at (L0,C3).")]
+        [InlineData(4, """{[}]""", "Unexpected token: LeftSquare([) found at (L0,C1).")]
         public void Parse1_Failures_UnbalancedInput(int _, string input, string expectedError)
         {
             using var reader = new StringReader(input);
             ReadOnlySpan<SourceToken> tokens = reader.ReadAllTokens().ToArray().AsSpan();
             ParseResult result = tokens.ParseTokens();
             result.Message.ShouldBe(expectedError);
+        }
+
+        [Fact]
+        public async Task Roundtrip0_Empty()
+        {
+            DynaTextMap orig = new DynaTextMap();
+
+            using var writer = new StringWriter();
+            bool emitted = orig.Emit(writer, 0);
+            string buffer = writer.ToString();
+
+            await Verifier.Verify(buffer);
+
+            using var reader = new StringReader(buffer);
+            ReadOnlySpan<SourceToken> tokens = reader.ReadAllTokens().ToArray().AsSpan();
+            ParseResult result = tokens.ParseTokens();
+            result.Message.ShouldBeNull();
+            result.IsError.ShouldBeFalse();
+            result.Consumed.ShouldBeGreaterThan(0);
+
+            DynaTextMap? copy = result.Output as DynaTextMap;
+
+            copy.ShouldNotBeNull();
+            copy.ShouldBeOfType<DynaTextMap>();
+            copy.ShouldBe(orig);
         }
 
     }
