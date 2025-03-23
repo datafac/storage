@@ -74,75 +74,6 @@ namespace DynaText.Tests
             token.Message.ShouldBe("Unterminated string");
         }
 
-        internal readonly struct ScanResult
-        {
-            public readonly int Consumed;
-            public readonly string? Message;
-            public ScanResult(int consumed, string? message = null)
-            {
-                Consumed = consumed;
-                Message = message;
-            }
-
-            public bool IsError => Message is not null;
-        }
-
-        private static ScanResult CheckBalance(ReadOnlySpan<SourceToken> tokens, TokenKind exitToken = TokenKind.None)
-        {
-            int curlyCount = 0;
-            int squareCount = 0;
-            int otherCount = 0;
-            int offset = 0;
-
-            if (tokens.Length == 0 && exitToken != TokenKind.None) return new ScanResult(0, "Unexpected EOF.");
-
-            bool exitSeen = false;
-            var token = tokens[0];
-            while (offset < tokens.Length)
-            {
-                token = tokens[offset++];
-
-                if (token.Kind == exitToken)
-                {
-                    exitSeen = true;
-                    break;
-                }
-
-                ScanResult result = default;
-                switch (token.Kind)
-                {
-                    case TokenKind.Error: throw new InvalidDataException(token.Message);
-                    case TokenKind.LeftCurly:
-                        result = CheckBalance(tokens.Slice(offset), TokenKind.RightCurly);
-                        if (result.IsError) return result;
-                        offset += result.Consumed;
-                        break;
-                    case TokenKind.RightCurly:
-                        curlyCount--;
-                        break;
-                    case TokenKind.LeftSquare:
-                        result = CheckBalance(tokens.Slice(offset), TokenKind.RightSquare);
-                        if (result.IsError) return result;
-                        offset += result.Consumed;
-                        break;
-                    case TokenKind.RightSquare:
-                        squareCount--;
-                        break;
-                    default:
-                        otherCount++;
-                        break;
-                }
-            }
-
-            if (curlyCount != 0) return new ScanResult(offset, $"Unbalanced {{}} found at (L{token.Number},C{token.Offset}).");
-
-            if (squareCount != 0) return new ScanResult(offset, $"Unbalanced [] found at (L{token.Number},C{token.Offset}).");
-
-            return (exitSeen || exitToken == TokenKind.None)
-                ? new ScanResult(offset)
-                : new ScanResult(0, "Unexpected EOF.");
-        }
-
         [Theory]
         [InlineData(0, """ """)]
         [InlineData(1, """{}""")]
@@ -153,7 +84,7 @@ namespace DynaText.Tests
         {
             using var reader = new StringReader(input);
             ReadOnlySpan<SourceToken> tokens = reader.ReadAllTokens().ToArray().AsSpan();
-            var result = CheckBalance(tokens);
+            ParseResult result = tokens.ParseTokens();
             result.Message.ShouldBeNull();
         }
 
@@ -167,7 +98,7 @@ namespace DynaText.Tests
         {
             using var reader = new StringReader(input);
             ReadOnlySpan<SourceToken> tokens = reader.ReadAllTokens().ToArray().AsSpan();
-            var result = CheckBalance(tokens);
+            ParseResult result = tokens.ParseTokens();
             result.Message.ShouldBe(expectedError);
         }
 

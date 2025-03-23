@@ -253,5 +253,61 @@ namespace DynaText
             }
         }
 
+        public static ParseResult ParseTokens(this ReadOnlySpan<SourceToken> tokens, TokenKind exitToken = TokenKind.None)
+        {
+            int curlyCount = 0;
+            int squareCount = 0;
+            int otherCount = 0;
+            int offset = 0;
+
+            if (tokens.Length == 0 && exitToken != TokenKind.None) return new ParseResult(0, "Unexpected EOF.");
+
+            bool exitSeen = false;
+            var token = tokens[0];
+            while (offset < tokens.Length)
+            {
+                token = tokens[offset++];
+
+                if (token.Kind == exitToken)
+                {
+                    exitSeen = true;
+                    break;
+                }
+
+                ParseResult result = default;
+                switch (token.Kind)
+                {
+                    case TokenKind.Error: throw new InvalidDataException(token.Message);
+                    case TokenKind.LeftCurly:
+                        result = tokens.Slice(offset).ParseTokens(TokenKind.RightCurly);
+                        if (result.IsError) return result;
+                        offset += result.Consumed;
+                        break;
+                    case TokenKind.RightCurly:
+                        curlyCount--;
+                        break;
+                    case TokenKind.LeftSquare:
+                        result = tokens.Slice(offset).ParseTokens(TokenKind.RightSquare);
+                        if (result.IsError) return result;
+                        offset += result.Consumed;
+                        break;
+                    case TokenKind.RightSquare:
+                        squareCount--;
+                        break;
+                    default:
+                        otherCount++;
+                        break;
+                }
+            }
+
+            if (curlyCount != 0) return new ParseResult(offset, $"Unbalanced {{}} found at (L{token.Number},C{token.Offset}).");
+
+            if (squareCount != 0) return new ParseResult(offset, $"Unbalanced [] found at (L{token.Number},C{token.Offset}).");
+
+            return (exitSeen || exitToken == TokenKind.None)
+                ? new ParseResult(offset)
+                : new ParseResult(0, "Unexpected EOF.");
+        }
+
     }
 }
