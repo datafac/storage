@@ -10,6 +10,13 @@ namespace DynaText
 
         public void Add(object? value) => _values.Add(value);
 
+        public string EmitText()
+        {
+            using var writer = new StringWriter();
+            Emit(writer, 0);
+            return writer.ToString();
+        }
+
         public bool Emit(TextWriter writer, int indent)
         {
             writer.Write(LexChar.LeftSquare);

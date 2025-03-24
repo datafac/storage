@@ -1,14 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace DynaText
 {
     public sealed class DynaTextMap : IEmitText, IEquatable<DynaTextMap>
     {
-        private readonly Dictionary<string, object?> _values = new Dictionary<string, object?>();
+        private Dictionary<string, object?> _values = new Dictionary<string, object?>();
 
         public void Add(string key, object? value) => _values[key] = value;
+
+        public T Get<T>(string key, T defaultValue)
+        {
+            if (!_values.TryGetValue(key, out var obj)) return defaultValue;
+            if (obj is null) return defaultValue;
+            if (obj is T tValue) return tValue;
+            // todo conversions?
+            throw new InvalidCastException($"Cannot cast value ({obj}) from type {obj.GetType().Name} to type {typeof(T).Name}.");
+        }
+
+        public void Set<T>(string key, T value)
+        {
+            // todo conversions such as arrays and dicts
+            _values[key] = value;
+        }
+
+        public string EmitText()
+        {
+            using var writer = new StringWriter();
+            Emit(writer, 0);
+            return writer.ToString();
+        }
+
 
         public bool Emit(TextWriter writer, int indent)
         {

@@ -123,9 +123,51 @@ namespace DynaText
             writer.Write(value);
             return true;
         }
-        public static bool EmitInt64(this TextWriter writer, long value)
+        public static bool EmitByte(this TextWriter writer, byte value)
         {
             writer.Write(value);
+            writer.Write("ub");
+            return true;
+        }
+        public static bool EmitSByte(this TextWriter writer, sbyte value)
+        {
+            writer.Write(value);
+            writer.Write('b');
+            return true;
+        }
+        public static bool EmitInt16(this TextWriter writer, Int16 value)
+        {
+            writer.Write(value);
+            writer.Write('s');
+            return true;
+        }
+        public static bool EmitUInt16(this TextWriter writer, UInt16 value)
+        {
+            writer.Write(value);
+            writer.Write("us");
+            return true;
+        }
+        public static bool EmitInt32(this TextWriter writer, Int32 value)
+        {
+            writer.Write(value);
+            return true;
+        }
+        public static bool EmitUInt32(this TextWriter writer, UInt32 value)
+        {
+            writer.Write(value);
+            writer.Write('u');
+            return true;
+        }
+        public static bool EmitInt64(this TextWriter writer, Int64 value)
+        {
+            writer.Write(value);
+            writer.Write('l');
+            return true;
+        }
+        public static bool EmitUInt64(this TextWriter writer, UInt64 value)
+        {
+            writer.Write(value);
+            writer.Write("ul");
             return true;
         }
         public static bool EmitString(this TextWriter writer, string value)
@@ -143,12 +185,27 @@ namespace DynaText
                 DynaTextVec array => array.Emit(writer, indent),
                 DynaTextMap child => child.Emit(writer, indent),
                 bool log => writer.EmitBoolean(log),
-                long i64 => writer.EmitInt64(i64),
-                // todo byte, short, int, long
+                sbyte i08 => writer.EmitSByte(i08),
+                byte u08 => writer.EmitByte(u08),
+                Int16 i16 => writer.EmitInt16(i16),
+                UInt16 u16 => writer.EmitUInt16(u16),
+                Int32 i32 => writer.EmitInt32(i32),
+                UInt32 u32 => writer.EmitUInt32(u32),
+                Int64 i64 => writer.EmitInt64(i64),
+                UInt64 u64 => writer.EmitUInt64(u64),
                 string str => writer.EmitString(str),
+                // todo half single double decimal
                 _ => throw new NotSupportedException($"Emit: Unsupported type: {value.GetType().FullName}")
             };
         }
+
+        public static string EmitText(this IEmitText emitter)
+        {
+            using var writer = new StringWriter();
+            emitter.Emit(writer, 0);
+            return writer.ToString();
+        }
+
         public static IEnumerable<SourceToken> ReadAllTokens(this TextReader reader)
         {
             string? text;
@@ -164,11 +221,19 @@ namespace DynaText
             }
         }
 
+        private static bool IsNumericSuffix(char ch)
+        {
+            // todo HFDMT
+            return "BSL".IndexOf(char.ToUpper(ch)) >= 0;
+        }
+
         private static IEnumerable<SourceToken> ReadLineTokens(this SourceLine source)
         {
+            bool seenUnsigned = false;
+
             SourceToken token = default;
             int offset = -1;
-            for (int i = 0; i < source.Line.Length; i++) 
+            for (int i = 0; i < source.Line.Length; i++)
             {
                 char ch = source.Line.Span[i];
                 offset++;
@@ -188,6 +253,7 @@ namespace DynaText
                         {
                             // start of number
                             token = new SourceToken(TokenKind.Number, source.Number, source.Line, offset, 1);
+                            seenUnsigned = false;
                         }
                         else if (char.IsLetter(ch) || ch == '_')
                         {
@@ -229,16 +295,51 @@ namespace DynaText
                     }
                     else if (token.Kind == TokenKind.Number)
                     {
+                        char upCh = char.ToUpper(ch);
                         // try consume number
-                        if (char.IsDigit(ch) || ch == '.')
+                        if (!seenUnsigned)
                         {
-                            token = token.Extend();
+                            // consuming digits
+                            if (char.IsDigit(ch))
+                            {
+                                token = token.Extend();
+                            }
+                            else if (upCh == 'U')
+                            {
+                                // unsigned modifier
+                                token = token.Unsigned();
+                                seenUnsigned = true;
+                            }
+                            else if (IsNumericSuffix(ch))
+                            {
+                                token = token.WithModifier(upCh);
+                                yield return token;
+                                token = default;
+                            }
+                            else
+                            {
+                                // end of number
+                                yield return token;
+                                token = default;
+                                consumed = false;
+                            }
                         }
                         else
                         {
-                            yield return token;
-                            token = default;
-                            consumed = false;
+                            // seen unsigned modifier
+                            if (IsNumericSuffix(ch))
+                            {
+                                token = token.WithModifier(upCh);
+                                yield return token;
+                                token = default;
+                            }
+                            else
+                            {
+                                // end of number
+                                yield return token;
+                                token = default;
+                                consumed = false;
+                            }
                         }
                     }
                     else if (token.Kind == TokenKind.Identifier)
@@ -315,15 +416,85 @@ namespace DynaText
         /// <param name="input"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        private static bool TryParseNumber(string input, out object? value)
+        private static bool TryParseNumber(SourceToken token, out object? value)
         {
             value = null;
-            if (input is null) return false;
-            // todo other numeric types
-            if (long.TryParse(input, out long result))
+            string input = token.StringValue;
+            switch(token.Modifier)
             {
-                value = result;
-                return true;
+                case 'B':
+                    if (token.IsUnsigned)
+                    {
+                        if (byte.TryParse(input, out byte u08))
+                        {
+                            value = u08;
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        if (sbyte.TryParse(input, out sbyte i08))
+                        {
+                            value = i08;
+                            return true;
+                        }
+                    }
+                    break;
+                case 'S':
+                    if (token.IsUnsigned)
+                    {
+                        if (UInt16.TryParse(input, out UInt16 u16))
+                        {
+                            value = u16;
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        if (Int16.TryParse(input, out Int16 i16))
+                        {
+                            value = i16;
+                            return true;
+                        }
+                    }
+                    break;
+                case 'L':
+                    if(token.IsUnsigned)
+                    {
+                        if (UInt64.TryParse(input, out UInt64 u64))
+                        {
+                            value = u64;
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        if (Int64.TryParse(input, out Int64 i64))
+                        {
+                            value = i64;
+                            return true;
+                        }
+                    }
+                    break;
+                // todo other numeric types: half single double decimal
+                default:
+                    if (token.IsUnsigned)
+                    {
+                        if (UInt32.TryParse(input, out UInt32 u32))
+                        {
+                            value = u32;
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        if (Int32.TryParse(input, out Int32 i32))
+                        {
+                            value = i32;
+                            return true;
+                        }
+                    }
+                    break;
             }
             return false;
         }
@@ -384,7 +555,7 @@ namespace DynaText
                         squareCount--;
                         break;
                     case TokenKind.Number:
-                        if (!TryParseNumber(token.StringValue, out object? value2))
+                        if (!TryParseNumber(token, out object? value2))
                             return new ParseResult($"Invalid number: '{token.StringValue}' found at (L{token.Number},C{token.Offset}).");
                         output.Add(value2);
                         break;
@@ -504,7 +675,7 @@ namespace DynaText
                         if (parseState != ParseState_Map.Equals)
                             return new ParseResult($"Unexpected token:  {token.Kind}({token.StringValue}) found at (L{token.Number},C{token.Offset}).");
                         parseState = ParseState_Map.Value;
-                        if (!TryParseNumber(token.StringValue, out object? value2))
+                        if (!TryParseNumber(token, out object? value2))
                             return new ParseResult($"Invalid number: '{token.StringValue}' found at (L{token.Number},C{token.Offset}).");
                         output.Add(fieldName, value2);
                         break;

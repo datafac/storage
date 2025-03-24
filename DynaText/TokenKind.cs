@@ -1,6 +1,6 @@
 ﻿namespace DynaText
 {
-    public enum TokenKind
+    public enum TokenKind : byte
     {
         None,
         Whitespace,
