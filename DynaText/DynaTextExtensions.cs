@@ -572,7 +572,7 @@ namespace DynaText
                     case TokenKind.Error:
                         return new ParseResult($"Error: '{token.Message}' found at (L{token.Number},C{token.Offset}).");
                     default:
-                        throw new NotImplementedException($"Unhandled token kind: {token.Kind}");
+                        return new ParseResult($"Unexpected token: {token.Kind}({token.StringValue}) found at (L{token.Number},C{token.Offset}).");
                 }
             }
 
@@ -695,7 +695,7 @@ namespace DynaText
                     case TokenKind.Error:
                         return new ParseResult($"Error: '{token.Message}' found at (L{token.Number},C{token.Offset}).");
                     default:
-                        throw new NotImplementedException($"Unhandled token kind: {token.Kind}");
+                        return new ParseResult($"Unexpected token: {token.Kind}({token.StringValue}) found at (L{token.Number},C{token.Offset}).");
                 }
             }
 

@@ -7,6 +7,15 @@ namespace DynaText
 {
     public sealed class DynaTextMap : IEmitText, IEquatable<DynaTextMap>
     {
+        public static DynaTextMap LoadFrom(string text)
+        {
+            using var reader = new StringReader(text);
+            ReadOnlySpan<SourceToken> tokens = reader.ReadAllTokens().ToArray().AsSpan();
+            ParseResult result = tokens.ParseTokens();
+            if (result.IsError) throw new InvalidDataException(result.Message);
+            return result.Output as DynaTextMap ?? throw new InvalidDataException();
+        }
+
         private Dictionary<string, object?> _values = new Dictionary<string, object?>();
 
         public void Add(string key, object? value) => _values[key] = value;
