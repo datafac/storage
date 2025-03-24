@@ -10,6 +10,28 @@ namespace DynaText
 
         public void Add(object? value) => _values.Add(value);
 
+        public T[] Get<T>(T defaultValue)
+        {
+            List<T> result = new List<T>();
+            for (int i = 0; i < _values.Count; i++)
+            {
+                var value = _values[i];
+                if (value is null)
+                {
+                    result.Add(defaultValue);
+                }
+                else if (value is T tValue)
+                {
+                    result.Add(tValue);
+                }
+                else
+                {
+                    throw new InvalidCastException($"Cannot cast value[{i}] ({value}) from type {value.GetType().Name} to type {typeof(T).Name}.");
+                }
+            }
+            return result.ToArray();
+        }
+
         public string EmitText()
         {
             using var writer = new StringWriter();

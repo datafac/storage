@@ -31,8 +31,31 @@ namespace DynaText
 
         public void Set<T>(string key, T value)
         {
-            // todo conversions such as arrays and dicts
             _values[key] = value;
+        }
+
+        public T[] GetArray<T>(string key, T defaultValue)
+        {
+            if (!_values.TryGetValue(key, out var obj)) return Array.Empty<T>();
+            if (obj is null) return Array.Empty<T>();
+            if (obj is DynaTextVec vector) return vector.Get<T>(defaultValue);
+            throw new InvalidCastException($"Cannot cast value ({obj}) from type {obj.GetType().Name} to type {typeof(T).Name}.");
+        }
+
+        public void SetArray<T>(string key, T[] values)
+        {
+            var vector = new DynaTextVec();
+            for (int i = 0; i < values.Length; i++)
+            {
+                vector.Add(values[i]);
+            }
+            _values[key] = vector;
+        }
+
+        public void Set<TExternal, TInternal>(string key, TExternal value, Func<TExternal, TInternal> converter)
+        {
+            // todo conversions such as arrays and dicts
+            _values[key] = converter(value);
         }
 
         public string EmitText()

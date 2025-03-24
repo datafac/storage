@@ -12,8 +12,10 @@ namespace DynaText.Tests
             SimpleDTO orig = new SimpleDTO()
             {
                 Id = 123,
-                Surname = "Smith",
+                Surname = "Citizen",
                 Nickname = null,
+                YOB = 1971,
+                OtherNames = ["Alan", "Beaufort"]
             };
 
             string buffer = orig.EmitText();
