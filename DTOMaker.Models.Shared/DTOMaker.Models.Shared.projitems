@@ -9,18 +9,6 @@
     <Import_RootNamespace>DTOMaker.Models.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)DynaMap.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DynaTextBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DynaTextExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DynaVec.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EscCode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IDynaText.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IEmitText.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ILoadText.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LexChar.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ParseResult.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SourceLine.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SourceToken.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TokenKind.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Class1.cs" />
   </ItemGroup>
 </Project>

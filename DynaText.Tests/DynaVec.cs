@@ -1,8 +1,8 @@
-﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System;
 
-namespace DTOMaker.Gentime
+namespace DTOMaker.Gentime.Tests
 {
     public sealed class DynaVec : IEmitText, IEquatable<DynaVec>
     {

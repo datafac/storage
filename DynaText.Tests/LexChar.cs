@@ -1,4 +1,4 @@
-﻿namespace DTOMaker.Gentime
+namespace DTOMaker.Gentime.Tests
 {
     internal static class LexChar
     {
