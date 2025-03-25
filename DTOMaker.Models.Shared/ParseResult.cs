@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-
-namespace DTOMaker.Gentime
+﻿namespace DTOMaker.Gentime
 {
     public readonly struct ParseResult
     {

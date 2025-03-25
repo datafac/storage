@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace DTOMaker.Gentime
+﻿namespace DTOMaker.Gentime
 {
     public interface IDynaText : IEmitText, ILoadText
     {
