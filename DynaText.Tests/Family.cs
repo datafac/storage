@@ -3,7 +3,7 @@ using System.IO;
 
 namespace DynaText.Tests
 {
-    internal class Family : IEmitText, ILoadText, IEquatable<Family>, IDynaText
+    internal class Family : IDynaText, IEquatable<Family>
     {
         #region boilerplate
         private DynaTextMap _map = new DynaTextMap();

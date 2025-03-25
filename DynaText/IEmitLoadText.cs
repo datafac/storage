@@ -2,7 +2,6 @@
 
 namespace DynaText
 {
-    // todo we need a better name for these
     public interface IEmitText
     {
         bool Emit(TextWriter writer, int indent);
@@ -11,7 +10,7 @@ namespace DynaText
     {
         void LoadFrom(string text);
     }
-    public interface IDynaText
+    public interface IDynaText : IEmitText, ILoadText
     {
         DynaTextMap GetMap();
         void LoadFrom(DynaTextMap map);
