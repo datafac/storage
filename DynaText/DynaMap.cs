@@ -5,15 +5,15 @@ using System.Linq;
 
 namespace DTOMaker.Gentime
 {
-    public sealed class DynaTextMap : IEmitText, IEquatable<DynaTextMap>
+    public sealed class DynaMap : IEmitText, IEquatable<DynaMap>
     {
-        public static DynaTextMap LoadFrom(string text)
+        public static DynaMap LoadFrom(string text)
         {
             using var reader = new StringReader(text);
             ReadOnlySpan<SourceToken> tokens = reader.ReadAllTokens().ToArray().AsSpan();
             ParseResult result = tokens.ParseTokens();
             if (result.IsError) throw new InvalidDataException(result.Message);
-            return result.Output as DynaTextMap ?? throw new InvalidDataException();
+            return result.Output as DynaMap ?? throw new InvalidDataException();
         }
 
         private Dictionary<string, object?> _values = new Dictionary<string, object?>();
@@ -39,14 +39,14 @@ namespace DTOMaker.Gentime
             return obj switch
             {
                 null => [],
-                DynaTextVec vector => vector.GetValues(defaultValue),
+                DynaVec vector => vector.GetValues(defaultValue),
                 _ => throw new InvalidCastException($"Cannot cast value ({obj}) from type {obj.GetType().Name} to type {typeof(T).Name}.")
             };
         }
 
         public void SetArray<T>(string key, T?[] values)
         {
-            var vector = new DynaTextVec();
+            var vector = new DynaVec();
             for (int i = 0; i < values.Length; i++)
             {
                 vector.Add(values[i]);
@@ -60,7 +60,7 @@ namespace DTOMaker.Gentime
             return obj switch
             {
                 null => null,
-                DynaTextMap map => map.ToObject<T>(),
+                DynaMap map => map.ToObject<T>(),
                 _ => throw new InvalidCastException($"Cannot cast value ({obj}) from type {obj.GetType().Name} to type {typeof(T).Name}.")
             };
         }
@@ -76,14 +76,14 @@ namespace DTOMaker.Gentime
             return obj switch
             {
                 null => [],
-                DynaTextVec vector => vector.GetObjects<T>(defaultValue),
+                DynaVec vector => vector.GetObjects<T>(defaultValue),
                 _ => throw new InvalidCastException($"Cannot cast value ({obj}) from type {obj.GetType().Name} to type {typeof(T).Name}.")
             };
         }
 
         public void SetVector<T>(string key, T?[] values) where T : class, IDynaText
         {
-            var vector = new DynaTextVec();
+            var vector = new DynaVec();
             for (int i = 0; i < values.Length; i++)
             {
                 vector.Add(values[i]?.GetMap());
@@ -120,7 +120,7 @@ namespace DTOMaker.Gentime
             return true;
         }
 
-        public bool Equals(DynaTextMap? other)
+        public bool Equals(DynaMap? other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -132,7 +132,7 @@ namespace DTOMaker.Gentime
             }
             return true;
         }
-        public override bool Equals(object? obj) => obj is DynaTextMap other && Equals(other);
+        public override bool Equals(object? obj) => obj is DynaMap other && Equals(other);
         public override int GetHashCode()
         {
             HashCode result = new HashCode();

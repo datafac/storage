@@ -5,11 +5,11 @@ namespace DTOMaker.Gentime
 {
     public abstract class DynaTextBase : IDynaText, IEquatable<DynaTextBase>
     {
-        protected DynaTextMap _map = new DynaTextMap();
-        public DynaTextMap GetMap() => _map;
-        public void LoadFrom(DynaTextMap map) => _map = map;
+        protected DynaMap _map = new DynaMap();
+        public DynaMap GetMap() => _map;
+        public void LoadFrom(DynaMap map) => _map = map;
         public bool Emit(TextWriter writer, int indent) => _map.Emit(writer, indent);
-        public void LoadFrom(string text) => _map = DynaTextMap.LoadFrom(text);
+        public void LoadFrom(string text) => _map = DynaMap.LoadFrom(text);
         public bool Equals(DynaTextBase? other)
         {
             if (other is null) return false;

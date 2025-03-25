@@ -41,7 +41,7 @@ namespace DTOMaker.Gentime.Tests
         [Fact]
         public async Task Roundtrip0_Empty()
         {
-            DynaTextMap orig = new DynaTextMap();
+            DynaMap orig = new DynaMap();
 
             using var writer = new StringWriter();
             orig.Emit(writer, 0);
@@ -56,17 +56,17 @@ namespace DTOMaker.Gentime.Tests
             result.IsError.ShouldBeFalse();
             result.Consumed.ShouldBeGreaterThan(0);
 
-            DynaTextMap? copy = result.Output as DynaTextMap;
+            DynaMap? copy = result.Output as DynaMap;
 
             copy.ShouldNotBeNull();
-            copy.ShouldBeOfType<DynaTextMap>();
+            copy.ShouldBeOfType<DynaMap>();
             copy.ShouldBe(orig);
         }
 
         [Fact]
         public async Task Roundtrip1a_Shallow_Bool()
         {
-            DynaTextMap orig = new DynaTextMap();
+            DynaMap orig = new DynaMap();
             orig.Add("Field1", true);
 
             using var writer = new StringWriter();
@@ -82,17 +82,17 @@ namespace DTOMaker.Gentime.Tests
             result.IsError.ShouldBeFalse();
             result.Consumed.ShouldBeGreaterThan(0);
 
-            DynaTextMap? copy = result.Output as DynaTextMap;
+            DynaMap? copy = result.Output as DynaMap;
 
             copy.ShouldNotBeNull();
-            copy.ShouldBeOfType<DynaTextMap>();
+            copy.ShouldBeOfType<DynaMap>();
             copy.ShouldBe(orig);
         }
 
         [Fact]
         public async Task Roundtrip1b_Shallow_Int64()
         {
-            DynaTextMap orig = new DynaTextMap();
+            DynaMap orig = new DynaMap();
             orig.Add("Field1", 123456L);
 
             using var writer = new StringWriter();
@@ -108,17 +108,17 @@ namespace DTOMaker.Gentime.Tests
             result.IsError.ShouldBeFalse();
             result.Consumed.ShouldBeGreaterThan(0);
 
-            DynaTextMap? copy = result.Output as DynaTextMap;
+            DynaMap? copy = result.Output as DynaMap;
 
             copy.ShouldNotBeNull();
-            copy.ShouldBeOfType<DynaTextMap>();
+            copy.ShouldBeOfType<DynaMap>();
             copy.ShouldBe(orig);
         }
 
         [Fact]
         public async Task Roundtrip1c_Shallow_UInt64()
         {
-            DynaTextMap orig = new DynaTextMap();
+            DynaMap orig = new DynaMap();
             orig.Add("Field1", 123456UL);
 
             using var writer = new StringWriter();
@@ -134,17 +134,17 @@ namespace DTOMaker.Gentime.Tests
             result.IsError.ShouldBeFalse();
             result.Consumed.ShouldBeGreaterThan(0);
 
-            DynaTextMap? copy = result.Output as DynaTextMap;
+            DynaMap? copy = result.Output as DynaMap;
 
             copy.ShouldNotBeNull();
-            copy.ShouldBeOfType<DynaTextMap>();
+            copy.ShouldBeOfType<DynaMap>();
             copy.ShouldBe(orig);
         }
 
         [Fact]
         public async Task Roundtrip1d_Shallow_String()
         {
-            DynaTextMap orig = new DynaTextMap();
+            DynaMap orig = new DynaMap();
             orig.Add("Field1", "abcdef");
 
             using var writer = new StringWriter();
@@ -160,17 +160,17 @@ namespace DTOMaker.Gentime.Tests
             result.IsError.ShouldBeFalse();
             result.Consumed.ShouldBeGreaterThan(0);
 
-            DynaTextMap? copy = result.Output as DynaTextMap;
+            DynaMap? copy = result.Output as DynaMap;
 
             copy.ShouldNotBeNull();
-            copy.ShouldBeOfType<DynaTextMap>();
+            copy.ShouldBeOfType<DynaMap>();
             copy.ShouldBe(orig);
         }
 
         [Fact]
         public async Task Roundtrip1e_Shallow_Null()
         {
-            DynaTextMap orig = new DynaTextMap();
+            DynaMap orig = new DynaMap();
             orig.Add("Field1", null);
 
             using var writer = new StringWriter();
@@ -186,17 +186,17 @@ namespace DTOMaker.Gentime.Tests
             result.IsError.ShouldBeFalse();
             result.Consumed.ShouldBeGreaterThan(0);
 
-            DynaTextMap? copy = result.Output as DynaTextMap;
+            DynaMap? copy = result.Output as DynaMap;
 
             copy.ShouldNotBeNull();
-            copy.ShouldBeOfType<DynaTextMap>();
+            copy.ShouldBeOfType<DynaMap>();
             copy.ShouldBe(orig);
         }
 
         [Fact]
         public async Task Roundtrip1f_Shallow_Byte()
         {
-            DynaTextMap orig = new DynaTextMap();
+            DynaMap orig = new DynaMap();
             orig.Add("Field1", (byte)123);
 
             using var writer = new StringWriter();
@@ -212,17 +212,17 @@ namespace DTOMaker.Gentime.Tests
             result.IsError.ShouldBeFalse();
             result.Consumed.ShouldBeGreaterThan(0);
 
-            DynaTextMap? copy = result.Output as DynaTextMap;
+            DynaMap? copy = result.Output as DynaMap;
 
             copy.ShouldNotBeNull();
-            copy.ShouldBeOfType<DynaTextMap>();
+            copy.ShouldBeOfType<DynaMap>();
             copy.ShouldBe(orig);
         }
 
         [Fact]
         public async Task Roundtrip1g_Shallow_SByte()
         {
-            DynaTextMap orig = new DynaTextMap();
+            DynaMap orig = new DynaMap();
             orig.Add("Field1", (sbyte)123);
 
             using var writer = new StringWriter();
@@ -238,17 +238,17 @@ namespace DTOMaker.Gentime.Tests
             result.IsError.ShouldBeFalse();
             result.Consumed.ShouldBeGreaterThan(0);
 
-            DynaTextMap? copy = result.Output as DynaTextMap;
+            DynaMap? copy = result.Output as DynaMap;
 
             copy.ShouldNotBeNull();
-            copy.ShouldBeOfType<DynaTextMap>();
+            copy.ShouldBeOfType<DynaMap>();
             copy.ShouldBe(orig);
         }
 
         [Fact]
         public async Task Roundtrip1h_Shallow_Int32()
         {
-            DynaTextMap orig = new DynaTextMap();
+            DynaMap orig = new DynaMap();
             orig.Add("Field1", 123456);
 
             using var writer = new StringWriter();
@@ -264,17 +264,17 @@ namespace DTOMaker.Gentime.Tests
             result.IsError.ShouldBeFalse();
             result.Consumed.ShouldBeGreaterThan(0);
 
-            DynaTextMap? copy = result.Output as DynaTextMap;
+            DynaMap? copy = result.Output as DynaMap;
 
             copy.ShouldNotBeNull();
-            copy.ShouldBeOfType<DynaTextMap>();
+            copy.ShouldBeOfType<DynaMap>();
             copy.ShouldBe(orig);
         }
 
         [Fact]
         public async Task Roundtrip1i_Shallow_UInt32()
         {
-            DynaTextMap orig = new DynaTextMap();
+            DynaMap orig = new DynaMap();
             orig.Add("Field1", 123456U);
 
             using var writer = new StringWriter();
@@ -290,17 +290,17 @@ namespace DTOMaker.Gentime.Tests
             result.IsError.ShouldBeFalse();
             result.Consumed.ShouldBeGreaterThan(0);
 
-            DynaTextMap? copy = result.Output as DynaTextMap;
+            DynaMap? copy = result.Output as DynaMap;
 
             copy.ShouldNotBeNull();
-            copy.ShouldBeOfType<DynaTextMap>();
+            copy.ShouldBeOfType<DynaMap>();
             copy.ShouldBe(orig);
         }
 
         [Fact]
         public async Task Roundtrip1j_Shallow_Int16()
         {
-            DynaTextMap orig = new DynaTextMap();
+            DynaMap orig = new DynaMap();
             orig.Add("Field1", (short)12345);
 
             using var writer = new StringWriter();
@@ -316,17 +316,17 @@ namespace DTOMaker.Gentime.Tests
             result.IsError.ShouldBeFalse();
             result.Consumed.ShouldBeGreaterThan(0);
 
-            DynaTextMap? copy = result.Output as DynaTextMap;
+            DynaMap? copy = result.Output as DynaMap;
 
             copy.ShouldNotBeNull();
-            copy.ShouldBeOfType<DynaTextMap>();
+            copy.ShouldBeOfType<DynaMap>();
             copy.ShouldBe(orig);
         }
 
         [Fact]
         public async Task Roundtrip1k_Shallow_UInt16()
         {
-            DynaTextMap orig = new DynaTextMap();
+            DynaMap orig = new DynaMap();
             orig.Add("Field1", (ushort)12345);
 
             using var writer = new StringWriter();
@@ -342,10 +342,10 @@ namespace DTOMaker.Gentime.Tests
             result.IsError.ShouldBeFalse();
             result.Consumed.ShouldBeGreaterThan(0);
 
-            DynaTextMap? copy = result.Output as DynaTextMap;
+            DynaMap? copy = result.Output as DynaMap;
 
             copy.ShouldNotBeNull();
-            copy.ShouldBeOfType<DynaTextMap>();
+            copy.ShouldBeOfType<DynaMap>();
             copy.ShouldBe(orig);
         }
 

@@ -4,7 +4,7 @@ using System.IO;
 
 namespace DTOMaker.Gentime
 {
-    public sealed class DynaTextVec : IEmitText, IEquatable<DynaTextVec>
+    public sealed class DynaVec : IEmitText, IEquatable<DynaVec>
     {
         private readonly List<object?> _values = new List<object?>();
 
@@ -37,7 +37,7 @@ namespace DTOMaker.Gentime
                 {
                     null => defaultValue,
                     T tValue => tValue,
-                    DynaTextMap map => map.ToObject<T>(),
+                    DynaMap map => map.ToObject<T>(),
                     _ => throw new InvalidCastException($"Cannot cast value[{i}] ({value}) from type {value.GetType().Name} to type {typeof(T).Name}.")
                 };
                 result.Add(t);
@@ -71,7 +71,7 @@ namespace DTOMaker.Gentime
             return true;
         }
 
-        public bool Equals(DynaTextVec? other)
+        public bool Equals(DynaVec? other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -82,7 +82,7 @@ namespace DTOMaker.Gentime
             }
             return true;
         }
-        public override bool Equals(object? obj) => obj is DynaTextVec other && Equals(other);
+        public override bool Equals(object? obj) => obj is DynaVec other && Equals(other);
         public override int GetHashCode()
         {
             HashCode result = new HashCode();

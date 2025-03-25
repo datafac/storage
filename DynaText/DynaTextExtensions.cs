@@ -193,8 +193,8 @@ namespace DTOMaker.Gentime
                 UInt64 u64 => writer.EmitUInt64(u64),
                 string str => writer.EmitString(str),
                 // todo half single double decimal
-                DynaTextVec array => array.Emit(writer, indent),
-                DynaTextMap child => child.Emit(writer, indent),
+                DynaVec array => array.Emit(writer, indent),
+                DynaMap child => child.Emit(writer, indent),
                 //IEmitText nested => nested.Emit(writer, indent),
                 _ => throw new NotSupportedException($"Emit: Unsupported type: {value.GetType().FullName}")
             };
@@ -514,7 +514,7 @@ namespace DTOMaker.Gentime
 
             if (tokens.Length == 0) return new ParseResult("Unexpected EOF.");
 
-            DynaTextVec output = new DynaTextVec();
+            DynaVec output = new DynaVec();
             bool exitSeen = false;
             var token = tokens[0];
             while (consumed < tokens.Length)
@@ -611,7 +611,7 @@ namespace DTOMaker.Gentime
 
             if (tokens.Length == 0 && exitToken != TokenKind.None) return new ParseResult("Unexpected EOF.");
 
-            DynaTextMap output = new DynaTextMap();
+            DynaMap output = new DynaMap();
             bool exitSeen = false;
             var token = tokens[0];
             while (consumed < tokens.Length)
@@ -757,7 +757,7 @@ namespace DTOMaker.Gentime
             return new ParseResult(consumed, output);
         }
 
-        public static T ToObject<T>(this DynaTextMap map) where T : class, IDynaText, new()
+        public static T ToObject<T>(this DynaMap map) where T : class, IDynaText, new()
         {
             T obj = new T();
             obj.LoadFrom(map);
