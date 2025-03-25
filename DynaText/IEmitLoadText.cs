@@ -11,4 +11,9 @@ namespace DynaText
     {
         void LoadFrom(string text);
     }
+    public interface IMapBacked
+    {
+        DynaTextMap GetMap();
+        void LoadFrom(DynaTextMap map);
+    }
 }

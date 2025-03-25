@@ -25,13 +25,30 @@ namespace DynaText
             if (!_values.TryGetValue(key, out var obj)) return defaultValue;
             if (obj is null) return defaultValue;
             if (obj is T tValue) return tValue;
-            // todo conversions?
             throw new InvalidCastException($"Cannot cast value ({obj}) from type {obj.GetType().Name} to type {typeof(T).Name}.");
         }
 
         public void Set<T>(string key, T value)
         {
             _values[key] = value;
+        }
+
+        public T? GetObject<T>(string key) where T : class, IMapBacked, new()
+        {
+            if (!_values.TryGetValue(key, out var obj)) return null;
+            if (obj is null) return null;
+            if (obj is DynaTextMap map && typeof(IMapBacked).IsAssignableFrom(typeof(T)))
+            {
+                T t = new T();
+                t.LoadFrom(map);
+                return t;
+            }
+            throw new InvalidCastException($"Cannot cast value ({obj}) from type {obj.GetType().Name} to type {typeof(T).Name}.");
+        }
+
+        public void SetObject<T>(string key, T? value) where T : class, IMapBacked
+        {
+            _values[key] = value?.GetMap();
         }
 
         public T[] GetArray<T>(string key, T defaultValue)

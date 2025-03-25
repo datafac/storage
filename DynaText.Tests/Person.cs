@@ -3,15 +3,17 @@ using System.IO;
 
 namespace DynaText.Tests
 {
-    internal class SimpleDTO : IEmitText, ILoadText, IEquatable<SimpleDTO>
+    internal class Person : IEmitText, ILoadText, IEquatable<Person>, IMapBacked
     {
         #region boilerplate
         private DynaTextMap _map = new DynaTextMap();
+        public DynaTextMap GetMap() => _map;
+        public void LoadFrom(DynaTextMap map) => _map = map;
         public bool Emit(TextWriter writer, int indent) => _map.Emit(writer, indent);
         public void LoadFrom(string text) => _map = DynaTextMap.LoadFrom(text);
-        public bool Equals(SimpleDTO? other) => other is null ? false : ReferenceEquals(this, other) ? true : _map.Equals(other._map);
-        public override bool Equals(object? obj) => obj is SimpleDTO other && Equals(other);
-        public override int GetHashCode() => HashCode.Combine(typeof(SimpleDTO), _map.GetHashCode());
+        public bool Equals(Person? other) => other is null ? false : ReferenceEquals(this, other) ? true : _map.Equals(other._map);
+        public override bool Equals(object? obj) => obj is Person other && Equals(other);
+        public override int GetHashCode() => HashCode.Combine(typeof(Person), _map.GetHashCode());
         #endregion
 
         public int Id { get { return _map.Get(nameof(Id), 0); } set { _map.Set(nameof(Id), value); } }

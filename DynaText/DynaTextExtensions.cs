@@ -182,8 +182,6 @@ namespace DynaText
             return value switch
             {
                 null => writer.EmitNull(),
-                DynaTextVec array => array.Emit(writer, indent),
-                DynaTextMap child => child.Emit(writer, indent),
                 bool log => writer.EmitBoolean(log),
                 sbyte i08 => writer.EmitSByte(i08),
                 byte u08 => writer.EmitByte(u08),
@@ -195,6 +193,9 @@ namespace DynaText
                 UInt64 u64 => writer.EmitUInt64(u64),
                 string str => writer.EmitString(str),
                 // todo half single double decimal
+                DynaTextVec array => array.Emit(writer, indent),
+                DynaTextMap child => child.Emit(writer, indent),
+                //IEmitText nested => nested.Emit(writer, indent),
                 _ => throw new NotSupportedException($"Emit: Unsupported type: {value.GetType().FullName}")
             };
         }

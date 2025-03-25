@@ -67,9 +67,6 @@ namespace DynaText
             {
                 if (!Equals(other._values[i], _values[i])) return false;
             }
-            foreach (var kvp in _values)
-            {
-            }
             return true;
         }
         public override bool Equals(object? obj) => obj is DynaTextVec other && Equals(other);
