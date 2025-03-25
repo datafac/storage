@@ -1,0 +1,10 @@
+﻿{
+    Id = 123,
+    Surname = "Citizen",
+    Nickname = null,
+    YOB = 1971us,
+    OtherNames = [
+        "Alan",
+        "Beaufort"
+    ]
+}
