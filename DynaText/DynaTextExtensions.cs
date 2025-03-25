@@ -757,5 +757,12 @@ namespace DynaText
             return new ParseResult(consumed, output);
         }
 
+        public static T ToObject<T>(this DynaTextMap map) where T : class, IDynaText, new()
+        {
+            T obj = new T();
+            obj.LoadFrom(map);
+            return obj;
+        }
+
     }
 }

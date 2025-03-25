@@ -3,7 +3,7 @@ using System.IO;
 
 namespace DynaText.Tests
 {
-    internal class Family : IEmitText, ILoadText, IEquatable<Family>, IMapBacked
+    internal class Family : IEmitText, ILoadText, IEquatable<Family>, IDynaText
     {
         #region boilerplate
         private DynaTextMap _map = new DynaTextMap();
@@ -21,10 +21,10 @@ namespace DynaText.Tests
             set { _map.SetObject<Person>(nameof(Leader), value); }
         }
 
-        //public Person[] Members
-        //{
-        //    get { return _map.GetArray(nameof(Members), ""); }
-        //    set { _map.SetArray(nameof(Members), value); }
-        //}
+        public Person?[] Members
+        {
+            get { return _map.GetVector<Person>(nameof(Members), null); }
+            set { _map.SetVector<Person>(nameof(Members), value); }
+        }
     }
 }

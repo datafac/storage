@@ -33,33 +33,18 @@ namespace DynaText
             _values[key] = value;
         }
 
-        public T? GetObject<T>(string key) where T : class, IMapBacked, new()
+        public T?[] GetArray<T>(string key, T? defaultValue)
         {
-            if (!_values.TryGetValue(key, out var obj)) return null;
-            if (obj is null) return null;
-            if (obj is DynaTextMap map && typeof(IMapBacked).IsAssignableFrom(typeof(T)))
+            if (!_values.TryGetValue(key, out var obj)) return [];
+            return obj switch
             {
-                T t = new T();
-                t.LoadFrom(map);
-                return t;
-            }
-            throw new InvalidCastException($"Cannot cast value ({obj}) from type {obj.GetType().Name} to type {typeof(T).Name}.");
+                null => [],
+                DynaTextVec vector => vector.GetValues(defaultValue),
+                _ => throw new InvalidCastException($"Cannot cast value ({obj}) from type {obj.GetType().Name} to type {typeof(T).Name}.")
+            };
         }
 
-        public void SetObject<T>(string key, T? value) where T : class, IMapBacked
-        {
-            _values[key] = value?.GetMap();
-        }
-
-        public T[] GetArray<T>(string key, T defaultValue)
-        {
-            if (!_values.TryGetValue(key, out var obj)) return Array.Empty<T>();
-            if (obj is null) return Array.Empty<T>();
-            if (obj is DynaTextVec vector) return vector.Get<T>(defaultValue);
-            throw new InvalidCastException($"Cannot cast value ({obj}) from type {obj.GetType().Name} to type {typeof(T).Name}.");
-        }
-
-        public void SetArray<T>(string key, T[] values)
+        public void SetArray<T>(string key, T?[] values)
         {
             var vector = new DynaTextVec();
             for (int i = 0; i < values.Length; i++)
@@ -69,10 +54,41 @@ namespace DynaText
             _values[key] = vector;
         }
 
-        public void Set<TExternal, TInternal>(string key, TExternal value, Func<TExternal, TInternal> converter)
+        public T? GetObject<T>(string key) where T : class, IDynaText, new()
         {
-            // todo conversions such as arrays and dicts
-            _values[key] = converter(value);
+            if (!_values.TryGetValue(key, out var obj)) return null;
+            return obj switch
+            {
+                null => null,
+                DynaTextMap map => map.ToObject<T>(),
+                _ => throw new InvalidCastException($"Cannot cast value ({obj}) from type {obj.GetType().Name} to type {typeof(T).Name}.")
+            };
+        }
+
+        public void SetObject<T>(string key, T? value) where T : class, IDynaText
+        {
+            _values[key] = value?.GetMap();
+        }
+
+        public T?[] GetVector<T>(string key, T? defaultValue) where T : class, IDynaText, new()
+        {
+            if (!_values.TryGetValue(key, out var obj)) return [];
+            return obj switch
+            {
+                null => [],
+                DynaTextVec vector => vector.GetObjects<T>(defaultValue),
+                _ => throw new InvalidCastException($"Cannot cast value ({obj}) from type {obj.GetType().Name} to type {typeof(T).Name}.")
+            };
+        }
+
+        public void SetVector<T>(string key, T?[] values) where T : class, IDynaText
+        {
+            var vector = new DynaTextVec();
+            for (int i = 0; i < values.Length; i++)
+            {
+                vector.Add(values[i]?.GetMap());
+            }
+            _values[key] = vector;
         }
 
         public string EmitText()

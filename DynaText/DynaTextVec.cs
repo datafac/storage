@@ -10,24 +10,37 @@ namespace DynaText
 
         public void Add(object? value) => _values.Add(value);
 
-        public T[] Get<T>(T defaultValue)
+        public T?[] GetValues<T>(T? defaultValue)
         {
-            List<T> result = new List<T>();
+            List<T?> result = new List<T?>();
             for (int i = 0; i < _values.Count; i++)
             {
                 var value = _values[i];
-                if (value is null)
+                T? t = value switch
                 {
-                    result.Add(defaultValue);
-                }
-                else if (value is T tValue)
+                    null => defaultValue,
+                    T tValue => tValue,
+                    _ => throw new InvalidCastException($"Cannot cast value[{i}] ({value}) from type {value.GetType().Name} to type {typeof(T).Name}.")
+                };
+                result.Add(t);
+            }
+            return result.ToArray();
+        }
+
+        public T?[] GetObjects<T>(T? defaultValue) where T : class, IDynaText, new()
+        {
+            List<T?> result = [];
+            for (int i = 0; i < _values.Count; i++)
+            {
+                var value = _values[i];
+                T? t = value switch
                 {
-                    result.Add(tValue);
-                }
-                else
-                {
-                    throw new InvalidCastException($"Cannot cast value[{i}] ({value}) from type {value.GetType().Name} to type {typeof(T).Name}.");
-                }
+                    null => defaultValue,
+                    T tValue => tValue,
+                    DynaTextMap map => map.ToObject<T>(),
+                    _ => throw new InvalidCastException($"Cannot cast value[{i}] ({value}) from type {value.GetType().Name} to type {typeof(T).Name}.")
+                };
+                result.Add(t);
             }
             return result.ToArray();
         }
