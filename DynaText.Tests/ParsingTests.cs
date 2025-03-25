@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using VerifyXunit;
 
-namespace DynaText.Tests
+namespace DTOMaker.Gentime.Tests
 {
     public class ParsingTests
     {

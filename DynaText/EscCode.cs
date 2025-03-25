@@ -1,4 +1,4 @@
-﻿namespace DynaText
+﻿namespace DTOMaker.Gentime
 {
     internal static class EscCode
     {

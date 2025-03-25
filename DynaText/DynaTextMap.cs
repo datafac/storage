@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace DynaText
+namespace DTOMaker.Gentime
 {
     public sealed class DynaTextMap : IEmitText, IEquatable<DynaTextMap>
     {

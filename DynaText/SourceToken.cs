@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DynaText
+namespace DTOMaker.Gentime
 {
     public readonly struct SourceToken
     {

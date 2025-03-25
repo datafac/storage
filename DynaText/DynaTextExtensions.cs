@@ -6,7 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace DynaText
+namespace DTOMaker.Gentime
 {
     public static class DynaTextExtensions
     {

@@ -1,4 +1,4 @@
-﻿namespace DynaText
+﻿namespace DTOMaker.Gentime
 {
     public enum TokenKind : byte
     {

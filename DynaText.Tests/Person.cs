@@ -1,4 +1,4 @@
-namespace DynaText.Tests
+namespace DTOMaker.Gentime.Tests
 {
     internal class Person : DynaTextBase
     {

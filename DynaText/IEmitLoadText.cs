@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace DynaText
+namespace DTOMaker.Gentime
 {
     public interface IEmitText
     {

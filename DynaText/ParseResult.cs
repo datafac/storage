@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace DynaText
+namespace DTOMaker.Gentime
 {
     public readonly struct ParseResult
     {
