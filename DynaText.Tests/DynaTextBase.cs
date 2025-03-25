@@ -1,7 +1,7 @@
-﻿using System;
 using System.IO;
+using System;
 
-namespace DTOMaker.Gentime
+namespace DTOMaker.Gentime.Tests
 {
     public abstract class DynaTextBase : IDynaText, IEquatable<DynaTextBase>
     {

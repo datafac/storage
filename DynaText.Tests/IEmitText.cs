@@ -1,6 +1,6 @@
-﻿using System.IO;
+using System.IO;
 
-namespace DTOMaker.Gentime
+namespace DTOMaker.Gentime.Tests
 {
     public interface IEmitText
     {

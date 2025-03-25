@@ -1,11 +1,11 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
+using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 
-namespace DTOMaker.Gentime
+namespace DTOMaker.Gentime.Tests
 {
     public static class DynaTextExtensions
     {
@@ -420,7 +420,7 @@ namespace DTOMaker.Gentime
         {
             value = null;
             string input = token.StringValue;
-            switch(token.Modifier)
+            switch (token.Modifier)
             {
                 case 'B':
                     if (token.IsUnsigned)
@@ -459,7 +459,7 @@ namespace DTOMaker.Gentime
                     }
                     break;
                 case 'L':
-                    if(token.IsUnsigned)
+                    if (token.IsUnsigned)
                     {
                         if (UInt64.TryParse(input, out UInt64 u64))
                         {

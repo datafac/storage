@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace DTOMaker.Gentime
+namespace DTOMaker.Gentime.Tests
 {
     public readonly struct SourceLine
     {

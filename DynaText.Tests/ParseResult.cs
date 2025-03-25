@@ -1,4 +1,4 @@
-﻿namespace DTOMaker.Gentime
+namespace DTOMaker.Gentime.Tests
 {
     public readonly struct ParseResult
     {
