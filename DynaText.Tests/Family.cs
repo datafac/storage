@@ -3,19 +3,25 @@ using System.IO;
 
 namespace DynaText.Tests
 {
-    internal class Family : IDynaText, IEquatable<Family>
+    internal abstract class DynaTextBase : IDynaText, IEquatable<DynaTextBase>
     {
-        #region boilerplate
-        private DynaTextMap _map = new DynaTextMap();
+        protected DynaTextMap _map = new DynaTextMap();
         public DynaTextMap GetMap() => _map;
         public void LoadFrom(DynaTextMap map) => _map = map;
         public bool Emit(TextWriter writer, int indent) => _map.Emit(writer, indent);
         public void LoadFrom(string text) => _map = DynaTextMap.LoadFrom(text);
-        public bool Equals(Family? other) => other is not null && (ReferenceEquals(this, other) || _map.Equals(other._map));
-        public override bool Equals(object? obj) => obj is Family other && Equals(other);
-        public override int GetHashCode() => HashCode.Combine(typeof(Family), _map.GetHashCode());
-        #endregion
-
+        public bool Equals(DynaTextBase? other)
+        {
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            if(other.GetType() != this.GetType()) return false;
+            return _map.Equals(other._map);
+        }
+        public override bool Equals(object? obj) => obj is DynaTextBase other && Equals(other);
+        public override int GetHashCode() => HashCode.Combine(GetType(), _map.GetHashCode());
+    }
+    internal class Family : DynaTextBase
+    {
         public Person? Leader {
             get { return _map.GetObject<Person>(nameof(Leader)); }
             set { _map.SetObject<Person>(nameof(Leader), value); }
