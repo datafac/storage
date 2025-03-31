@@ -67,6 +67,16 @@ namespace DTOMaker.Gentime
                 }
             }
 
+            // todo emit metadata as json
+            //var metadata = new JsonModel();
+            //metadata.Entities = entities
+            //    .OrderBy(e => e.EntityId)
+            //    .Select(e => e.ToJson())
+            //    .ToArray();
+            //string jsonText = metadata.ToText();
+            //// todo emit json file directly to file system
+            //context.AddSource($"Metadata.g.json", jsonText);
+
             OnExecute(context);
         }
     }

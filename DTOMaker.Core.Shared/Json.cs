@@ -1,0 +1,70 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace DTOMaker.Gentime.Json
+{
+    public sealed class JsonMember
+    {
+        public int Sequence { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string TypeFullName { get; set; } = string.Empty;
+        public bool IsNullable { get; set; }
+        public bool IsObsolete { get; set; }
+        public bool ObsoleteIsError { get; set; }
+        public string ObsoleteMessage { get; set; } = string.Empty;
+    }
+    public sealed class JsonEntity
+    {
+        public int EntityId { get; set; }
+        public string EntityName { get; set; } = string.Empty;
+        public string BaseName { get; set; } = string.Empty;
+        public JsonMember[] Members { get; set; } = Array.Empty<JsonMember>();
+    }
+    public sealed class JsonModel
+    {
+        public JsonEntity[] Entities { get; set; } = Array.Empty<JsonEntity>();
+    }
+    public static class JsonHelpers
+    {
+        public static JsonMember ToJson(this TargetMember member)
+        {
+            return new JsonMember()
+            {
+                Sequence = member.Sequence,
+                Name = member.Name,
+                //Kind = member.Kind, // todo
+                TypeFullName = member.MemberType.FullName,
+                IsNullable = member.MemberIsNullable,
+                IsObsolete = member.IsObsolete,
+                ObsoleteIsError = member.ObsoleteIsError,
+                ObsoleteMessage = member.ObsoleteMessage,
+            };
+        }
+
+        public static JsonEntity ToJson(this TargetEntity entity)
+        {
+            return new JsonEntity()
+            {
+                EntityId = entity.EntityId,
+                EntityName = entity.EntityName.FullName,
+                BaseName = entity.BaseName.FullName,
+                Members = entity.Members.Values
+                    .OrderBy(m => m.Sequence)
+                    .Select(m => m.ToJson())
+                    .ToArray(),
+            };
+        }
+
+        //private static readonly JsonSerializerSettings settings = new JsonSerializerSettings()
+        //{
+        //    Formatting = Formatting.Indented,
+        //    DefaultValueHandling = DefaultValueHandling.Ignore
+        //};
+        //public static string ToText(this JsonModel model)
+        //{
+        //    return JsonConvert.SerializeObject(model, settings);
+        //}
+    }
+}
