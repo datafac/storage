@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Template_MessagePack.Tests
 {
-    public class TemplateRoundtripTests
+    public class RoundtripTests
     {
         [Fact]
         public void Roundtrip01AsEntity()
