@@ -3,6 +3,9 @@
 
 *Warning: This is pre-release software under active development. Breaking changes may occur.*
 
+<!--TOC-->
+<!--/TOC-->
+
 # DTOMaker
 
 This repo includes model-driven compile-time source generators for quickly creating DTOs (Data Transport Objects) supporting the following
