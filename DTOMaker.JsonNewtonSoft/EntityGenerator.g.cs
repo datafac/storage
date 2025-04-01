@@ -23,6 +23,7 @@ Emit("using DataFac.Memory;");
 Emit("using DTOMaker.Runtime;");
 Emit("using DTOMaker.Runtime.JsonNewtonSoft;");
 Emit("using System;");
+Emit("using System.Linq;");
 Emit("");
 if (false) {
 Emit("using T_MemberType_ = System.Int32;");
@@ -204,7 +205,7 @@ Emit("            _T_RequiredScalarMemberName_ = source.T_RequiredScalarMemberNa
             }
             break;
             case MemberKind.Vector:
-Emit("            _T_VectorMemberName_ = source.T_VectorMemberName_;");
+Emit("            _T_VectorMemberName_ = source.T_VectorMemberName_.ToArray();");
             break;
             case MemberKind.Entity:
             if (member.IsNullable) {
@@ -215,9 +216,9 @@ Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.JsonNewt
             break;
             case MemberKind.Binary:
             if (member.IsNullable) {
-Emit("            _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_;");
+Emit("            _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_ is null ? null : source.T_NullableBinaryMemberName_.Memory.ToArray();");
             } else {
-Emit("            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_;");
+Emit("            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_.Memory.ToArray();");
             }
             break;
             case MemberKind.String:
@@ -261,15 +262,16 @@ Emit("        }");
         }
         break;
         case MemberKind.Vector:
-Emit("        private ReadOnlyMemory<T_MemberType_> _T_VectorMemberName_;");
+Emit("        private T_MemberType_[] _T_VectorMemberName_ = Array.Empty<T_MemberType_>();");
         if (member.IsObsolete) {
 Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
         }
-Emit("        public ReadOnlyMemory<T_MemberType_> T_VectorMemberName_");
+Emit("        public T_MemberType_[] T_VectorMemberName_");
 Emit("        {");
 Emit("            get => _T_VectorMemberName_;");
 Emit("            set => _T_VectorMemberName_ = IfNotFrozen(ref value);");
 Emit("        }");
+Emit("        ReadOnlyMemory<T_MemberType_> IT_EntityName_.T_VectorMemberName_ => IsFrozen ? _T_VectorMemberName_ : _T_VectorMemberName_.ToArray().AsMemory();");
         break;
         case MemberKind.Entity:
         if (member.IsNullable) {
@@ -292,19 +294,22 @@ Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityName_.T_Require
         break;
         case MemberKind.Binary:
         if (member.IsNullable) {
-Emit("        private Octets? _T_NullableBinaryMemberName_;");
-Emit("        public Octets? T_NullableBinaryMemberName_");
+Emit("        private byte[]? _T_NullableBinaryMemberName_;");
+Emit("        public byte[]? T_NullableBinaryMemberName_");
 Emit("        {");
 Emit("            get => _T_NullableBinaryMemberName_;");
 Emit("            set => _T_NullableBinaryMemberName_ = IfNotFrozen(ref value);");
 Emit("        }");
+Emit("        Octets? IT_EntityName_.T_NullableBinaryMemberName_ => _T_NullableBinaryMemberName_ is null ? null");
+Emit("            : IsFrozen ? Octets.UnsafeWrap(_T_NullableBinaryMemberName_) : new Octets(_T_NullableBinaryMemberName_);");
         } else {
-Emit("        private Octets _T_RequiredBinaryMemberName_ = Octets.Empty;");
-Emit("        public Octets T_RequiredBinaryMemberName_");
+Emit("        private byte[] _T_RequiredBinaryMemberName_ = Array.Empty<byte>();");
+Emit("        public byte[] T_RequiredBinaryMemberName_");
 Emit("        {");
 Emit("            get => _T_RequiredBinaryMemberName_;");
 Emit("            set => _T_RequiredBinaryMemberName_ = IfNotFrozen(ref value);");
 Emit("        }");
+Emit("        Octets IT_EntityName_.T_RequiredBinaryMemberName_ => IsFrozen ? Octets.UnsafeWrap(_T_RequiredBinaryMemberName_) : new Octets(_T_RequiredBinaryMemberName_);");
         }
         break;
         case MemberKind.String:
@@ -347,7 +352,7 @@ Emit("            if (_T_RequiredScalarMemberName_ != other.T_RequiredScalarMemb
             }
             break;
             case MemberKind.Vector:
-Emit("            if (!_T_VectorMemberName_.Span.SequenceEqual(other.T_VectorMemberName_.Span)) return false;");
+Emit("            if (!_T_VectorMemberName_.AsSpan().SequenceEqual(other.T_VectorMemberName_.AsSpan())) return false;");
             break;
             case MemberKind.Entity:
             if (member.IsNullable) {
@@ -400,7 +405,7 @@ Emit("            result.Add(_T_RequiredScalarMemberName_);");
 Emit("            result.Add(_T_VectorMemberName_.Length);");
 Emit("            for (int i = 0; i < _T_VectorMemberName_.Length; i++)");
 Emit("            {");
-Emit("                result.Add(_T_VectorMemberName_.Span[i]);");
+Emit("                result.Add(_T_VectorMemberName_[i]);");
 Emit("            }");
             break;
             case MemberKind.Entity:

@@ -9,6 +9,7 @@ using DataFac.Memory;
 using DTOMaker.Runtime;
 using DTOMaker.Runtime.JsonNewtonSoft;
 using System;
+using System.Linq;
 
 namespace MyOrg.Models.JsonNewtonSoft
 {
@@ -57,8 +58,8 @@ namespace MyOrg.Models.JsonNewtonSoft
         public MyDTO(IMyDTO source) : base(source)
         {
             _Other1 = source.Other1 is null ? null : MyOrg.Models.JsonNewtonSoft.Other.CreateFrom(source.Other1);
-            _Field1 = source.Field1;
-            _Field2 = source.Field2;
+            _Field1 = source.Field1.Memory.ToArray();
+            _Field2 = source.Field2 is null ? null : source.Field2.Memory.ToArray();
         }
 
         private MyOrg.Models.JsonNewtonSoft.Other? _Other1;
@@ -69,19 +70,22 @@ namespace MyOrg.Models.JsonNewtonSoft
         }
         MyOrg.Models.IOther? IMyDTO.Other1 => _Other1;
 
-        private Octets _Field1 = Octets.Empty;
-        public Octets Field1
+        private byte[] _Field1 = Array.Empty<byte>();
+        public byte[] Field1
         {
             get => _Field1;
             set => _Field1 = IfNotFrozen(ref value);
         }
+        Octets IMyDTO.Field1 => IsFrozen ? Octets.UnsafeWrap(_Field1) : new Octets(_Field1);
 
-        private Octets? _Field2;
-        public Octets? Field2
+        private byte[]? _Field2;
+        public byte[]? Field2
         {
             get => _Field2;
             set => _Field2 = IfNotFrozen(ref value);
         }
+        Octets? IMyDTO.Field2 => _Field2 is null ? null
+            : IsFrozen ? Octets.UnsafeWrap(_Field2) : new Octets(_Field2);
 
 
         public bool Equals(MyDTO? other)

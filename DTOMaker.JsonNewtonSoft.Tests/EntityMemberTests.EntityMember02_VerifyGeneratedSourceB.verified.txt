@@ -9,6 +9,7 @@ using DataFac.Memory;
 using DTOMaker.Runtime;
 using DTOMaker.Runtime.JsonNewtonSoft;
 using System;
+using System.Linq;
 
 namespace MyOrg.DomainB.JsonNewtonSoft
 {

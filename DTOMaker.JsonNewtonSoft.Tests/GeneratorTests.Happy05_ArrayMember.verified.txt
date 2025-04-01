@@ -9,6 +9,7 @@ using DataFac.Memory;
 using DTOMaker.Runtime;
 using DTOMaker.Runtime.JsonNewtonSoft;
 using System;
+using System.Linq;
 
 namespace MyOrg.Models.JsonNewtonSoft
 {
@@ -55,15 +56,16 @@ namespace MyOrg.Models.JsonNewtonSoft
         public MyDTO() { }
         public MyDTO(IMyDTO source) : base(source)
         {
-            _Field1 = source.Field1;
+            _Field1 = source.Field1.ToArray();
         }
 
-        private ReadOnlyMemory<Double> _Field1;
-        public ReadOnlyMemory<Double> Field1
+        private Double[] _Field1 = Array.Empty<Double>();
+        public Double[] Field1
         {
             get => _Field1;
             set => _Field1 = IfNotFrozen(ref value);
         }
+        ReadOnlyMemory<Double> IMyDTO.Field1 => IsFrozen ? _Field1 : _Field1.ToArray().AsMemory();
 
 
         public bool Equals(MyDTO? other)
@@ -71,7 +73,7 @@ namespace MyOrg.Models.JsonNewtonSoft
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
             if (!base.Equals(other)) return false;
-            if (!_Field1.Span.SequenceEqual(other.Field1.Span)) return false;
+            if (!_Field1.AsSpan().SequenceEqual(other.Field1.AsSpan())) return false;
             return true;
         }
 
@@ -86,7 +88,7 @@ namespace MyOrg.Models.JsonNewtonSoft
             result.Add(_Field1.Length);
             for (int i = 0; i < _Field1.Length; i++)
             {
-                result.Add(_Field1.Span[i]);
+                result.Add(_Field1[i]);
             }
             return result.ToHashCode();
         }

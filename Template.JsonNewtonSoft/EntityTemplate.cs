@@ -15,7 +15,6 @@ using DTOMaker.Runtime.JsonNewtonSoft;
 using System;
 using System.Linq;
 
-
 //##if (false) {
 using T_MemberType_ = System.Int32;
 namespace T_MemberTypeNameSpace_
@@ -318,7 +317,6 @@ namespace T_NameSpace_.JsonNewtonSoft
             get => _T_RequiredStringMemberName_;
             set => _T_RequiredStringMemberName_ = IfNotFrozen(ref value);
         }
-
         //##}
         //##break;
         //##default:
