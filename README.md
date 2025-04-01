@@ -1,28 +1,9 @@
-![Build-Deploy](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml)
+[![Build-Deploy](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/datafac/dtomaker-core/actions/workflows/dotnet.yml)
+[![CodeQL](https://github.com/datafac/dtomaker-core/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/datafac/dtomaker-core/actions/workflows/github-code-scanning/codeql)
 
 *Warning: This is pre-release software under active development. Breaking changes may occur.*
 
-<!--TOC-->
-- [DTOMaker](#dtomaker)
-  - [Workflow](#workflow)
-- [Included Packages](#included-packages)
-  - [DTOMaker.Models](#dtomaker.models)
-  - [DTOMaker.MessagePack](#dtomaker.messagepack)
-  - [DTOMaker.Models.MessagePack](#dtomaker.models.messagepack)
-  - [DTOMaker.MemBlocks](#dtomaker.memblocks)
-  - [DTOMaker.Models.MemBlocks](#dtomaker.models.memblocks)
-  - [DTOMaker.CSPoco](#dtomaker.cspoco)
-  - [DTOMaker.CSRecord (.NET 8+)](#dtomaker.csrecord-.net-8)
-  - [DTOMaker.Runtime](#dtomaker.runtime)
-- [Model features](#model-features)
-  - [MemBlocks features](#memblocks-features)
-- [!Limitations](#limitations)
-  - [Single compilation unit](#single-compilation-unit)
-- [Development](#development)
-  - [In progress](#in-progress)
-  - [Coming soon](#coming-soon)
-  - [Coming later](#coming-later)
-<!--/TOC-->
+
 
 # DTOMaker
 
