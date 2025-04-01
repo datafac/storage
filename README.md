@@ -2,6 +2,27 @@
 
 *Warning: This is pre-release software under active development. Breaking changes may occur.*
 
+<!--TOC-->
+- [DTOMaker](#dtomaker)
+  - [Workflow](#workflow)
+- [Included Packages](#included-packages)
+  - [DTOMaker.Models](#dtomaker.models)
+  - [DTOMaker.MessagePack](#dtomaker.messagepack)
+  - [DTOMaker.Models.MessagePack](#dtomaker.models.messagepack)
+  - [DTOMaker.MemBlocks](#dtomaker.memblocks)
+  - [DTOMaker.Models.MemBlocks](#dtomaker.models.memblocks)
+  - [DTOMaker.CSPoco](#dtomaker.cspoco)
+  - [DTOMaker.CSRecord (.NET 8+)](#dtomaker.csrecord-.net-8)
+  - [DTOMaker.Runtime](#dtomaker.runtime)
+- [Model features](#model-features)
+  - [MemBlocks features](#memblocks-features)
+- [!Limitations](#limitations)
+  - [Single compilation unit](#single-compilation-unit)
+- [Development](#development)
+  - [In progress](#in-progress)
+  - [Coming soon](#coming-soon)
+  - [Coming later](#coming-later)
+<!--/TOC-->
 
 # DTOMaker
 
@@ -9,6 +30,7 @@ This repo includes model-driven compile-time source generators for quickly creat
 serialization schemes:
 - MessagePack
 - MemBlocks
+- JSON (NewtonSoft)
 
 and related POCOs (Plain Old C# Objects).
 
