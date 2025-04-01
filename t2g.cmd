@@ -10,6 +10,7 @@ call :t2g CSPoco
 call :t2g CSRecord
 call :t2g MemBlocks
 call :t2g MessagePack
+call :t2g JsonNewtonSoft
 
 goto :eof
 

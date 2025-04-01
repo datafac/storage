@@ -2,26 +2,6 @@
 
 *Warning: This is pre-release software under active development. Breaking changes may occur.*
 
-<!--TOC-->
-- [DTOMaker](#dtomaker)
-  - [Workflow](#workflow)
-- [Included Packages](#included-packages)
-  - [DTOMaker.Models](#dtomaker.models)
-  - [DTOMaker.MessagePack](#dtomaker.messagepack)
-  - [DTOMaker.Models.MessagePack](#dtomaker.models.messagepack)
-  - [DTOMaker.MemBlocks](#dtomaker.memblocks)
-  - [DTOMaker.Models.MemBlocks](#dtomaker.models.memblocks)
-  - [DTOMaker.CSRecord](#dtomaker.csrecord)
-  - [DTOMaker.Runtime](#dtomaker.runtime)
-- [Model features](#model-features)
-  - [MemBlocks features](#memblocks-features)
-- [!Limitations](#limitations)
-  - [Single compilation unit](#single-compilation-unit)
-- [Development](#development)
-  - [In progress](#in-progress)
-  - [Coming soon](#coming-soon)
-  - [Coming later](#coming-later)
-<!--/TOC-->
 
 # DTOMaker
 
@@ -93,8 +73,11 @@ values directly to the block with little-endian (default) or big-endian byte ord
 Additional attributes used by the DTOMaker.MemBlocks source generator, to 
 manage entity and member memory layout.
 
-## DTOMaker.CSRecord
+## DTOMaker.CSPoco
 Generates basic POCOs (Plain Old C# Objects) that implement the model interfaces.
+
+## DTOMaker.CSRecord (.NET 8+)
+Generates C# records that implement the model interfaces.
 
 ## DTOMaker.Runtime
 Common types used at runtime by DTOMaker generated entities.
@@ -126,10 +109,9 @@ mitigate the single assembly constraint.
 
 # Development
 ## In progress
-- C# records generator
+- Json (NewtonSoft) generator
 
 ## Coming soon
-- Json (NewtonSoft) generator
 - Json (System.Text) generator
 - upgrade source generators to IIncrementalGenerator
 - global interface equality comparer
@@ -146,7 +128,6 @@ mitigate the single assembly constraint.
 
 ## Coming later
 - custom struct members (to avoid primitive obsession)
-- C# records generator
 - Google Protobuf .proto generation
 - model.json generation
 - command-line alternative
