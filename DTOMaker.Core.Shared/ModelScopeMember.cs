@@ -38,7 +38,7 @@ namespace DTOMaker.Gentime
             _tokens["MemberDefaultValue"] = _language.GetDefaultValue(member.MemberType);
             switch (member.Kind)
             {
-                case MemberKind.Scalar:
+                case MemberKind.Native:
                     _tokens["ScalarMemberSequence"] = member.Sequence;
                     _tokens[(member.MemberIsNullable ? "Nullable" : "Required") + "ScalarMemberSequence"] = member.Sequence;
                     _tokens["ScalarMemberName"] = member.Name;

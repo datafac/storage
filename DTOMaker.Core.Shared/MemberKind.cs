@@ -2,10 +2,10 @@
 {
     public enum MemberKind
     {
-        Scalar, // todo rename to Native
+        Native,
         Entity,
         Binary,
         String,
-        Vector,
+        Vector, // todo replace with Rank (0=scalar, 1=vector, etc.)
     }
 }

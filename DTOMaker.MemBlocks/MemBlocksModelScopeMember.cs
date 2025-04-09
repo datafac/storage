@@ -27,7 +27,7 @@ namespace DTOMaker.MemBlocks
             _tokens["MemberTypeL7"] = memberType.PadRight(7);
             switch (_member.Kind)
             {
-                case MemberKind.Scalar:
+                case MemberKind.Native:
                     _tokens["ScalarFieldOffset"] = _member.FieldOffset;
                     break;
                 case MemberKind.Vector:

@@ -296,7 +296,7 @@ Emit("            base.OnFreeze();");
             foreach (var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
             using var _ = NewScope(member);
             switch(member.Kind) {
-            case MemberKind.Scalar:
+            case MemberKind.Native:
             break;
             case MemberKind.Vector:
             break;
@@ -324,7 +324,7 @@ Emit("            await base.OnPack(dataStore);");
             foreach (var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
             using var _ = NewScope(member);
             switch(member.Kind) {
-            case MemberKind.Scalar:
+            case MemberKind.Native:
             break;
             case MemberKind.Vector:
             break;
@@ -378,7 +378,7 @@ Emit("            await base.OnUnpack(dataStore, depth);");
             foreach (var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
             using var _ = NewScope(member);
             switch(member.Kind) {
-            case MemberKind.Scalar:
+            case MemberKind.Native:
             break;
             case MemberKind.Vector:
             break;
@@ -450,7 +450,7 @@ Emit("            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLeng
             foreach(var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
             using var _ = NewScope(member);
             switch(member.Kind) {
-            case MemberKind.Scalar:
+            case MemberKind.Native:
 Emit("            this.T_ScalarMemberName_ = source.T_ScalarMemberName_;");
             break;
             case MemberKind.Vector:
@@ -507,7 +507,7 @@ Emit("            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLeng
             foreach(var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
             using var _ = NewScope(member);
             switch(member.Kind) {
-            case MemberKind.Scalar:
+            case MemberKind.Native:
 Emit("            this.T_ScalarMemberName_ = source.T_ScalarMemberName_;");
             break;
             case MemberKind.Vector:
@@ -604,7 +604,7 @@ Emit("        private const int T_ArrayLength_ = 4;");
         foreach(var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
         using var _ = NewScope(member);
         switch(member.Kind) {
-        case MemberKind.Scalar:
+        case MemberKind.Native:
         if(member.IsObsolete) {
 Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
         }

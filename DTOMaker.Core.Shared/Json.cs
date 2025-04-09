@@ -34,7 +34,7 @@ namespace DTOMaker.Gentime.Json
             {
                 Sequence = member.Sequence,
                 Name = member.Name,
-                //Kind = member.Kind, // todo
+                //Kind = member.Kind,
                 TypeFullName = member.MemberType.FullName,
                 IsNullable = member.MemberIsNullable,
                 IsObsolete = member.IsObsolete,

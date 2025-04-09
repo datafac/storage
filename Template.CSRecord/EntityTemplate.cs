@@ -122,7 +122,7 @@ namespace T_NameSpace_.CSRecord
             //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
             //##switch(member.Kind) {
-            //##case MemberKind.Scalar:
+            //##case MemberKind.Native:
             //##if (member.IsNullable) {
             _T_NullableScalarMemberName_ = source.T_NullableScalarMemberName_;
             //##} else {
@@ -163,7 +163,7 @@ namespace T_NameSpace_.CSRecord
         //##foreach (var member in entity.Members) {
         //##using var _ = NewScope(member);
         //##switch(member.Kind) {
-        //##case MemberKind.Scalar:
+        //##case MemberKind.Native:
         //##if (member.IsNullable) {
         private T_MemberType_? _T_NullableScalarMemberName_;
         //##} else {

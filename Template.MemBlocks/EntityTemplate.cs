@@ -286,7 +286,7 @@ namespace T_NameSpace_.MemBlocks
             //##foreach (var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
             //##using var _ = NewScope(member);
             //##switch(member.Kind) {
-            //##case MemberKind.Scalar:
+            //##case MemberKind.Native:
             //##break;
             //##case MemberKind.Vector:
             //##break;
@@ -314,7 +314,7 @@ namespace T_NameSpace_.MemBlocks
             //##foreach (var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
             //##using var _ = NewScope(member);
             //##switch(member.Kind) {
-            //##case MemberKind.Scalar:
+            //##case MemberKind.Native:
             //##break;
             //##case MemberKind.Vector:
             //##break;
@@ -368,7 +368,7 @@ namespace T_NameSpace_.MemBlocks
             //##foreach (var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
             //##using var _ = NewScope(member);
             //##switch(member.Kind) {
-            //##case MemberKind.Scalar:
+            //##case MemberKind.Native:
             //##break;
             //##case MemberKind.Vector:
             //##break;
@@ -440,7 +440,7 @@ namespace T_NameSpace_.MemBlocks
             //##foreach(var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
             //##using var _ = NewScope(member);
             //##switch(member.Kind) {
-            //##case MemberKind.Scalar:
+            //##case MemberKind.Native:
             this.T_ScalarMemberName_ = source.T_ScalarMemberName_;
             //##break;
             //##case MemberKind.Vector:
@@ -497,7 +497,7 @@ namespace T_NameSpace_.MemBlocks
             //##foreach(var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
             //##using var _ = NewScope(member);
             //##switch(member.Kind) {
-            //##case MemberKind.Scalar:
+            //##case MemberKind.Native:
             this.T_ScalarMemberName_ = source.T_ScalarMemberName_;
             //##break;
             //##case MemberKind.Vector:
@@ -594,7 +594,7 @@ namespace T_NameSpace_.MemBlocks
         //##foreach(var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
         //##using var _ = NewScope(member);
         //##switch(member.Kind) {
-        //##case MemberKind.Scalar:
+        //##case MemberKind.Native:
         //##if(member.IsObsolete) {
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##}

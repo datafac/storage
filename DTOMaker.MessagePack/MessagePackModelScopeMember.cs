@@ -19,7 +19,7 @@ namespace DTOMaker.MessagePack
             int memberKey = memberKeyOffset + member.Sequence;
             switch (member.Kind)
             {
-                case MemberKind.Scalar:
+                case MemberKind.Native:
                     _tokens[(member.MemberIsNullable ? "Nullable" : "Required") + "ScalarMemberKey"] = memberKey;
                     break;
                 case MemberKind.Vector:
