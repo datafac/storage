@@ -7,54 +7,6 @@ using System.Threading.Tasks;
 
 namespace DTOMaker.CLI
 {
-    internal interface ITargetLanguage
-    {
-        string Name { get; }
-        string PrefixComment { get; }
-        string PrefixMetaCode { get; }
-        string EmitCodePrefix { get; }
-        string EmitCodeSuffix { get; }
-        string EmitFileHeader { get; }
-        string EmitFileFooter { get; }
-    }
-
-    internal sealed class TargetLanguage_CSharp : ITargetLanguage
-    {
-        private static readonly TargetLanguage_CSharp _instance = new TargetLanguage_CSharp();
-        public static ITargetLanguage Instance => _instance;
-
-        private static readonly string _header =
-            """
-            using System;
-            using System.Linq;
-            using DTOMaker.Gentime;
-            namespace _targetNamespace_;
-            #pragma warning disable CS0162 // Unreachable code detected
-            public sealed class EntityGenerator : EntityGeneratorBase
-            {
-                public EntityGenerator(ILanguage language) : base(language) { }
-                protected override void OnGenerate(ModelScopeEntity entity)
-                {
-            """;
-
-        private static readonly string _footer =
-            """
-                }
-            }
-            """;
-
-        public string Name => "CSharp";
-        public string PrefixComment => "//";
-        public string PrefixMetaCode => "##";
-        public string EmitCodePrefix => "Emit(\"";
-        public string EmitCodeSuffix => "\");";
-
-        public string EmitFileHeader => _header;
-        public string EmitFileFooter => _footer;
-
-        private TargetLanguage_CSharp() { }
-    }
-
     internal class Program
     {
         static async Task<int> Main(string[] args)
@@ -83,8 +35,8 @@ namespace DTOMaker.CLI
 
             var language = new Option<string>(["--language", "-l"], () => "cs")
             {
-                IsRequired = true,
-                Description = "The target language file extension (default: cs)",
+                //IsRequired = true,
+                Description = "The target language file extension",
             };
             t2gCommand.AddOption(language);
 
