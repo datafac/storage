@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace DTOMaker.CLI
 {
+
     internal class Program
     {
         static async Task<int> Main(string[] args)
@@ -44,7 +45,7 @@ namespace DTOMaker.CLI
             return await rootCommand.InvokeAsync(args);
         }
 
-        private static readonly string Header =
+        private static readonly string CSHeader =
             """
             using System;
             using System.Linq;
@@ -58,7 +59,7 @@ namespace DTOMaker.CLI
                 {
             """;
 
-        private static readonly string Footer =
+        private static readonly string CSFooter =
             """
                 }
             }
@@ -75,15 +76,15 @@ namespace DTOMaker.CLI
             {
                 using var fs = output.Create();
                 using var sw = new StreamWriter(fs);
-                await sw.WriteLineAsync(Header.Replace("_targetNamespace_", targetNamespace));
+                await sw.WriteLineAsync(CSHeader.Replace("_targetNamespace_", targetNamespace));
                 int lineNumber = 0;
                 await foreach (var inputLine in File.ReadLinesAsync(source.FullName, CancellationToken.None))
                 {
                     lineNumber++;
-                    string outputLine = T2GConvertLine(lineNumber, inputLine);
+                    string outputLine = T2GConvertLine(inputLine);
                     await sw.WriteLineAsync(outputLine);
                 }
-                await sw.WriteLineAsync(Footer);
+                await sw.WriteLineAsync(CSFooter);
                 Console.WriteLine($"T2G: Generator created ({lineNumber} lines)");
                 return 0;
             }
@@ -94,80 +95,41 @@ namespace DTOMaker.CLI
             }
         }
 
-        private static int SizeOfIndent(ReadOnlySpan<char> input)
-        {
-            for (int pos = 0; pos < input.Length; pos++)
-            {
-                if (!char.IsWhiteSpace(input[pos])) return pos;
-            }
-            return 0;
-        }
-
-        private static (string indent, string remainder) StripLeadingWhitespace(string input)
-        {
-            StringBuilder indent = new StringBuilder();
-            for (int pos = 0; pos < input.Length; pos++)
-            {
-                char ch = input[pos];
-                if (char.IsWhiteSpace(ch))
-                {
-                    // nothing
-                    indent.Append(ch);
-                }
-                else
-                {
-                    return (indent.ToString(), input.Substring(pos));
-                }
-            }
-            return (input, "");
-        }
-
         // todo make language agnostic
         private const string PrefixCSharpComment = "//";
         private const string PrefixMetaCode = "##";
         private const string EmitCodePrefix = "Emit(\"";
         private const string EmitCodeSuffix = "\");";
 
-        private static string T2GConvertLine(int lineNumber, string input)
+        private static string T2GConvertLine(ReadOnlySpan<char> input)
         {
-            // todo spanify
-            ReadOnlySpan<char> inputSpan = input;
-            int indentSize = SizeOfIndent(inputSpan);
-            ReadOnlySpan<char> outerIndentSpan = inputSpan.Slice(0, indentSize);
-            ReadOnlySpan<char> sourceCodeSpan = inputSpan.Slice(indentSize);
+            int outerIndentPos = input.SizeOfLeadingWhitespace();
+            var outerIndent = input.Slice(0, outerIndentPos);
+            var sourceCode = input.Slice(outerIndentPos);
 
-            (string outerIndent, string sourceCode) = StripLeadingWhitespace(input);
+            StringBuilder result = new StringBuilder();
             if (sourceCode.StartsWith(PrefixCSharpComment))
             {
                 // comment found
-                string comment = sourceCode.Substring(PrefixCSharpComment.Length);
-                (string innerIndent, string candidate) = StripLeadingWhitespace(comment);
+                var comment = sourceCode.Slice(PrefixCSharpComment.Length);
+                int innerIndentPos = comment.SizeOfLeadingWhitespace();
+                var innerIndent = comment.Slice(0, innerIndentPos);
+                var candidate = comment.Slice(innerIndentPos);
                 if (candidate.StartsWith(PrefixMetaCode))
                 {
                     // metacode found - emit
-                    string metacode = candidate.Substring(PrefixMetaCode.Length);
-                    return $"{outerIndent}{innerIndent}{metacode}";
+                    var metacode = candidate.Slice(PrefixMetaCode.Length);
+                    result.Append(outerIndent);
+                    result.Append(innerIndent);
+                    result.Append(metacode);
+                    return result.ToString();
                 }
             }
-            string encodedSource = EncodeSource(outerIndent, sourceCode);
-            return $"{EmitCodePrefix}{encodedSource}{EmitCodeSuffix}";
-        }
 
-        private static string EncodeSource(string outerIndent, string sourceCode)
-        {
-            return $"{outerIndent}{Escaped(sourceCode)}";
-        }
-        private static string? Escaped(string input)
-        {
-            if (input is null) return null;
-            // escape double quotes
-            StringBuilder result = new StringBuilder();
-            foreach (char ch in input)
-            {
-                if (ch == '"') // || ch == '\\')
-                    result.Append('\\');
-                result.Append(ch);
-            }
+            result.Append(EmitCodePrefix);
+            result.Append(outerIndent);
+            result.AppendEscaped(sourceCode);
+            result.Append(EmitCodeSuffix);
             return result.ToString();
         }
     }
