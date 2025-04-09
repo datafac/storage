@@ -7,6 +7,53 @@ using System.Threading.Tasks;
 
 namespace DTOMaker.CLI
 {
+    internal interface ITargetLanguage
+    {
+        string Name { get; }
+        string PrefixComment { get; }
+        string PrefixMetaCode { get; }
+        string EmitCodePrefix { get; }
+        string EmitCodeSuffix { get; }
+        string EmitFileHeader { get; }
+        string EmitFileFooter { get; }
+    }
+
+    internal sealed class TargetLanguage_CSharp : ITargetLanguage
+    {
+        private static readonly TargetLanguage_CSharp _instance = new TargetLanguage_CSharp();
+        public static ITargetLanguage Instance => _instance;
+
+        private static readonly string _header =
+            """
+            using System;
+            using System.Linq;
+            using DTOMaker.Gentime;
+            namespace _targetNamespace_;
+            #pragma warning disable CS0162 // Unreachable code detected
+            public sealed class EntityGenerator : EntityGeneratorBase
+            {
+                public EntityGenerator(ILanguage language) : base(language) { }
+                protected override void OnGenerate(ModelScopeEntity entity)
+                {
+            """;
+
+        private static readonly string _footer =
+            """
+                }
+            }
+            """;
+
+        public string Name => "CSharp";
+        public string PrefixComment => "//";
+        public string PrefixMetaCode => "##";
+        public string EmitCodePrefix => "Emit(\"";
+        public string EmitCodeSuffix => "\");";
+
+        public string EmitFileHeader => _header;
+        public string EmitFileFooter => _footer;
+
+        private TargetLanguage_CSharp() { }
+    }
 
     internal class Program
     {
@@ -34,7 +81,14 @@ namespace DTOMaker.CLI
             };
             t2gCommand.AddOption(targetNamespace);
 
-            t2gCommand.SetHandler<FileInfo, FileInfo, string>(T2GHandler, template, generator, targetNamespace);
+            var language = new Option<string>(["--language", "-l"], () => "cs")
+            {
+                IsRequired = true,
+                Description = "The target language file extension (default: cs)",
+            };
+            t2gCommand.AddOption(language);
+
+            t2gCommand.SetHandler<FileInfo, FileInfo, string, string>(T2GHandler, template, generator, targetNamespace, language);
 
             var rootCommand = new RootCommand("dtomaker")
             {
@@ -45,27 +99,7 @@ namespace DTOMaker.CLI
             return await rootCommand.InvokeAsync(args);
         }
 
-        private static readonly string CSHeader =
-            """
-            using System;
-            using System.Linq;
-            using DTOMaker.Gentime;
-            namespace _targetNamespace_;
-            #pragma warning disable CS0162 // Unreachable code detected
-            public sealed class EntityGenerator : EntityGeneratorBase
-            {
-                public EntityGenerator(ILanguage language) : base(language) { }
-                protected override void OnGenerate(ModelScopeEntity entity)
-                {
-            """;
-
-        private static readonly string CSFooter =
-            """
-                }
-            }
-            """;
-
-        private static async Task<int> T2GHandler(FileInfo source, FileInfo output, string targetNamespace)
+        private static async Task<int> T2GHandler(FileInfo source, FileInfo output, string targetNamespace, string languageExtn)
         {
             Console.WriteLine($"{ThisAssembly.AssemblyTitle} ({ThisAssembly.AssemblyInformationalVersion})");
             Console.WriteLine("T2G: Creating generator...");
@@ -74,17 +108,24 @@ namespace DTOMaker.CLI
             Console.WriteLine($"T2G:   Namespace: {targetNamespace}");
             try
             {
+                ITargetLanguage language = languageExtn.ToLower() switch
+                {
+                    "cs" => TargetLanguage_CSharp.Instance,
+                    _ => throw new ArgumentOutOfRangeException("language", languageExtn, null),
+                };
+                Console.WriteLine($"T2G:   Language : {language.Name}");
+
                 using var fs = output.Create();
                 using var sw = new StreamWriter(fs);
-                await sw.WriteLineAsync(CSHeader.Replace("_targetNamespace_", targetNamespace));
+                await sw.WriteLineAsync(language.EmitFileHeader.Replace("_targetNamespace_", targetNamespace));
                 int lineNumber = 0;
                 await foreach (var inputLine in File.ReadLinesAsync(source.FullName, CancellationToken.None))
                 {
                     lineNumber++;
-                    string outputLine = T2GConvertLine(inputLine);
+                    string outputLine = T2GConvertLine(inputLine, language);
                     await sw.WriteLineAsync(outputLine);
                 }
-                await sw.WriteLineAsync(CSFooter);
+                await sw.WriteLineAsync(language.EmitFileFooter);
                 Console.WriteLine($"T2G: Generator created ({lineNumber} lines)");
                 return 0;
             }
@@ -95,30 +136,24 @@ namespace DTOMaker.CLI
             }
         }
 
-        // todo make language agnostic
-        private const string PrefixCSharpComment = "//";
-        private const string PrefixMetaCode = "##";
-        private const string EmitCodePrefix = "Emit(\"";
-        private const string EmitCodeSuffix = "\");";
-
-        private static string T2GConvertLine(ReadOnlySpan<char> input)
+        private static string T2GConvertLine(ReadOnlySpan<char> input, ITargetLanguage language)
         {
             int outerIndentPos = input.SizeOfLeadingWhitespace();
             var outerIndent = input.Slice(0, outerIndentPos);
             var sourceCode = input.Slice(outerIndentPos);
 
             StringBuilder result = new StringBuilder();
-            if (sourceCode.StartsWith(PrefixCSharpComment))
+            if (sourceCode.StartsWith(language.PrefixComment))
             {
                 // comment found
-                var comment = sourceCode.Slice(PrefixCSharpComment.Length);
+                var comment = sourceCode.Slice(language.PrefixComment.Length);
                 int innerIndentPos = comment.SizeOfLeadingWhitespace();
                 var innerIndent = comment.Slice(0, innerIndentPos);
                 var candidate = comment.Slice(innerIndentPos);
-                if (candidate.StartsWith(PrefixMetaCode))
+                if (candidate.StartsWith(language.PrefixMetaCode))
                 {
                     // metacode found - emit
-                    var metacode = candidate.Slice(PrefixMetaCode.Length);
+                    var metacode = candidate.Slice(language.PrefixMetaCode.Length);
                     result.Append(outerIndent);
                     result.Append(innerIndent);
                     result.Append(metacode);
@@ -126,10 +161,10 @@ namespace DTOMaker.CLI
                 }
             }
 
-            result.Append(EmitCodePrefix);
+            result.Append(language.EmitCodePrefix);
             result.Append(outerIndent);
             result.AppendEscaped(sourceCode);
-            result.Append(EmitCodeSuffix);
+            result.Append(language.EmitCodeSuffix);
             return result.ToString();
         }
     }

@@ -32,7 +32,7 @@ namespace Template.CSRecord.Tests
             copy.Equals(orig).ShouldBeTrue();
         }
 
-        [Fact] //(Skip = "todo we need an array-like structure that implements IEquatable")]
+        [Fact]
         public void Equality03_VectorData()
         {
             var orig = new T_NameSpace_.CSRecord.T_EntityName_() { T_VectorMemberName_ = new int[] { 123, 456, 789 } };
