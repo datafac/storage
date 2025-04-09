@@ -23,7 +23,6 @@ namespace DTOMaker.Gentime
         public bool ObsoleteIsError { get; set; }
         public int Sequence { get; set; }
         public MemberKind Kind { get; set; }
-        public int FieldLength { get; set; } // todo move to MemBlocks
 
         private SyntaxDiagnostic? CheckHasMemberAttribute()
         {

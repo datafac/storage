@@ -65,6 +65,5 @@ namespace DTOMaker.Gentime
         public MemberKind Kind => _member.Kind;
         public bool IsNullable => _member.MemberIsNullable;
         public bool IsObsolete => _member.IsObsolete;
-        public int FieldLength => _member.FieldLength;
     }
 }

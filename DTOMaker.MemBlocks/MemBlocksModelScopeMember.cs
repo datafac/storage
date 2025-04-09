@@ -7,6 +7,7 @@ namespace DTOMaker.MemBlocks
     {
         private readonly MemBlockMember _member;
         public bool IsFixedLength => _member.IsFixedLength;
+        public int FieldLength => _member.FieldLength;
 
         public MemBlocksModelScopeMember(IModelScope parent, IScopeFactory factory, ILanguage language, TargetMember baseMember)
             : base(parent, factory, language, baseMember)
