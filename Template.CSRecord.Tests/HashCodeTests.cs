@@ -11,11 +11,13 @@ namespace Template.CSRecord.Tests
         [Fact]
         public void Equality01_HashCodes()
         {
-            var sut = new T_NameSpace_.CSRecord.T_EntityName_();
-            int hc0 = sut.GetHashCode();
+            var orig = new T_NameSpace_.CSRecord.T_EntityName_();
+            int origHash = orig.GetHashCode();
 
-            int hc1 = sut.GetHashCode();
-            hc1.ShouldBe(hc0);
+            var copy = orig with { T_RequiredScalarMemberName_ = 0 };
+
+            int copyHash = copy.GetHashCode();
+            copyHash.ShouldBe(origHash);
         }
 
         [Fact]

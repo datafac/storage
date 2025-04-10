@@ -98,8 +98,6 @@ namespace T_NameSpace_
 //##}
 namespace T_NameSpace_.JsonNewtonSoft
 {
-    //##if (false) {
-    //##}
     public partial class T_EntityName_ : T_BaseNameSpace_.JsonNewtonSoft.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>
     {
         // Derived entities: T_DerivedEntityCount_
@@ -353,9 +351,9 @@ namespace T_NameSpace_.JsonNewtonSoft
             //##break;
             //##case MemberKind.Binary:
             //##if (member.IsNullable) {
-            if (_T_NullableBinaryMemberName_ != other.T_NullableBinaryMemberName_) return false;
+            if (!BinaryValuesAreEqual(_T_NullableBinaryMemberName_, other._T_NullableBinaryMemberName_)) return false;
             //##} else {
-            if (_T_RequiredBinaryMemberName_ != other.T_RequiredBinaryMemberName_) return false;
+            if (!BinaryValuesAreEqual(_T_RequiredBinaryMemberName_, other._T_RequiredBinaryMemberName_)) return false;
             //##}
             //##break;
             //##case MemberKind.String:
@@ -407,9 +405,30 @@ namespace T_NameSpace_.JsonNewtonSoft
             //##break;
             //##case MemberKind.Binary:
             //##if (member.IsNullable) {
-            result.Add(_T_NullableBinaryMemberName_);
+            if (_T_NullableBinaryMemberName_ is not null)
+            {
+                ReadOnlySpan<byte> span_T_NullableBinaryMemberName_ = _T_NullableBinaryMemberName_;
+                result.Add(span_T_NullableBinaryMemberName_.Length);
+#if NET8_0_OR_GREATER
+                result.AddBytes(span_T_NullableBinaryMemberName_);
+#else
+                for (int i = 0; i < span_T_NullableBinaryMemberName_.Length; i++)
+                {
+                    result.Add(span_T_NullableBinaryMemberName_[i]);
+                }
+#endif
+            }
             //##} else {
-            result.Add(_T_RequiredBinaryMemberName_);
+            ReadOnlySpan<byte> span_T_RequiredBinaryMemberName_ = _T_RequiredBinaryMemberName_;
+            result.Add(span_T_RequiredBinaryMemberName_.Length);
+#if NET8_0_OR_GREATER
+            result.AddBytes(span_T_RequiredBinaryMemberName_);
+#else
+            for (int i = 0; i < span_T_RequiredBinaryMemberName_.Length; i++)
+            {
+                result.Add(span_T_RequiredBinaryMemberName_[i]);
+            }
+#endif
             //##}
             //##break;
             //##case MemberKind.String:

@@ -44,5 +44,13 @@ namespace DTOMaker.Runtime.JsonNewtonSoft
         public bool Equals(EntityBase? other) => true;
         public override bool Equals(object? obj) => obj is EntityBase;
         public override int GetHashCode() => HashCode.Combine<Type>(typeof(EntityBase));
+
+        protected static bool BinaryValuesAreEqual(byte[]? left, byte[]? right)
+        {
+            if (left is null) return (right is null);
+            if (right is null) return false;
+            return left.AsSpan().SequenceEqual(right.AsSpan());
+        }
+
     }
 }
