@@ -10,7 +10,6 @@ namespace DTOMaker.MemBlocks
 
         public LayoutMethod LayoutMethod => (Entity as MemBlockEntity)?.LayoutMethod ?? LayoutMethod.Undefined;
 
-        // todo? remove these flags if not used
         public bool HasOffsetAttribute { get; set; }
         public int FixedLength { get; set; }
         public bool IsFixedLength => FixedLength != 0;
@@ -66,7 +65,7 @@ namespace DTOMaker.MemBlocks
         {
             if (LayoutMethod == LayoutMethod.Undefined) return null;
             if (LayoutMethod == LayoutMethod.Linear) return null;
-            //if (LayoutMethod == LayoutMethod.Compact) return null; //todo
+            //if (LayoutMethod == LayoutMethod.Compact) return null;
 
             if (HasOffsetAttribute) return null;
 
@@ -153,8 +152,6 @@ namespace DTOMaker.MemBlocks
             if ((diagnostic2 = CheckFixedLengthIsValid()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckArrayCapacityIsValid()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckTotalLengthIsValid()) is not null) yield return diagnostic2;
-            // todo check binary fixed length >= 4
-            // todo check string fixed length >= 4
         }
 
 
