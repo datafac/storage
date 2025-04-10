@@ -99,8 +99,8 @@ namespace MyOrg.Models.MessagePack
 
         public bool Equals(RightTriangle? other)
         {
-            if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
             if (!base.Equals(other)) return false;
             if (_Length != other.Length) return false;
             if (_Height != other.Height) return false;

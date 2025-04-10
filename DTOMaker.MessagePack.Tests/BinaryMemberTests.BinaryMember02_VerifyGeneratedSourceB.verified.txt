@@ -99,8 +99,8 @@ namespace MyOrg.Models.MessagePack
 
         public bool Equals(Other? other)
         {
-            if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
             if (!base.Equals(other)) return false;
             if (_Value1 != other.Value1) return false;
             if (_Value2 != other.Value2) return false;

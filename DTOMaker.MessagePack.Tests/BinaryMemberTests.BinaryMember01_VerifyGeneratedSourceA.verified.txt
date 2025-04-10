@@ -126,8 +126,8 @@ namespace MyOrg.Models.MessagePack
 
         public bool Equals(MyDTO? other)
         {
-            if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
             if (!base.Equals(other)) return false;
             if (_Other1 != other.Other1) return false;
             if (!BinaryValuesAreEqual(_Field1, other._Field1)) return false;
@@ -144,8 +144,29 @@ namespace MyOrg.Models.MessagePack
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
             result.Add(_Other1);
-            result.Add(_Field1);
-            result.Add(_Field2);
+            var span_Field1 = _Field1.Span;
+            result.Add(span_Field1.Length);
+#if NET8_0_OR_GREATER
+            result.AddBytes(span_Field1);
+#else
+            for (int i = 0; i < span_Field1.Length; i++)
+            {
+                result.Add(span_Field1[i]);
+            }
+#endif
+            if (_Field2.HasValue)
+            {
+                var span_Field2 = _Field2.Value.Span;
+                result.Add(span_Field2.Length);
+#if NET8_0_OR_GREATER
+                result.AddBytes(span_Field2);
+#else
+                for (int i = 0; i < span_Field2.Length; i++)
+                {
+                    result.Add(span_Field2[i]);
+                }
+#endif
+            }
             return result.ToHashCode();
         }
 

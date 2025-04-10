@@ -19,19 +19,41 @@ using System;
 using T_MemberType_ = System.Int32;
 namespace T_MemberTypeNameSpace_
 {
-    public interface IT_MemberTypeName_ { }
+    public interface IT_MemberTypeName_
+    {
+        long Field1 { get; }
+    }
 }
 namespace T_MemberTypeNameSpace_.MessagePack
 {
-    public class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_
+    [MessagePackObject]
+    public sealed class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_, IEquatable<T_MemberTypeName_>
     {
         private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();
         public static T_MemberTypeName_ Empty => _empty;
+
+        [Key(1)]
+        public long Field1 { get; set; }
+
         public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source) => throw new NotImplementedException();
         protected override int OnGetEntityId() => 3;
         public T_MemberTypeName_() { }
         public T_MemberTypeName_(IT_MemberTypeName_ source) { }
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
+
+        public bool Equals(T_MemberTypeName_? other)
+        {
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            if (!base.Equals(other)) return false;
+            if (other.Field1 != Field1) return false;
+            return true;
+        }
+
+        public override bool Equals(object? obj) => obj is T_MemberTypeName_ other && Equals(other);
+        public override int GetHashCode() => HashCode.Combine(Field1);
+        public static bool operator ==(T_MemberTypeName_? left, T_MemberTypeName_? right) => left is not null ? left.Equals(right) : (right is null);
+        public static bool operator !=(T_MemberTypeName_? left, T_MemberTypeName_? right) => left is not null ? !left.Equals(right) : (right is not null);
     }
 }
 namespace T_BaseNameSpace_.MessagePack
@@ -502,9 +524,30 @@ namespace T_NameSpace_.MessagePack
             //##break;
             //##case MemberKind.Binary:
             //##if (member.IsNullable) {
-            result.Add(_T_NullableBinaryMemberName_);
+            if (_T_NullableBinaryMemberName_.HasValue)
+            {
+                var span_T_NullableBinaryMemberName_ = _T_NullableBinaryMemberName_.Value.Span;
+                result.Add(span_T_NullableBinaryMemberName_.Length);
+#if NET8_0_OR_GREATER
+                result.AddBytes(span_T_NullableBinaryMemberName_);
+#else
+                for (int i = 0; i < span_T_NullableBinaryMemberName_.Length; i++)
+                {
+                    result.Add(span_T_NullableBinaryMemberName_[i]);
+                }
+#endif
+            }
             //##} else {
-            result.Add(_T_RequiredBinaryMemberName_);
+            var span_T_RequiredBinaryMemberName_ = _T_RequiredBinaryMemberName_.Span;
+            result.Add(span_T_RequiredBinaryMemberName_.Length);
+#if NET8_0_OR_GREATER
+            result.AddBytes(span_T_RequiredBinaryMemberName_);
+#else
+            for (int i = 0; i < span_T_RequiredBinaryMemberName_.Length; i++)
+            {
+                result.Add(span_T_RequiredBinaryMemberName_[i]);
+            }
+#endif
             //##}
             //##break;
             //##case MemberKind.String:
@@ -761,6 +804,9 @@ namespace T_NameSpace_.MessagePack
         //##if (member.IsNullable) {
         [IgnoreMember]
         private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_? _T_NullableEntityMemberName_;
+        //##if (member.IsObsolete) {
+        [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
+        //##}
         [Key(T_NullableEntityMemberKey_)]
         public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_? T_NullableEntityMemberName_
         {
@@ -774,6 +820,9 @@ namespace T_NameSpace_.MessagePack
         //##} else {
         [IgnoreMember]
         private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.Empty;
+        //##if (member.IsObsolete) {
+        [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
+        //##}
         [Key(T_RequiredEntityMemberKey_)]
         public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_ T_RequiredEntityMemberName_
         {
@@ -857,8 +906,8 @@ namespace T_NameSpace_.MessagePack
 
         public bool Equals(T_ConcreteEntityName_? other)
         {
-            if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
             if (!base.Equals(other)) return false;
             //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
@@ -936,9 +985,30 @@ namespace T_NameSpace_.MessagePack
             //##break;
             //##case MemberKind.Binary:
             //##if (member.IsNullable) {
-            result.Add(_T_NullableBinaryMemberName_);
+            if (_T_NullableBinaryMemberName_.HasValue)
+            {
+                var span_T_NullableBinaryMemberName_ = _T_NullableBinaryMemberName_.Value.Span;
+                result.Add(span_T_NullableBinaryMemberName_.Length);
+#if NET8_0_OR_GREATER
+                result.AddBytes(span_T_NullableBinaryMemberName_);
+#else
+                for (int i = 0; i < span_T_NullableBinaryMemberName_.Length; i++)
+                {
+                    result.Add(span_T_NullableBinaryMemberName_[i]);
+                }
+#endif
+            }
             //##} else {
-            result.Add(_T_RequiredBinaryMemberName_);
+            var span_T_RequiredBinaryMemberName_ = _T_RequiredBinaryMemberName_.Span;
+            result.Add(span_T_RequiredBinaryMemberName_.Length);
+#if NET8_0_OR_GREATER
+            result.AddBytes(span_T_RequiredBinaryMemberName_);
+#else
+            for (int i = 0; i < span_T_RequiredBinaryMemberName_.Length; i++)
+            {
+                result.Add(span_T_RequiredBinaryMemberName_[i]);
+            }
+#endif
             //##}
             //##break;
             //##case MemberKind.String:

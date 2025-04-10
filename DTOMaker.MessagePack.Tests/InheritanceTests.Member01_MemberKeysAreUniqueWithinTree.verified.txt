@@ -88,8 +88,8 @@ namespace MyOrg.Models.MessagePack
 
         public bool Equals(MyDTO? other)
         {
-            if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
             if (!base.Equals(other)) return false;
             if (_DTOField1 != other.DTOField1) return false;
             return true;

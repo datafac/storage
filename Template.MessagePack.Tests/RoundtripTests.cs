@@ -21,6 +21,7 @@ namespace Template_MessagePack.Tests
             orig.BaseField1 = 321;
             orig.T_RequiredScalarMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
+            orig.T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_() { Field1 = 456L };
             orig.T_RequiredBinaryMemberName_ = largeBinary;
             orig.T_NullableBinaryMemberName_ = smallBinary;
             orig.Freeze();
@@ -34,7 +35,10 @@ namespace Template_MessagePack.Tests
             copy.BaseField1!.ShouldBe(orig.BaseField1);
             copy.T_RequiredScalarMemberName_.ShouldBe(orig.T_RequiredScalarMemberName_);
             copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).ShouldBeTrue();
+            copy.T_RequiredEntityMemberName_.Field1.ShouldBe(orig.T_RequiredEntityMemberName_.Field1);
             copy.T_RequiredBinaryMemberName_.Span.SequenceEqual(orig.T_RequiredBinaryMemberName_.Span).ShouldBeTrue();
+            copy.ShouldBe(orig);
+            copy.GetHashCode().ShouldBe(orig.GetHashCode());
         }
 
         [Fact]
@@ -64,6 +68,8 @@ namespace Template_MessagePack.Tests
             copy.T_RequiredScalarMemberName_.ShouldBe(orig.T_RequiredScalarMemberName_);
             copy.T_VectorMemberName_.Span.SequenceEqual(orig.T_VectorMemberName_.Span).ShouldBeTrue();
             copy.T_RequiredBinaryMemberName_.Span.SequenceEqual(orig.T_RequiredBinaryMemberName_.Span).ShouldBeTrue();
+            copy.ShouldBe(orig);
+            copy.GetHashCode().ShouldBe(orig.GetHashCode());
         }
     }
 }

@@ -29,19 +29,41 @@ if (false) {
 Emit("using T_MemberType_ = System.Int32;");
 Emit("namespace T_MemberTypeNameSpace_");
 Emit("{");
-Emit("    public interface IT_MemberTypeName_ { }");
+Emit("    public interface IT_MemberTypeName_");
+Emit("    {");
+Emit("        long Field1 { get; }");
+Emit("    }");
 Emit("}");
 Emit("namespace T_MemberTypeNameSpace_.MessagePack");
 Emit("{");
-Emit("    public class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_");
+Emit("    [MessagePackObject]");
+Emit("    public sealed class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_, IEquatable<T_MemberTypeName_>");
 Emit("    {");
 Emit("        private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();");
 Emit("        public static T_MemberTypeName_ Empty => _empty;");
+Emit("");
+Emit("        [Key(1)]");
+Emit("        public long Field1 { get; set; }");
+Emit("");
 Emit("        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source) => throw new NotImplementedException();");
 Emit("        protected override int OnGetEntityId() => 3;");
 Emit("        public T_MemberTypeName_() { }");
 Emit("        public T_MemberTypeName_(IT_MemberTypeName_ source) { }");
 Emit("        protected override IFreezable OnPartCopy() => throw new NotImplementedException();");
+Emit("");
+Emit("        public bool Equals(T_MemberTypeName_? other)");
+Emit("        {");
+Emit("            if (other is null) return false;");
+Emit("            if (ReferenceEquals(this, other)) return true;");
+Emit("            if (!base.Equals(other)) return false;");
+Emit("            if (other.Field1 != Field1) return false;");
+Emit("            return true;");
+Emit("        }");
+Emit("");
+Emit("        public override bool Equals(object? obj) => obj is T_MemberTypeName_ other && Equals(other);");
+Emit("        public override int GetHashCode() => HashCode.Combine(Field1);");
+Emit("        public static bool operator ==(T_MemberTypeName_? left, T_MemberTypeName_? right) => left is not null ? left.Equals(right) : (right is null);");
+Emit("        public static bool operator !=(T_MemberTypeName_? left, T_MemberTypeName_? right) => left is not null ? !left.Equals(right) : (right is not null);");
 Emit("    }");
 Emit("}");
 Emit("namespace T_BaseNameSpace_.MessagePack");
@@ -512,9 +534,30 @@ Emit("            result.Add(_T_RequiredEntityMemberName_);");
             break;
             case MemberKind.Binary:
             if (member.IsNullable) {
-Emit("            result.Add(_T_NullableBinaryMemberName_);");
+Emit("            if (_T_NullableBinaryMemberName_.HasValue)");
+Emit("            {");
+Emit("                var span_T_NullableBinaryMemberName_ = _T_NullableBinaryMemberName_.Value.Span;");
+Emit("                result.Add(span_T_NullableBinaryMemberName_.Length);");
+Emit("#if NET8_0_OR_GREATER");
+Emit("                result.AddBytes(span_T_NullableBinaryMemberName_);");
+Emit("#else");
+Emit("                for (int i = 0; i < span_T_NullableBinaryMemberName_.Length; i++)");
+Emit("                {");
+Emit("                    result.Add(span_T_NullableBinaryMemberName_[i]);");
+Emit("                }");
+Emit("#endif");
+Emit("            }");
             } else {
-Emit("            result.Add(_T_RequiredBinaryMemberName_);");
+Emit("            var span_T_RequiredBinaryMemberName_ = _T_RequiredBinaryMemberName_.Span;");
+Emit("            result.Add(span_T_RequiredBinaryMemberName_.Length);");
+Emit("#if NET8_0_OR_GREATER");
+Emit("            result.AddBytes(span_T_RequiredBinaryMemberName_);");
+Emit("#else");
+Emit("            for (int i = 0; i < span_T_RequiredBinaryMemberName_.Length; i++)");
+Emit("            {");
+Emit("                result.Add(span_T_RequiredBinaryMemberName_[i]);");
+Emit("            }");
+Emit("#endif");
             }
             break;
             case MemberKind.String:
@@ -771,6 +814,9 @@ Emit("        }");
         if (member.IsNullable) {
 Emit("        [IgnoreMember]");
 Emit("        private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_? _T_NullableEntityMemberName_;");
+        if (member.IsObsolete) {
+Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
+        }
 Emit("        [Key(T_NullableEntityMemberKey_)]");
 Emit("        public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_? T_NullableEntityMemberName_");
 Emit("        {");
@@ -784,6 +830,9 @@ Emit("        }");
         } else {
 Emit("        [IgnoreMember]");
 Emit("        private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.Empty;");
+        if (member.IsObsolete) {
+Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
+        }
 Emit("        [Key(T_RequiredEntityMemberKey_)]");
 Emit("        public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_ T_RequiredEntityMemberName_");
 Emit("        {");
@@ -867,8 +916,8 @@ Emit("");
 Emit("");
 Emit("        public bool Equals(T_ConcreteEntityName_? other)");
 Emit("        {");
-Emit("            if (ReferenceEquals(this, other)) return true;");
 Emit("            if (other is null) return false;");
+Emit("            if (ReferenceEquals(this, other)) return true;");
 Emit("            if (!base.Equals(other)) return false;");
             foreach (var member in entity.Members) {
             using var _ = NewScope(member);
@@ -946,9 +995,30 @@ Emit("            result.Add(_T_RequiredEntityMemberName_);");
             break;
             case MemberKind.Binary:
             if (member.IsNullable) {
-Emit("            result.Add(_T_NullableBinaryMemberName_);");
+Emit("            if (_T_NullableBinaryMemberName_.HasValue)");
+Emit("            {");
+Emit("                var span_T_NullableBinaryMemberName_ = _T_NullableBinaryMemberName_.Value.Span;");
+Emit("                result.Add(span_T_NullableBinaryMemberName_.Length);");
+Emit("#if NET8_0_OR_GREATER");
+Emit("                result.AddBytes(span_T_NullableBinaryMemberName_);");
+Emit("#else");
+Emit("                for (int i = 0; i < span_T_NullableBinaryMemberName_.Length; i++)");
+Emit("                {");
+Emit("                    result.Add(span_T_NullableBinaryMemberName_[i]);");
+Emit("                }");
+Emit("#endif");
+Emit("            }");
             } else {
-Emit("            result.Add(_T_RequiredBinaryMemberName_);");
+Emit("            var span_T_RequiredBinaryMemberName_ = _T_RequiredBinaryMemberName_.Span;");
+Emit("            result.Add(span_T_RequiredBinaryMemberName_.Length);");
+Emit("#if NET8_0_OR_GREATER");
+Emit("            result.AddBytes(span_T_RequiredBinaryMemberName_);");
+Emit("#else");
+Emit("            for (int i = 0; i < span_T_RequiredBinaryMemberName_.Length; i++)");
+Emit("            {");
+Emit("                result.Add(span_T_RequiredBinaryMemberName_[i]);");
+Emit("            }");
+Emit("#endif");
             }
             break;
             case MemberKind.String:

@@ -93,8 +93,8 @@ namespace MyOrg.DomainB.MessagePack
 
         public bool Equals(MyDTO2? other)
         {
-            if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
             if (!base.Equals(other)) return false;
             if (_Member1 != other.Member1) return false;
             return true;
