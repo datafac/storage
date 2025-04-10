@@ -4,6 +4,26 @@
 *Warning: This is pre-release software under active development. Breaking changes may occur.*
 
 <!--TOC-->
+- [DTOMaker](#dtomaker)
+  - [Workflow](#workflow)
+- [Included Packages](#included-packages)
+  - [DTOMaker.Models](#dtomaker.models)
+  - [DTOMaker.JsonNewtonSoft](#dtomaker.jsonnewtonsoft)
+  - [DTOMaker.MessagePack](#dtomaker.messagepack)
+  - [DTOMaker.Models.MessagePack](#dtomaker.models.messagepack)
+  - [DTOMaker.MemBlocks](#dtomaker.memblocks)
+  - [DTOMaker.Models.MemBlocks](#dtomaker.models.memblocks)
+  - [DTOMaker.CSPoco](#dtomaker.cspoco)
+  - [DTOMaker.CSRecord (.NET 8+)](#dtomaker.csrecord-.net-8)
+  - [DTOMaker.Runtime](#dtomaker.runtime)
+- [Model features](#model-features)
+  - [MemBlocks features](#memblocks-features)
+- [!Limitations](#limitations)
+  - [Single compilation unit](#single-compilation-unit)
+- [Development](#development)
+  - [In progress](#in-progress)
+  - [Coming soon](#coming-soon)
+  - [Coming later](#coming-later)
 <!--/TOC-->
 
 # DTOMaker
@@ -40,7 +60,7 @@ flowchart LR
 Models are defined as C# interfaces with additional attributes. Here's a trivial example:
 
 ```C#
-[Entity]
+[Entity][Id(1)]
 public interface IMyFirstDTO
 {
     [Member(1)] string Name { get; }
@@ -62,6 +82,10 @@ This repo includes the following packages:
 
 ## DTOMaker.Models
 Attributes for defining simple data models as interfaces in C#.
+
+## DTOMaker.JsonNewtonSoft
+A source generator that creates DTOs (Data Transport Objects) that are serializable to JSON 
+using the Newtonsoft.Json package.
 
 ## DTOMaker.MessagePack
 A source generator that creates MessagePack DTOs (Data Transport Objects).
@@ -90,8 +114,9 @@ Common types used at runtime by DTOMaker generated entities.
 - Member value types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
 - String member types.
 - Binary member types:
-  - Octets (model interfaces, CSRecord, MemBlocks)
+  - Octets (model interfaces, CSPoco, CSRecord, MemBlocks)
   - ReadOnlyMemory\<byte\> (MessagePack)
+  - byte[] (JsonNewtonSoft)
 - polymorphic types
 - entity members
 - Built-in freezability (mutable until frozen) support
@@ -107,13 +132,13 @@ Common types used at runtime by DTOMaker generated entities.
 # !Limitations
 ## Single compilation unit
 All models and generated DTOs are contained within a single assembly.
-Models cannot reference types in other projects or pacakges (other 
+Models cannot reference types in other projects or packages (other 
 than native types). Generated classes are partial, which can help you 
 mitigate the single assembly constraint.
 
 # Development
 ## In progress
-- Json (NewtonSoft) generator
+- custom struct members (to avoid primitive obsession)
 
 ## Coming soon
 - Json (System.Text) generator
@@ -131,7 +156,6 @@ mitigate the single assembly constraint.
   of members (Boolean, T).
 
 ## Coming later
-- custom struct members (to avoid primitive obsession)
 - Google Protobuf .proto generation
 - model.json generation
 - command-line alternative
