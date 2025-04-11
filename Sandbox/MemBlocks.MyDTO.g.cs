@@ -165,11 +165,7 @@ namespace MyOrg.Models.MemBlocks
             get => IfUnpacked(_Other1);
             set => _Other1 = IfNotFrozen(value);
         }
-        MyOrg.Models.IOther? IMyDTO.Other1
-        {
-            get => IfUnpacked(_Other1);
-            set => _Other1 = IfNotFrozen(value is null ? null : MyOrg.Models.MemBlocks.Other.CreateFrom(value));
-        }
+        MyOrg.Models.IOther? IMyDTO.Other1 => IfUnpacked(_Other1);
 
         private async ValueTask Field1_Pack(IDataStore dataStore)
         {

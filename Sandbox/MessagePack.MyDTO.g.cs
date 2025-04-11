@@ -92,15 +92,7 @@ namespace MyOrg.Models.MessagePack
             get => _Other1;
             set => _Other1 = IfNotFrozen(value);
         }
-        MyOrg.Models.IOther? IMyDTO.Other1
-        {
-            get => _Other1;
-            set
-            {
-                ThrowIfFrozen();
-                _Other1 = value is null ? null : MyOrg.Models.MessagePack.Other.CreateFrom(value);
-            }
-        }
+        MyOrg.Models.IOther? IMyDTO.Other1 => _Other1;
 
         [IgnoreMember]
         private ReadOnlyMemory<byte> _Field1 = ReadOnlyMemory<byte>.Empty;
@@ -110,11 +102,7 @@ namespace MyOrg.Models.MessagePack
             get => _Field1;
             set => _Field1 = IfNotFrozen(value);
         }
-        Octets IMyDTO.Field1
-        {
-            get => Octets.UnsafeWrap(_Field1);
-            set => _Field1 = IfNotFrozen(value.Memory);
-        }
+        Octets IMyDTO.Field1 => Octets.UnsafeWrap(_Field1);
 
         [IgnoreMember]
         private ReadOnlyMemory<byte>? _Field2;
@@ -124,12 +112,7 @@ namespace MyOrg.Models.MessagePack
             get => _Field2;
             set => _Field2 = IfNotFrozen(value);
         }
-        Octets? IMyDTO.Field2
-        {
-            get => _Field2 is null ? null : Octets.UnsafeWrap(_Field2.Value);
-            set => _Field2 = IfNotFrozen(value is null ? null : value.Memory);
-        }
-
+        Octets? IMyDTO.Field2 => _Field2 is null ? null : Octets.UnsafeWrap(_Field2.Value);
 
         public bool Equals(MyDTO? other)
         {
