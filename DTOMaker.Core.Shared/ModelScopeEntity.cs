@@ -17,13 +17,13 @@ namespace DTOMaker.Gentime
 
             _entity = entity;
             _tokens["NameSpace"] = entity.TFN.NameSpace;
-            _tokens["AbstractEntity"] = entity.TFN.ShortName;
-            _tokens["ConcreteEntity"] = entity.TFN.ShortName;
+            _tokens["AbstractEntity"] = entity.TFN.ShortImplName;
+            _tokens["ConcreteEntity"] = entity.TFN.ShortImplName;
             _tokens["EntityImplName"] = entity.TFN.ShortImplName;
             _tokens["EntityIntfName"] = entity.TFN.ShortIntfName;
 
             _tokens["EntityId"] = entity.EntityId;
-            _tokens["BaseName"] = entity.Base?.TFN.ShortName ?? TypeFullName.DefaultBase.ShortName;
+            _tokens["BaseName"] = entity.Base?.TFN.ShortImplName ?? TypeFullName.DefaultBase.ShortImplName;
             _tokens["BaseNameSpace"] = entity.Base?.TFN.NameSpace ?? TypeFullName.DefaultBase.NameSpace;
             _tokens["BaseFullName"] = entity.Base?.TFN.FullName ?? TypeFullName.DefaultBase.FullName;
             _tokens["ClassHeight"] = ClassHeight;
