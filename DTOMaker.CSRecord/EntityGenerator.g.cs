@@ -33,14 +33,14 @@ Emit("    public interface IT_MemberTypeIntfName_ { }");
 Emit("}");
 Emit("namespace T_MemberTypeNameSpace_.CSRecord");
 Emit("{");
-Emit("    public record class T_MemberTypeName_ : EntityBase, IT_MemberTypeIntfName_");
+Emit("    public record class T_MemberTypeImplName_ : EntityBase, IT_MemberTypeIntfName_");
 Emit("    {");
 Emit("        private const int T_EntityId_ = 3;");
-Emit("        private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();");
-Emit("        public static T_MemberTypeName_ Empty => _empty;");
-Emit("        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeIntfName_ source) => throw new NotImplementedException();");
-Emit("        public T_MemberTypeName_() { }");
-Emit("        public T_MemberTypeName_(IT_MemberTypeIntfName_ source) { }");
+Emit("        private static readonly T_MemberTypeImplName_ _empty = new T_MemberTypeImplName_();");
+Emit("        public static T_MemberTypeImplName_ Empty => _empty;");
+Emit("        public static T_MemberTypeImplName_ CreateFrom(IT_MemberTypeIntfName_ source) => throw new NotImplementedException();");
+Emit("        public T_MemberTypeImplName_() { }");
+Emit("        public T_MemberTypeImplName_(IT_MemberTypeIntfName_ source) { }");
 Emit("        protected override int OnGetEntityId() => T_EntityId_;");
 Emit("    }");
 Emit("}");
@@ -144,9 +144,9 @@ Emit("            _T_VectorMemberName_ = new ReadOnlyMemoryWrapper<T_MemberType_
             break;
             case MemberKind.Entity:
             if (member.IsNullable) {
-Emit("            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);");
+Emit("            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.CSRecord.T_MemberTypeImplName_.CreateFrom(source.T_NullableEntityMemberName_);");
             } else {
-Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);");
+Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSRecord.T_MemberTypeImplName_.CreateFrom(source.T_RequiredEntityMemberName_);");
             }
             break;
             case MemberKind.Binary:
@@ -209,16 +209,16 @@ Emit("        }");
         break;
         case MemberKind.Entity:
         if (member.IsNullable) {
-Emit("        private T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_? _T_NullableEntityMemberName_;");
-Emit("        public T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_? T_NullableEntityMemberName_");
+Emit("        private T_MemberTypeNameSpace_.CSRecord.T_MemberTypeImplName_? _T_NullableEntityMemberName_;");
+Emit("        public T_MemberTypeNameSpace_.CSRecord.T_MemberTypeImplName_? T_NullableEntityMemberName_");
 Emit("        {");
 Emit("            get => _T_NullableEntityMemberName_;");
 Emit("            init => _T_NullableEntityMemberName_ = value;");
 Emit("        }");
 Emit("        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => T_NullableEntityMemberName_;");
         } else {
-Emit("        private T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_.Empty;");
-Emit("        public T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_ T_RequiredEntityMemberName_");
+Emit("        private T_MemberTypeNameSpace_.CSRecord.T_MemberTypeImplName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSRecord.T_MemberTypeImplName_.Empty;");
+Emit("        public T_MemberTypeNameSpace_.CSRecord.T_MemberTypeImplName_ T_RequiredEntityMemberName_");
 Emit("        {");
 Emit("            get => _T_RequiredEntityMemberName_;");
 Emit("            init => _T_RequiredEntityMemberName_ = value;");

@@ -37,21 +37,21 @@ Emit("}");
 Emit("namespace T_MemberTypeNameSpace_.MessagePack");
 Emit("{");
 Emit("    [MessagePackObject]");
-Emit("    public sealed class T_MemberTypeName_ : EntityBase, IT_MemberTypeIntfName_, IEquatable<T_MemberTypeName_>");
+Emit("    public sealed class T_MemberTypeImplName_ : EntityBase, IT_MemberTypeIntfName_, IEquatable<T_MemberTypeImplName_>");
 Emit("    {");
-Emit("        private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();");
-Emit("        public static T_MemberTypeName_ Empty => _empty;");
+Emit("        private static readonly T_MemberTypeImplName_ _empty = new T_MemberTypeImplName_();");
+Emit("        public static T_MemberTypeImplName_ Empty => _empty;");
 Emit("");
 Emit("        [Key(1)]");
 Emit("        public long Field1 { get; set; }");
 Emit("");
-Emit("        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeIntfName_ source) => throw new NotImplementedException();");
+Emit("        public static T_MemberTypeImplName_ CreateFrom(IT_MemberTypeIntfName_ source) => throw new NotImplementedException();");
 Emit("        protected override int OnGetEntityId() => 3;");
-Emit("        public T_MemberTypeName_() { }");
-Emit("        public T_MemberTypeName_(IT_MemberTypeIntfName_ source) { }");
+Emit("        public T_MemberTypeImplName_() { }");
+Emit("        public T_MemberTypeImplName_(IT_MemberTypeIntfName_ source) { }");
 Emit("        protected override IFreezable OnPartCopy() => throw new NotImplementedException();");
 Emit("");
-Emit("        public bool Equals(T_MemberTypeName_? other)");
+Emit("        public bool Equals(T_MemberTypeImplName_? other)");
 Emit("        {");
 Emit("            if (other is null) return false;");
 Emit("            if (ReferenceEquals(this, other)) return true;");
@@ -60,10 +60,10 @@ Emit("            if (other.Field1 != Field1) return false;");
 Emit("            return true;");
 Emit("        }");
 Emit("");
-Emit("        public override bool Equals(object? obj) => obj is T_MemberTypeName_ other && Equals(other);");
+Emit("        public override bool Equals(object? obj) => obj is T_MemberTypeImplName_ other && Equals(other);");
 Emit("        public override int GetHashCode() => HashCode.Combine(Field1);");
-Emit("        public static bool operator ==(T_MemberTypeName_? left, T_MemberTypeName_? right) => left is not null ? left.Equals(right) : (right is null);");
-Emit("        public static bool operator !=(T_MemberTypeName_? left, T_MemberTypeName_? right) => left is not null ? !left.Equals(right) : (right is not null);");
+Emit("        public static bool operator ==(T_MemberTypeImplName_? left, T_MemberTypeImplName_? right) => left is not null ? left.Equals(right) : (right is null);");
+Emit("        public static bool operator !=(T_MemberTypeImplName_? left, T_MemberTypeImplName_? right) => left is not null ? !left.Equals(right) : (right is not null);");
 Emit("    }");
 Emit("}");
 Emit("namespace T_BaseNameSpace_.MessagePack");
@@ -239,9 +239,9 @@ Emit("            _T_VectorMemberName_ = source._T_VectorMemberName_;");
             break;
             case MemberKind.Entity:
             if (member.IsNullable) {
-Emit("            _T_NullableEntityMemberName_ = source._T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source._T_NullableEntityMemberName_);");
+Emit("            _T_NullableEntityMemberName_ = source._T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.CreateFrom(source._T_NullableEntityMemberName_);");
             } else {
-Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source._T_RequiredEntityMemberName_);");
+Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.CreateFrom(source._T_RequiredEntityMemberName_);");
             }
             break;
             case MemberKind.Binary:
@@ -283,9 +283,9 @@ Emit("            _T_VectorMemberName_ = source.T_VectorMemberName_;");
             break;
             case MemberKind.Entity:
             if (member.IsNullable) {
-Emit("            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);");
+Emit("            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.CreateFrom(source.T_NullableEntityMemberName_);");
             } else {
-Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);");
+Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.CreateFrom(source.T_RequiredEntityMemberName_);");
             }
             break;
             case MemberKind.Binary:
@@ -358,12 +358,12 @@ Emit("        }");
         case MemberKind.Entity:
         if (member.IsNullable) {
 Emit("        [IgnoreMember]");
-Emit("        private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_? _T_NullableEntityMemberName_;");
+Emit("        private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_? _T_NullableEntityMemberName_;");
         if (member.IsObsolete) {
 Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
         }
 Emit("        [Key(T_NullableEntityMemberKey_)]");
-Emit("        public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_? T_NullableEntityMemberName_");
+Emit("        public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_? T_NullableEntityMemberName_");
 Emit("        {");
 Emit("            get => _T_NullableEntityMemberName_;");
 Emit("            set => _T_NullableEntityMemberName_ = IfNotFrozen(value);");
@@ -371,12 +371,12 @@ Emit("        }");
 Emit("        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => _T_NullableEntityMemberName_;");
         } else {
 Emit("        [IgnoreMember]");
-Emit("        private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.Empty;");
+Emit("        private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.Empty;");
         if (member.IsObsolete) {
 Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
         }
 Emit("        [Key(T_RequiredEntityMemberKey_)]");
-Emit("        public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_ T_RequiredEntityMemberName_");
+Emit("        public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_ T_RequiredEntityMemberName_");
 Emit("        {");
 Emit("            get => _T_RequiredEntityMemberName_;");
 Emit("            set => _T_RequiredEntityMemberName_ = IfNotFrozen(value);");
@@ -694,9 +694,9 @@ Emit("            _T_VectorMemberName_ = source._T_VectorMemberName_;");
             break;
             case MemberKind.Entity:
             if (member.IsNullable) {
-Emit("            _T_NullableEntityMemberName_ = source._T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source._T_NullableEntityMemberName_);");
+Emit("            _T_NullableEntityMemberName_ = source._T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.CreateFrom(source._T_NullableEntityMemberName_);");
             } else {
-Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source._T_RequiredEntityMemberName_);");
+Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.CreateFrom(source._T_RequiredEntityMemberName_);");
             }
             break;
             case MemberKind.Binary:
@@ -738,9 +738,9 @@ Emit("            _T_VectorMemberName_ = source.T_VectorMemberName_;");
             break;
             case MemberKind.Entity:
             if (member.IsNullable) {
-Emit("            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);");
+Emit("            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.CreateFrom(source.T_NullableEntityMemberName_);");
             } else {
-Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);");
+Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.CreateFrom(source.T_RequiredEntityMemberName_);");
             }
             break;
             case MemberKind.Binary:
@@ -813,12 +813,12 @@ Emit("        }");
         case MemberKind.Entity:
         if (member.IsNullable) {
 Emit("        [IgnoreMember]");
-Emit("        private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_? _T_NullableEntityMemberName_;");
+Emit("        private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_? _T_NullableEntityMemberName_;");
         if (member.IsObsolete) {
 Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
         }
 Emit("        [Key(T_NullableEntityMemberKey_)]");
-Emit("        public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_? T_NullableEntityMemberName_");
+Emit("        public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_? T_NullableEntityMemberName_");
 Emit("        {");
 Emit("            get => _T_NullableEntityMemberName_;");
 Emit("            set => _T_NullableEntityMemberName_ = IfNotFrozen(value);");
@@ -829,12 +829,12 @@ Emit("            get => _T_NullableEntityMemberName_;");
 Emit("        }");
         } else {
 Emit("        [IgnoreMember]");
-Emit("        private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.Empty;");
+Emit("        private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.Empty;");
         if (member.IsObsolete) {
 Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
         }
 Emit("        [Key(T_RequiredEntityMemberKey_)]");
-Emit("        public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_ T_RequiredEntityMemberName_");
+Emit("        public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_ T_RequiredEntityMemberName_");
 Emit("        {");
 Emit("            get => _T_RequiredEntityMemberName_;");
 Emit("            set => _T_RequiredEntityMemberName_ = IfNotFrozen(value);");

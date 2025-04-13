@@ -28,7 +28,7 @@ namespace Template.JsonNewtonSoft.Tests
             orig.BaseField1 = 321;
             orig.T_RequiredScalarMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
-            //todo orig.T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeName_() { Field1 = 456L };
+            //todo orig.T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeImplName_() { Field1 = 456L };
             orig.T_RequiredBinaryMemberName_ = largeBinary;
             orig.T_NullableBinaryMemberName_ = smallBinary;
             orig.Freeze();

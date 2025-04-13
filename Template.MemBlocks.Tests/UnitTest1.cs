@@ -98,7 +98,7 @@ namespace Template.MemBlocks.Tests
             orig.BaseField1 = 789;
             orig.T_ScalarMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
-            orig.T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_() { Field1 = 123 };
+            orig.T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_() { Field1 = 123 };
             orig.T_RequiredFixLenBinaryMemberName_ = smallBinary;
             orig.T_RequiredVarLenBinaryMemberName_ = largeBinary;
             orig.T_NullableFixLenBinaryMemberName_ = null;
@@ -132,7 +132,7 @@ namespace Template.MemBlocks.Tests
             orig.BaseField1 = 789;
             orig.T_ScalarMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
-            orig.T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_() { Field1 = 123 };
+            orig.T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_() { Field1 = 123 };
             orig.T_RequiredFixLenBinaryMemberName_ = smallBinary;
             orig.T_RequiredVarLenBinaryMemberName_ = largeBinary;
             orig.T_NullableFixLenBinaryMemberName_ = null;

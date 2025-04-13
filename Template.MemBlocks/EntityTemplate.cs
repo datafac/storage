@@ -39,43 +39,43 @@ namespace T_MemberTypeNameSpace_
 }
 namespace T_MemberTypeNameSpace_.MemBlocks
 {
-    public class T_MemberTypeName_ : EntityBase, IT_MemberTypeIntfName_
+    public class T_MemberTypeImplName_ : EntityBase, IT_MemberTypeIntfName_
     {
         private const int ClassHeight = 1;
         private const int BlockLength = 8;
         private const long StructureCode = 0x00_41L;
         private static readonly BlockHeader _header = BlockHeader.CreateNew(3, StructureCode);
 
-        public static T_MemberTypeName_ CreateFrom(T_MemberTypeName_ source)
+        public static T_MemberTypeImplName_ CreateFrom(T_MemberTypeImplName_ source)
         {
             if (source.IsFrozen) return source;
-            return new T_MemberTypeName_(source);
+            return new T_MemberTypeImplName_(source);
         }
-        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeIntfName_ source)
+        public static T_MemberTypeImplName_ CreateFrom(IT_MemberTypeIntfName_ source)
         {
-            if (source is T_MemberTypeName_ concrete && concrete.IsFrozen) return concrete;
-            return new T_MemberTypeName_(source);
+            if (source is T_MemberTypeImplName_ concrete && concrete.IsFrozen) return concrete;
+            return new T_MemberTypeImplName_(source);
         }
-        public static T_MemberTypeName_ CreateFrom(ReadOnlySequence<byte> buffers)
+        public static T_MemberTypeImplName_ CreateFrom(ReadOnlySequence<byte> buffers)
         {
-            return new T_MemberTypeName_(buffers);
+            return new T_MemberTypeImplName_(buffers);
         }
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
-        public T_MemberTypeName_() : base(_header)
+        public T_MemberTypeImplName_() : base(_header)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
-        public T_MemberTypeName_(T_MemberTypeName_ source) : base(_header, source)
+        public T_MemberTypeImplName_(T_MemberTypeImplName_ source) : base(_header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
-        public T_MemberTypeName_(IT_MemberTypeIntfName_ source) : base(_header, source)
+        public T_MemberTypeImplName_(IT_MemberTypeIntfName_ source) : base(_header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
             this.Field1 = source.Field1;
         }
-        protected T_MemberTypeName_(BlockHeader header, SourceBlocks sourceBlocks) : base(_header, sourceBlocks)
+        protected T_MemberTypeImplName_(BlockHeader header, SourceBlocks sourceBlocks) : base(_header, sourceBlocks)
         {
             var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];
             if (sourceBlock.Length < BlockLength)
@@ -90,7 +90,7 @@ namespace T_MemberTypeNameSpace_.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        public T_MemberTypeName_(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
+        public T_MemberTypeImplName_(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
@@ -505,9 +505,9 @@ namespace T_NameSpace_.MemBlocks
             //##break;
             //##case MemberKind.Entity:
             //##if (member.IsNullable) {
-            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);
+            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_.CreateFrom(source.T_NullableEntityMemberName_);
             //##} else {
-            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);
+            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_.CreateFrom(source.T_RequiredEntityMemberName_);
             //##}
             //##break;
             //##case MemberKind.Binary:
@@ -683,15 +683,15 @@ namespace T_NameSpace_.MemBlocks
             _T_NullableEntityMemberName_ = null;
             if (blob is not null)
             {
-                _T_NullableEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(new ReadOnlySequence<byte>(blob.Value));
+                _T_NullableEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_.CreateFrom(new ReadOnlySequence<byte>(blob.Value));
                 await _T_NullableEntityMemberName_.Unpack(dataStore, depth - 1);
             }
         }
-        private T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_? _T_NullableEntityMemberName_;
+        private T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_? _T_NullableEntityMemberName_;
         //##if(member.IsObsolete) {
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##}
-        public T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_? T_NullableEntityMemberName_
+        public T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_? T_NullableEntityMemberName_
         {
             get => IfUnpacked(_T_NullableEntityMemberName_);
             set => _T_NullableEntityMemberName_ = IfNotFrozen(value);
@@ -703,7 +703,7 @@ namespace T_NameSpace_.MemBlocks
             BlobIdV1 blobId = default;
             if (_T_RequiredEntityMemberName_ is null)
             {
-                _T_RequiredEntityMemberName_ = await CreateEmpty<T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_>(dataStore);
+                _T_RequiredEntityMemberName_ = await CreateEmpty<T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_>(dataStore);
             }
             await _T_RequiredEntityMemberName_.Pack(dataStore);
             var buffer = _T_RequiredEntityMemberName_.GetBuffers();
@@ -716,19 +716,19 @@ namespace T_NameSpace_.MemBlocks
             var blob = await dataStore.GetBlob(blobId);
             if (blob is null)
             {
-                _T_RequiredEntityMemberName_ = await CreateEmpty<T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_>(dataStore);
+                _T_RequiredEntityMemberName_ = await CreateEmpty<T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_>(dataStore);
             }
             else
             {
-                _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(new ReadOnlySequence<byte>(blob.Value));
+                _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_.CreateFrom(new ReadOnlySequence<byte>(blob.Value));
                 await _T_RequiredEntityMemberName_.Unpack(dataStore, depth - 1);
             }
         }
-        private T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_? _T_RequiredEntityMemberName_ = null;
+        private T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_? _T_RequiredEntityMemberName_ = null;
         //##if(member.IsObsolete) {
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##}
-        public T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_ T_RequiredEntityMemberName_
+        public T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_ T_RequiredEntityMemberName_
         {
             get => IfNotNull(IfUnpacked(_T_RequiredEntityMemberName_));
             set => _T_RequiredEntityMemberName_ = IfNotFrozen(value);

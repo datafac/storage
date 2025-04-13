@@ -27,21 +27,21 @@ namespace T_MemberTypeNameSpace_
 namespace T_MemberTypeNameSpace_.MessagePack
 {
     [MessagePackObject]
-    public sealed class T_MemberTypeName_ : EntityBase, IT_MemberTypeIntfName_, IEquatable<T_MemberTypeName_>
+    public sealed class T_MemberTypeImplName_ : EntityBase, IT_MemberTypeIntfName_, IEquatable<T_MemberTypeImplName_>
     {
-        private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();
-        public static T_MemberTypeName_ Empty => _empty;
+        private static readonly T_MemberTypeImplName_ _empty = new T_MemberTypeImplName_();
+        public static T_MemberTypeImplName_ Empty => _empty;
 
         [Key(1)]
         public long Field1 { get; set; }
 
-        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeIntfName_ source) => throw new NotImplementedException();
+        public static T_MemberTypeImplName_ CreateFrom(IT_MemberTypeIntfName_ source) => throw new NotImplementedException();
         protected override int OnGetEntityId() => 3;
-        public T_MemberTypeName_() { }
-        public T_MemberTypeName_(IT_MemberTypeIntfName_ source) { }
+        public T_MemberTypeImplName_() { }
+        public T_MemberTypeImplName_(IT_MemberTypeIntfName_ source) { }
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
 
-        public bool Equals(T_MemberTypeName_? other)
+        public bool Equals(T_MemberTypeImplName_? other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -50,10 +50,10 @@ namespace T_MemberTypeNameSpace_.MessagePack
             return true;
         }
 
-        public override bool Equals(object? obj) => obj is T_MemberTypeName_ other && Equals(other);
+        public override bool Equals(object? obj) => obj is T_MemberTypeImplName_ other && Equals(other);
         public override int GetHashCode() => HashCode.Combine(Field1);
-        public static bool operator ==(T_MemberTypeName_? left, T_MemberTypeName_? right) => left is not null ? left.Equals(right) : (right is null);
-        public static bool operator !=(T_MemberTypeName_? left, T_MemberTypeName_? right) => left is not null ? !left.Equals(right) : (right is not null);
+        public static bool operator ==(T_MemberTypeImplName_? left, T_MemberTypeImplName_? right) => left is not null ? left.Equals(right) : (right is null);
+        public static bool operator !=(T_MemberTypeImplName_? left, T_MemberTypeImplName_? right) => left is not null ? !left.Equals(right) : (right is not null);
     }
 }
 namespace T_BaseNameSpace_.MessagePack
@@ -229,9 +229,9 @@ namespace T_NameSpace_.MessagePack
             //##break;
             //##case MemberKind.Entity:
             //##if (member.IsNullable) {
-            _T_NullableEntityMemberName_ = source._T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source._T_NullableEntityMemberName_);
+            _T_NullableEntityMemberName_ = source._T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.CreateFrom(source._T_NullableEntityMemberName_);
             //##} else {
-            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source._T_RequiredEntityMemberName_);
+            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.CreateFrom(source._T_RequiredEntityMemberName_);
             //##}
             //##break;
             //##case MemberKind.Binary:
@@ -273,9 +273,9 @@ namespace T_NameSpace_.MessagePack
             //##break;
             //##case MemberKind.Entity:
             //##if (member.IsNullable) {
-            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);
+            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.CreateFrom(source.T_NullableEntityMemberName_);
             //##} else {
-            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);
+            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.CreateFrom(source.T_RequiredEntityMemberName_);
             //##}
             //##break;
             //##case MemberKind.Binary:
@@ -348,12 +348,12 @@ namespace T_NameSpace_.MessagePack
         //##case MemberKind.Entity:
         //##if (member.IsNullable) {
         [IgnoreMember]
-        private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_? _T_NullableEntityMemberName_;
+        private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_? _T_NullableEntityMemberName_;
         //##if (member.IsObsolete) {
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##}
         [Key(T_NullableEntityMemberKey_)]
-        public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_? T_NullableEntityMemberName_
+        public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_? T_NullableEntityMemberName_
         {
             get => _T_NullableEntityMemberName_;
             set => _T_NullableEntityMemberName_ = IfNotFrozen(value);
@@ -361,12 +361,12 @@ namespace T_NameSpace_.MessagePack
         T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => _T_NullableEntityMemberName_;
         //##} else {
         [IgnoreMember]
-        private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.Empty;
+        private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.Empty;
         //##if (member.IsObsolete) {
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##}
         [Key(T_RequiredEntityMemberKey_)]
-        public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_ T_RequiredEntityMemberName_
+        public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_ T_RequiredEntityMemberName_
         {
             get => _T_RequiredEntityMemberName_;
             set => _T_RequiredEntityMemberName_ = IfNotFrozen(value);
@@ -684,9 +684,9 @@ namespace T_NameSpace_.MessagePack
             //##break;
             //##case MemberKind.Entity:
             //##if (member.IsNullable) {
-            _T_NullableEntityMemberName_ = source._T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source._T_NullableEntityMemberName_);
+            _T_NullableEntityMemberName_ = source._T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.CreateFrom(source._T_NullableEntityMemberName_);
             //##} else {
-            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source._T_RequiredEntityMemberName_);
+            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.CreateFrom(source._T_RequiredEntityMemberName_);
             //##}
             //##break;
             //##case MemberKind.Binary:
@@ -728,9 +728,9 @@ namespace T_NameSpace_.MessagePack
             //##break;
             //##case MemberKind.Entity:
             //##if (member.IsNullable) {
-            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);
+            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.CreateFrom(source.T_NullableEntityMemberName_);
             //##} else {
-            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);
+            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.CreateFrom(source.T_RequiredEntityMemberName_);
             //##}
             //##break;
             //##case MemberKind.Binary:
@@ -803,12 +803,12 @@ namespace T_NameSpace_.MessagePack
         //##case MemberKind.Entity:
         //##if (member.IsNullable) {
         [IgnoreMember]
-        private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_? _T_NullableEntityMemberName_;
+        private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_? _T_NullableEntityMemberName_;
         //##if (member.IsObsolete) {
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##}
         [Key(T_NullableEntityMemberKey_)]
-        public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_? T_NullableEntityMemberName_
+        public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_? T_NullableEntityMemberName_
         {
             get => _T_NullableEntityMemberName_;
             set => _T_NullableEntityMemberName_ = IfNotFrozen(value);
@@ -819,12 +819,12 @@ namespace T_NameSpace_.MessagePack
         }
         //##} else {
         [IgnoreMember]
-        private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.Empty;
+        private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_.Empty;
         //##if (member.IsObsolete) {
         [Obsolete("T_MemberObsoleteMessage_", T_MemberObsoleteIsError_)]
         //##}
         [Key(T_RequiredEntityMemberKey_)]
-        public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_ T_RequiredEntityMemberName_
+        public T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_ T_RequiredEntityMemberName_
         {
             get => _T_RequiredEntityMemberName_;
             set => _T_RequiredEntityMemberName_ = IfNotFrozen(value);

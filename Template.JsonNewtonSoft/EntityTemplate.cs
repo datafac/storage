@@ -23,22 +23,22 @@ namespace T_MemberTypeNameSpace_
 }
 namespace T_MemberTypeNameSpace_.JsonNewtonSoft
 {
-    public class T_MemberTypeName_ : EntityBase, IT_MemberTypeIntfName_
+    public class T_MemberTypeImplName_ : EntityBase, IT_MemberTypeIntfName_
     {
         protected override int OnGetEntityId() => 3;
 
-        private static T_MemberTypeName_ CreateEmpty()
+        private static T_MemberTypeImplName_ CreateEmpty()
         {
-            var empty = new T_MemberTypeName_();
+            var empty = new T_MemberTypeImplName_();
             empty.Freeze();
             return empty;
         }
-        private static readonly T_MemberTypeName_ _empty = CreateEmpty();
-        public static new T_MemberTypeName_ Empty => _empty;
+        private static readonly T_MemberTypeImplName_ _empty = CreateEmpty();
+        public static new T_MemberTypeImplName_ Empty => _empty;
 
-        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeIntfName_ source) => throw new NotImplementedException();
-        public T_MemberTypeName_() { }
-        public T_MemberTypeName_(IT_MemberTypeIntfName_ source) { }
+        public static T_MemberTypeImplName_ CreateFrom(IT_MemberTypeIntfName_ source) => throw new NotImplementedException();
+        public T_MemberTypeImplName_() { }
+        public T_MemberTypeImplName_(IT_MemberTypeIntfName_ source) { }
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
     }
 }
@@ -197,9 +197,9 @@ namespace T_NameSpace_.JsonNewtonSoft
             //##break;
             //##case MemberKind.Entity:
             //##if (member.IsNullable) {
-            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);
+            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeImplName_.CreateFrom(source.T_NullableEntityMemberName_);
             //##} else {
-            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);
+            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeImplName_.CreateFrom(source.T_RequiredEntityMemberName_);
             //##}
             //##break;
             //##case MemberKind.Binary:
@@ -263,16 +263,16 @@ namespace T_NameSpace_.JsonNewtonSoft
         //##break;
         //##case MemberKind.Entity:
         //##if (member.IsNullable) {
-        private T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeName_? _T_NullableEntityMemberName_;
-        public T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeName_? T_NullableEntityMemberName_
+        private T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeImplName_? _T_NullableEntityMemberName_;
+        public T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeImplName_? T_NullableEntityMemberName_
         {
             get => _T_NullableEntityMemberName_;
             set => _T_NullableEntityMemberName_ = IfNotFrozen(ref value);
         }
         T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => _T_NullableEntityMemberName_;
         //##} else {
-        private T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeName_.Empty;
-        public T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeName_ T_RequiredEntityMemberName_
+        private T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeImplName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeImplName_.Empty;
+        public T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeImplName_ T_RequiredEntityMemberName_
         {
             get => _T_RequiredEntityMemberName_;
             set => _T_RequiredEntityMemberName_ = IfNotFrozen(ref value);
