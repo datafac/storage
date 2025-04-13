@@ -12,7 +12,8 @@ namespace DTOMaker.MemBlocks
         public int BlockLength { get; set; }
         public long BlockStructureCode { get; set; }
 
-        public MemBlockEntity(TargetDomain domain, string nameSpace, string name, Location location) : base(domain, nameSpace, name, location) { }
+        public MemBlockEntity(TargetDomain domain, TypeFullName entityName, Location location) 
+            : base(domain, entityName, location) { }
 
         private static int GetFieldLength(TargetMember member)
         {

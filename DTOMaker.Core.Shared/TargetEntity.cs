@@ -7,16 +7,19 @@ namespace DTOMaker.Gentime
 {
     public abstract class TargetEntity : TargetBase
     {
-        public TypeFullName EntityName { get; }
-
         private readonly TargetDomain _domain;
         public TargetDomain Domain => _domain;
+
+        public TypeFullName TFN { get; }
         public ConcurrentDictionary<string, TargetMember> Members { get; } = new ConcurrentDictionary<string, TargetMember>();
-        public TargetEntity(TargetDomain domain, string nameSpace, string name, Location location) : base(location)
+        public TargetEntity(TargetDomain domain, TypeFullName tfn, Location location) : base(location)
         {
-            EntityName = new TypeFullName(nameSpace, name);
             _domain = domain;
+            TFN = tfn;
         }
+        public int GenericTypeParams = 0;
+        public bool IsGeneric => GenericTypeParams > 0;
+        public TargetEntity? OpenEntity { get; set; }
         public int EntityId { get; set; }
         public bool HasEntityAttribute { get; set; }
         public TypeFullName BaseName { get; set; } = TypeFullName.DefaultBase;

@@ -46,19 +46,19 @@ namespace DTOMaker.MemBlocks
             var domainScope = new MemBlocksModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
 
             // complete intra-entity layout
-            foreach (var entity in domain.Entities.Values.OrderBy(e => e.EntityName.FullName).OfType<MemBlockEntity>())
+            foreach (var entity in domain.Entities.Values.OrderBy(e => e.TFN.FullName).OfType<MemBlockEntity>())
             {
                 entity.AutoLayoutMembers();
             }
 
             // complete inter-entity layout
-            foreach (var entity in domain.Entities.Values.OrderBy(e => e.EntityName.FullName).OfType<MemBlockEntity>())
+            foreach (var entity in domain.Entities.Values.OrderBy(e => e.TFN.FullName).OfType<MemBlockEntity>())
             {
                 entity.BuildStructureCodes();
             }
 
             // emit each entity
-            foreach (var entity in domain.Entities.Values.OrderBy(e => e.EntityName.FullName).OfType<MemBlockEntity>())
+            foreach (var entity in domain.Entities.Values.OrderBy(e => e.TFN.FullName).OfType<MemBlockEntity>())
             {
                 EmitDiagnostics(context, entity);
                 foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence))
@@ -71,7 +71,7 @@ namespace DTOMaker.MemBlocks
                 var generator = new EntityGenerator(language);
                 string sourceText = generator.GenerateSourceText(entityScope);
 
-                context.AddSource($"{entity.EntityName.FullName}.MemBlocks.g.cs", sourceText);
+                context.AddSource($"{entity.TFN.FullName}.MemBlocks.g.cs", sourceText);
             }
         }
     }

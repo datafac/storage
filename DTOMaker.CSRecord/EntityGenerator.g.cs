@@ -63,7 +63,7 @@ Emit("    }");
 Emit("}");
 Emit("namespace T_NameSpace_");
 Emit("{");
-Emit("    public interface IT_EntityName_ : T_BaseNameSpace_.IT_BaseName_");
+Emit("    public interface IT_EntityIntfName_ : T_BaseNameSpace_.IT_BaseName_");
 Emit("    {");
 Emit("        T_MemberType_? T_NullableScalarMemberName_ { get; }");
 Emit("        T_MemberType_ T_RequiredScalarMemberName_ { get; }");
@@ -81,12 +81,12 @@ Emit("namespace T_NameSpace_.CSRecord");
 Emit("{");
     if (false) {
     }
-Emit("    public partial record class T_EntityName_ : T_BaseNameSpace_.CSRecord.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>");
+Emit("    public partial record class T_EntityImplName_ : T_BaseNameSpace_.CSRecord.T_BaseName_, IT_EntityIntfName_, IEquatable<T_EntityImplName_>");
 Emit("    {");
 Emit("        // Derived entities: T_DerivedEntityCount_");
         foreach (var derived in entity.DerivedEntities) {
         using var _ = NewScope(derived);
-Emit("        // - T_EntityName_");
+Emit("        // - T_EntityImplName_");
         }
         if (false) {
 Emit("        private const string T_MemberObsoleteMessage_ = null;");
@@ -95,39 +95,39 @@ Emit("        private const int T_MemberDefaultValue_ = 0;");
 Emit("        private const int T_EntityId_ = 1;");
         }
 Emit("");
-Emit("        private static readonly T_EntityName_ _empty = new T_EntityName_();");
-Emit("        public static new T_EntityName_ Empty => _empty;");
+Emit("        private static readonly T_EntityImplName_ _empty = new T_EntityImplName_();");
+Emit("        public static new T_EntityImplName_ Empty => _empty;");
 Emit("");
 Emit("        protected override int OnGetEntityId() => T_EntityId_;");
 Emit("");
-Emit("        public new static T_EntityName_ CreateFrom(T_EntityName_ source)");
+Emit("        public new static T_EntityImplName_ CreateFrom(T_EntityImplName_ source)");
 Emit("        {");
 Emit("            if (source.IsFrozen) return source;");
 Emit("            return source switch");
 Emit("            {");
                 foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
                 using var _ = NewScope(derived);
-Emit("                T_NameSpace_.CSRecord.T_EntityName_ source2 => new T_NameSpace_.CSRecord.T_EntityName_(source2),");
+Emit("                T_NameSpace_.CSRecord.T_EntityImplName_ source2 => new T_NameSpace_.CSRecord.T_EntityImplName_(source2),");
                 }
-Emit("                _ => new T_NameSpace_.CSRecord.T_EntityName_(source)");
+Emit("                _ => new T_NameSpace_.CSRecord.T_EntityImplName_(source)");
 Emit("            };");
 Emit("        }");
 Emit("");
-Emit("        public new static T_EntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)");
+Emit("        public new static T_EntityImplName_ CreateFrom(T_NameSpace_.IT_EntityIntfName_ source)");
 Emit("        {");
-Emit("            if (source is T_EntityName_ concrete && concrete.IsFrozen) return concrete;");
+Emit("            if (source is T_EntityImplName_ concrete && concrete.IsFrozen) return concrete;");
 Emit("            return source switch");
 Emit("            {");
                 foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
                 using var _ = NewScope(derived);
-Emit("                T_NameSpace_.IT_EntityName_ source2 => new T_NameSpace_.CSRecord.T_EntityName_(source2),");
+Emit("                T_NameSpace_.IT_EntityIntfName_ source2 => new T_NameSpace_.CSRecord.T_EntityImplName_(source2),");
                 }
-Emit("                _ => new T_NameSpace_.CSRecord.T_EntityName_(source)");
+Emit("                _ => new T_NameSpace_.CSRecord.T_EntityImplName_(source)");
 Emit("            };");
 Emit("        }");
 Emit("");
-Emit("        public T_EntityName_() { }");
-Emit("        public T_EntityName_(IT_EntityName_ source) : base(source)");
+Emit("        public T_EntityImplName_() { }");
+Emit("        public T_EntityImplName_(IT_EntityIntfName_ source) : base(source)");
 Emit("        {");
             foreach (var member in entity.Members) {
             using var _ = NewScope(member);
@@ -215,7 +215,7 @@ Emit("        {");
 Emit("            get => _T_NullableEntityMemberName_;");
 Emit("            init => _T_NullableEntityMemberName_ = value;");
 Emit("        }");
-Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityName_.T_NullableEntityMemberName_ => T_NullableEntityMemberName_;");
+Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => T_NullableEntityMemberName_;");
         } else {
 Emit("        private T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_.Empty;");
 Emit("        public T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_ T_RequiredEntityMemberName_");
@@ -223,7 +223,7 @@ Emit("        {");
 Emit("            get => _T_RequiredEntityMemberName_;");
 Emit("            init => _T_RequiredEntityMemberName_ = value;");
 Emit("        }");
-Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityName_.T_RequiredEntityMemberName_ => T_RequiredEntityMemberName_;");
+Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityIntfName_.T_RequiredEntityMemberName_ => T_RequiredEntityMemberName_;");
         }
         break;
         case MemberKind.Binary:

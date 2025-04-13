@@ -16,14 +16,16 @@ namespace DTOMaker.Gentime
             ClassHeight = entity.GetClassHeight();
 
             _entity = entity;
-            _tokens["NameSpace"] = entity.EntityName.NameSpace;
-            _tokens["EntityName"] = entity.EntityName.ShortName;
-            _tokens["AbstractEntityName"] = entity.EntityName.ShortName;
-            _tokens["ConcreteEntityName"] = entity.EntityName.ShortName;
+            _tokens["NameSpace"] = entity.TFN.NameSpace;
+            _tokens["AbstractEntity"] = entity.TFN.ShortName;
+            _tokens["ConcreteEntity"] = entity.TFN.ShortName;
+            _tokens["EntityImplName"] = entity.TFN.ShortImplName;
+            _tokens["EntityIntfName"] = entity.TFN.ShortIntfName;
+
             _tokens["EntityId"] = entity.EntityId;
-            _tokens["BaseName"] = entity.Base?.EntityName.ShortName ?? TypeFullName.DefaultBase.ShortName;
-            _tokens["BaseNameSpace"] = entity.Base?.EntityName.NameSpace ?? TypeFullName.DefaultBase.NameSpace;
-            _tokens["BaseFullName"] = entity.Base?.EntityName.FullName ?? TypeFullName.DefaultBase.FullName;
+            _tokens["BaseName"] = entity.Base?.TFN.ShortName ?? TypeFullName.DefaultBase.ShortName;
+            _tokens["BaseNameSpace"] = entity.Base?.TFN.NameSpace ?? TypeFullName.DefaultBase.NameSpace;
+            _tokens["BaseFullName"] = entity.Base?.TFN.FullName ?? TypeFullName.DefaultBase.FullName;
             _tokens["ClassHeight"] = ClassHeight;
             _tokens["DerivedEntityCount"] = DerivedEntityCount;
         }
@@ -32,7 +34,7 @@ namespace DTOMaker.Gentime
         {
             if (ReferenceEquals(candidate, parent)) return false;
             if (candidate.Base is null) return false;
-            if (candidate.Base.EntityName.Equals(parent.EntityName)) return true;
+            if (candidate.Base.TFN.Equals(parent.TFN)) return true;
             return IsDerivedFrom(candidate.Base, parent);
         }
 
@@ -52,7 +54,7 @@ namespace DTOMaker.Gentime
             get
             {
                 return _entity.DerivedEntities
-                        .OrderBy(e => e.EntityName.FullName)
+                        .OrderBy(e => e.TFN.FullName)
                         .Select(e => _factory.CreateEntity(this, _factory, _language, e))
                         .ToArray();
             }

@@ -81,7 +81,7 @@ namespace T_BaseNameSpace_.CSPoco
 }
 namespace T_NameSpace_
 {
-    public interface IT_EntityName_ : T_BaseNameSpace_.IT_BaseName_
+    public interface IT_EntityIntfName_ : T_BaseNameSpace_.IT_BaseName_
     {
         T_MemberType_? T_NullableScalarMemberName_ { get; }
         T_MemberType_ T_RequiredScalarMemberName_ { get; }
@@ -99,12 +99,12 @@ namespace T_NameSpace_.CSPoco
 {
     //##if (false) {
     //##}
-    public partial class T_EntityName_ : T_BaseNameSpace_.CSPoco.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>
+    public partial class T_EntityImplName_ : T_BaseNameSpace_.CSPoco.T_BaseName_, IT_EntityIntfName_, IEquatable<T_EntityImplName_>
     {
         // Derived entities: T_DerivedEntityCount_
         //##foreach (var derived in entity.DerivedEntities) {
         //##using var _ = NewScope(derived);
-        // - T_EntityName_
+        // - T_EntityImplName_
         //##}
         //##if (false) {
         private const string T_MemberObsoleteMessage_ = null;
@@ -115,38 +115,38 @@ namespace T_NameSpace_.CSPoco
 
         protected override int OnGetEntityId() => T_EntityId_;
 
-        private static T_EntityName_ CreateEmpty()
+        private static T_EntityImplName_ CreateEmpty()
         {
-            var empty = new T_EntityName_();
+            var empty = new T_EntityImplName_();
             empty.Freeze();
             return empty;
         }
-        private static readonly T_EntityName_ _empty = CreateEmpty();
-        public static new T_EntityName_ Empty => _empty;
+        private static readonly T_EntityImplName_ _empty = CreateEmpty();
+        public static new T_EntityImplName_ Empty => _empty;
 
-        public new static T_EntityName_ CreateFrom(T_EntityName_ source)
+        public new static T_EntityImplName_ CreateFrom(T_EntityImplName_ source)
         {
             if (source.IsFrozen) return source;
             return source switch
             {
                 //##foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
                 //##using var _ = NewScope(derived);
-                T_NameSpace_.CSPoco.T_EntityName_ source2 => new T_NameSpace_.CSPoco.T_EntityName_(source2),
+                T_NameSpace_.CSPoco.T_EntityImplName_ source2 => new T_NameSpace_.CSPoco.T_EntityImplName_(source2),
                 //##}
-                _ => new T_NameSpace_.CSPoco.T_EntityName_(source)
+                _ => new T_NameSpace_.CSPoco.T_EntityImplName_(source)
             };
         }
 
-        public new static T_EntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)
+        public new static T_EntityImplName_ CreateFrom(T_NameSpace_.IT_EntityIntfName_ source)
         {
-            if (source is T_EntityName_ concrete && concrete.IsFrozen) return concrete;
+            if (source is T_EntityImplName_ concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 //##foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
                 //##using var _ = NewScope(derived);
-                T_NameSpace_.IT_EntityName_ source2 => new T_NameSpace_.CSPoco.T_EntityName_(source2),
+                T_NameSpace_.IT_EntityIntfName_ source2 => new T_NameSpace_.CSPoco.T_EntityImplName_(source2),
                 //##}
-                _ => new T_NameSpace_.CSPoco.T_EntityName_(source)
+                _ => new T_NameSpace_.CSPoco.T_EntityImplName_(source)
             };
         }
 
@@ -178,10 +178,10 @@ namespace T_NameSpace_.CSPoco
             //##}
         }
 
-        protected override IFreezable OnPartCopy() => new T_EntityName_(this);
+        protected override IFreezable OnPartCopy() => new T_EntityImplName_(this);
 
-        public T_EntityName_() { }
-        public T_EntityName_(IT_EntityName_ source) : base(source)
+        public T_EntityImplName_() { }
+        public T_EntityImplName_(IT_EntityIntfName_ source) : base(source)
         {
             //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
@@ -269,7 +269,7 @@ namespace T_NameSpace_.CSPoco
             get => _T_NullableEntityMemberName_;
             set => _T_NullableEntityMemberName_ = IfNotFrozen(ref value);
         }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityName_.T_NullableEntityMemberName_ => _T_NullableEntityMemberName_;
+        T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => _T_NullableEntityMemberName_;
         //##} else {
         private T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_.Empty;
         public T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_ T_RequiredEntityMemberName_
@@ -277,7 +277,7 @@ namespace T_NameSpace_.CSPoco
             get => _T_RequiredEntityMemberName_;
             set => _T_RequiredEntityMemberName_ = IfNotFrozen(ref value);
         }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityName_.T_RequiredEntityMemberName_ => _T_RequiredEntityMemberName_;
+        T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityIntfName_.T_RequiredEntityMemberName_ => _T_RequiredEntityMemberName_;
         //##}
         //##break;
         //##case MemberKind.Binary:
@@ -321,7 +321,7 @@ namespace T_NameSpace_.CSPoco
 
         //##}
 
-        public bool Equals(T_EntityName_? other)
+        public bool Equals(T_EntityImplName_? other)
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
@@ -368,9 +368,9 @@ namespace T_NameSpace_.CSPoco
             return true;
         }
 
-        public override bool Equals(object? obj) => obj is T_EntityName_ other && Equals(other);
-        public static bool operator ==(T_EntityName_? left, T_EntityName_? right) => left is not null ? left.Equals(right) : (right is null);
-        public static bool operator !=(T_EntityName_? left, T_EntityName_? right) => left is not null ? !left.Equals(right) : (right is not null);
+        public override bool Equals(object? obj) => obj is T_EntityImplName_ other && Equals(other);
+        public static bool operator ==(T_EntityImplName_? left, T_EntityImplName_? right) => left is not null ? left.Equals(right) : (right is null);
+        public static bool operator !=(T_EntityImplName_? left, T_EntityImplName_? right) => left is not null ? !left.Equals(right) : (right is not null);
 
         private int CalcHashCode()
         {

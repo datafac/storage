@@ -12,7 +12,7 @@ namespace DTOMaker.Gentime
         {
             if (ReferenceEquals(candidate, parent)) return false;
             if (candidate.Base is null) return false;
-            if (candidate.Base.EntityName.Equals(parent.EntityName)) return true;
+            if (candidate.Base.TFN.Equals(parent.TFN)) return true;
             return IsDerivedFrom(candidate.Base, parent);
         }
 
@@ -23,7 +23,6 @@ namespace DTOMaker.Gentime
 
             // fix entity hierarchy
             var domain = syntaxReceiver.Domain;
-            // fix/set entity base
             var entities = domain.Entities.Values.ToArray();
             foreach (var entity in entities)
             {
@@ -44,12 +43,42 @@ namespace DTOMaker.Gentime
                 }
             }
 
+            // bind closed/open generic entities
+            foreach (var entity in entities)
+            {
+                var eTFN = entity.TFN;
+                if (eTFN.IsGeneric && eTFN.IsClosed)
+                {
+                    var openTFN = eTFN.AsOpenGeneric();
+                    if (domain.Entities.TryGetValue(openTFN.FullName, out var openEntity))
+                    {
+                        // generate id and members if required
+                        if (entity.OpenEntity is null)
+                        {
+                            entity.HasEntityAttribute = true; // implied
+                            // todo
+                            entity.EntityId = openEntity.EntityId + 1000; // todo
+                            //entity.Members = xxx;
+                            entity.OpenEntity = openEntity;
+                        }
+                    }
+                    else
+                    {
+                        // open entity not found!
+                        entity.SyntaxErrors.Add(
+                            new SyntaxDiagnostic(
+                                DiagnosticId.DTOM0011, "Invalid generic entity", DiagnosticCategory.Design, entity.Location, DiagnosticSeverity.Error,
+                                $"Cannot find open entity '{openTFN}' for closed entity '{eTFN}'."));
+                    }
+                }
+            }
+
             // determine derived entities
             foreach (var entity in entities)
             {
                 entity.DerivedEntities = domain.Entities.Values
                     .Where(e => IsDerivedFrom(e, entity))
-                    .OrderBy(e => e.EntityName.FullName)
+                    .OrderBy(e => e.TFN.FullName)
                     .ToArray();
             }
 
@@ -58,11 +87,10 @@ namespace DTOMaker.Gentime
             {
                 foreach (var member in entity.Members.Values)
                 {
-                    var entity2 = entities.FirstOrDefault(e => e.EntityName.WithShortName(sn => "I" + sn) == member.MemberType);
+                    var entity2 = entities.FirstOrDefault(e => e.TFN == member.MemberType);
                     if (entity2 is not null)
                     {
                         member.Kind = MemberKind.Entity;
-                        member.MemberType = entity2.EntityName;
                     }
                 }
             }

@@ -94,7 +94,7 @@ namespace Template.MemBlocks.Tests
 
             using var dataStore = new DataFac.Storage.Testing.TestDataStore();
 
-            var orig = new T_NameSpace_.MemBlocks.T_EntityName_();
+            var orig = new T_NameSpace_.MemBlocks.T_EntityImplName_();
             orig.BaseField1 = 789;
             orig.T_ScalarMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
@@ -105,7 +105,7 @@ namespace Template.MemBlocks.Tests
             orig.T_NullableVarLenBinaryMemberName_ = smallBinary;
             await orig.Pack(dataStore);
 
-            var copy = new T_NameSpace_.MemBlocks.T_EntityName_(orig);
+            var copy = new T_NameSpace_.MemBlocks.T_EntityImplName_(orig);
             copy.IsFrozen.ShouldBeFalse();
             copy.BaseField1.ShouldBe(orig.BaseField1);
             copy.T_ScalarMemberName_.ShouldBe(orig.T_ScalarMemberName_);
@@ -128,7 +128,7 @@ namespace Template.MemBlocks.Tests
 
             using var dataStore = new DataFac.Storage.Testing.TestDataStore();
 
-            var orig = new T_NameSpace_.MemBlocks.T_EntityName_();
+            var orig = new T_NameSpace_.MemBlocks.T_EntityImplName_();
             orig.BaseField1 = 789;
             orig.T_ScalarMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
@@ -142,7 +142,7 @@ namespace Template.MemBlocks.Tests
 
             var buffers = orig.GetBuffers();
 
-            var copy = T_NameSpace_.MemBlocks.T_EntityName_.CreateFrom(buffers);
+            var copy = T_NameSpace_.MemBlocks.T_EntityImplName_.CreateFrom(buffers);
             copy.IsFrozen.ShouldBeTrue();
             await copy.Unpack(dataStore, 0);
             copy.BaseField1.ShouldBe(orig.BaseField1);

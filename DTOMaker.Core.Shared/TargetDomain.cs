@@ -18,14 +18,14 @@ namespace DTOMaker.Gentime
         {
             var idMap = new Dictionary<int, TargetEntity>();
 
-            foreach (var entity in this.Entities.Values.OrderBy(e => e.EntityName.FullName))
+            foreach (var entity in this.Entities.Values.OrderBy(e => e.TFN.FullName))
             {
                 int id = entity.EntityId;
                 if (idMap.TryGetValue(id, out var otherEntity))
                 {
                     return new SyntaxDiagnostic(
                         DiagnosticId.DTOM0009, "Duplicate entity id", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                        $"Entity id ({id}) is already used by entity: {otherEntity.EntityName}");
+                        $"Entity id ({id}) is already used by entity: {otherEntity.TFN}");
                 }
                 idMap[id] = entity;
             }
