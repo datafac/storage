@@ -32,14 +32,14 @@ namespace DataFac.Memory
 }
 namespace T_MemberTypeNameSpace_
 {
-    public interface IT_MemberTypeName_ : IPackable
+    public interface IT_MemberTypeIntfName_ : IPackable
     {
         Int64 Field1 { get; set; }
     }
 }
 namespace T_MemberTypeNameSpace_.MemBlocks
 {
-    public class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_
+    public class T_MemberTypeName_ : EntityBase, IT_MemberTypeIntfName_
     {
         private const int ClassHeight = 1;
         private const int BlockLength = 8;
@@ -51,7 +51,7 @@ namespace T_MemberTypeNameSpace_.MemBlocks
             if (source.IsFrozen) return source;
             return new T_MemberTypeName_(source);
         }
-        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source)
+        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeIntfName_ source)
         {
             if (source is T_MemberTypeName_ concrete && concrete.IsFrozen) return concrete;
             return new T_MemberTypeName_(source);
@@ -70,7 +70,7 @@ namespace T_MemberTypeNameSpace_.MemBlocks
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
-        public T_MemberTypeName_(IT_MemberTypeName_ source) : base(_header, source)
+        public T_MemberTypeName_(IT_MemberTypeIntfName_ source) : base(_header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
             this.Field1 = source.Field1;
@@ -198,8 +198,8 @@ namespace T_NameSpace_
     {
         T_MemberType_ T_ScalarMemberName_ { get; }
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberName_ { get; }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; }
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? T_NullableEntityMemberName_ { get; }
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ T_RequiredEntityMemberName_ { get; }
         Octets? T_NullableFixLenBinaryMemberName_ { get; }
         Octets? T_NullableVarLenBinaryMemberName_ { get; }
         Octets T_RequiredFixLenBinaryMemberName_ { get; }
@@ -696,7 +696,7 @@ namespace T_NameSpace_.MemBlocks
             get => IfUnpacked(_T_NullableEntityMemberName_);
             set => _T_NullableEntityMemberName_ = IfNotFrozen(value);
         }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => IfUnpacked(_T_NullableEntityMemberName_);
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => IfUnpacked(_T_NullableEntityMemberName_);
         //##} else {
         private async ValueTask T_RequiredEntityMemberName__Pack(IDataStore dataStore)
         {
@@ -733,7 +733,7 @@ namespace T_NameSpace_.MemBlocks
             get => IfNotNull(IfUnpacked(_T_RequiredEntityMemberName_));
             set => _T_RequiredEntityMemberName_ = IfNotFrozen(value);
         }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityIntfName_.T_RequiredEntityMemberName_ => IfNotNull(IfUnpacked(_T_RequiredEntityMemberName_));
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ IT_EntityIntfName_.T_RequiredEntityMemberName_ => IfNotNull(IfUnpacked(_T_RequiredEntityMemberName_));
         //##}
         //##break;
         //##case MemberKind.Binary:

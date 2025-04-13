@@ -18,11 +18,11 @@ using System;
 using T_MemberType_ = System.Int32;
 namespace T_MemberTypeNameSpace_
 {
-    public interface IT_MemberTypeName_ { }
+    public interface IT_MemberTypeIntfName_ { }
 }
 namespace T_MemberTypeNameSpace_.CSPoco
 {
-    public class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_
+    public class T_MemberTypeName_ : EntityBase, IT_MemberTypeIntfName_
     {
         protected override int OnGetEntityId() => 3;
 
@@ -35,9 +35,9 @@ namespace T_MemberTypeNameSpace_.CSPoco
         private static readonly T_MemberTypeName_ _empty = CreateEmpty();
         public static new T_MemberTypeName_ Empty => _empty;
 
-        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source) => throw new NotImplementedException();
+        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeIntfName_ source) => throw new NotImplementedException();
         public T_MemberTypeName_() { }
-        public T_MemberTypeName_(IT_MemberTypeName_ source) { }
+        public T_MemberTypeName_(IT_MemberTypeIntfName_ source) { }
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
     }
 }
@@ -86,8 +86,8 @@ namespace T_NameSpace_
         T_MemberType_? T_NullableScalarMemberName_ { get; }
         T_MemberType_ T_RequiredScalarMemberName_ { get; }
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberName_ { get; }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; }
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? T_NullableEntityMemberName_ { get; }
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ T_RequiredEntityMemberName_ { get; }
         Octets? T_NullableBinaryMemberName_ { get; }
         Octets T_RequiredBinaryMemberName_ { get; }
         string? T_NullableStringMemberName_ { get; }
@@ -269,7 +269,7 @@ namespace T_NameSpace_.CSPoco
             get => _T_NullableEntityMemberName_;
             set => _T_NullableEntityMemberName_ = IfNotFrozen(ref value);
         }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => _T_NullableEntityMemberName_;
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => _T_NullableEntityMemberName_;
         //##} else {
         private T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_.Empty;
         public T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_ T_RequiredEntityMemberName_
@@ -277,7 +277,7 @@ namespace T_NameSpace_.CSPoco
             get => _T_RequiredEntityMemberName_;
             set => _T_RequiredEntityMemberName_ = IfNotFrozen(ref value);
         }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityIntfName_.T_RequiredEntityMemberName_ => _T_RequiredEntityMemberName_;
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ IT_EntityIntfName_.T_RequiredEntityMemberName_ => _T_RequiredEntityMemberName_;
         //##}
         //##break;
         //##case MemberKind.Binary:

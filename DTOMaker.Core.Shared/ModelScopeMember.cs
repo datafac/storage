@@ -30,6 +30,8 @@ namespace DTOMaker.Gentime
             _tokens["MemberObsoleteIsError"] = member.ObsoleteIsError;
             _tokens["MemberType"] = _language.GetDataTypeToken(member.MemberType);
             _tokens["MemberTypeName"] = member.MemberType.ShortImplName;
+            _tokens["MemberTypeImplName"] = member.MemberType.ShortImplName;
+            _tokens["MemberTypeIntfName"] = member.MemberType.ShortIntfName;
             _tokens["MemberTypeNameSpace"] = member.MemberType.NameSpace;
             _tokens["MemberIsNullable"] = member.MemberIsNullable;
             _tokens["MemberSequence"] = member.Sequence;

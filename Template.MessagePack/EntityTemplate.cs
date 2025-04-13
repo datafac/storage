@@ -19,7 +19,7 @@ using System;
 using T_MemberType_ = System.Int32;
 namespace T_MemberTypeNameSpace_
 {
-    public interface IT_MemberTypeName_
+    public interface IT_MemberTypeIntfName_
     {
         long Field1 { get; }
     }
@@ -27,7 +27,7 @@ namespace T_MemberTypeNameSpace_
 namespace T_MemberTypeNameSpace_.MessagePack
 {
     [MessagePackObject]
-    public sealed class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_, IEquatable<T_MemberTypeName_>
+    public sealed class T_MemberTypeName_ : EntityBase, IT_MemberTypeIntfName_, IEquatable<T_MemberTypeName_>
     {
         private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();
         public static T_MemberTypeName_ Empty => _empty;
@@ -35,10 +35,10 @@ namespace T_MemberTypeNameSpace_.MessagePack
         [Key(1)]
         public long Field1 { get; set; }
 
-        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source) => throw new NotImplementedException();
+        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeIntfName_ source) => throw new NotImplementedException();
         protected override int OnGetEntityId() => 3;
         public T_MemberTypeName_() { }
-        public T_MemberTypeName_(IT_MemberTypeName_ source) { }
+        public T_MemberTypeName_(IT_MemberTypeIntfName_ source) { }
         protected override IFreezable OnPartCopy() => throw new NotImplementedException();
 
         public bool Equals(T_MemberTypeName_? other)
@@ -86,8 +86,8 @@ namespace T_NameSpace_
         T_MemberType_? T_NullableScalarMemberName_ { get; }
         T_MemberType_ T_RequiredScalarMemberName_ { get; }
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberName_ { get; }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; }
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? T_NullableEntityMemberName_ { get; }
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ T_RequiredEntityMemberName_ { get; }
         Octets? T_NullableBinaryMemberName_ { get; }
         Octets T_RequiredBinaryMemberName_ { get; }
         string? T_NullableStringMemberName_ { get; }
@@ -358,7 +358,7 @@ namespace T_NameSpace_.MessagePack
             get => _T_NullableEntityMemberName_;
             set => _T_NullableEntityMemberName_ = IfNotFrozen(value);
         }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => _T_NullableEntityMemberName_;
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => _T_NullableEntityMemberName_;
         //##} else {
         [IgnoreMember]
         private T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_.Empty;
@@ -371,7 +371,7 @@ namespace T_NameSpace_.MessagePack
             get => _T_RequiredEntityMemberName_;
             set => _T_RequiredEntityMemberName_ = IfNotFrozen(value);
         }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityIntfName_.T_RequiredEntityMemberName_ => _T_RequiredEntityMemberName_;
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ IT_EntityIntfName_.T_RequiredEntityMemberName_ => _T_RequiredEntityMemberName_;
         //##}
         //##break;
         //##case MemberKind.Binary:
@@ -813,7 +813,7 @@ namespace T_NameSpace_.MessagePack
             get => _T_NullableEntityMemberName_;
             set => _T_NullableEntityMemberName_ = IfNotFrozen(value);
         }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityIntfName_.T_NullableEntityMemberName_
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? IT_EntityIntfName_.T_NullableEntityMemberName_
         {
             get => _T_NullableEntityMemberName_;
         }
@@ -829,7 +829,7 @@ namespace T_NameSpace_.MessagePack
             get => _T_RequiredEntityMemberName_;
             set => _T_RequiredEntityMemberName_ = IfNotFrozen(value);
         }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityIntfName_.T_RequiredEntityMemberName_
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ IT_EntityIntfName_.T_RequiredEntityMemberName_
         {
             get => _T_RequiredEntityMemberName_;
         }

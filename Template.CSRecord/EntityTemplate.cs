@@ -19,18 +19,18 @@ using System;
 using T_MemberType_ = System.Int32;
 namespace T_MemberTypeNameSpace_
 {
-    public interface IT_MemberTypeName_ { }
+    public interface IT_MemberTypeIntfName_ { }
 }
 namespace T_MemberTypeNameSpace_.CSRecord
 {
-    public record class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_
+    public record class T_MemberTypeName_ : EntityBase, IT_MemberTypeIntfName_
     {
         private const int T_EntityId_ = 3;
         private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();
         public static T_MemberTypeName_ Empty => _empty;
-        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source) => throw new NotImplementedException();
+        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeIntfName_ source) => throw new NotImplementedException();
         public T_MemberTypeName_() { }
-        public T_MemberTypeName_(IT_MemberTypeName_ source) { }
+        public T_MemberTypeName_(IT_MemberTypeIntfName_ source) { }
         protected override int OnGetEntityId() => T_EntityId_;
     }
 }
@@ -58,8 +58,8 @@ namespace T_NameSpace_
         T_MemberType_? T_NullableScalarMemberName_ { get; }
         T_MemberType_ T_RequiredScalarMemberName_ { get; }
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberName_ { get; }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; }
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? T_NullableEntityMemberName_ { get; }
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ T_RequiredEntityMemberName_ { get; }
         Octets? T_NullableBinaryMemberName_ { get; }
         Octets T_RequiredBinaryMemberName_ { get; }
         string? T_NullableStringMemberName_ { get; }
@@ -205,7 +205,7 @@ namespace T_NameSpace_.CSRecord
             get => _T_NullableEntityMemberName_;
             init => _T_NullableEntityMemberName_ = value;
         }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => T_NullableEntityMemberName_;
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => T_NullableEntityMemberName_;
         //##} else {
         private T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_.Empty;
         public T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_ T_RequiredEntityMemberName_
@@ -213,7 +213,7 @@ namespace T_NameSpace_.CSRecord
             get => _T_RequiredEntityMemberName_;
             init => _T_RequiredEntityMemberName_ = value;
         }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityIntfName_.T_RequiredEntityMemberName_ => T_RequiredEntityMemberName_;
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ IT_EntityIntfName_.T_RequiredEntityMemberName_ => T_RequiredEntityMemberName_;
         //##}
         //##break;
         //##case MemberKind.Binary:
