@@ -18,7 +18,9 @@ namespace DTOMaker.Gentime
         {
             var idMap = new Dictionary<int, TargetEntity>();
 
-            foreach (var entity in this.Entities.Values.OrderBy(e => e.TFN.FullName))
+            foreach (var entity in this.Entities.Values
+                .Where(e => !e.IsGeneric)
+                .OrderBy(e => e.TFN.FullName))
             {
                 int id = entity.EntityId;
                 if (idMap.TryGetValue(id, out var otherEntity))

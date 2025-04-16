@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Text;
 
 namespace DTOMaker.Gentime
@@ -15,7 +16,6 @@ namespace DTOMaker.Gentime
 
         private static readonly TypeFullName _defaultBase = new TypeFullName("DTOMaker.Runtime", "EntityBase",
             ImmutableArray<ITypeParameterSymbol>.Empty, ImmutableArray<ITypeSymbol>.Empty);
-
         public static TypeFullName DefaultBase => _defaultBase;
 
         public static TypeFullName Create(ITypeSymbol ids)
@@ -47,7 +47,11 @@ namespace DTOMaker.Gentime
         public string ShortIntfName => MakeCSIntfName(_name, _typeParameters, _typeArguments);
         public string FullName => _fullName;
         public bool IsGeneric => _typeParameters.Length > 0;
-        public bool IsClosed => _typeArguments.Length == _typeParameters.Length;
+        public bool IsClosed => (_typeArguments.Length == _typeParameters.Length) 
+                                && _typeArguments.All(ta => ta.Kind != SymbolKind.TypeParameter);
+
+        public ImmutableArray<ITypeParameterSymbol> TypeParameters => _typeParameters;
+        public ImmutableArray<ITypeSymbol> TypeArguments => _typeArguments;
         public TypeFullName AsOpenGeneric()
         {
             return new TypeFullName(_nameSpace, _name, _typeParameters, ImmutableArray<ITypeSymbol>.Empty);
