@@ -7,6 +7,15 @@ namespace DTOMaker.MemBlocks
     internal sealed class MemBlockMember : TargetMember
     {
         public MemBlockMember(TargetEntity entity, string name, Location location) : base(entity, name, location) { }
+        public MemBlockMember(TargetEntity entity, MemBlockMember source) : base(entity, source)
+        {
+            HasOffsetAttribute = source.HasOffsetAttribute;
+            FixedLength = source.FixedLength;
+            ArrayCapacity = source.ArrayCapacity;
+            FieldOffset = source.FieldOffset;
+            FieldLength = source.FieldLength;
+            IsBigEndian = source.IsBigEndian;
+        }
 
         public LayoutMethod LayoutMethod => (Entity as MemBlockEntity)?.LayoutMethod ?? LayoutMethod.Undefined;
 

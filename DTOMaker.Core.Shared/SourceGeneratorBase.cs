@@ -90,7 +90,19 @@ namespace DTOMaker.Gentime
                             }
                             entity.EntityId = syntheticId.Id;
                             // generate members
-                            //entity.Members = xxx;
+                            foreach (TargetMember openMember in openEntity.Members.Values)
+                            {
+                                TargetMember member = syntaxReceiver.Factory.CloneMember(entity, openMember);
+                                for (int i = 0; i < eTFN.TypeParameters.Length; i++)
+                                {
+                                    TypeFullName openMemberTFN = TypeFullName.Create(eTFN.TypeParameters[i]);
+                                    if (openMember.MemberType == openMemberTFN)
+                                    {
+                                        member.MemberType = TypeFullName.Create(eTFN.TypeArguments[i]);
+                                    }
+                                }
+                                entity.Members.TryAdd(member.Name, member);
+                            }
                         }
                     }
                     else

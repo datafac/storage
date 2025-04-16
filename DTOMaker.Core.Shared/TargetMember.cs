@@ -15,6 +15,20 @@ namespace DTOMaker.Gentime
             _entity = entity;
             _name = name;
         }
+        public TargetMember(TargetEntity entity, TargetMember source) : base(source.Location)
+        {
+            _entity = entity;
+            _name = source.Name;
+            HasMemberAttribute = source.HasMemberAttribute;
+            Sequence = source.Sequence;
+            Kind = source.Kind;
+            MemberIsNullable = source.MemberIsNullable;
+            MemberType = source.MemberType;
+            IsObsolete = source.IsObsolete;
+            ObsoleteMessage = source.ObsoleteMessage;
+            ObsoleteIsError = source.ObsoleteIsError;
+        }
+
         public bool HasMemberAttribute { get; set; }
         public TypeFullName MemberType { get; set; }
         public bool MemberIsNullable { get; set; }

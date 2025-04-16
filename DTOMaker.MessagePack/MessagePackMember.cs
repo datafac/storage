@@ -7,6 +7,7 @@ namespace DTOMaker.MessagePack
     internal sealed class MessagePackMember : TargetMember
     {
         public MessagePackMember(TargetEntity entity, string name, Location location) : base(entity, name, location) { }
+        public MessagePackMember(TargetEntity entity, MessagePackMember source) : base(entity, source) { }
 
         private SyntaxDiagnostic? CheckEntityMemberIsNullable()
         {

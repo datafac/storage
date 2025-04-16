@@ -63,11 +63,33 @@ namespace MyOrg.Models.MessagePack
         protected Pair_2_Int64_String(Pair_2_Int64_String source) : base(source)
         {
             if (source is null) throw new ArgumentNullException(nameof(source));
+            _Item1 = source._Item1;
+            _Item2 = source._Item2;
         }
 
         public Pair_2_Int64_String(IPair<Int64, String> source) : base(source)
         {
             if (source is null) throw new ArgumentNullException(nameof(source));
+            _Item1 = source.Item1;
+            _Item2 = source.Item2;
+        }
+
+        [IgnoreMember]
+        private Int64 _Item1 = default;
+        [Key(1)]
+        public Int64 Item1
+        {
+            get => _Item1;
+            set => _Item1 = IfNotFrozen(value);
+        }
+
+        [IgnoreMember]
+        private String _Item2 = string.Empty;
+        [Key(2)]
+        public String Item2
+        {
+            get => _Item2;
+            set => _Item2 = IfNotFrozen(value);
         }
 
 
@@ -76,6 +98,8 @@ namespace MyOrg.Models.MessagePack
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
             if (!base.Equals(other)) return false;
+            if (_Item1 != other.Item1) return false;
+            if (_Item2 != other.Item2) return false;
             return true;
         }
 
@@ -87,6 +111,8 @@ namespace MyOrg.Models.MessagePack
         {
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
+            result.Add(_Item1);
+            result.Add(_Item2);
             return result.ToHashCode();
         }
 

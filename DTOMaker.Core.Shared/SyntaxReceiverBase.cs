@@ -7,6 +7,14 @@ using System.Linq;
 
 namespace DTOMaker.Gentime
 {
+    public interface ITargetFactory
+    {
+        TargetDomain CreateDomain(string name, Location location);
+        TargetEntity CreateEntity(TargetDomain domain, TypeFullName tfn, Location location);
+        TargetMember CreateMember(TargetEntity entity, string name, Location location);
+        TargetMember CloneMember(TargetEntity entity, TargetMember source);
+    }
+
     public abstract class SyntaxReceiverBase : ISyntaxContextReceiver
     {
         //private const string DomainAttribute = nameof(DomainAttribute);
@@ -14,20 +22,16 @@ namespace DTOMaker.Gentime
         private const string MemberAttribute = nameof(MemberAttribute);
         private const string IdAttribute = nameof(IdAttribute);
 
+        private readonly ITargetFactory _factory;
+        public ITargetFactory Factory => _factory;
+
         private readonly TargetDomain _domain;
         public TargetDomain Domain => _domain;
 
-        private readonly Func<TargetDomain, TypeFullName, Location, TargetEntity> _entityFactory;
-        private readonly Func<TargetEntity, string, Location, TargetMember> _memberFactory;
-
-        protected SyntaxReceiverBase(
-            Func<string, Location, TargetDomain> domainFactory,
-            Func<TargetDomain, TypeFullName, Location, TargetEntity> entityFactory,
-            Func<TargetEntity, string, Location, TargetMember> memberFactory)
+        protected SyntaxReceiverBase(ITargetFactory factory)
         {
-            _domain = domainFactory(TypeFullName.DefaultBase.NameSpace, Location.None);
-            _entityFactory = entityFactory;
-            _memberFactory = memberFactory;
+            _factory = factory;
+            _domain = factory.CreateDomain(TypeFullName.DefaultBase.NameSpace, Location.None);
         }
 
         protected static void TryGetAttributeArgumentValue<T>(TargetBase target, Location location, ImmutableArray<TypedConstant> attributeArguments, int index, Action<T> action)
@@ -116,7 +120,7 @@ namespace DTOMaker.Gentime
                 Location ndsLocation = Location.Create(nds1.SyntaxTree, nds1.Span);
                 Location idsLocation = Location.Create(ids1.SyntaxTree, ids1.Span);
                 var eTFN = TypeFullName.Create(ids1Symbol);
-                var entity = Domain.Entities.GetOrAdd(eTFN.FullName, (n) => _entityFactory(Domain, eTFN, idsLocation));
+                var entity = Domain.Entities.GetOrAdd(eTFN.FullName, (n) => _factory.CreateEntity(Domain, eTFN, idsLocation));
                 entity.GenericTypeParams = ids1Symbol.TypeParameters.Length;
                 ImmutableArray<AttributeData> entityAttributes = ids1Symbol.GetAttributes();
                 if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == EntityAttribute) is AttributeData entityAttr)
@@ -139,7 +143,7 @@ namespace DTOMaker.Gentime
                         var bTFN = TypeFullName.Create(intf);
                         if (bTFN.IsGeneric && bTFN.IsClosed)
                         {
-                            var closedEntity = Domain.Entities.GetOrAdd(bTFN.FullName, (n) => _entityFactory(Domain, bTFN, idsLocation));
+                            var closedEntity = Domain.Entities.GetOrAdd(bTFN.FullName, (n) => _factory.CreateEntity(Domain, bTFN, idsLocation));
                         }
                         entity.BaseName = bTFN;
                     }
@@ -171,45 +175,58 @@ namespace DTOMaker.Gentime
                 && pds.AttributeLists.Count > 0)
             {
                 var eTFN = TypeFullName.Create(ids2Symbol);
-                if (Domain.Entities.TryGetValue(eTFN.FullName, out var entity)
-                    && pdsSymbol.Type is INamedTypeSymbol pdsSymbolType)
-                {
-                    Location pdsLocation = Location.Create(pds.SyntaxTree, pds.Span);
-                    var mTFN = TypeFullName.Create(pdsSymbolType);
-                    if (mTFN.IsGeneric && mTFN.IsClosed)
-                    {
-                        var closedEntity = Domain.Entities.GetOrAdd(mTFN.FullName, (n) => _entityFactory(Domain, mTFN, pdsLocation));
-                    }
-                    var member = entity.Members.GetOrAdd(pds.Identifier.Text, (n) => _memberFactory(entity, n, pdsLocation));
-                    member.MemberType = mTFN;
-                    if (member.MemberType.FullName == FullTypeName.MemoryOctets)
-                    {
-                        // binary
-                        member.Kind = MemberKind.Binary;
-                    }
-                    else if (member.MemberType.FullName == FullTypeName.SystemString)
-                    {
-                        // string
-                        member.Kind = MemberKind.String;
-                    }
-                    else if (pdsSymbolType.IsGenericType && pdsSymbolType.Name == "ReadOnlyMemory" && pdsSymbolType.TypeArguments.Length == 1)
-                    {
-                        member.Kind = MemberKind.Vector;
-                        ITypeSymbol typeArg0 = pdsSymbolType.TypeArguments[0];
-                        member.MemberType = TypeFullName.Create(typeArg0);
-                    }
-                    else if (pdsSymbolType.IsGenericType && pdsSymbolType.Name == "Nullable" && pdsSymbolType.TypeArguments.Length == 1)
-                    {
-                        // nullable value type
-                        member.MemberIsNullable = true;
-                        ITypeSymbol typeArg0 = pdsSymbolType.TypeArguments[0];
-                        member.MemberType = TypeFullName.Create(typeArg0);
-                    }
+                Location pdsLocation = Location.Create(pds.SyntaxTree, pds.Span);
 
-                    if (pdsSymbolType.IsReferenceType && pdsSymbolType.NullableAnnotation == NullableAnnotation.Annotated)
+                if (Domain.Entities.TryGetValue(eTFN.FullName, out var entity))
+                {
+                    var member = entity.Members.GetOrAdd(pds.Identifier.Text, (n) => _factory.CreateMember(entity, n, pdsLocation));
+                    if (pdsSymbol.Type is INamedTypeSymbol pdsNamedType)
                     {
-                        // nullable ref type
-                        member.MemberIsNullable = true;
+                        var mTFN = TypeFullName.Create(pdsNamedType);
+                        if (mTFN.IsGeneric && mTFN.IsClosed)
+                        {
+                            var closedEntity = Domain.Entities.GetOrAdd(mTFN.FullName, (n) => _factory.CreateEntity(Domain, mTFN, pdsLocation));
+                        }
+                        member.MemberType = mTFN;
+                        if (member.MemberType.FullName == FullTypeName.MemoryOctets)
+                        {
+                            // binary
+                            member.Kind = MemberKind.Binary;
+                        }
+                        else if (member.MemberType.FullName == FullTypeName.SystemString)
+                        {
+                            // string
+                            member.Kind = MemberKind.String;
+                        }
+                        else if (pdsNamedType.IsGenericType && pdsNamedType.Name == "ReadOnlyMemory" && pdsNamedType.TypeArguments.Length == 1)
+                        {
+                            member.Kind = MemberKind.Vector;
+                            ITypeSymbol typeArg0 = pdsNamedType.TypeArguments[0];
+                            member.MemberType = TypeFullName.Create(typeArg0);
+                        }
+                        else if (pdsNamedType.IsGenericType && pdsNamedType.Name == "Nullable" && pdsNamedType.TypeArguments.Length == 1)
+                        {
+                            // nullable value type
+                            member.MemberIsNullable = true;
+                            ITypeSymbol typeArg0 = pdsNamedType.TypeArguments[0];
+                            member.MemberType = TypeFullName.Create(typeArg0);
+                        }
+
+                        if (pdsNamedType.IsReferenceType && pdsNamedType.NullableAnnotation == NullableAnnotation.Annotated)
+                        {
+                            // nullable ref type
+                            member.MemberIsNullable = true;
+                        }
+                    }
+                    else if(pdsSymbol.Type is ITypeSymbol pdsType)
+                    {
+                        // generic type parameter?
+                        var mTFN = TypeFullName.Create(pdsType);
+                        member.MemberType = mTFN;
+                    }
+                    else
+                    {
+                        // unknown 
                     }
 
                     ImmutableArray<AttributeData> allAttributes = pdsSymbol.GetAttributes();
