@@ -58,8 +58,6 @@ namespace DTOMaker.Gentime
                 case MemberKind.String:
                     _tokens[(member.MemberIsNullable ? "Nullable" : "Required") + "StringMemberName"] = member.Name;
                     break;
-                default:
-                    throw new NotImplementedException($"Member.Kind: {member.Kind}");
             }
         }
 

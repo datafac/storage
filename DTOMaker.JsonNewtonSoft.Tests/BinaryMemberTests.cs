@@ -13,6 +13,7 @@ namespace DTOMaker.JsonNewtonSoft.Tests
     {
         private readonly string inputSource1 =
             """
+            using System;
             using DataFac.Memory;
             using DTOMaker.Models;
             namespace MyOrg.Models

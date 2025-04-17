@@ -18,29 +18,6 @@ namespace DTOMaker.Gentime
             return IsDerivedFrom(candidate.Base, parent);
         }
 
-        private static int GetSyntheticId(TypeFullName tfn)
-        {
-            return tfn.FullName switch
-            {
-                FullTypeName.SystemBoolean => 9001,
-                FullTypeName.SystemSByte => 9002,
-                FullTypeName.SystemByte => 9003,
-                FullTypeName.SystemInt16 => 9004,
-                FullTypeName.SystemUInt16 => 9005,
-                FullTypeName.SystemChar => 9006,
-                FullTypeName.SystemHalf => 9007,
-                FullTypeName.SystemInt32 => 9008,
-                FullTypeName.SystemUInt32 => 9009,
-                FullTypeName.SystemSingle => 9010,
-                FullTypeName.SystemInt64 => 9011,
-                FullTypeName.SystemUInt64 => 9012,
-                FullTypeName.SystemDouble => 9013,
-                FullTypeName.SystemString => 9014,
-                FullTypeName.MemoryOctets => 9099,
-                _ => throw new NotSupportedException($"Cannot synthesize id for type '{tfn}'"),
-            };
-        }
-
         protected abstract void OnExecute(GeneratorExecutionContext context);
         public void Execute(GeneratorExecutionContext context)
         {
@@ -86,7 +63,7 @@ namespace DTOMaker.Gentime
                             SyntheticId syntheticId = new SyntheticId(openEntity.EntityId);
                             foreach (var ta in eTFN.TypeArguments)
                             {
-                                syntheticId = syntheticId.Add(GetSyntheticId(TypeFullName.Create(ta)));
+                                syntheticId = syntheticId.Add(TypeFullName.Create(ta).SyntheticId);
                             }
                             entity.EntityId = syntheticId.Id;
                             // generate members
@@ -98,7 +75,17 @@ namespace DTOMaker.Gentime
                                     TypeFullName openMemberTFN = TypeFullName.Create(eTFN.TypeParameters[i]);
                                     if (openMember.MemberType == openMemberTFN)
                                     {
-                                        member.MemberType = TypeFullName.Create(eTFN.TypeArguments[i]);
+                                        var mTFN = TypeFullName.Create(eTFN.TypeArguments[i]);
+                                        member.MemberType = mTFN;
+                                        member.Kind = mTFN.MemberKind;
+                                        if (mTFN.MemberKind == MemberKind.Unknown)
+                                        {
+                                            // entity?
+                                            if (domain.Entities.TryGetValue(mTFN.FullName, out var _))
+                                            {
+                                                member.Kind = MemberKind.Entity;
+                                            }
+                                        }
                                     }
                                 }
                                 entity.Members.TryAdd(member.Name, member);

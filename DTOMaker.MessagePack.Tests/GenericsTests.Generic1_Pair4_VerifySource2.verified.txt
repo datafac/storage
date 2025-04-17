@@ -84,9 +84,9 @@ namespace MyOrg.Models.MessagePack
         }
 
         [IgnoreMember]
-        private String _Item2 = string.Empty;
+        private string _Item2 = string.Empty;
         [Key(2)]
-        public String Item2
+        public string Item2
         {
             get => _Item2;
             set => _Item2 = IfNotFrozen(value);
@@ -99,7 +99,7 @@ namespace MyOrg.Models.MessagePack
             if (other is null) return false;
             if (!base.Equals(other)) return false;
             if (_Item1 != other.Item1) return false;
-            if (_Item2 != other.Item2) return false;
+            if (!string.Equals(_Item2, other._Item2)) return false;
             return true;
         }
 

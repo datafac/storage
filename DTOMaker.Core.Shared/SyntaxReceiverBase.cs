@@ -188,6 +188,8 @@ namespace DTOMaker.Gentime
                             var closedEntity = Domain.Entities.GetOrAdd(mTFN.FullName, (n) => _factory.CreateEntity(Domain, mTFN, pdsLocation));
                         }
                         member.MemberType = mTFN;
+                        member.Kind = mTFN.MemberKind;
+
                         if (member.MemberType.FullName == FullTypeName.MemoryOctets)
                         {
                             // binary
@@ -210,6 +212,7 @@ namespace DTOMaker.Gentime
                             member.MemberIsNullable = true;
                             ITypeSymbol typeArg0 = pdsNamedType.TypeArguments[0];
                             member.MemberType = TypeFullName.Create(typeArg0);
+                            member.Kind = member.MemberType.MemberKind;
                         }
 
                         if (pdsNamedType.IsReferenceType && pdsNamedType.NullableAnnotation == NullableAnnotation.Annotated)
@@ -227,6 +230,7 @@ namespace DTOMaker.Gentime
                     else
                     {
                         // unknown 
+                        member.Kind = MemberKind.Unknown;
                     }
 
                     ImmutableArray<AttributeData> allAttributes = pdsSymbol.GetAttributes();

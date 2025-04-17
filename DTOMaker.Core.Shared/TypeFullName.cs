@@ -13,6 +13,8 @@ namespace DTOMaker.Gentime
         private readonly ImmutableArray<ITypeParameterSymbol> _typeParameters; // generics only
         private readonly ImmutableArray<ITypeSymbol> _typeArguments; // closed generics only
         private readonly string _fullName;
+        private readonly int _syntheticId;
+        private readonly MemberKind _memberKind;
 
         private static readonly TypeFullName _defaultBase = new TypeFullName("DTOMaker.Runtime", "EntityBase",
             ImmutableArray<ITypeParameterSymbol>.Empty, ImmutableArray<ITypeSymbol>.Empty);
@@ -26,11 +28,39 @@ namespace DTOMaker.Gentime
         public static TypeFullName Create(INamedTypeSymbol ids)
         {
             string nameSpace = ids.ContainingNamespace.ToDisplayString();
-            if (ids.TypeKind != TypeKind.Interface) return new TypeFullName(nameSpace, ids.Name, ImmutableArray<ITypeParameterSymbol>.Empty, ImmutableArray<ITypeSymbol>.Empty);
+            if (ids.TypeKind != TypeKind.Interface) 
+                return new TypeFullName(nameSpace, ids.Name, ImmutableArray<ITypeParameterSymbol>.Empty, ImmutableArray<ITypeSymbol>.Empty);
 
             // is entity
             string entityName = ids.Name.Substring(1);
             return new TypeFullName(nameSpace, entityName, ids.TypeParameters, ids.TypeArguments);
+        }
+
+        private static (int syntheticId, MemberKind kind) GetSyntheticId(string fullname)
+        {
+            return fullname switch
+            {
+                FullTypeName.SystemBoolean => (9001, MemberKind.Native),
+                FullTypeName.SystemSByte => (9002, MemberKind.Native),
+                FullTypeName.SystemByte => (9003, MemberKind.Native),
+                FullTypeName.SystemInt16 => (9004, MemberKind.Native),
+                FullTypeName.SystemUInt16 => (9005, MemberKind.Native),
+                FullTypeName.SystemChar => (9006, MemberKind.Native),
+                FullTypeName.SystemHalf => (9007, MemberKind.Native),
+                FullTypeName.SystemInt32 => (9008, MemberKind.Native),
+                FullTypeName.SystemUInt32 => (9009, MemberKind.Native),
+                FullTypeName.SystemSingle => (9010, MemberKind.Native),
+                FullTypeName.SystemInt64 => (9011, MemberKind.Native),
+                FullTypeName.SystemUInt64 => (9012, MemberKind.Native),
+                FullTypeName.SystemDouble => (9013, MemberKind.Native),
+                FullTypeName.SystemInt128 => (9015, MemberKind.Native),
+                FullTypeName.SystemUInt128 => (9016, MemberKind.Native),
+                FullTypeName.SystemGuid => (9015, MemberKind.Native),
+                FullTypeName.SystemDecimal => (9016, MemberKind.Native),
+                FullTypeName.SystemString => (9014, MemberKind.String),
+                FullTypeName.MemoryOctets => (9099, MemberKind.Binary),
+                _ => (0, MemberKind.Unknown),
+            };
         }
 
         private TypeFullName(string nameSpace, string name, ImmutableArray<ITypeParameterSymbol> typeParameters, ImmutableArray<ITypeSymbol> typeArguments)
@@ -40,12 +70,15 @@ namespace DTOMaker.Gentime
             _typeParameters = typeParameters;
             _typeArguments = typeArguments;
             _fullName = nameSpace + "." + MakeCSImplName(name, typeParameters, typeArguments);
+            (_syntheticId, _memberKind) = GetSyntheticId(_fullName);
         }
 
         public string NameSpace => _nameSpace;
         public string ShortImplName => MakeCSImplName(_name, _typeParameters, _typeArguments);
         public string ShortIntfName => MakeCSIntfName(_name, _typeParameters, _typeArguments);
         public string FullName => _fullName;
+        public int SyntheticId => _syntheticId;
+        public MemberKind MemberKind => _memberKind;
         public bool IsGeneric => _typeParameters.Length > 0;
         public bool IsClosed => (_typeArguments.Length == _typeParameters.Length) 
                                 && _typeArguments.All(ta => ta.Kind != SymbolKind.TypeParameter);

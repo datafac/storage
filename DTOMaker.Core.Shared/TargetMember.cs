@@ -56,11 +56,28 @@ namespace DTOMaker.Gentime
                 : null;
         }
 
+        private SyntaxDiagnostic? CheckMemberKind()
+        {
+            if (!HasMemberAttribute) return null;
+            return Kind switch {
+                MemberKind.Native => null,
+                MemberKind.String => null,
+                MemberKind.Binary => null,
+                MemberKind.Entity => null,
+                MemberKind.Vector => null,
+                _ => new SyntaxDiagnostic(
+                    DiagnosticId.DTOM0004, "Invalid member datatype", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+                    $"Unknown member data type '{MemberType}'.")
+
+            };
+        }
+
         protected override IEnumerable<SyntaxDiagnostic> OnGetValidationDiagnostics()
         {
             SyntaxDiagnostic? diagnostic;
             if ((diagnostic = CheckHasMemberAttribute()) is not null) yield return diagnostic;
             if ((diagnostic = CheckMemberSequence()) is not null) yield return diagnostic;
+            if ((diagnostic = CheckMemberKind()) is not null) yield return diagnostic;
         }
     }
 }

@@ -34,8 +34,6 @@ namespace DTOMaker.MessagePack
                 case MemberKind.String:
                     _tokens[(member.MemberIsNullable ? "Nullable" : "Required") + "StringMemberKey"] = memberKey;
                     break;
-                default:
-                    throw new NotImplementedException($"Member.Kind: {member.Kind}");
             }
         }
     }
