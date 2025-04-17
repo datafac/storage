@@ -282,5 +282,25 @@ namespace DTOMaker.MessagePack.Tests
             await Verifier.Verify(outputCode);
         }
 
+        [Fact]
+        public async Task Generic2_Monoid2_Int128()
+        {
+            string source = source2.Replace("_T1_", "Int128");
+            var grr = GeneratorTestHelper.RunSourceGenerator(source, LanguageVersion.LatestMajor);
+            grr.Diagnostics.ShouldBeEmpty();
+            string outputCode = grr.GeneratedSources[0].SourceText.ToString();
+            await Verifier.Verify(outputCode);
+        }
+
+        [Fact]
+        public async Task Generic2_Monoid2_UInt128()
+        {
+            string source = source2.Replace("_T1_", "UInt128");
+            var grr = GeneratorTestHelper.RunSourceGenerator(source, LanguageVersion.LatestMajor);
+            grr.Diagnostics.ShouldBeEmpty();
+            string outputCode = grr.GeneratedSources[0].SourceText.ToString();
+            await Verifier.Verify(outputCode);
+        }
+
     }
 }

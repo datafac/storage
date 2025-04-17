@@ -15,14 +15,14 @@ namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
     [Union(MyDTO.EntityId, typeof(MyDTO))]
-    public abstract partial class Monoid_1_Guid : DTOMaker.Runtime.MessagePack.EntityBase, IMonoid<Guid>, IEquatable<Monoid_1_Guid>
+    public abstract partial class Monoid_1_Int128 : DTOMaker.Runtime.MessagePack.EntityBase, IMonoid<Int128>, IEquatable<Monoid_1_Int128>
     {
         // Derived entities: 1
         // - MyDTO
 
-        public new const int EntityId = 10047;
+        public new const int EntityId = 10045;
 
-        public new static Monoid_1_Guid CreateFrom(Monoid_1_Guid source)
+        public new static Monoid_1_Int128 CreateFrom(Monoid_1_Int128 source)
         {
             if (source.IsFrozen) return source;
             return source switch
@@ -32,9 +32,9 @@ namespace MyOrg.Models.MessagePack
             };
         }
 
-        public new static Monoid_1_Guid CreateFrom(MyOrg.Models.IMonoid<Guid> source)
+        public new static Monoid_1_Int128 CreateFrom(MyOrg.Models.IMonoid<Int128> source)
         {
-            if (source is Monoid_1_Guid concrete && concrete.IsFrozen) return concrete;
+            if (source is Monoid_1_Int128 concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 MyOrg.Models.IMyDTO source2 => new MyOrg.Models.MessagePack.MyDTO(source2),
@@ -42,7 +42,7 @@ namespace MyOrg.Models.MessagePack
             };
         }
 
-        public new static Monoid_1_Guid CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
+        public new static Monoid_1_Int128 CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
             return entityId switch
             {
@@ -51,38 +51,38 @@ namespace MyOrg.Models.MessagePack
             };
         }
 
-        protected override int OnGetEntityId() => 10047;
+        protected override int OnGetEntityId() => 10045;
 
         protected override void OnFreeze()
         {
             base.OnFreeze();
         }
 
-        protected Monoid_1_Guid() { }
+        protected Monoid_1_Int128() { }
 
-        protected Monoid_1_Guid(Monoid_1_Guid source) : base(source)
+        protected Monoid_1_Int128(Monoid_1_Int128 source) : base(source)
         {
             if (source is null) throw new ArgumentNullException(nameof(source));
             _Value = source._Value;
         }
 
-        public Monoid_1_Guid(IMonoid<Guid> source) : base(source)
+        public Monoid_1_Int128(IMonoid<Int128> source) : base(source)
         {
             if (source is null) throw new ArgumentNullException(nameof(source));
             _Value = source.Value;
         }
 
         [IgnoreMember]
-        private Guid _Value = default;
+        private Int128 _Value = default;
         [Key(1)]
-        public Guid Value
+        public Int128 Value
         {
             get => _Value;
             set => _Value = IfNotFrozen(value);
         }
 
 
-        public bool Equals(Monoid_1_Guid? other)
+        public bool Equals(Monoid_1_Int128? other)
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
@@ -91,9 +91,9 @@ namespace MyOrg.Models.MessagePack
             return true;
         }
 
-        public override bool Equals(object? obj) => obj is Monoid_1_Guid other && Equals(other);
-        public static bool operator ==(Monoid_1_Guid? left, Monoid_1_Guid? right) => left is not null ? left.Equals(right) : (right is null);
-        public static bool operator !=(Monoid_1_Guid? left, Monoid_1_Guid? right) => left is not null ? !left.Equals(right) : (right is not null);
+        public override bool Equals(object? obj) => obj is Monoid_1_Int128 other && Equals(other);
+        public static bool operator ==(Monoid_1_Int128? left, Monoid_1_Int128? right) => left is not null ? left.Equals(right) : (right is null);
+        public static bool operator !=(Monoid_1_Int128? left, Monoid_1_Int128? right) => left is not null ? !left.Equals(right) : (right is not null);
 
         private int CalcHashCode()
         {
