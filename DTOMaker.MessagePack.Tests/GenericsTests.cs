@@ -42,9 +42,7 @@ namespace DTOMaker.MessagePack.Tests
         {
             var grr = GeneratorTestHelper.RunSourceGenerator(source1, LanguageVersion.LatestMajor);
             grr.Exception.ShouldBeNull();
-            grr.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
-            grr.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
-            grr.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ShouldBeEmpty();
+            grr.Diagnostics.ShouldBeEmpty();
 
             grr.GeneratedSources.Length.ShouldBe(3);
             grr.GeneratedSources[0].HintName.ShouldBe("MyOrg.Models.MyDTO2.MessagePack.g.cs");
@@ -103,9 +101,7 @@ namespace DTOMaker.MessagePack.Tests
             string source = source2.Replace("_T1_", "bool");
             var grr = GeneratorTestHelper.RunSourceGenerator(source, LanguageVersion.LatestMajor);
             grr.Exception.ShouldBeNull();
-            grr.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Info).ShouldBeEmpty();
-            grr.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Warning).ShouldBeEmpty();
-            grr.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ShouldBeEmpty();
+            grr.Diagnostics.ShouldBeEmpty();
 
             grr.GeneratedSources.Length.ShouldBe(2);
             grr.GeneratedSources[0].HintName.ShouldBe("MyOrg.Models.Monoid_1_Boolean.MessagePack.g.cs");
@@ -299,6 +295,70 @@ namespace DTOMaker.MessagePack.Tests
             var grr = GeneratorTestHelper.RunSourceGenerator(source, LanguageVersion.LatestMajor);
             grr.Diagnostics.ShouldBeEmpty();
             string outputCode = grr.GeneratedSources[0].SourceText.ToString();
+            await Verifier.Verify(outputCode);
+        }
+
+        private readonly string source3 =
+            """
+            using System;
+            using DataFac.Memory;
+            using DTOMaker.Models;
+            using DTOMaker.Models.MessagePack;
+            namespace MyOrg.Models
+            {
+                [Entity][Id(1)]
+                public interface IMonoid<T1>
+                {
+                    [Member(1)] T1? Value {get;}
+                }
+                [Entity][Id(2)]
+                public interface IMyDTO : IMonoid<IOther>
+                {
+                }
+                [Entity][Id(3)]
+                public interface IOther
+                {
+                }
+            }
+            """;
+
+        [Fact]
+        public void Generic3_Monoid1_CheckGeneratedSources()
+        {
+            var grr = GeneratorTestHelper.RunSourceGenerator(source3, LanguageVersion.LatestMajor);
+            grr.Exception.ShouldBeNull();
+            grr.Diagnostics.ShouldBeEmpty();
+
+            grr.GeneratedSources.Length.ShouldBe(3);
+            grr.GeneratedSources[0].HintName.ShouldBe("MyOrg.Models.Monoid_1_Other.MessagePack.g.cs");
+            grr.GeneratedSources[1].HintName.ShouldBe("MyOrg.Models.MyDTO.MessagePack.g.cs");
+            grr.GeneratedSources[2].HintName.ShouldBe("MyOrg.Models.Other.MessagePack.g.cs");
+        }
+
+        [Fact]
+        public async Task Generic3_Monoid2_Monoid_1_Other()
+        {
+            var grr = GeneratorTestHelper.RunSourceGenerator(source3, LanguageVersion.LatestMajor);
+            grr.Diagnostics.ShouldBeEmpty();
+            string outputCode = grr.GeneratedSources[0].SourceText.ToString();
+            await Verifier.Verify(outputCode);
+        }
+
+        [Fact]
+        public async Task Generic3_Monoid3_MyDTO()
+        {
+            var grr = GeneratorTestHelper.RunSourceGenerator(source3, LanguageVersion.LatestMajor);
+            grr.Diagnostics.ShouldBeEmpty();
+            string outputCode = grr.GeneratedSources[1].SourceText.ToString();
+            await Verifier.Verify(outputCode);
+        }
+
+        [Fact]
+        public async Task Generic3_Monoid4_Other()
+        {
+            var grr = GeneratorTestHelper.RunSourceGenerator(source3, LanguageVersion.LatestMajor);
+            grr.Diagnostics.ShouldBeEmpty();
+            string outputCode = grr.GeneratedSources[2].SourceText.ToString();
             await Verifier.Verify(outputCode);
         }
 

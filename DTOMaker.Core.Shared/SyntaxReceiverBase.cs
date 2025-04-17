@@ -113,8 +113,8 @@ namespace DTOMaker.Gentime
         {
             if (context.Node is InterfaceDeclarationSyntax ids1
                 && ids1.Modifiers.Any(SyntaxKind.PublicKeyword)
-                && context.SemanticModel.GetDeclaredSymbol(ids1) is INamedTypeSymbol ids1Symbol 
-                && ids1.Parent is NamespaceDeclarationSyntax nds1 
+                && context.SemanticModel.GetDeclaredSymbol(ids1) is INamedTypeSymbol ids1Symbol
+                && ids1.Parent is NamespaceDeclarationSyntax nds1
                 && ids1.AttributeLists.Count > 0)
             {
                 Location ndsLocation = Location.Create(nds1.SyntaxTree, nds1.Span);
@@ -168,7 +168,7 @@ namespace DTOMaker.Gentime
             }
 
             if (context.Node is PropertyDeclarationSyntax pds
-                && context.SemanticModel.GetDeclaredSymbol(pds) is IPropertySymbol pdsSymbol 
+                && context.SemanticModel.GetDeclaredSymbol(pds) is IPropertySymbol pdsSymbol
                 && pds.Parent is InterfaceDeclarationSyntax ids2
                 && context.SemanticModel.GetDeclaredSymbol(ids2) is INamedTypeSymbol ids2Symbol
                 && ids2.Parent is NamespaceDeclarationSyntax nds2
@@ -221,11 +221,16 @@ namespace DTOMaker.Gentime
                             member.MemberIsNullable = true;
                         }
                     }
-                    else if(pdsSymbol.Type is ITypeSymbol pdsType)
+                    else if (pdsSymbol.Type is ITypeSymbol pdsType)
                     {
                         // generic type parameter?
                         var mTFN = TypeFullName.Create(pdsType);
                         member.MemberType = mTFN;
+                        if (pdsType.NullableAnnotation == NullableAnnotation.Annotated)
+                        {
+                            // nullable ref type
+                            member.MemberIsNullable = true;
+                        }
                     }
                     else
                     {

@@ -22,18 +22,30 @@ namespace DTOMaker.Gentime
 
         public static TypeFullName Create(ITypeSymbol ids)
         {
-            return new TypeFullName(ids.ContainingNamespace.ToDisplayString(), ids.Name, ImmutableArray<ITypeParameterSymbol>.Empty, ImmutableArray<ITypeSymbol>.Empty);
+            string entityName;
+            if (ids.TypeKind == TypeKind.Interface)
+            {
+                entityName = ids.Name.Substring(1);
+            }
+            else
+            {
+                entityName = ids.Name;
+            }
+            return new TypeFullName(ids.ContainingNamespace.ToDisplayString(), entityName, ImmutableArray<ITypeParameterSymbol>.Empty, ImmutableArray<ITypeSymbol>.Empty);
         }
 
         public static TypeFullName Create(INamedTypeSymbol ids)
         {
             string nameSpace = ids.ContainingNamespace.ToDisplayString();
-            if (ids.TypeKind != TypeKind.Interface) 
+            if (ids.TypeKind != TypeKind.Interface)
+            {
                 return new TypeFullName(nameSpace, ids.Name, ImmutableArray<ITypeParameterSymbol>.Empty, ImmutableArray<ITypeSymbol>.Empty);
-
-            // is entity
-            string entityName = ids.Name.Substring(1);
-            return new TypeFullName(nameSpace, entityName, ids.TypeParameters, ids.TypeArguments);
+            }
+            else
+            {
+                string entityName = ids.Name.Substring(1);
+                return new TypeFullName(nameSpace, entityName, ids.TypeParameters, ids.TypeArguments);
+            }
         }
 
         private static (int syntheticId, MemberKind kind) GetSyntheticId(string fullname)
@@ -117,8 +129,9 @@ namespace DTOMaker.Gentime
                 result.Append('_');
                 if (i < typeArguments.Length)
                 {
-                    var ta = typeArguments[i];
-                    result.Append(ta.Name);
+                    var aTFN = TypeFullName.Create(typeArguments[i]);
+                    //var ta = typeArguments[i];
+                    result.Append(aTFN.ShortImplName);
                 }
                 else
                 {
