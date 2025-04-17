@@ -47,7 +47,7 @@ namespace DTOMaker.CSRecord
             var domainScope = new CSRecordModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
 
             // emit each entity
-            foreach (var entity in domain.Entities.Values.OrderBy(e => e.TFN.FullName))
+            foreach (var entity in domain.ClosedEntities.Values.OrderBy(e => e.TFN.FullName))
             {
                 EmitDiagnostics(context, entity);
                 foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence))

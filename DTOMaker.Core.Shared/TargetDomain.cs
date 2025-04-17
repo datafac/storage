@@ -8,7 +8,8 @@ namespace DTOMaker.Gentime
     public abstract class TargetDomain : TargetBase
     {
         public string Name { get; }
-        public ConcurrentDictionary<string, TargetEntity> Entities { get; } = new ConcurrentDictionary<string, TargetEntity>();
+        public ConcurrentDictionary<string, TargetEntity> OpenEntities { get; } = new ConcurrentDictionary<string, TargetEntity>();
+        public ConcurrentDictionary<string, TargetEntity> ClosedEntities { get; } = new ConcurrentDictionary<string, TargetEntity>();
         public TargetDomain(string name, Location location) : base(location)
         {
             Name = name;
@@ -18,9 +19,7 @@ namespace DTOMaker.Gentime
         {
             var idMap = new Dictionary<int, TargetEntity>();
 
-            foreach (var entity in this.Entities.Values
-                .Where(e => !e.IsGeneric)
-                .OrderBy(e => e.TFN.FullName))
+            foreach (var entity in this.ClosedEntities.Values.OrderBy(e => e.TFN.FullName))
             {
                 int id = entity.EntityId;
                 if (idMap.TryGetValue(id, out var otherEntity))

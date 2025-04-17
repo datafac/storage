@@ -17,8 +17,6 @@ namespace DTOMaker.Gentime
             _domain = domain;
             TFN = tfn;
         }
-        public int GenericTypeParams = 0;
-        public bool IsGeneric => GenericTypeParams > 0;
         public TargetEntity? OpenEntity { get; set; }
         public int EntityId { get; set; }
         public bool HasEntityAttribute { get; set; }

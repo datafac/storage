@@ -25,12 +25,12 @@ namespace DTOMaker.Gentime
 
             // fix entity hierarchy
             var domain = syntaxReceiver.Domain;
-            var entities = domain.Entities.Values.ToArray();
+            var entities = domain.ClosedEntities.Values.ToArray();
             foreach (var entity in entities)
             {
                 if (!entity.BaseName.Equals(TypeFullName.DefaultBase))
                 {
-                    if (domain.Entities.TryGetValue(entity.BaseName.FullName, out var baseEntity))
+                    if (domain.ClosedEntities.TryGetValue(entity.BaseName.FullName, out var baseEntity))
                     {
                         entity.Base = baseEntity;
                     }
@@ -52,7 +52,7 @@ namespace DTOMaker.Gentime
                 if (eTFN.IsGeneric && eTFN.IsClosed)
                 {
                     var openTFN = eTFN.AsOpenGeneric();
-                    if (domain.Entities.TryGetValue(openTFN.FullName, out var openEntity))
+                    if (domain.OpenEntities.TryGetValue(openTFN.FullName, out var openEntity))
                     {
                         // generate id and members if required
                         if (entity.OpenEntity is null)
@@ -81,7 +81,7 @@ namespace DTOMaker.Gentime
                                         if (mTFN.MemberKind == MemberKind.Unknown)
                                         {
                                             // entity?
-                                            if (domain.Entities.TryGetValue(mTFN.FullName, out var _))
+                                            if (domain.ClosedEntities.TryGetValue(mTFN.FullName, out var _))
                                             {
                                                 member.Kind = MemberKind.Entity;
                                             }
@@ -106,7 +106,7 @@ namespace DTOMaker.Gentime
             // determine derived entities
             foreach (var entity in entities)
             {
-                entity.DerivedEntities = domain.Entities.Values
+                entity.DerivedEntities = domain.ClosedEntities.Values
                     .Where(e => IsDerivedFrom(e, entity))
                     .OrderBy(e => e.TFN.FullName)
                     .ToArray();
