@@ -362,5 +362,59 @@ namespace DTOMaker.MessagePack.Tests
             await Verifier.Verify(outputCode);
         }
 
+        private readonly string source4 =
+            """
+            using System;
+            using DataFac.Memory;
+            using DTOMaker.Models;
+            using DTOMaker.Models.MessagePack;
+            namespace MyOrg.Models
+            {
+                [Entity][Id(1)]
+                public interface ITree<TK, TV>
+                {
+                    [Member(1)] int Count {get;}
+                    [Member(2)] TK  Key   {get;}
+                    [Member(3)] TV  Value {get;}
+                    //[Member(4)] ITree<TK, TV>? Left  {get;}
+                    //[Member(5)] ITree<TK, TV>? Right {get;}
+                }
+                [Entity][Id(2)]
+                public interface IMyTree : ITree<String, Octets>
+                {
+                }
+            }
+            """;
+
+        [Fact]
+        public void Generic4_Recurse1_CheckGeneratedSources()
+        {
+            var grr = GeneratorTestHelper.RunSourceGenerator(source4, LanguageVersion.LatestMajor);
+            grr.Exception.ShouldBeNull();
+            grr.Diagnostics.ShouldBeEmpty();
+
+            grr.GeneratedSources.Length.ShouldBe(2);
+            grr.GeneratedSources[0].HintName.ShouldBe("MyOrg.Models.MyTree.MessagePack.g.cs");
+            grr.GeneratedSources[1].HintName.ShouldBe("MyOrg.Models.Tree_2_String_Octets.MessagePack.g.cs");
+        }
+
+        [Fact]
+        public async Task Generic4_Recurse2_VeryifyMyTree()
+        {
+            var grr = GeneratorTestHelper.RunSourceGenerator(source4, LanguageVersion.LatestMajor);
+            grr.Diagnostics.ShouldBeEmpty();
+            string outputCode = grr.GeneratedSources[0].SourceText.ToString();
+            await Verifier.Verify(outputCode);
+        }
+
+        [Fact]
+        public async Task Generic4_Recurse3_VeryifyTree_2()
+        {
+            var grr = GeneratorTestHelper.RunSourceGenerator(source4, LanguageVersion.LatestMajor);
+            grr.Diagnostics.ShouldBeEmpty();
+            string outputCode = grr.GeneratedSources[1].SourceText.ToString();
+            await Verifier.Verify(outputCode);
+        }
+
     }
 }

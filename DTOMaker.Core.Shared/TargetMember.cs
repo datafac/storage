@@ -67,7 +67,7 @@ namespace DTOMaker.Gentime
                 MemberKind.Vector => null,
                 _ => new SyntaxDiagnostic(
                     DiagnosticId.DTOM0004, "Invalid member datatype", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                    $"Unknown member data type '{MemberType}'.")
+                    $"Member '{Name}' has invalid data type '{MemberType}'.")
 
             };
         }
