@@ -56,6 +56,8 @@ namespace MyOrg.Models.MessagePack
         protected override void OnFreeze()
         {
             base.OnFreeze();
+            _Left?.Freeze();
+            _Right?.Freeze();
         }
 
         protected Tree_2_String_Octets() { }
@@ -66,6 +68,8 @@ namespace MyOrg.Models.MessagePack
             _Count = source._Count;
             _Key = source._Key;
             _Value = source._Value;
+            _Left = source._Left is null ? null : MyOrg.Models.MessagePack.Tree_2_String_Octets.CreateFrom(source._Left);
+            _Right = source._Right is null ? null : MyOrg.Models.MessagePack.Tree_2_String_Octets.CreateFrom(source._Right);
         }
 
         public Tree_2_String_Octets(ITree<String, Octets> source) : base(source)
@@ -74,6 +78,8 @@ namespace MyOrg.Models.MessagePack
             _Count = source.Count;
             _Key = source.Key;
             _Value = source.Value.Memory;
+            _Left = source.Left is null ? null : MyOrg.Models.MessagePack.Tree_2_String_Octets.CreateFrom(source.Left);
+            _Right = source.Right is null ? null : MyOrg.Models.MessagePack.Tree_2_String_Octets.CreateFrom(source.Right);
         }
 
         [IgnoreMember]
@@ -107,6 +113,26 @@ namespace MyOrg.Models.MessagePack
             get => Octets.UnsafeWrap(_Value);
         }
 
+        [IgnoreMember]
+        private MyOrg.Models.MessagePack.Tree_2_String_Octets? _Left;
+        [Key(4)]
+        public MyOrg.Models.MessagePack.Tree_2_String_Octets? Left
+        {
+            get => _Left;
+            set => _Left = IfNotFrozen(value);
+        }
+        MyOrg.Models.ITree<String, Octets>? ITree<String, Octets>.Left => _Left;
+
+        [IgnoreMember]
+        private MyOrg.Models.MessagePack.Tree_2_String_Octets? _Right;
+        [Key(5)]
+        public MyOrg.Models.MessagePack.Tree_2_String_Octets? Right
+        {
+            get => _Right;
+            set => _Right = IfNotFrozen(value);
+        }
+        MyOrg.Models.ITree<String, Octets>? ITree<String, Octets>.Right => _Right;
+
 
         public bool Equals(Tree_2_String_Octets? other)
         {
@@ -116,6 +142,8 @@ namespace MyOrg.Models.MessagePack
             if (_Count != other.Count) return false;
             if (!string.Equals(_Key, other._Key)) return false;
             if (!BinaryValuesAreEqual(_Value, other. _Value)) return false;
+            if (_Left != other.Left) return false;
+            if (_Right != other.Right) return false;
             return true;
         }
 
@@ -139,6 +167,8 @@ namespace MyOrg.Models.MessagePack
                 result.Add(span_Value[i]);
             }
 #endif
+            result.Add(_Left);
+            result.Add(_Right);
             return result.ToHashCode();
         }
 

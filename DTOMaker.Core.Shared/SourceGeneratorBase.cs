@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace DTOMaker.Gentime
@@ -16,6 +17,45 @@ namespace DTOMaker.Gentime
             if (candidate.Base is null) return false;
             if (candidate.Base.TFN.Equals(parent.TFN)) return true;
             return IsDerivedFrom(candidate.Base, parent);
+        }
+
+        private static string MakeClosedFullName(TypeFullName openTFN, ImmutableArray<ITypeParameterSymbol> typeParameters, ImmutableArray<ITypeSymbol> typeArguments)
+        {
+            string result = openTFN.FullName;
+            int length = Math.Min(typeParameters.Length, typeArguments.Length);
+            for (int i = 0; i < length; i++)
+            {
+                string pattern = TypeFullName.Create(typeParameters[i]).ShortImplName;
+                string replace = TypeFullName.Create(typeArguments[i]).ShortImplName;
+                result = result.Replace(pattern, replace);
+            }
+            return result;
+        }
+
+        private static TypeFullName ResolveMemberType(TargetDomain domain, TypeFullName closedEntityTFN, TargetMember openMember)
+        {
+            // search for direct open/closed argument match
+            for (int i = 0; i < closedEntityTFN.TypeParameters.Length; i++)
+            {
+                TypeFullName openMemberTFN = TypeFullName.Create(closedEntityTFN.TypeParameters[i]);
+                if (openMember.MemberType == openMemberTFN)
+                {
+                    var mTFN = TypeFullName.Create(closedEntityTFN.TypeArguments[i]);
+                    return mTFN;
+                }
+            }
+
+            // search closed entities for match
+            string candidateFullName = MakeClosedFullName(openMember.MemberType, closedEntityTFN.TypeParameters, closedEntityTFN.TypeArguments);
+            foreach (var closedEntity in domain.ClosedEntities.Values)
+            {
+                if (string.Equals(candidateFullName, closedEntity.TFN.FullName))
+                {
+                    return closedEntity.TFN;
+                }
+            }
+            // oops - not resolved
+            return openMember.MemberType;
         }
 
         protected abstract void OnExecute(GeneratorExecutionContext context);
@@ -48,10 +88,9 @@ namespace DTOMaker.Gentime
             // bind closed/open generic entities
             foreach (var entity in entities)
             {
-                var eTFN = entity.TFN;
-                if (eTFN.IsGeneric && eTFN.IsClosed)
+                if (entity.TFN.IsGeneric && entity.TFN.IsClosed)
                 {
-                    var openTFN = eTFN.AsOpenGeneric();
+                    var openTFN = entity.TFN.AsOpenGeneric();
                     if (domain.OpenEntities.TryGetValue(openTFN.FullName, out var openEntity))
                     {
                         // generate id and members if required
@@ -61,7 +100,7 @@ namespace DTOMaker.Gentime
                             entity.HasEntityAttribute = true; // implied
                             // generate id
                             SyntheticId syntheticId = new SyntheticId(openEntity.EntityId);
-                            foreach (var ta in eTFN.TypeArguments)
+                            foreach (var ta in entity.TFN.TypeArguments)
                             {
                                 syntheticId = syntheticId.Add(TypeFullName.Create(ta).SyntheticId);
                             }
@@ -70,22 +109,14 @@ namespace DTOMaker.Gentime
                             foreach (TargetMember openMember in openEntity.Members.Values)
                             {
                                 TargetMember member = syntaxReceiver.Factory.CloneMember(entity, openMember);
-                                for (int i = 0; i < eTFN.TypeParameters.Length; i++)
+                                if(member.Kind == MemberKind.Unknown)
                                 {
-                                    TypeFullName openMemberTFN = TypeFullName.Create(eTFN.TypeParameters[i]);
-                                    if (openMember.MemberType == openMemberTFN)
+                                    var mTFN = ResolveMemberType(domain, entity.TFN, openMember);
+                                    member.MemberType = mTFN;
+                                    member.Kind = mTFN.MemberKind;
+                                    if (mTFN.MemberKind == MemberKind.Unknown && domain.ClosedEntities.TryGetValue(mTFN.FullName, out var _))
                                     {
-                                        var mTFN = TypeFullName.Create(eTFN.TypeArguments[i]);
-                                        member.MemberType = mTFN;
-                                        member.Kind = mTFN.MemberKind;
-                                        if (mTFN.MemberKind == MemberKind.Unknown)
-                                        {
-                                            // entity?
-                                            if (domain.ClosedEntities.TryGetValue(mTFN.FullName, out var _))
-                                            {
-                                                member.Kind = MemberKind.Entity;
-                                            }
-                                        }
+                                        member.Kind = MemberKind.Entity;
                                     }
                                 }
                                 entity.Members.TryAdd(member.Name, member);
@@ -98,7 +129,7 @@ namespace DTOMaker.Gentime
                         entity.SyntaxErrors.Add(
                             new SyntaxDiagnostic(
                                 DiagnosticId.DTOM0011, "Invalid generic entity", DiagnosticCategory.Design, entity.Location, DiagnosticSeverity.Error,
-                                $"Cannot find open entity '{openTFN}' for closed entity '{eTFN}'."));
+                                $"Cannot find open entity '{openTFN}' for closed entity '{entity.TFN}'."));
                     }
                 }
             }

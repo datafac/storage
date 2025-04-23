@@ -142,9 +142,11 @@ namespace DTOMaker.Gentime
                     {
                         var intf = ids1Symbol.Interfaces[0];
                         var bTFN = TypeFullName.Create(intf);
-                        if (bTFN.IsGeneric && bTFN.IsClosed)
+                        if (bTFN.IsGeneric)
                         {
-                            var closedEntity = Domain.ClosedEntities.GetOrAdd(bTFN.FullName, (n) => _factory.CreateEntity(Domain, bTFN, idsLocation));
+                            TargetEntity bEntity = bTFN.IsClosed
+                                ? Domain.ClosedEntities.GetOrAdd(bTFN.FullName, (n) => _factory.CreateEntity(Domain, bTFN, idsLocation))
+                                : Domain.OpenEntities.GetOrAdd(bTFN.FullName, (n) => _factory.CreateEntity(Domain, bTFN, idsLocation));
                         }
                         entity.BaseName = bTFN;
                     }
@@ -185,9 +187,11 @@ namespace DTOMaker.Gentime
                     if (pdsSymbol.Type is INamedTypeSymbol pdsNamedType)
                     {
                         var mTFN = TypeFullName.Create(pdsNamedType);
-                        if (mTFN.IsGeneric && mTFN.IsClosed)
+                        if (mTFN.IsGeneric)
                         {
-                            var closedEntity = Domain.ClosedEntities.GetOrAdd(mTFN.FullName, (n) => _factory.CreateEntity(Domain, mTFN, pdsLocation));
+                            TargetEntity mEntity = mTFN.IsClosed
+                                ? Domain.ClosedEntities.GetOrAdd(mTFN.FullName, (n) => _factory.CreateEntity(Domain, mTFN, pdsLocation))
+                                : Domain.OpenEntities.GetOrAdd(mTFN.FullName, (n) => _factory.CreateEntity(Domain, mTFN, pdsLocation));
                         }
                         member.MemberType = mTFN;
                         member.Kind = mTFN.MemberKind;
