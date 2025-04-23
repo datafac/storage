@@ -126,19 +126,20 @@ Common types used at runtime by DTOMaker generated entities.
 - Templates as testable code, template-to-generator processing.
 
 ## MemBlocks features
-- auto-embedded string, binary and entity members when encoded <= 62 bytes.
+- auto-embedded string, binary and entity members when encoded < 63 bytes.
 - fixed-length string and binary member types.
 
 # !Limitations
 ## Single compilation unit
 All models and generated DTOs are contained within a single assembly.
 Models cannot reference types in other projects or packages (other 
-than native types). Generated classes are partial, which can help you 
+than native or built-in types). Generated classes are partial, which can help you 
 mitigate the single assembly constraint.
 
 # Development
 ## In progress
 - custom struct members (to avoid primitive obsession)
+- generic/open types
 
 ## Coming soon
 - Json (System.Text) generator
@@ -159,7 +160,6 @@ mitigate the single assembly constraint.
 - Google Protobuf .proto generation
 - model.json generation
 - command-line alternative
-- generic model patterns: lists, trees, unions, etc.
 - variable length arrays
 - logical value equality
 - Rune member types
