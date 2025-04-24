@@ -9,114 +9,167 @@ using DataFac.Memory;
 using DTOMaker.Runtime;
 using DTOMaker.Runtime.MessagePack;
 using MessagePack;
+using MyOrg.Models;
 using System;
 
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    public sealed partial class Other : DTOMaker.Runtime.MessagePack.EntityBase, IOther, IEquatable<Other>
+    [Union(MyTree.EntityId, typeof(MyTree))]
+    public abstract partial class Tree_2_String_Octets : DTOMaker.Runtime.MessagePack.EntityBase, ITree<String, Octets>, IEquatable<Tree_2_String_Octets>
     {
+        // Derived entities: 1
+        // - MyTree
 
-        public new const int EntityId = 2;
+        public new const int EntityId = 10365494;
 
-        private static Other CreateEmpty()
+        public new static Tree_2_String_Octets CreateFrom(Tree_2_String_Octets source)
         {
-            var empty = new Other();
-            empty.Freeze();
-            return empty;
-        }
-        private static readonly Other _empty = CreateEmpty();
-        public static Other Empty => _empty;
-
-        public new static Other CreateFrom(Other source)
-        {
-            if (source.IsFrozen)
-                return source;
-            else
-                return new Other(source);
+            if (source.IsFrozen) return source;
+            return source switch
+            {
+                MyOrg.Models.MessagePack.MyTree source2 => new MyOrg.Models.MessagePack.MyTree(source2),
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+            };
         }
 
-        public new static Other CreateFrom(MyOrg.Models.IOther source)
+        public new static Tree_2_String_Octets CreateFrom(MyOrg.Models.ITree<String, Octets> source)
         {
-            if (source is Other concrete && concrete.IsFrozen)
-                return concrete;
-            else
-                return new Other(source);
+            if (source is Tree_2_String_Octets concrete && concrete.IsFrozen) return concrete;
+            return source switch
+            {
+                MyOrg.Models.IMyTree source2 => new MyOrg.Models.MessagePack.MyTree(source2),
+                _ => throw new ArgumentException($"Unexpected type: {source.GetType().Name}", nameof(source))
+            };
         }
 
-        public new static Other CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
+        public new static Tree_2_String_Octets CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            if (entityId == MyOrg.Models.MessagePack.Other.EntityId)
-                return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Other>(buffer, out var _);
-            else
-                throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
+            return entityId switch
+            {
+                MyOrg.Models.MessagePack.MyTree.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.MyTree>(buffer, out var _),
+                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
+            };
         }
 
-        protected override int OnGetEntityId() => 2;
+        protected override int OnGetEntityId() => 10365494;
 
         protected override void OnFreeze()
         {
             base.OnFreeze();
+            _Left?.Freeze();
+            _Right?.Freeze();
         }
 
-        protected override IFreezable OnPartCopy() => new Other(this);
+        protected Tree_2_String_Octets() { }
 
-        [SerializationConstructor]
-        public Other() { }
-
-        public Other(Other source) : base(source)
+        protected Tree_2_String_Octets(Tree_2_String_Octets source) : base(source)
         {
             if (source is null) throw new ArgumentNullException(nameof(source));
-            _Value1 = source._Value1;
-            _Value2 = source._Value2;
+            _Count = source._Count;
+            _Key = source._Key;
+            _Value = source._Value;
+            _Left = source._Left is null ? null : MyOrg.Models.MessagePack.Tree_2_String_Octets.CreateFrom(source._Left);
+            _Right = source._Right is null ? null : MyOrg.Models.MessagePack.Tree_2_String_Octets.CreateFrom(source._Right);
         }
 
-        public Other(IOther source) : base(source)
+        public Tree_2_String_Octets(ITree<String, Octets> source) : base(source)
         {
             if (source is null) throw new ArgumentNullException(nameof(source));
-            _Value1 = source.Value1;
-            _Value2 = source.Value2;
+            _Count = source.Count;
+            _Key = source.Key;
+            _Value = source.Value.Memory;
+            _Left = source.Left is null ? null : MyOrg.Models.MessagePack.Tree_2_String_Octets.CreateFrom(source.Left);
+            _Right = source.Right is null ? null : MyOrg.Models.MessagePack.Tree_2_String_Octets.CreateFrom(source.Right);
         }
 
         [IgnoreMember]
-        private Int64 _Value1 = default;
+        private Int32 _Count = default;
         [Key(1)]
-        public Int64 Value1
+        public Int32 Count
         {
-            get => _Value1;
-            set => _Value1 = IfNotFrozen(value);
+            get => _Count;
+            set => _Count = IfNotFrozen(value);
         }
 
         [IgnoreMember]
-        private Int64 _Value2 = default;
+        private string _Key = string.Empty;
         [Key(2)]
-        public Int64 Value2
+        public string Key
         {
-            get => _Value2;
-            set => _Value2 = IfNotFrozen(value);
+            get => _Key;
+            set => _Key = IfNotFrozen(value);
         }
 
+        [IgnoreMember]
+        private ReadOnlyMemory<byte> _Value = ReadOnlyMemory<byte>.Empty;
+        [Key(3)]
+        public ReadOnlyMemory<byte> Value
+        {
+            get => _Value;
+            set => _Value = IfNotFrozen(value);
+        }
+        Octets ITree<String, Octets>.Value
+        {
+            get => Octets.UnsafeWrap(_Value);
+        }
 
-        public bool Equals(Other? other)
+        [IgnoreMember]
+        private MyOrg.Models.MessagePack.Tree_2_String_Octets? _Left;
+        [Key(4)]
+        public MyOrg.Models.MessagePack.Tree_2_String_Octets? Left
+        {
+            get => _Left;
+            set => _Left = IfNotFrozen(value);
+        }
+        MyOrg.Models.ITree<String, Octets>? ITree<String, Octets>.Left => _Left;
+
+        [IgnoreMember]
+        private MyOrg.Models.MessagePack.Tree_2_String_Octets? _Right;
+        [Key(5)]
+        public MyOrg.Models.MessagePack.Tree_2_String_Octets? Right
+        {
+            get => _Right;
+            set => _Right = IfNotFrozen(value);
+        }
+        MyOrg.Models.ITree<String, Octets>? ITree<String, Octets>.Right => _Right;
+
+
+        public bool Equals(Tree_2_String_Octets? other)
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
             if (!base.Equals(other)) return false;
-            if (_Value1 != other.Value1) return false;
-            if (_Value2 != other.Value2) return false;
+            if (_Count != other.Count) return false;
+            if (!string.Equals(_Key, other._Key)) return false;
+            if (!BinaryValuesAreEqual(_Value, other._Value)) return false;
+            if (_Left != other.Left) return false;
+            if (_Right != other.Right) return false;
             return true;
         }
 
-        public override bool Equals(object? obj) => obj is Other other && Equals(other);
-        public static bool operator ==(Other? left, Other? right) => left is not null ? left.Equals(right) : (right is null);
-        public static bool operator !=(Other? left, Other? right) => left is not null ? !left.Equals(right) : (right is not null);
+        public override bool Equals(object? obj) => obj is Tree_2_String_Octets other && Equals(other);
+        public static bool operator ==(Tree_2_String_Octets? left, Tree_2_String_Octets? right) => left is not null ? left.Equals(right) : (right is null);
+        public static bool operator !=(Tree_2_String_Octets? left, Tree_2_String_Octets? right) => left is not null ? !left.Equals(right) : (right is not null);
 
         private int CalcHashCode()
         {
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
-            result.Add(_Value1);
-            result.Add(_Value2);
+            result.Add(_Count);
+            result.Add(_Key);
+            var span_Value = _Value.Span;
+            result.Add(span_Value.Length);
+#if NET8_0_OR_GREATER
+            result.AddBytes(span_Value);
+#else
+            for (int i = 0; i < span_Value.Length; i++)
+            {
+                result.Add(span_Value[i]);
+            }
+#endif
+            result.Add(_Left);
+            result.Add(_Right);
             return result.ToHashCode();
         }
 

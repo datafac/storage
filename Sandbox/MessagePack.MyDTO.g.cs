@@ -14,128 +14,83 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    public sealed partial class MyDTO : DTOMaker.Runtime.MessagePack.EntityBase, IMyDTO, IEquatable<MyDTO>
+    public sealed partial class MyTree : MyOrg.Models.MessagePack.Tree_2_String_Octets, IMyTree, IEquatable<MyTree>
     {
 
-        public new const int EntityId = 1;
+        public new const int EntityId = 2;
 
-        private static MyDTO CreateEmpty()
+        private static MyTree CreateEmpty()
         {
-            var empty = new MyDTO();
+            var empty = new MyTree();
             empty.Freeze();
             return empty;
         }
-        private static readonly MyDTO _empty = CreateEmpty();
-        public static new MyDTO Empty => _empty;
+        private static readonly MyTree _empty = CreateEmpty();
+        public static new MyTree Empty => _empty;
 
-        public new static MyDTO CreateFrom(MyDTO source)
+        public new static MyTree CreateFrom(MyTree source)
         {
             if (source.IsFrozen)
                 return source;
             else
-                return new MyDTO(source);
+                return new MyTree(source);
         }
 
-        public new static MyDTO CreateFrom(MyOrg.Models.IMyDTO source)
+        public new static MyTree CreateFrom(MyOrg.Models.IMyTree source)
         {
-            if (source is MyDTO concrete && concrete.IsFrozen)
+            if (source is MyTree concrete && concrete.IsFrozen)
                 return concrete;
             else
-                return new MyDTO(source);
+                return new MyTree(source);
         }
 
-        public new static MyDTO CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
+        public new static MyTree CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
-            if (entityId == MyOrg.Models.MessagePack.MyDTO.EntityId)
-                return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.MyDTO>(buffer, out var _);
+            if (entityId == MyOrg.Models.MessagePack.MyTree.EntityId)
+                return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.MyTree>(buffer, out var _);
             else
                 throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }
 
-        protected override int OnGetEntityId() => 1;
+        protected override int OnGetEntityId() => 2;
 
         protected override void OnFreeze()
         {
             base.OnFreeze();
-            _Other1?.Freeze();
         }
 
-        protected override IFreezable OnPartCopy() => new MyDTO(this);
+        protected override IFreezable OnPartCopy() => new MyTree(this);
 
         [SerializationConstructor]
-        public MyDTO() { }
+        public MyTree() { }
 
-        public MyDTO(MyDTO source) : base(source)
+        public MyTree(MyTree source) : base(source)
         {
             if (source is null) throw new ArgumentNullException(nameof(source));
-            _Other1 = source._Other1 is null ? null : MyOrg.Models.MessagePack.Other.CreateFrom(source._Other1);
-            _Field1 = source._Field1;
-            _Field2 = source._Field2;
         }
 
-        public MyDTO(IMyDTO source) : base(source)
+        public MyTree(IMyTree source) : base(source)
         {
             if (source is null) throw new ArgumentNullException(nameof(source));
-            _Other1 = source.Other1 is null ? null : MyOrg.Models.MessagePack.Other.CreateFrom(source.Other1);
-            _Field1 = source.Field1.Memory;
-            if (source.Field2 is null)
-                _Field2 = null;
-            else
-                _Field2 = source.Field2.Memory;
         }
 
-        [IgnoreMember]
-        private MyOrg.Models.MessagePack.Other? _Other1;
-        [Key(1)]
-        public MyOrg.Models.MessagePack.Other? Other1
-        {
-            get => _Other1;
-            set => _Other1 = IfNotFrozen(value);
-        }
-        MyOrg.Models.IOther? IMyDTO.Other1 => _Other1;
 
-        [IgnoreMember]
-        private ReadOnlyMemory<byte> _Field1 = ReadOnlyMemory<byte>.Empty;
-        [Key(2)]
-        public ReadOnlyMemory<byte> Field1
+        public bool Equals(MyTree? other)
         {
-            get => _Field1;
-            set => _Field1 = IfNotFrozen(value);
-        }
-        Octets IMyDTO.Field1 => Octets.UnsafeWrap(_Field1);
-
-        [IgnoreMember]
-        private ReadOnlyMemory<byte>? _Field2;
-        [Key(3)]
-        public ReadOnlyMemory<byte>? Field2
-        {
-            get => _Field2;
-            set => _Field2 = IfNotFrozen(value);
-        }
-        Octets? IMyDTO.Field2 => _Field2 is null ? null : Octets.UnsafeWrap(_Field2.Value);
-
-        public bool Equals(MyDTO? other)
-        {
-            if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
             if (!base.Equals(other)) return false;
-            if (_Other1 != other.Other1) return false;
-            if (!BinaryValuesAreEqual(_Field1, other._Field1)) return false;
-            if (!BinaryValuesAreEqual(_Field2, other._Field2)) return false;
             return true;
         }
 
-        public override bool Equals(object? obj) => obj is MyDTO other && Equals(other);
-        public static bool operator ==(MyDTO? left, MyDTO? right) => left is not null ? left.Equals(right) : (right is null);
-        public static bool operator !=(MyDTO? left, MyDTO? right) => left is not null ? !left.Equals(right) : (right is not null);
+        public override bool Equals(object? obj) => obj is MyTree other && Equals(other);
+        public static bool operator ==(MyTree? left, MyTree? right) => left is not null ? left.Equals(right) : (right is null);
+        public static bool operator !=(MyTree? left, MyTree? right) => left is not null ? !left.Equals(right) : (right is not null);
 
         private int CalcHashCode()
         {
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
-            result.Add(_Other1);
-            result.Add(_Field1);
-            result.Add(_Field2);
             return result.ToHashCode();
         }
 
