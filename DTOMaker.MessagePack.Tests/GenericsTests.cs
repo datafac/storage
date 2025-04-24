@@ -1,7 +1,5 @@
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Shouldly;
-using System.Linq;
 using System.Threading.Tasks;
 using VerifyXunit;
 using Xunit;

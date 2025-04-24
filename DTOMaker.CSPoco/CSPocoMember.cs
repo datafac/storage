@@ -1,6 +1,5 @@
 ﻿using DTOMaker.Gentime;
 using Microsoft.CodeAnalysis;
-using System.Xml.Linq;
 
 namespace DTOMaker.CSPoco
 {

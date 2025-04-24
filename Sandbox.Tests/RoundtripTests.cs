@@ -1,6 +1,5 @@
 using DataFac.Memory;
 using MessagePack;
-using Newtonsoft.Json;
 using Shouldly;
 using System;
 using Xunit;

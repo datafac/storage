@@ -1,7 +1,6 @@
 ﻿using DataFac.Memory;
 using System;
 using DTOMaker.Models;
-using DTOMaker.Models.MessagePack;
 namespace MyOrg.Models
 {
     [Entity]
