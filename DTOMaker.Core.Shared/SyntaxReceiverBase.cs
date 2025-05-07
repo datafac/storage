@@ -147,6 +147,7 @@ namespace DTOMaker.Gentime
                             TargetEntity bEntity = bTFN.IsClosed
                                 ? Domain.ClosedEntities.GetOrAdd(bTFN.FullName, (n) => _factory.CreateEntity(Domain, bTFN, idsLocation))
                                 : Domain.OpenEntities.GetOrAdd(bTFN.FullName, (n) => _factory.CreateEntity(Domain, bTFN, idsLocation));
+                            bEntity.HasEntityAttribute = true;
                         }
                         entity.BaseName = bTFN;
                     }
@@ -165,9 +166,13 @@ namespace DTOMaker.Gentime
                     //    TryGetAttributeArgumentValue<int>(entity, idsLocation, attributeArguments, 0, (value) => { entity.xxx = value; });
                     //}
                 }
+                else
+                {
+                    //
+                }
 
-                // additional entity attribute processing
-                OnProcessEntityAttributes(entity, idsLocation, entityAttributes);
+                    // additional entity attribute processing
+                    OnProcessEntityAttributes(entity, idsLocation, entityAttributes);
             }
 
             if (context.Node is PropertyDeclarationSyntax pds

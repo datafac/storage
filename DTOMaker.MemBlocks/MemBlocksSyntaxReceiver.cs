@@ -19,14 +19,18 @@ namespace DTOMaker.MemBlocks
             {
                 if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(LayoutAttribute)) is AttributeData entityLayoutAttr)
                 {
-                    // found entity layout attribute
-                    entity.HasEntityLayoutAttribute = true;
+                    // found layout attribute
+                    entity.HasLayoutAttribute = true;
                     var attributeArguments = entityLayoutAttr.ConstructorArguments;
                     if (CheckAttributeArguments(nameof(LayoutAttribute), attributeArguments, 2, entity, location))
                     {
                         TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 0, (value) => { entity.LayoutMethod = (LayoutMethod)value; });
                         TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 1, (value) => { entity.BlockLength = value; });
                     }
+                }
+                else
+                {
+                    // no layout attr
                 }
             }
         }

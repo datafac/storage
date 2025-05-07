@@ -7,7 +7,7 @@ namespace DTOMaker.MemBlocks
 {
     internal sealed class MemBlockEntity : TargetEntity
     {
-        public bool HasEntityLayoutAttribute { get; set; }
+        public bool HasLayoutAttribute { get; set; }
         public LayoutMethod LayoutMethod { get; set; }
         public int BlockLength { get; set; }
         public long BlockStructureCode { get; set; }
@@ -137,18 +137,17 @@ namespace DTOMaker.MemBlocks
             this.BlockStructureCode = structureCode.Bits;
         }
 
-        private SyntaxDiagnostic? CheckHasEntityLayoutAttribute()
+        private SyntaxDiagnostic? CheckHasLayoutAttribute()
         {
-            return !HasEntityLayoutAttribute
-                ? new SyntaxDiagnostic(
-                        DiagnosticId.DMMB0005, "Missing [EntityLayout] attribute", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                        $"[EntityLayout] attribute is missing.")
-                : null;
+            if (HasLayoutAttribute) return null;
+            return (SyntaxDiagnostic?)new SyntaxDiagnostic(
+                    DiagnosticId.DMMB0005, "Missing [Layout] attribute", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+                    $"[Layout] attribute is missing.");
         }
 
         private SyntaxDiagnostic? CheckBlockSizeIsValid()
         {
-            if (!HasEntityLayoutAttribute)
+            if (!HasLayoutAttribute)
                 return null;
 
             if (LayoutMethod != LayoutMethod.Explicit)
@@ -187,7 +186,7 @@ namespace DTOMaker.MemBlocks
 
         private SyntaxDiagnostic? CheckLayoutMethodIsSupported()
         {
-            if (!HasEntityLayoutAttribute)
+            if (!HasLayoutAttribute)
                 return null;
 
             return LayoutMethod switch
@@ -263,7 +262,7 @@ namespace DTOMaker.MemBlocks
             }
 
             SyntaxDiagnostic? diagnostic2;
-            if ((diagnostic2 = CheckHasEntityLayoutAttribute()) is not null) yield return diagnostic2;
+            if ((diagnostic2 = CheckHasLayoutAttribute()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckLayoutMethodIsSupported()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckBlockSizeIsValid()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckMemberLayoutHasNoOverlaps()) is not null) yield return diagnostic2;
