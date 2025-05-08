@@ -77,11 +77,11 @@ namespace MyOrg.Models.MessagePack
         {
             if (source is null) throw new ArgumentNullException(nameof(source));
             _Other1 = source.Other1 is null ? null : MyOrg.Models.MessagePack.Other.CreateFrom(source.Other1);
-            _Field1 = source.Field1.Memory;
+            _Field1 = source.Field1.AsMemory();
             if (source.Field2 is null)
                 _Field2 = null;
             else
-                _Field2 = source.Field2.Memory;
+                _Field2 = source.Field2.AsMemory();
         }
 
         [IgnoreMember]

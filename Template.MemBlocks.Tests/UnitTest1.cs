@@ -20,7 +20,7 @@ namespace Template.MemBlocks.Tests
         //##}
         private static readonly long _structureBits = 0x0051;
         private const int ClassHeight = 1;
-        public new const int EntityId = 4;
+        public const int EntityId = 4;
         private const int BlockLength = 32;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
