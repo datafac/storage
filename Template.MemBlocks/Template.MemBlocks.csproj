@@ -9,7 +9,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="DataFac.Memory" Version="0.10.2" />
-	  <PackageReference Include="System.Collections.Immutable" Version="9.0.4" />
+	  <PackageReference Include="System.Collections.Immutable" Version="9.0.5" />
 	</ItemGroup>
 
 	<ItemGroup>
