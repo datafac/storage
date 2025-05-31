@@ -99,7 +99,7 @@ namespace Template.JsonNewtonSoft.Tests
             ISimple iorig = orig;
             ISimple icopy = copy;
             icopy.Field1.ShouldBe(iorig.Field1);
-            icopy.Field2.Memory.Span.SequenceEqual(iorig.Field2.Memory.Span).ShouldBeTrue();
+            icopy.Field2.AsMemory().Span.SequenceEqual(iorig.Field2.AsMemory().Span).ShouldBeTrue();
         }
 
         [Fact]
@@ -119,7 +119,7 @@ namespace Template.JsonNewtonSoft.Tests
             ISimple iorig = orig;
             ISimple icopy = copy;
             icopy.Field1.ShouldBe(iorig.Field1);
-            icopy.Field2.Memory.Span.SequenceEqual(iorig.Field2.Memory.Span).ShouldBeTrue();
+            icopy.Field2.AsMemory().Span.SequenceEqual(iorig.Field2.AsMemory().Span).ShouldBeTrue();
         }
 
         [Fact]

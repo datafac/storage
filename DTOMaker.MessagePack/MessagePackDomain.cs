@@ -15,7 +15,7 @@ namespace DTOMaker.MessagePack
                 yield return diagnostic1;
             }
 
-            SyntaxDiagnostic? diagnostic2;
+            //SyntaxDiagnostic? diagnostic2;
             //if ((diagnostic2 = CheckEntityKeys()) is not null) yield return diagnostic2;
         }
     }

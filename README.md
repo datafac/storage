@@ -48,10 +48,9 @@ flowchart LR
     ref3(Reference one or more source generators e.g. DTOMaker.MessagePack)
     bld(VS/Code/MSBuild)
     pkg(Assembly)
-    def-->ref1
+    ref1-->def
     def-->ref2
     def-->ref3
-    ref1-->bld
     ref2-->bld
     ref3-->bld
     bld-->pkg
@@ -71,7 +70,7 @@ generated (simplified):
 
 ```C#
 [MessagePackObject]
-public sealed class MyFirstDTO : IMyFirstDTO:
+public sealed class MyFirstDTO : EntityBase, IMyFirstDTO, IEquatable<MyFirstDTO>
 {
     [Key(1)] string Name { get; set; }
 }
