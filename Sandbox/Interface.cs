@@ -1,16 +1,21 @@
 ﻿using DataFac.Memory;
 using System;
+using DTOMaker.Models;
 namespace MyOrg.Models
 {
-    public interface IOther
+    [Entity]
+    [Id(1)]
+    public interface ITree<TK, TV>
     {
-        Int64 Value1 { get; }
-        Int64 Value2 { get; }
+        [Member(1)] int Count { get; }
+        [Member(2)] TK Key { get; }
+        [Member(3)] TV Value { get; }
+        [Member(4)] ITree<TK, TV>? Left { get; }
+        [Member(5)] ITree<TK, TV>? Right { get; }
     }
-    public interface IMyDTO
+    [Entity]
+    [Id(2)]
+    public interface IMyTree : ITree<String, Octets>
     {
-        IOther? Other1 { get; }
-        Octets Field1 { get; }
-        Octets? Field2 { get; }
     }
 }

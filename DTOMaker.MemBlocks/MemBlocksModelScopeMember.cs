@@ -47,8 +47,6 @@ namespace DTOMaker.MemBlocks
                     _tokens[(_member.MemberIsNullable ? "Nullable" : "Required") + (_member.IsFixedLength ? "FixLen" : "VarLen") + "StringFieldOffset"] = _member.FieldOffset;
                     _tokens[(_member.MemberIsNullable ? "Nullable" : "Required") + (_member.IsFixedLength ? "FixLen" : "VarLen") + "StringFieldLength"] = _member.FieldLength;
                     break;
-                default:
-                    throw new NotImplementedException($"Member.Kind: {_member.Kind}");
             }
         }
     }

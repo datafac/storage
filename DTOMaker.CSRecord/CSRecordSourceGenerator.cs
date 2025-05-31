@@ -47,7 +47,7 @@ namespace DTOMaker.CSRecord
             var domainScope = new CSRecordModelScopeDomain(ModelScopeEmpty.Instance, factory, language, domain);
 
             // emit each entity
-            foreach (var entity in domain.Entities.Values.OrderBy(e => e.EntityName.FullName))
+            foreach (var entity in domain.ClosedEntities.Values.OrderBy(e => e.TFN.FullName))
             {
                 EmitDiagnostics(context, entity);
                 foreach (var member in entity.Members.Values.OrderBy(m => m.Sequence))
@@ -60,7 +60,7 @@ namespace DTOMaker.CSRecord
                 var generator = new EntityGenerator(language);
                 string sourceText = generator.GenerateSourceText(entityScope);
 
-                context.AddSource($"{entity.EntityName.FullName}.CSRecord.g.cs", sourceText);
+                context.AddSource($"{entity.TFN.FullName}.CSRecord.g.cs", sourceText);
             }
         }
     }

@@ -17,7 +17,7 @@ namespace MyOrg.Models.MessagePack
     public sealed partial class Other : DTOMaker.Runtime.MessagePack.EntityBase, IOther, IEquatable<Other>
     {
 
-        public new const int EntityId = 2;
+        public new const int EntityId = 3;
 
         private static Other CreateEmpty()
         {
@@ -26,7 +26,7 @@ namespace MyOrg.Models.MessagePack
             return empty;
         }
         private static readonly Other _empty = CreateEmpty();
-        public static Other Empty => _empty;
+        public static new Other Empty => _empty;
 
         public new static Other CreateFrom(Other source)
         {
@@ -52,7 +52,7 @@ namespace MyOrg.Models.MessagePack
                 throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }
 
-        protected override int OnGetEntityId() => 2;
+        protected override int OnGetEntityId() => 3;
 
         protected override void OnFreeze()
         {
@@ -67,43 +67,19 @@ namespace MyOrg.Models.MessagePack
         public Other(Other source) : base(source)
         {
             if (source is null) throw new ArgumentNullException(nameof(source));
-            _Value1 = source._Value1;
-            _Value2 = source._Value2;
         }
 
         public Other(IOther source) : base(source)
         {
             if (source is null) throw new ArgumentNullException(nameof(source));
-            _Value1 = source.Value1;
-            _Value2 = source.Value2;
-        }
-
-        [IgnoreMember]
-        private Int64 _Value1 = default;
-        [Key(1)]
-        public Int64 Value1
-        {
-            get => _Value1;
-            set => _Value1 = IfNotFrozen(value);
-        }
-
-        [IgnoreMember]
-        private Int64 _Value2 = default;
-        [Key(2)]
-        public Int64 Value2
-        {
-            get => _Value2;
-            set => _Value2 = IfNotFrozen(value);
         }
 
 
         public bool Equals(Other? other)
         {
-            if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
             if (!base.Equals(other)) return false;
-            if (_Value1 != other.Value1) return false;
-            if (_Value2 != other.Value2) return false;
             return true;
         }
 
@@ -115,8 +91,6 @@ namespace MyOrg.Models.MessagePack
         {
             HashCode result = new HashCode();
             result.Add(base.GetHashCode());
-            result.Add(_Value1);
-            result.Add(_Value2);
             return result.ToHashCode();
         }
 

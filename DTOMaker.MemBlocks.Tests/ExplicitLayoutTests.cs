@@ -197,7 +197,7 @@ namespace DTOMaker.MemBlocks.Tests
                 using DTOMaker.Models.MemBlocks;
                 namespace MyOrg.Models
                 {
-                    [Entity] [Layout(LayoutMethod.Undefined, 64)]
+                    [Entity] [Layout((LayoutMethod)3, 64)]
                     [Id(1)]
                     public interface IMyDTO
                     {
@@ -212,7 +212,7 @@ namespace DTOMaker.MemBlocks.Tests
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
             errors.Length.ShouldBe(1);
-            errors[0].GetMessage().ShouldStartWith("LayoutMethod is not defined.");
+            errors[0].GetMessage().ShouldBe("LayoutMethod (3) is not supported.");
         }
 
         [Fact]
@@ -245,7 +245,7 @@ namespace DTOMaker.MemBlocks.Tests
         [Fact]
         public void Fault03_OrphanMember()
         {
-            // note: both [Entity] and [EntityLayout] attributes missing
+            // note: both [Entity] and [Layout] attributes missing
             var inputSource =
                 """
                 using DTOMaker.Models;
@@ -302,9 +302,9 @@ namespace DTOMaker.MemBlocks.Tests
         }
 
         [Fact]
-        public void Fault05_MissingEntityLayoutAttribute()
+        public void Fault05_MissingLayoutAttribute()
         {
-            // note: [EntityLayout] attribute is missing
+            // note: [Layout] attribute is missing
             var inputSource =
                 """
                 using DTOMaker.Models;
@@ -329,7 +329,7 @@ namespace DTOMaker.MemBlocks.Tests
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
             errors.Length.ShouldBe(2);
-            errors[0].GetMessage().ShouldBe("[EntityLayout] attribute is missing.");
+            errors[0].GetMessage().ShouldBe("LayoutMethod is not defined. Is the [Layout] attribute missing?");
             errors[1].GetMessage().ShouldBe("FieldLength (0) is invalid. FieldLength must be a whole power of 2 between 1 and 1024.");
         }
 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-
-namespace DTOMaker.Runtime.CSRecord
+﻿namespace DTOMaker.Runtime.CSRecord
 {
 #if NET8_0_OR_GREATER
     public abstract record class EntityBase : IImmutable

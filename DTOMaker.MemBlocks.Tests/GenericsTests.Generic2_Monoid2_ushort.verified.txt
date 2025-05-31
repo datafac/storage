@@ -18,49 +18,53 @@ using DTOMaker.Runtime.MemBlocks;
 
 namespace MyOrg.Models.MemBlocks
 {
-    public partial class Other : DTOMaker.Runtime.MemBlocks.EntityBase, IOther, IEquatable<Other>
+    public partial class Monoid_1_UInt16 : DTOMaker.Runtime.MemBlocks.EntityBase, IMonoid<UInt16>, IEquatable<Monoid_1_UInt16>
     {
-        // Derived entities: 0
+        // Derived entities: 1
+        // - MyDTO
 
-        private const long BlockStructureCode = 81L;
+        private const long BlockStructureCode = 33L;
         private const int ClassHeight = 1;
-        private const int BlockLength = 16;
+        private const int BlockLength = 2;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        private static readonly BlockHeader _header = BlockHeader.CreateNew(1, BlockStructureCode);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(10036, BlockStructureCode);
 
-        public new static Other CreateFrom(Other source)
+        public new static Monoid_1_UInt16 CreateFrom(Monoid_1_UInt16 source)
         {
             if (source.IsFrozen) return source;
             return source switch
             {
-                _ => new MyOrg.Models.MemBlocks.Other(source)
+                MyOrg.Models.MemBlocks.MyDTO source2 => new MyOrg.Models.MemBlocks.MyDTO(source2),
+                _ => new MyOrg.Models.MemBlocks.Monoid_1_UInt16(source)
             };
         }
 
-        public new static Other CreateFrom(MyOrg.Models.IOther source)
+        public new static Monoid_1_UInt16 CreateFrom(MyOrg.Models.IMonoid<UInt16> source)
         {
-            if (source is Other concrete && concrete.IsFrozen) return concrete;
+            if (source is Monoid_1_UInt16 concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
-                _ => new MyOrg.Models.MemBlocks.Other(source)
+                MyOrg.Models.IMyDTO source2 => new MyOrg.Models.MemBlocks.MyDTO(source2),
+                _ => new MyOrg.Models.MemBlocks.Monoid_1_UInt16(source)
             };
         }
 
-        public new static Other CreateFrom(ReadOnlySequence<byte> buffers)
+        public new static Monoid_1_UInt16 CreateFrom(ReadOnlySequence<byte> buffers)
         {
             SourceBlocks blocks = SourceBlocks.ParseFrom(buffers);
             return blocks.Header.EntityId switch
             {
-                _ => new MyOrg.Models.MemBlocks.Other(blocks)
+                2 => new MyOrg.Models.MemBlocks.MyDTO(blocks),
+                _ => new MyOrg.Models.MemBlocks.Monoid_1_UInt16(blocks)
             };
         }
 
-        protected override int OnGetEntityId() => 1;
+        protected override int OnGetEntityId() => 10036;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
-        protected override IFreezable OnPartCopy() => new Other(this);
+        protected override IFreezable OnPartCopy() => new Monoid_1_UInt16(this);
 
         protected override void OnFreeze()
         {
@@ -80,36 +84,33 @@ namespace MyOrg.Models.MemBlocks
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
         //  ----  ----  ----  ----  ------- ----  -------
-        //     1     0     8        Int64   LE    Value1
-        //     2     8     8        Int64   LE    Value2
+        //     1     0     2        UInt16  LE    Value
         // ------------------------------------------------------------
 
-        protected Other(BlockHeader header) : base(header)
+        protected Monoid_1_UInt16(BlockHeader header) : base(header)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
-        public Other() : base(_header)
+        public Monoid_1_UInt16() : base(_header)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
 
-        protected Other(BlockHeader header, Other source) : base(header, source)
+        protected Monoid_1_UInt16(BlockHeader header, Monoid_1_UInt16 source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-            this.Value1 = source.Value1;
-            this.Value2 = source.Value2;
+            this.Value = source.Value;
         }
-        public Other(Other source) : this(_header, source) { }
+        public Monoid_1_UInt16(Monoid_1_UInt16 source) : this(_header, source) { }
 
-        protected Other(BlockHeader header, IOther source) : base(header, source)
+        protected Monoid_1_UInt16(BlockHeader header, IMonoid<UInt16> source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-            this.Value1 = source.Value1;
-            this.Value2 = source.Value2;
+            this.Value = source.Value;
         }
-        public Other(IOther source) : this(_header, source) { }
+        public Monoid_1_UInt16(IMonoid<UInt16> source) : this(_header, source) { }
 
-        protected Other(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
+        protected Monoid_1_UInt16(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
             var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];
             if (sourceBlock.Length < BlockLength)
@@ -124,23 +125,17 @@ namespace MyOrg.Models.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        private Other(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
-        public Other(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
+        internal Monoid_1_UInt16(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        public Monoid_1_UInt16(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
-        public Int64 Value1
+        public UInt16 Value
         {
-            get => Codec_Int64_LE.ReadFromSpan(_readonlyLocalBlock.Slice(0, 8).Span);
-            set => Codec_Int64_LE.WriteToSpan(_writableLocalBlock.Slice(0, 8).Span, IfNotFrozen(value));
-        }
-
-        public Int64 Value2
-        {
-            get => Codec_Int64_LE.ReadFromSpan(_readonlyLocalBlock.Slice(8, 8).Span);
-            set => Codec_Int64_LE.WriteToSpan(_writableLocalBlock.Slice(8, 8).Span, IfNotFrozen(value));
+            get => Codec_UInt16_LE.ReadFromSpan(_readonlyLocalBlock.Slice(0, 2).Span);
+            set => Codec_UInt16_LE.WriteToSpan(_writableLocalBlock.Slice(0, 2).Span, IfNotFrozen(value));
         }
 
 
-        public bool Equals(Other? other)
+        public bool Equals(Monoid_1_UInt16? other)
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
@@ -148,10 +143,10 @@ namespace MyOrg.Models.MemBlocks
             if (!_readonlyLocalBlock.Span.SequenceEqual(other._readonlyLocalBlock.Span)) return false;
             return true;
         }
-        public override bool Equals(object? obj) => obj is Other other && Equals(other);
+        public override bool Equals(object? obj) => obj is Monoid_1_UInt16 other && Equals(other);
         public override int GetHashCode() => base.GetHashCode();
-        public static bool operator ==(Other? left, Other? right) => left is not null ? left.Equals(right) : (right is null);
-        public static bool operator !=(Other? left, Other? right) => left is not null ? !left.Equals(right) : (right is not null);
+        public static bool operator ==(Monoid_1_UInt16? left, Monoid_1_UInt16? right) => left is not null ? left.Equals(right) : (right is null);
+        public static bool operator !=(Monoid_1_UInt16? left, Monoid_1_UInt16? right) => left is not null ? !left.Equals(right) : (right is not null);
 
     }
 }

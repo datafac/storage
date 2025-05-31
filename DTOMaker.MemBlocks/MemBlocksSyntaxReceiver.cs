@@ -13,24 +13,23 @@ namespace DTOMaker.MemBlocks
 
     internal class MemBlocksSyntaxReceiver : SyntaxReceiverBase
     {
-        private static TargetDomain DomainFactory(string name, Location location) => new MemBlockDomain(name, location);
-        private static TargetEntity EntityFactory(TargetDomain domain, string nameSpace, string name, Location location) => new MemBlockEntity(domain, nameSpace, name, location);
-        private static TargetMember MemberFactory(TargetEntity entity, string name, Location location) => new MemBlockMember(entity, name, location);
-
         protected override void OnProcessEntityAttributes(TargetEntity baseEntity, Location location, ImmutableArray<AttributeData> entityAttributes)
         {
             if (baseEntity is MemBlockEntity entity)
             {
                 if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(LayoutAttribute)) is AttributeData entityLayoutAttr)
                 {
-                    // found entity layout attribute
-                    entity.HasEntityLayoutAttribute = true;
+                    // found layout attribute
                     var attributeArguments = entityLayoutAttr.ConstructorArguments;
                     if (CheckAttributeArguments(nameof(LayoutAttribute), attributeArguments, 2, entity, location))
                     {
                         TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 0, (value) => { entity.LayoutMethod = (LayoutMethod)value; });
                         TryGetAttributeArgumentValue<int>(entity, location, attributeArguments, 1, (value) => { entity.BlockLength = value; });
                     }
+                }
+                else
+                {
+                    // no layout attr
                 }
             }
         }
@@ -75,7 +74,7 @@ namespace DTOMaker.MemBlocks
             }
         }
 
-        public MemBlocksSyntaxReceiver() : base(DomainFactory, EntityFactory, MemberFactory)
+        public MemBlocksSyntaxReceiver() : base(new MemBlocksFactory())
         {
         }
     }

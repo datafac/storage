@@ -7,6 +7,15 @@ namespace DTOMaker.MemBlocks
     internal sealed class MemBlockMember : TargetMember
     {
         public MemBlockMember(TargetEntity entity, string name, Location location) : base(entity, name, location) { }
+        public MemBlockMember(TargetEntity entity, MemBlockMember source) : base(entity, source)
+        {
+            HasOffsetAttribute = source.HasOffsetAttribute;
+            FixedLength = source.FixedLength;
+            ArrayCapacity = source.ArrayCapacity;
+            FieldOffset = source.FieldOffset;
+            FieldLength = source.FieldLength;
+            IsBigEndian = source.IsBigEndian;
+        }
 
         public LayoutMethod LayoutMethod => (Entity as MemBlockEntity)?.LayoutMethod ?? LayoutMethod.Undefined;
 
@@ -18,36 +27,6 @@ namespace DTOMaker.MemBlocks
         public int FieldLength { get; set; }
         public int TotalLength => (Kind == MemberKind.Vector) ? FieldLength * ArrayCapacity : FieldLength;
         public bool IsBigEndian { get; set; } = false;
-
-        private SyntaxDiagnostic? CheckMemberType()
-        {
-            if (Kind == MemberKind.Entity) return null;
-            return MemberType.FullName switch
-            {
-                "System.Boolean" => null,
-                "System.SByte" => null,
-                "System.Byte" => null,
-                "System.Int16" => null,
-                "System.UInt16" => null,
-                "System.Char" => null,
-                "System.Int32" => null,
-                "System.UInt32" => null,
-                "System.Int64" => null,
-                "System.UInt64" => null,
-                "System.Half" => null,
-                "System.Single" => null,
-                "System.Double" => null,
-                "System.Int128" => null,
-                "System.UInt128" => null,
-                "System.Decimal" => null,
-                "System.Guid" => null,
-                FullTypeName.SystemString => null,
-                FullTypeName.MemoryOctets => null,
-                _ => new SyntaxDiagnostic(
-                    DiagnosticId.DMMB0007, "Unsupported member datatype", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                    $"MemberType '{MemberType}' not supported")
-            };
-        }
 
         private SyntaxDiagnostic? CheckMemberIsNotNullable()
         {
@@ -144,7 +123,6 @@ namespace DTOMaker.MemBlocks
             }
 
             SyntaxDiagnostic? diagnostic2;
-            if ((diagnostic2 = CheckMemberType()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckMemberIsNotNullable()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckHasOffsetAttribute()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckFieldOffsetIsValid()) is not null) yield return diagnostic2;

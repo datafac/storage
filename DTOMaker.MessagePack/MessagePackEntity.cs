@@ -6,6 +6,7 @@ namespace DTOMaker.MessagePack
     internal sealed class MessagePackEntity : TargetEntity
     {
         public int MemberKeyOffset { get; set; }
-        public MessagePackEntity(TargetDomain domain, string nameSpace, string name, Location location) : base(domain, nameSpace, name, location) { }
+        public MessagePackEntity(TargetDomain domain, TypeFullName entityName, Location location) 
+            : base(domain, entityName, location) { }
     }
 }

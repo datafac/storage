@@ -12,5 +12,6 @@
         public const string DTOM0008 = nameof(DTOM0008); // Invalid base name(s)
         public const string DTOM0009 = nameof(DTOM0009); // Duplicate entity id
         public const string DTOM0010 = nameof(DTOM0010); // Invalid entity identifier
+        public const string DTOM0011 = nameof(DTOM0011); // Invalid generic entity
     }
 }

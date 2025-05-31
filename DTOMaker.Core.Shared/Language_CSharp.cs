@@ -46,7 +46,7 @@
             {
                 FullTypeName.SystemString => "String",
                 FullTypeName.MemoryOctets => "Octets",
-                _ => typeFullName.ShortName
+                _ => typeFullName.ShortImplName
             };
         }
 

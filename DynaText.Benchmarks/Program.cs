@@ -2,7 +2,6 @@
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using Newtonsoft.Json;
-using System;
 
 namespace DynaText.Benchmarks
 {

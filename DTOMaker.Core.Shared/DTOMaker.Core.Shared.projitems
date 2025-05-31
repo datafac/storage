@@ -24,6 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ModelScopeMember.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SourceGeneratorBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SyntaxReceiverBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SyntheticId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TargetBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DiagnosticCategory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DiagnosticId.cs" />

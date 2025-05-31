@@ -259,8 +259,8 @@ namespace DTOMaker.MemBlocks.Tests
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
             errors.Length.ShouldBe(2);
-            errors[0].GetMessage().ShouldBe("MemberType 'System.DayOfWeek' not supported");
-            errors[1].GetMessage().ShouldStartWith("FieldLength (0) is invalid");
+            errors[0].GetMessage().ShouldBe("Member 'Field1' has invalid data type 'System.DayOfWeek'.");
+            errors[1].GetMessage().ShouldBe("FieldLength (0) is invalid. FieldLength must be a whole power of 2 between 1 and 1024.");
         }
 
         [Fact]
@@ -319,7 +319,7 @@ namespace DTOMaker.MemBlocks.Tests
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
             errors.Length.ShouldBe(3);
-            errors[0].GetMessage().ShouldBe("MemberType 'System.Version' not supported");
+            errors[0].GetMessage().ShouldBe("Member 'Field1' has invalid data type 'System.Version'.");
             errors[1].GetMessage().ShouldBe("Nullable type 'System.Version?' is not supported.");
             errors[2].GetMessage().ShouldBe("FieldLength (0) is invalid. FieldLength must be a whole power of 2 between 1 and 1024.");
         }
