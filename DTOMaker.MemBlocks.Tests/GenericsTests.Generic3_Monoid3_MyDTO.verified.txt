@@ -18,49 +18,49 @@ using DTOMaker.Runtime.MemBlocks;
 
 namespace MyOrg.Models.MemBlocks
 {
-    public partial class MyDTO2 : MyOrg.Models.MemBlocks.Pair_2_Int64_String, IMyDTO2, IEquatable<MyDTO2>
+    public partial class MyDTO : MyOrg.Models.MemBlocks.Monoid_1_Other, IMyDTO, IEquatable<MyDTO>
     {
         // Derived entities: 0
 
-        private const long BlockStructureCode = 898L;
+        private const long BlockStructureCode = 114L;
         private const int ClassHeight = 2;
-        private const int BlockLength = 4;
+        private const int BlockLength = 0;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
         private static readonly BlockHeader _header = BlockHeader.CreateNew(2, BlockStructureCode);
 
-        public new static MyDTO2 CreateFrom(MyDTO2 source)
+        public new static MyDTO CreateFrom(MyDTO source)
         {
             if (source.IsFrozen) return source;
             return source switch
             {
-                _ => new MyOrg.Models.MemBlocks.MyDTO2(source)
+                _ => new MyOrg.Models.MemBlocks.MyDTO(source)
             };
         }
 
-        public new static MyDTO2 CreateFrom(MyOrg.Models.IMyDTO2 source)
+        public new static MyDTO CreateFrom(MyOrg.Models.IMyDTO source)
         {
-            if (source is MyDTO2 concrete && concrete.IsFrozen) return concrete;
+            if (source is MyDTO concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
-                _ => new MyOrg.Models.MemBlocks.MyDTO2(source)
+                _ => new MyOrg.Models.MemBlocks.MyDTO(source)
             };
         }
 
-        public new static MyDTO2 CreateFrom(ReadOnlySequence<byte> buffers)
+        public new static MyDTO CreateFrom(ReadOnlySequence<byte> buffers)
         {
             SourceBlocks blocks = SourceBlocks.ParseFrom(buffers);
             return blocks.Header.EntityId switch
             {
-                _ => new MyOrg.Models.MemBlocks.MyDTO2(blocks)
+                _ => new MyOrg.Models.MemBlocks.MyDTO(blocks)
             };
         }
 
         protected override int OnGetEntityId() => 2;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
-        protected override IFreezable OnPartCopy() => new MyDTO2(this);
+        protected override IFreezable OnPartCopy() => new MyDTO(this);
 
         protected override void OnFreeze()
         {
@@ -80,33 +80,30 @@ namespace MyOrg.Models.MemBlocks
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
         //  ----  ----  ----  ----  ------- ----  -------
-        //     1     0     4        Int32   LE    Id
         // ------------------------------------------------------------
 
-        protected MyDTO2(BlockHeader header) : base(header)
+        protected MyDTO(BlockHeader header) : base(header)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
-        public MyDTO2() : base(_header)
+        public MyDTO() : base(_header)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
 
-        protected MyDTO2(BlockHeader header, MyDTO2 source) : base(header, source)
+        protected MyDTO(BlockHeader header, MyDTO source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-            this.Id = source.Id;
         }
-        public MyDTO2(MyDTO2 source) : this(_header, source) { }
+        public MyDTO(MyDTO source) : this(_header, source) { }
 
-        protected MyDTO2(BlockHeader header, IMyDTO2 source) : base(header, source)
+        protected MyDTO(BlockHeader header, IMyDTO source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-            this.Id = source.Id;
         }
-        public MyDTO2(IMyDTO2 source) : this(_header, source) { }
+        public MyDTO(IMyDTO source) : this(_header, source) { }
 
-        protected MyDTO2(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
+        protected MyDTO(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
             var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];
             if (sourceBlock.Length < BlockLength)
@@ -121,17 +118,11 @@ namespace MyOrg.Models.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        internal MyDTO2(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
-        public MyDTO2(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
-
-        public Int32 Id
-        {
-            get => Codec_Int32_LE.ReadFromSpan(_readonlyLocalBlock.Slice(0, 4).Span);
-            set => Codec_Int32_LE.WriteToSpan(_writableLocalBlock.Slice(0, 4).Span, IfNotFrozen(value));
-        }
+        internal MyDTO(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        public MyDTO(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
 
-        public bool Equals(MyDTO2? other)
+        public bool Equals(MyDTO? other)
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
@@ -139,10 +130,10 @@ namespace MyOrg.Models.MemBlocks
             if (!_readonlyLocalBlock.Span.SequenceEqual(other._readonlyLocalBlock.Span)) return false;
             return true;
         }
-        public override bool Equals(object? obj) => obj is MyDTO2 other && Equals(other);
+        public override bool Equals(object? obj) => obj is MyDTO other && Equals(other);
         public override int GetHashCode() => base.GetHashCode();
-        public static bool operator ==(MyDTO2? left, MyDTO2? right) => left is not null ? left.Equals(right) : (right is null);
-        public static bool operator !=(MyDTO2? left, MyDTO2? right) => left is not null ? !left.Equals(right) : (right is not null);
+        public static bool operator ==(MyDTO? left, MyDTO? right) => left is not null ? left.Equals(right) : (right is null);
+        public static bool operator !=(MyDTO? left, MyDTO? right) => left is not null ? !left.Equals(right) : (right is not null);
 
     }
 }

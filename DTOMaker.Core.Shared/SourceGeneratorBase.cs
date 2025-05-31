@@ -98,6 +98,7 @@ namespace DTOMaker.Gentime
                         {
                             entity.OpenEntity = openEntity;
                             entity.HasEntityAttribute = true; // implied
+
                             // generate id
                             SyntheticId syntheticId = new SyntheticId(openEntity.EntityId);
                             foreach (var ta in entity.TFN.TypeArguments)

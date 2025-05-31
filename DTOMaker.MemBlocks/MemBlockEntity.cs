@@ -7,8 +7,14 @@ namespace DTOMaker.MemBlocks
 {
     internal sealed class MemBlockEntity : TargetEntity
     {
-        public bool HasLayoutAttribute { get; set; }
-        public LayoutMethod LayoutMethod { get; set; }
+        private LayoutMethod _layoutMethod;
+        public LayoutMethod LayoutMethod
+        {
+            get => _layoutMethod != LayoutMethod.Undefined
+                ? _layoutMethod
+                : (OpenEntity as MemBlockEntity)?.LayoutMethod ?? LayoutMethod.Undefined; 
+            set => _layoutMethod = value;
+        }
         public int BlockLength { get; set; }
         public long BlockStructureCode { get; set; }
 
@@ -137,17 +143,9 @@ namespace DTOMaker.MemBlocks
             this.BlockStructureCode = structureCode.Bits;
         }
 
-        private SyntaxDiagnostic? CheckHasLayoutAttribute()
-        {
-            if (HasLayoutAttribute) return null;
-            return (SyntaxDiagnostic?)new SyntaxDiagnostic(
-                    DiagnosticId.DMMB0005, "Missing [Layout] attribute", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                    $"[Layout] attribute is missing.");
-        }
-
         private SyntaxDiagnostic? CheckBlockSizeIsValid()
         {
-            if (!HasLayoutAttribute)
+            if (LayoutMethod == LayoutMethod.Undefined)
                 return null;
 
             if (LayoutMethod != LayoutMethod.Explicit)
@@ -186,16 +184,13 @@ namespace DTOMaker.MemBlocks
 
         private SyntaxDiagnostic? CheckLayoutMethodIsSupported()
         {
-            if (!HasLayoutAttribute)
-                return null;
-
             return LayoutMethod switch
             {
                 LayoutMethod.Explicit => null,
                 LayoutMethod.Linear => null,
                 LayoutMethod.Undefined => new SyntaxDiagnostic(
                         DiagnosticId.DMMB0004, "Invalid layout method", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                        $"LayoutMethod is not defined."),
+                        $"LayoutMethod is not defined. Is the [Layout] attribute missing?"),
                 _ => new SyntaxDiagnostic(
                         DiagnosticId.DMMB0004, "Invalid layout method", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
                         $"LayoutMethod ({LayoutMethod}) is not supported.")
@@ -262,7 +257,6 @@ namespace DTOMaker.MemBlocks
             }
 
             SyntaxDiagnostic? diagnostic2;
-            if ((diagnostic2 = CheckHasLayoutAttribute()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckLayoutMethodIsSupported()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckBlockSizeIsValid()) is not null) yield return diagnostic2;
             if ((diagnostic2 = CheckMemberLayoutHasNoOverlaps()) is not null) yield return diagnostic2;

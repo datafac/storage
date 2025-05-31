@@ -20,7 +20,6 @@ namespace DTOMaker.MemBlocks
                 if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(LayoutAttribute)) is AttributeData entityLayoutAttr)
                 {
                     // found layout attribute
-                    entity.HasLayoutAttribute = true;
                     var attributeArguments = entityLayoutAttr.ConstructorArguments;
                     if (CheckAttributeArguments(nameof(LayoutAttribute), attributeArguments, 2, entity, location))
                     {

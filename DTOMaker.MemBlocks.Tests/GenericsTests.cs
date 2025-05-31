@@ -81,12 +81,12 @@ namespace DTOMaker.MemBlocks.Tests
             using DTOMaker.Models.MemBlocks;
             namespace MyOrg.Models
             {
-                [Entity][Id(1)]
+                [Entity][Id(1)][Layout(LayoutMethod.Linear)]
                 public interface IMonoid<T1>
                 {
                     [Member(1)] T1 Value {get;}
                 }
-                [Entity][Id(2)]
+                [Entity][Id(2)][Layout(LayoutMethod.Linear)]
                 public interface IMyDTO : IMonoid<_T1_>
                 {
                 }
@@ -304,16 +304,16 @@ namespace DTOMaker.MemBlocks.Tests
             using DTOMaker.Models.MemBlocks;
             namespace MyOrg.Models
             {
-                [Entity][Id(1)]
+                [Entity][Id(1)][Layout(LayoutMethod.Linear)]
                 public interface IMonoid<T1>
                 {
                     [Member(1)] T1? Value {get;}
                 }
-                [Entity][Id(2)]
+                [Entity][Id(2)][Layout(LayoutMethod.Linear)]
                 public interface IMyDTO : IMonoid<IOther>
                 {
                 }
-                [Entity][Id(3)]
+                [Entity][Id(3)][Layout(LayoutMethod.Linear)]
                 public interface IOther
                 {
                 }
@@ -368,7 +368,7 @@ namespace DTOMaker.MemBlocks.Tests
             using DTOMaker.Models.MemBlocks;
             namespace MyOrg.Models
             {
-                [Entity][Id(1)]
+                [Entity][Id(1)][Layout(LayoutMethod.Linear)]
                 public interface ITree<TK, TV>
                 {
                     [Member(1)] int Count {get;}
@@ -377,7 +377,7 @@ namespace DTOMaker.MemBlocks.Tests
                     [Member(4)] ITree<TK, TV>? Left  {get;}
                     [Member(5)] ITree<TK, TV>? Right {get;}
                 }
-                [Entity][Id(2)]
+                [Entity][Id(2)][Layout(LayoutMethod.Linear)]
                 public interface IMyTree : ITree<String, Octets>
                 {
                 }
