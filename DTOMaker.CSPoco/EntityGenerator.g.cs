@@ -28,26 +28,26 @@ if (false) {
 Emit("using T_MemberType_ = System.Int32;");
 Emit("namespace T_MemberTypeNameSpace_");
 Emit("{");
-Emit("    public interface IT_MemberTypeName_ { }");
+Emit("    public interface IT_MemberTypeIntfName_ { }");
 Emit("}");
 Emit("namespace T_MemberTypeNameSpace_.CSPoco");
 Emit("{");
-Emit("    public class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_");
+Emit("    public class T_MemberTypeImplName_ : EntityBase, IT_MemberTypeIntfName_");
 Emit("    {");
 Emit("        protected override int OnGetEntityId() => 3;");
 Emit("");
-Emit("        private static T_MemberTypeName_ CreateEmpty()");
+Emit("        private static T_MemberTypeImplName_ CreateEmpty()");
 Emit("        {");
-Emit("            var empty = new T_MemberTypeName_();");
+Emit("            var empty = new T_MemberTypeImplName_();");
 Emit("            empty.Freeze();");
 Emit("            return empty;");
 Emit("        }");
-Emit("        private static readonly T_MemberTypeName_ _empty = CreateEmpty();");
-Emit("        public static new T_MemberTypeName_ Empty => _empty;");
+Emit("        private static readonly T_MemberTypeImplName_ _empty = CreateEmpty();");
+Emit("        public static new T_MemberTypeImplName_ Empty => _empty;");
 Emit("");
-Emit("        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source) => throw new NotImplementedException();");
-Emit("        public T_MemberTypeName_() { }");
-Emit("        public T_MemberTypeName_(IT_MemberTypeName_ source) { }");
+Emit("        public static T_MemberTypeImplName_ CreateFrom(IT_MemberTypeIntfName_ source) => throw new NotImplementedException();");
+Emit("        public T_MemberTypeImplName_() { }");
+Emit("        public T_MemberTypeImplName_(IT_MemberTypeIntfName_ source) { }");
 Emit("        protected override IFreezable OnPartCopy() => throw new NotImplementedException();");
 Emit("    }");
 Emit("}");
@@ -91,13 +91,13 @@ Emit("    }");
 Emit("}");
 Emit("namespace T_NameSpace_");
 Emit("{");
-Emit("    public interface IT_EntityName_ : T_BaseNameSpace_.IT_BaseName_");
+Emit("    public interface IT_EntityIntfName_ : T_BaseNameSpace_.IT_BaseName_");
 Emit("    {");
 Emit("        T_MemberType_? T_NullableScalarMemberName_ { get; }");
 Emit("        T_MemberType_ T_RequiredScalarMemberName_ { get; }");
 Emit("        ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; }");
-Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberName_ { get; }");
-Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; }");
+Emit("        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? T_NullableEntityMemberName_ { get; }");
+Emit("        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ T_RequiredEntityMemberName_ { get; }");
 Emit("        Octets? T_NullableBinaryMemberName_ { get; }");
 Emit("        Octets T_RequiredBinaryMemberName_ { get; }");
 Emit("        string? T_NullableStringMemberName_ { get; }");
@@ -109,12 +109,12 @@ Emit("namespace T_NameSpace_.CSPoco");
 Emit("{");
     if (false) {
     }
-Emit("    public partial class T_EntityName_ : T_BaseNameSpace_.CSPoco.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>");
+Emit("    public partial class T_EntityImplName_ : T_BaseNameSpace_.CSPoco.T_BaseName_, IT_EntityIntfName_, IEquatable<T_EntityImplName_>");
 Emit("    {");
 Emit("        // Derived entities: T_DerivedEntityCount_");
         foreach (var derived in entity.DerivedEntities) {
         using var _ = NewScope(derived);
-Emit("        // - T_EntityName_");
+Emit("        // - T_EntityImplName_");
         }
         if (false) {
 Emit("        private const string T_MemberObsoleteMessage_ = null;");
@@ -125,38 +125,38 @@ Emit("        private const int T_EntityId_ = 1;");
 Emit("");
 Emit("        protected override int OnGetEntityId() => T_EntityId_;");
 Emit("");
-Emit("        private static T_EntityName_ CreateEmpty()");
+Emit("        private static T_EntityImplName_ CreateEmpty()");
 Emit("        {");
-Emit("            var empty = new T_EntityName_();");
+Emit("            var empty = new T_EntityImplName_();");
 Emit("            empty.Freeze();");
 Emit("            return empty;");
 Emit("        }");
-Emit("        private static readonly T_EntityName_ _empty = CreateEmpty();");
-Emit("        public static new T_EntityName_ Empty => _empty;");
+Emit("        private static readonly T_EntityImplName_ _empty = CreateEmpty();");
+Emit("        public static new T_EntityImplName_ Empty => _empty;");
 Emit("");
-Emit("        public new static T_EntityName_ CreateFrom(T_EntityName_ source)");
+Emit("        public new static T_EntityImplName_ CreateFrom(T_EntityImplName_ source)");
 Emit("        {");
 Emit("            if (source.IsFrozen) return source;");
 Emit("            return source switch");
 Emit("            {");
                 foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
                 using var _ = NewScope(derived);
-Emit("                T_NameSpace_.CSPoco.T_EntityName_ source2 => new T_NameSpace_.CSPoco.T_EntityName_(source2),");
+Emit("                T_NameSpace_.CSPoco.T_EntityImplName_ source2 => new T_NameSpace_.CSPoco.T_EntityImplName_(source2),");
                 }
-Emit("                _ => new T_NameSpace_.CSPoco.T_EntityName_(source)");
+Emit("                _ => new T_NameSpace_.CSPoco.T_EntityImplName_(source)");
 Emit("            };");
 Emit("        }");
 Emit("");
-Emit("        public new static T_EntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)");
+Emit("        public new static T_EntityImplName_ CreateFrom(T_NameSpace_.IT_EntityIntfName_ source)");
 Emit("        {");
-Emit("            if (source is T_EntityName_ concrete && concrete.IsFrozen) return concrete;");
+Emit("            if (source is T_EntityImplName_ concrete && concrete.IsFrozen) return concrete;");
 Emit("            return source switch");
 Emit("            {");
                 foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
                 using var _ = NewScope(derived);
-Emit("                T_NameSpace_.IT_EntityName_ source2 => new T_NameSpace_.CSPoco.T_EntityName_(source2),");
+Emit("                T_NameSpace_.IT_EntityIntfName_ source2 => new T_NameSpace_.CSPoco.T_EntityImplName_(source2),");
                 }
-Emit("                _ => new T_NameSpace_.CSPoco.T_EntityName_(source)");
+Emit("                _ => new T_NameSpace_.CSPoco.T_EntityImplName_(source)");
 Emit("            };");
 Emit("        }");
 Emit("");
@@ -188,10 +188,10 @@ Emit("            _T_RequiredEntityMemberName_.Freeze();");
             }
 Emit("        }");
 Emit("");
-Emit("        protected override IFreezable OnPartCopy() => new T_EntityName_(this);");
+Emit("        protected override IFreezable OnPartCopy() => new T_EntityImplName_(this);");
 Emit("");
-Emit("        public T_EntityName_() { }");
-Emit("        public T_EntityName_(IT_EntityName_ source) : base(source)");
+Emit("        public T_EntityImplName_() { }");
+Emit("        public T_EntityImplName_(IT_EntityIntfName_ source) : base(source)");
 Emit("        {");
             foreach (var member in entity.Members) {
             using var _ = NewScope(member);
@@ -208,9 +208,9 @@ Emit("            _T_VectorMemberName_ = source.T_VectorMemberName_;");
             break;
             case MemberKind.Entity:
             if (member.IsNullable) {
-Emit("            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);");
+Emit("            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.CSPoco.T_MemberTypeImplName_.CreateFrom(source.T_NullableEntityMemberName_);");
             } else {
-Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);");
+Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSPoco.T_MemberTypeImplName_.CreateFrom(source.T_RequiredEntityMemberName_);");
             }
             break;
             case MemberKind.Binary:
@@ -273,21 +273,21 @@ Emit("        }");
         break;
         case MemberKind.Entity:
         if (member.IsNullable) {
-Emit("        private T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_? _T_NullableEntityMemberName_;");
-Emit("        public T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_? T_NullableEntityMemberName_");
+Emit("        private T_MemberTypeNameSpace_.CSPoco.T_MemberTypeImplName_? _T_NullableEntityMemberName_;");
+Emit("        public T_MemberTypeNameSpace_.CSPoco.T_MemberTypeImplName_? T_NullableEntityMemberName_");
 Emit("        {");
 Emit("            get => _T_NullableEntityMemberName_;");
 Emit("            set => _T_NullableEntityMemberName_ = IfNotFrozen(ref value);");
 Emit("        }");
-Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityName_.T_NullableEntityMemberName_ => _T_NullableEntityMemberName_;");
+Emit("        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => _T_NullableEntityMemberName_;");
         } else {
-Emit("        private T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_.Empty;");
-Emit("        public T_MemberTypeNameSpace_.CSPoco.T_MemberTypeName_ T_RequiredEntityMemberName_");
+Emit("        private T_MemberTypeNameSpace_.CSPoco.T_MemberTypeImplName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSPoco.T_MemberTypeImplName_.Empty;");
+Emit("        public T_MemberTypeNameSpace_.CSPoco.T_MemberTypeImplName_ T_RequiredEntityMemberName_");
 Emit("        {");
 Emit("            get => _T_RequiredEntityMemberName_;");
 Emit("            set => _T_RequiredEntityMemberName_ = IfNotFrozen(ref value);");
 Emit("        }");
-Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityName_.T_RequiredEntityMemberName_ => _T_RequiredEntityMemberName_;");
+Emit("        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ IT_EntityIntfName_.T_RequiredEntityMemberName_ => _T_RequiredEntityMemberName_;");
         }
         break;
         case MemberKind.Binary:
@@ -331,7 +331,7 @@ Emit("        }");
 Emit("");
         }
 Emit("");
-Emit("        public bool Equals(T_EntityName_? other)");
+Emit("        public bool Equals(T_EntityImplName_? other)");
 Emit("        {");
 Emit("            if (ReferenceEquals(this, other)) return true;");
 Emit("            if (other is null) return false;");
@@ -378,9 +378,9 @@ Emit("            if (_T_RequiredStringMemberName_ != other.T_RequiredStringMemb
 Emit("            return true;");
 Emit("        }");
 Emit("");
-Emit("        public override bool Equals(object? obj) => obj is T_EntityName_ other && Equals(other);");
-Emit("        public static bool operator ==(T_EntityName_? left, T_EntityName_? right) => left is not null ? left.Equals(right) : (right is null);");
-Emit("        public static bool operator !=(T_EntityName_? left, T_EntityName_? right) => left is not null ? !left.Equals(right) : (right is not null);");
+Emit("        public override bool Equals(object? obj) => obj is T_EntityImplName_ other && Equals(other);");
+Emit("        public static bool operator ==(T_EntityImplName_? left, T_EntityImplName_? right) => left is not null ? left.Equals(right) : (right is null);");
+Emit("        public static bool operator !=(T_EntityImplName_? left, T_EntityImplName_? right) => left is not null ? !left.Equals(right) : (right is not null);");
 Emit("");
 Emit("        private int CalcHashCode()");
 Emit("        {");

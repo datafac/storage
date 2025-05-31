@@ -42,50 +42,50 @@ Emit("    }");
 Emit("}");
 Emit("namespace T_MemberTypeNameSpace_");
 Emit("{");
-Emit("    public interface IT_MemberTypeName_ : IPackable");
+Emit("    public interface IT_MemberTypeIntfName_ : IPackable");
 Emit("    {");
 Emit("        Int64 Field1 { get; set; }");
 Emit("    }");
 Emit("}");
 Emit("namespace T_MemberTypeNameSpace_.MemBlocks");
 Emit("{");
-Emit("    public class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_");
+Emit("    public class T_MemberTypeImplName_ : EntityBase, IT_MemberTypeIntfName_");
 Emit("    {");
 Emit("        private const int ClassHeight = 1;");
 Emit("        private const int BlockLength = 8;");
 Emit("        private const long StructureCode = 0x00_41L;");
 Emit("        private static readonly BlockHeader _header = BlockHeader.CreateNew(3, StructureCode);");
 Emit("");
-Emit("        public static T_MemberTypeName_ CreateFrom(T_MemberTypeName_ source)");
+Emit("        public static T_MemberTypeImplName_ CreateFrom(T_MemberTypeImplName_ source)");
 Emit("        {");
 Emit("            if (source.IsFrozen) return source;");
-Emit("            return new T_MemberTypeName_(source);");
+Emit("            return new T_MemberTypeImplName_(source);");
 Emit("        }");
-Emit("        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source)");
+Emit("        public static T_MemberTypeImplName_ CreateFrom(IT_MemberTypeIntfName_ source)");
 Emit("        {");
-Emit("            if (source is T_MemberTypeName_ concrete && concrete.IsFrozen) return concrete;");
-Emit("            return new T_MemberTypeName_(source);");
+Emit("            if (source is T_MemberTypeImplName_ concrete && concrete.IsFrozen) return concrete;");
+Emit("            return new T_MemberTypeImplName_(source);");
 Emit("        }");
-Emit("        public static T_MemberTypeName_ CreateFrom(ReadOnlySequence<byte> buffers)");
+Emit("        public static T_MemberTypeImplName_ CreateFrom(ReadOnlySequence<byte> buffers)");
 Emit("        {");
-Emit("            return new T_MemberTypeName_(buffers);");
+Emit("            return new T_MemberTypeImplName_(buffers);");
 Emit("        }");
 Emit("        private readonly Memory<byte> _writableLocalBlock;");
 Emit("        private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;");
-Emit("        public T_MemberTypeName_() : base(_header)");
+Emit("        public T_MemberTypeImplName_() : base(_header)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];");
 Emit("        }");
-Emit("        public T_MemberTypeName_(T_MemberTypeName_ source) : base(_header, source)");
+Emit("        public T_MemberTypeImplName_(T_MemberTypeImplName_ source) : base(_header, source)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];");
 Emit("        }");
-Emit("        public T_MemberTypeName_(IT_MemberTypeName_ source) : base(_header, source)");
+Emit("        public T_MemberTypeImplName_(IT_MemberTypeIntfName_ source) : base(_header, source)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];");
 Emit("            this.Field1 = source.Field1;");
 Emit("        }");
-Emit("        protected T_MemberTypeName_(BlockHeader header, SourceBlocks sourceBlocks) : base(_header, sourceBlocks)");
+Emit("        protected T_MemberTypeImplName_(BlockHeader header, SourceBlocks sourceBlocks) : base(_header, sourceBlocks)");
 Emit("        {");
 Emit("            var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];");
 Emit("            if (sourceBlock.Length < BlockLength)");
@@ -100,7 +100,7 @@ Emit("                _readonlyLocalBlock = sourceBlock;");
 Emit("                _writableLocalBlock = Memory<byte>.Empty;");
 Emit("            }");
 Emit("        }");
-Emit("        public T_MemberTypeName_(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }");
+Emit("        public T_MemberTypeImplName_(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }");
 Emit("");
 Emit("        protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);");
 Emit("        protected override IFreezable OnPartCopy() => throw new NotImplementedException();");
@@ -204,12 +204,12 @@ Emit("    }");
 Emit("}");
 Emit("namespace T_NameSpace_");
 Emit("{");
-Emit("    public interface IT_EntityName_ : T_BaseNameSpace_.MemBlocks.IT_BaseName_");
+Emit("    public interface IT_EntityIntfName_ : T_BaseNameSpace_.MemBlocks.IT_BaseName_");
 Emit("    {");
 Emit("        T_MemberType_ T_ScalarMemberName_ { get; }");
 Emit("        ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; }");
-Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberName_ { get; }");
-Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; }");
+Emit("        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? T_NullableEntityMemberName_ { get; }");
+Emit("        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ T_RequiredEntityMemberName_ { get; }");
 Emit("        Octets? T_NullableFixLenBinaryMemberName_ { get; }");
 Emit("        Octets? T_NullableVarLenBinaryMemberName_ { get; }");
 Emit("        Octets T_RequiredFixLenBinaryMemberName_ { get; }");
@@ -223,12 +223,12 @@ Emit("}");
 }
 Emit("namespace T_NameSpace_.MemBlocks");
 Emit("{");
-Emit("    public partial class T_EntityName_ : T_BaseNameSpace_.MemBlocks.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>");
+Emit("    public partial class T_EntityImplName_ : T_BaseNameSpace_.MemBlocks.T_BaseName_, IT_EntityIntfName_, IEquatable<T_EntityImplName_>");
 Emit("    {");
 Emit("        // Derived entities: T_DerivedEntityCount_");
         foreach(var derived in entity.DerivedEntities) {
         using var _ = NewScope(derived);
-Emit("        // - T_EntityName_");
+Emit("        // - T_EntityImplName_");
         }
 Emit("");
         if(false) {
@@ -246,49 +246,49 @@ Emit("        private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;");
 Emit("");
 Emit("        private static readonly BlockHeader _header = BlockHeader.CreateNew(T_EntityId_, BlockStructureCode);");
 Emit("");
-Emit("        public new static T_EntityName_ CreateFrom(T_EntityName_ source)");
+Emit("        public new static T_EntityImplName_ CreateFrom(T_EntityImplName_ source)");
 Emit("        {");
 Emit("            if (source.IsFrozen) return source;");
 Emit("            return source switch");
 Emit("            {");
                 foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
                 using var _ = NewScope(derived);
-Emit("                T_NameSpace_.MemBlocks.T_EntityName_ source2 => new T_NameSpace_.MemBlocks.T_EntityName_(source2),");
+Emit("                T_NameSpace_.MemBlocks.T_EntityImplName_ source2 => new T_NameSpace_.MemBlocks.T_EntityImplName_(source2),");
                 }
-Emit("                _ => new T_NameSpace_.MemBlocks.T_EntityName_(source)");
+Emit("                _ => new T_NameSpace_.MemBlocks.T_EntityImplName_(source)");
 Emit("            };");
 Emit("        }");
 Emit("");
-Emit("        public new static T_EntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)");
+Emit("        public new static T_EntityImplName_ CreateFrom(T_NameSpace_.IT_EntityIntfName_ source)");
 Emit("        {");
-Emit("            if (source is T_EntityName_ concrete && concrete.IsFrozen) return concrete;");
+Emit("            if (source is T_EntityImplName_ concrete && concrete.IsFrozen) return concrete;");
 Emit("            return source switch");
 Emit("            {");
                 foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
                 using var _ = NewScope(derived);
-Emit("                T_NameSpace_.IT_EntityName_ source2 => new T_NameSpace_.MemBlocks.T_EntityName_(source2),");
+Emit("                T_NameSpace_.IT_EntityIntfName_ source2 => new T_NameSpace_.MemBlocks.T_EntityImplName_(source2),");
                 }
-Emit("                _ => new T_NameSpace_.MemBlocks.T_EntityName_(source)");
+Emit("                _ => new T_NameSpace_.MemBlocks.T_EntityImplName_(source)");
 Emit("            };");
 Emit("        }");
 Emit("");
-Emit("        public new static T_EntityName_ CreateFrom(ReadOnlySequence<byte> buffers)");
+Emit("        public new static T_EntityImplName_ CreateFrom(ReadOnlySequence<byte> buffers)");
 Emit("        {");
 Emit("            SourceBlocks blocks = SourceBlocks.ParseFrom(buffers);");
 Emit("            return blocks.Header.EntityId switch");
 Emit("            {");
                 foreach(var derived in entity.DerivedEntities) {
                 using var _ = NewScope(derived);
-Emit("                T_EntityId_ => new T_NameSpace_.MemBlocks.T_EntityName_(blocks),");
+Emit("                T_EntityId_ => new T_NameSpace_.MemBlocks.T_EntityImplName_(blocks),");
                 }
-Emit("                _ => new T_NameSpace_.MemBlocks.T_EntityName_(blocks)");
+Emit("                _ => new T_NameSpace_.MemBlocks.T_EntityImplName_(blocks)");
 Emit("            };");
 Emit("        }");
 Emit("");
 Emit("        protected override int OnGetEntityId() => T_EntityId_;");
 Emit("        protected override int OnGetClassHeight() => ClassHeight;");
 Emit("        protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);");
-Emit("        protected override IFreezable OnPartCopy() => new T_EntityName_(this);");
+Emit("        protected override IFreezable OnPartCopy() => new T_EntityImplName_(this);");
 Emit("");
 Emit("        protected override void OnFreeze()");
 Emit("        {");
@@ -435,16 +435,16 @@ Emit("        //  T_MemberSequenceR4_  T_FieldOffsetR4_  T_FieldLengthR4_  T_Arr
         }
 Emit("        // ------------------------------------------------------------");
 Emit("");
-Emit("        protected T_EntityName_(BlockHeader header) : base(header)");
+Emit("        protected T_EntityImplName_(BlockHeader header) : base(header)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];");
 Emit("        }");
-Emit("        public T_EntityName_() : base(_header)");
+Emit("        public T_EntityImplName_() : base(_header)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];");
 Emit("        }");
 Emit("");
-Emit("        protected T_EntityName_(BlockHeader header, T_EntityName_ source) : base(header, source)");
+Emit("        protected T_EntityImplName_(BlockHeader header, T_EntityImplName_ source) : base(header, source)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];");
             foreach(var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
@@ -499,9 +499,9 @@ Emit("            _T_RequiredVarLenStringMemberName_ = source._T_RequiredVarLenS
             } // switch
             }
 Emit("        }");
-Emit("        public T_EntityName_(T_EntityName_ source) : this(_header, source) { }");
+Emit("        public T_EntityImplName_(T_EntityImplName_ source) : this(_header, source) { }");
 Emit("");
-Emit("        protected T_EntityName_(BlockHeader header, IT_EntityName_ source) : base(header, source)");
+Emit("        protected T_EntityImplName_(BlockHeader header, IT_EntityIntfName_ source) : base(header, source)");
 Emit("        {");
 Emit("            _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];");
             foreach(var member in entity.Members.OfType<MemBlocksModelScopeMember>()) {
@@ -515,9 +515,9 @@ Emit("            this.T_VectorMemberName_ = source.T_VectorMemberName_;");
             break;
             case MemberKind.Entity:
             if (member.IsNullable) {
-Emit("            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);");
+Emit("            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_.CreateFrom(source.T_NullableEntityMemberName_);");
             } else {
-Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);");
+Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_.CreateFrom(source.T_RequiredEntityMemberName_);");
             }
             break;
             case MemberKind.Binary:
@@ -556,9 +556,9 @@ Emit("            _T_RequiredVarLenStringMemberName_ = source.T_RequiredVarLenSt
             } // switch
             }
 Emit("        }");
-Emit("        public T_EntityName_(IT_EntityName_ source) : this(_header, source) { }");
+Emit("        public T_EntityImplName_(IT_EntityIntfName_ source) : this(_header, source) { }");
 Emit("");
-Emit("        protected T_EntityName_(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)");
+Emit("        protected T_EntityImplName_(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)");
 Emit("        {");
 Emit("            var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];");
 Emit("            if (sourceBlock.Length < BlockLength)");
@@ -573,8 +573,8 @@ Emit("                _readonlyLocalBlock = sourceBlock;");
 Emit("                _writableLocalBlock = Memory<byte>.Empty;");
 Emit("            }");
 Emit("        }");
-Emit("        internal T_EntityName_(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }");
-Emit("        public T_EntityName_(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }");
+Emit("        internal T_EntityImplName_(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }");
+Emit("        public T_EntityImplName_(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }");
 Emit("");
         if(false) {
 Emit("        private const int T_ScalarFieldOffset_ = 0;");
@@ -693,27 +693,27 @@ Emit("            var blob = await dataStore.GetBlob(blobId);");
 Emit("            _T_NullableEntityMemberName_ = null;");
 Emit("            if (blob is not null)");
 Emit("            {");
-Emit("                _T_NullableEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(new ReadOnlySequence<byte>(blob.Value));");
+Emit("                _T_NullableEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_.CreateFrom(new ReadOnlySequence<byte>(blob.Value));");
 Emit("                await _T_NullableEntityMemberName_.Unpack(dataStore, depth - 1);");
 Emit("            }");
 Emit("        }");
-Emit("        private T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_? _T_NullableEntityMemberName_;");
+Emit("        private T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_? _T_NullableEntityMemberName_;");
         if(member.IsObsolete) {
 Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
         }
-Emit("        public T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_? T_NullableEntityMemberName_");
+Emit("        public T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_? T_NullableEntityMemberName_");
 Emit("        {");
 Emit("            get => IfUnpacked(_T_NullableEntityMemberName_);");
 Emit("            set => _T_NullableEntityMemberName_ = IfNotFrozen(value);");
 Emit("        }");
-Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityName_.T_NullableEntityMemberName_ => IfUnpacked(_T_NullableEntityMemberName_);");
+Emit("        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => IfUnpacked(_T_NullableEntityMemberName_);");
         } else {
 Emit("        private async ValueTask T_RequiredEntityMemberName__Pack(IDataStore dataStore)");
 Emit("        {");
 Emit("            BlobIdV1 blobId = default;");
 Emit("            if (_T_RequiredEntityMemberName_ is null)");
 Emit("            {");
-Emit("                _T_RequiredEntityMemberName_ = await CreateEmpty<T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_>(dataStore);");
+Emit("                _T_RequiredEntityMemberName_ = await CreateEmpty<T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_>(dataStore);");
 Emit("            }");
 Emit("            await _T_RequiredEntityMemberName_.Pack(dataStore);");
 Emit("            var buffer = _T_RequiredEntityMemberName_.GetBuffers();");
@@ -726,24 +726,24 @@ Emit("            BlobIdV1 blobId = BlobIdV1.UnsafeWrap(_readonlyLocalBlock.Slic
 Emit("            var blob = await dataStore.GetBlob(blobId);");
 Emit("            if (blob is null)");
 Emit("            {");
-Emit("                _T_RequiredEntityMemberName_ = await CreateEmpty<T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_>(dataStore);");
+Emit("                _T_RequiredEntityMemberName_ = await CreateEmpty<T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_>(dataStore);");
 Emit("            }");
 Emit("            else");
 Emit("            {");
-Emit("                _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_.CreateFrom(new ReadOnlySequence<byte>(blob.Value));");
+Emit("                _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_.CreateFrom(new ReadOnlySequence<byte>(blob.Value));");
 Emit("                await _T_RequiredEntityMemberName_.Unpack(dataStore, depth - 1);");
 Emit("            }");
 Emit("        }");
-Emit("        private T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_? _T_RequiredEntityMemberName_ = null;");
+Emit("        private T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_? _T_RequiredEntityMemberName_ = null;");
         if(member.IsObsolete) {
 Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]");
         }
-Emit("        public T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeName_ T_RequiredEntityMemberName_");
+Emit("        public T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_ T_RequiredEntityMemberName_");
 Emit("        {");
 Emit("            get => IfNotNull(IfUnpacked(_T_RequiredEntityMemberName_));");
 Emit("            set => _T_RequiredEntityMemberName_ = IfNotFrozen(value);");
 Emit("        }");
-Emit("        T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityName_.T_RequiredEntityMemberName_ => IfNotNull(IfUnpacked(_T_RequiredEntityMemberName_));");
+Emit("        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ IT_EntityIntfName_.T_RequiredEntityMemberName_ => IfNotNull(IfUnpacked(_T_RequiredEntityMemberName_));");
         }
         break;
         case MemberKind.Binary:
@@ -962,7 +962,7 @@ Emit("        }");
 Emit("");
         }
 Emit("");
-Emit("        public bool Equals(T_EntityName_? other)");
+Emit("        public bool Equals(T_EntityImplName_? other)");
 Emit("        {");
 Emit("            if (ReferenceEquals(this, other)) return true;");
 Emit("            if (other is null) return false;");
@@ -970,10 +970,10 @@ Emit("            if (!base.Equals(other)) return false;");
 Emit("            if (!_readonlyLocalBlock.Span.SequenceEqual(other._readonlyLocalBlock.Span)) return false;");
 Emit("            return true;");
 Emit("        }");
-Emit("        public override bool Equals(object? obj) => obj is T_EntityName_ other && Equals(other);");
+Emit("        public override bool Equals(object? obj) => obj is T_EntityImplName_ other && Equals(other);");
 Emit("        public override int GetHashCode() => base.GetHashCode();");
-Emit("        public static bool operator ==(T_EntityName_? left, T_EntityName_? right) => left is not null ? left.Equals(right) : (right is null);");
-Emit("        public static bool operator !=(T_EntityName_? left, T_EntityName_? right) => left is not null ? !left.Equals(right) : (right is not null);");
+Emit("        public static bool operator ==(T_EntityImplName_? left, T_EntityImplName_? right) => left is not null ? left.Equals(right) : (right is null);");
+Emit("        public static bool operator !=(T_EntityImplName_? left, T_EntityImplName_? right) => left is not null ? !left.Equals(right) : (right is not null);");
 Emit("");
 Emit("    }");
 Emit("}");

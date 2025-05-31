@@ -19,18 +19,18 @@ using System;
 using T_MemberType_ = System.Int32;
 namespace T_MemberTypeNameSpace_
 {
-    public interface IT_MemberTypeName_ { }
+    public interface IT_MemberTypeIntfName_ { }
 }
 namespace T_MemberTypeNameSpace_.CSRecord
 {
-    public record class T_MemberTypeName_ : EntityBase, IT_MemberTypeName_
+    public record class T_MemberTypeImplName_ : EntityBase, IT_MemberTypeIntfName_
     {
         private const int T_EntityId_ = 3;
-        private static readonly T_MemberTypeName_ _empty = new T_MemberTypeName_();
-        public static T_MemberTypeName_ Empty => _empty;
-        public static T_MemberTypeName_ CreateFrom(IT_MemberTypeName_ source) => throw new NotImplementedException();
-        public T_MemberTypeName_() { }
-        public T_MemberTypeName_(IT_MemberTypeName_ source) { }
+        private static readonly T_MemberTypeImplName_ _empty = new T_MemberTypeImplName_();
+        public static T_MemberTypeImplName_ Empty => _empty;
+        public static T_MemberTypeImplName_ CreateFrom(IT_MemberTypeIntfName_ source) => throw new NotImplementedException();
+        public T_MemberTypeImplName_() { }
+        public T_MemberTypeImplName_(IT_MemberTypeIntfName_ source) { }
         protected override int OnGetEntityId() => T_EntityId_;
     }
 }
@@ -53,13 +53,13 @@ namespace T_BaseNameSpace_.CSRecord
 }
 namespace T_NameSpace_
 {
-    public interface IT_EntityName_ : T_BaseNameSpace_.IT_BaseName_
+    public interface IT_EntityIntfName_ : T_BaseNameSpace_.IT_BaseName_
     {
         T_MemberType_? T_NullableScalarMemberName_ { get; }
         T_MemberType_ T_RequiredScalarMemberName_ { get; }
         ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_? T_NullableEntityMemberName_ { get; }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_ T_RequiredEntityMemberName_ { get; }
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? T_NullableEntityMemberName_ { get; }
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ T_RequiredEntityMemberName_ { get; }
         Octets? T_NullableBinaryMemberName_ { get; }
         Octets T_RequiredBinaryMemberName_ { get; }
         string? T_NullableStringMemberName_ { get; }
@@ -71,12 +71,12 @@ namespace T_NameSpace_.CSRecord
 {
     //##if (false) {
     //##}
-    public partial record class T_EntityName_ : T_BaseNameSpace_.CSRecord.T_BaseName_, IT_EntityName_, IEquatable<T_EntityName_>
+    public partial record class T_EntityImplName_ : T_BaseNameSpace_.CSRecord.T_BaseName_, IT_EntityIntfName_, IEquatable<T_EntityImplName_>
     {
         // Derived entities: T_DerivedEntityCount_
         //##foreach (var derived in entity.DerivedEntities) {
         //##using var _ = NewScope(derived);
-        // - T_EntityName_
+        // - T_EntityImplName_
         //##}
         //##if (false) {
         private const string T_MemberObsoleteMessage_ = null;
@@ -85,39 +85,39 @@ namespace T_NameSpace_.CSRecord
         private const int T_EntityId_ = 1;
         //##}
 
-        private static readonly T_EntityName_ _empty = new T_EntityName_();
-        public static new T_EntityName_ Empty => _empty;
+        private static readonly T_EntityImplName_ _empty = new T_EntityImplName_();
+        public static new T_EntityImplName_ Empty => _empty;
 
         protected override int OnGetEntityId() => T_EntityId_;
 
-        public new static T_EntityName_ CreateFrom(T_EntityName_ source)
+        public new static T_EntityImplName_ CreateFrom(T_EntityImplName_ source)
         {
             if (source.IsFrozen) return source;
             return source switch
             {
                 //##foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
                 //##using var _ = NewScope(derived);
-                T_NameSpace_.CSRecord.T_EntityName_ source2 => new T_NameSpace_.CSRecord.T_EntityName_(source2),
+                T_NameSpace_.CSRecord.T_EntityImplName_ source2 => new T_NameSpace_.CSRecord.T_EntityImplName_(source2),
                 //##}
-                _ => new T_NameSpace_.CSRecord.T_EntityName_(source)
+                _ => new T_NameSpace_.CSRecord.T_EntityImplName_(source)
             };
         }
 
-        public new static T_EntityName_ CreateFrom(T_NameSpace_.IT_EntityName_ source)
+        public new static T_EntityImplName_ CreateFrom(T_NameSpace_.IT_EntityIntfName_ source)
         {
-            if (source is T_EntityName_ concrete && concrete.IsFrozen) return concrete;
+            if (source is T_EntityImplName_ concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
                 //##foreach(var derived in entity.DerivedEntities.OrderByDescending(e => e.ClassHeight)) {
                 //##using var _ = NewScope(derived);
-                T_NameSpace_.IT_EntityName_ source2 => new T_NameSpace_.CSRecord.T_EntityName_(source2),
+                T_NameSpace_.IT_EntityIntfName_ source2 => new T_NameSpace_.CSRecord.T_EntityImplName_(source2),
                 //##}
-                _ => new T_NameSpace_.CSRecord.T_EntityName_(source)
+                _ => new T_NameSpace_.CSRecord.T_EntityImplName_(source)
             };
         }
 
-        public T_EntityName_() { }
-        public T_EntityName_(IT_EntityName_ source) : base(source)
+        public T_EntityImplName_() { }
+        public T_EntityImplName_(IT_EntityIntfName_ source) : base(source)
         {
             //##foreach (var member in entity.Members) {
             //##using var _ = NewScope(member);
@@ -134,9 +134,9 @@ namespace T_NameSpace_.CSRecord
             //##break;
             //##case MemberKind.Entity:
             //##if (member.IsNullable) {
-            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_.CreateFrom(source.T_NullableEntityMemberName_);
+            _T_NullableEntityMemberName_ = source.T_NullableEntityMemberName_ is null ? null : T_MemberTypeNameSpace_.CSRecord.T_MemberTypeImplName_.CreateFrom(source.T_NullableEntityMemberName_);
             //##} else {
-            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_.CreateFrom(source.T_RequiredEntityMemberName_);
+            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSRecord.T_MemberTypeImplName_.CreateFrom(source.T_RequiredEntityMemberName_);
             //##}
             //##break;
             //##case MemberKind.Binary:
@@ -199,21 +199,21 @@ namespace T_NameSpace_.CSRecord
         //##break;
         //##case MemberKind.Entity:
         //##if (member.IsNullable) {
-        private T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_? _T_NullableEntityMemberName_;
-        public T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_? T_NullableEntityMemberName_
+        private T_MemberTypeNameSpace_.CSRecord.T_MemberTypeImplName_? _T_NullableEntityMemberName_;
+        public T_MemberTypeNameSpace_.CSRecord.T_MemberTypeImplName_? T_NullableEntityMemberName_
         {
             get => _T_NullableEntityMemberName_;
             init => _T_NullableEntityMemberName_ = value;
         }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_? IT_EntityName_.T_NullableEntityMemberName_ => T_NullableEntityMemberName_;
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => T_NullableEntityMemberName_;
         //##} else {
-        private T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_.Empty;
-        public T_MemberTypeNameSpace_.CSRecord.T_MemberTypeName_ T_RequiredEntityMemberName_
+        private T_MemberTypeNameSpace_.CSRecord.T_MemberTypeImplName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSRecord.T_MemberTypeImplName_.Empty;
+        public T_MemberTypeNameSpace_.CSRecord.T_MemberTypeImplName_ T_RequiredEntityMemberName_
         {
             get => _T_RequiredEntityMemberName_;
             init => _T_RequiredEntityMemberName_ = value;
         }
-        T_MemberTypeNameSpace_.IT_MemberTypeName_ IT_EntityName_.T_RequiredEntityMemberName_ => T_RequiredEntityMemberName_;
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ IT_EntityIntfName_.T_RequiredEntityMemberName_ => T_RequiredEntityMemberName_;
         //##}
         //##break;
         //##case MemberKind.Binary:

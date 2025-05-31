@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace DTOMaker.Gentime.Json
 {
@@ -18,7 +16,7 @@ namespace DTOMaker.Gentime.Json
     public sealed class JsonEntity
     {
         public int EntityId { get; set; }
-        public string EntityName { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
         public string BaseName { get; set; } = string.Empty;
         public JsonMember[] Members { get; set; } = Array.Empty<JsonMember>();
     }
@@ -48,7 +46,7 @@ namespace DTOMaker.Gentime.Json
             return new JsonEntity()
             {
                 EntityId = entity.EntityId,
-                EntityName = entity.EntityName.FullName,
+                Name = entity.TFN.FullName,
                 BaseName = entity.BaseName.FullName,
                 Members = entity.Members.Values
                     .OrderBy(m => m.Sequence)

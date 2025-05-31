@@ -9,10 +9,6 @@ namespace DTOMaker.MessagePack
 
     internal class MessagePackSyntaxReceiver : SyntaxReceiverBase
     {
-        private static TargetDomain DomainFactory(string name, Location location) => new MessagePackDomain(name, location);
-        private static TargetEntity EntityFactory(TargetDomain domain, string nameSpace, string name, Location location) => new MessagePackEntity(domain, nameSpace, name, location);
-        private static TargetMember MemberFactory(TargetEntity entity, string name, Location location) => new MessagePackMember(entity, name, location);
-
         protected override void OnProcessEntityAttributes(TargetEntity baseEntity, Location location, ImmutableArray<AttributeData> entityAttributes)
         {
             if (baseEntity is MessagePackEntity entity
@@ -26,14 +22,7 @@ namespace DTOMaker.MessagePack
                 }
             }
         }
-
-        protected override void OnProcessMemberAttributes(TargetMember member, Location location, ImmutableArray<AttributeData> memberAttributes)
-        {
-            // not needed yet
-        }
-
-        public MessagePackSyntaxReceiver() : base(DomainFactory, EntityFactory, MemberFactory)
-        {
-        }
+        protected override void OnProcessMemberAttributes(TargetMember member, Location location, ImmutableArray<AttributeData> memberAttributes) { }
+        public MessagePackSyntaxReceiver() : base(new MessagePackFactory()) { }
     }
 }

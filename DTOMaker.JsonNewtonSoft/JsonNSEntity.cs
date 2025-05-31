@@ -5,6 +5,7 @@ namespace DTOMaker.JsonNewtonSoft
 {
     internal sealed class JsonNSEntity : TargetEntity
     {
-        public JsonNSEntity(TargetDomain domain, string nameSpace, string name, Location location) : base(domain, nameSpace, name, location) { }
+        public JsonNSEntity(TargetDomain domain, TypeFullName entityName, Location location) 
+            : base(domain, entityName, location) { }
     }
 }

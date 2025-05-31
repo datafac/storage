@@ -17,17 +17,17 @@ namespace Template_MessagePack.Tests
             ReadOnlyMemory<byte> smallBinary = new byte[] { 1, 2, 3, 4, 5, 6, 7 };
             ReadOnlyMemory<byte> largeBinary = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
 
-            var orig = new T_ConcreteEntityName_();
+            var orig = new T_ConcreteEntity_();
             orig.BaseField1 = 321;
             orig.T_RequiredScalarMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
-            orig.T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_() { Field1 = 456L };
+            orig.T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_() { Field1 = 456L };
             orig.T_RequiredBinaryMemberName_ = largeBinary;
             orig.T_NullableBinaryMemberName_ = smallBinary;
             orig.Freeze();
 
-            ReadOnlyMemory<byte> buffer = MessagePackSerializer.Serialize<T_ConcreteEntityName_>(orig);
-            var copy = MessagePackSerializer.Deserialize<T_ConcreteEntityName_>(buffer, out int bytesRead);
+            ReadOnlyMemory<byte> buffer = MessagePackSerializer.Serialize<T_ConcreteEntity_>(orig);
+            var copy = MessagePackSerializer.Deserialize<T_ConcreteEntity_>(buffer, out int bytesRead);
             bytesRead.ShouldBe(buffer.Length);
 
             copy.Freeze();
@@ -47,11 +47,11 @@ namespace Template_MessagePack.Tests
             ReadOnlyMemory<byte> smallBinary = new byte[] { 1, 2, 3, 4, 5, 6, 7 };
             ReadOnlyMemory<byte> largeBinary = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
 
-            var orig = new T_ConcreteEntityName_();
+            var orig = new T_ConcreteEntity_();
             orig.BaseField1 = 321;
             orig.T_RequiredScalarMemberName_ = 123;
             orig.T_VectorMemberName_ = new int[] { 1, 2, 3 };
-            orig.T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.MessagePack.T_MemberTypeName_() { Field1 = 456L };
+            orig.T_RequiredEntityMemberName_ = new T_MemberTypeNameSpace_.MessagePack.T_MemberTypeImplName_() { Field1 = 456L };
             orig.T_RequiredBinaryMemberName_ = largeBinary;
             orig.T_NullableBinaryMemberName_ = smallBinary;
             orig.Freeze();
@@ -60,9 +60,9 @@ namespace Template_MessagePack.Tests
             var recd = MessagePackSerializer.Deserialize<T_BaseNameSpace_.MessagePack.T_BaseName_>(buffer, out int bytesRead);
             bytesRead.ShouldBe(buffer.Length);
             recd.ShouldNotBeNull();
-            recd.ShouldBeOfType<T_ConcreteEntityName_>();
+            recd.ShouldBeOfType<T_ConcreteEntity_>();
             recd.Freeze();
-            var copy = recd as T_ConcreteEntityName_;
+            var copy = recd as T_ConcreteEntity_;
             copy.ShouldNotBeNull();
             copy!.IsFrozen.ShouldBeTrue();
             copy.BaseField1!.ShouldBe(orig.BaseField1);

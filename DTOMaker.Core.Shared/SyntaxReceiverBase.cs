@@ -7,6 +7,14 @@ using System.Linq;
 
 namespace DTOMaker.Gentime
 {
+    public interface ITargetFactory
+    {
+        TargetDomain CreateDomain(string name, Location location);
+        TargetEntity CreateEntity(TargetDomain domain, TypeFullName tfn, Location location);
+        TargetMember CreateMember(TargetEntity entity, string name, Location location);
+        TargetMember CloneMember(TargetEntity entity, TargetMember source);
+    }
+
     public abstract class SyntaxReceiverBase : ISyntaxContextReceiver
     {
         //private const string DomainAttribute = nameof(DomainAttribute);
@@ -14,20 +22,16 @@ namespace DTOMaker.Gentime
         private const string MemberAttribute = nameof(MemberAttribute);
         private const string IdAttribute = nameof(IdAttribute);
 
+        private readonly ITargetFactory _factory;
+        public ITargetFactory Factory => _factory;
+
         private readonly TargetDomain _domain;
         public TargetDomain Domain => _domain;
 
-        private readonly Func<TargetDomain, string, string, Location, TargetEntity> _entityFactory;
-        private readonly Func<TargetEntity, string, Location, TargetMember> _memberFactory;
-
-        protected SyntaxReceiverBase(
-            Func<string, Location, TargetDomain> domainFactory,
-            Func<TargetDomain, string, string, Location, TargetEntity> entityFactory,
-            Func<TargetEntity, string, Location, TargetMember> memberFactory)
+        protected SyntaxReceiverBase(ITargetFactory factory)
         {
-            _domain = domainFactory(TypeFullName.DefaultBase.NameSpace, Location.None);
-            _entityFactory = entityFactory;
-            _memberFactory = memberFactory;
+            _factory = factory;
+            _domain = factory.CreateDomain(TypeFullName.DefaultBase.NameSpace, Location.None);
         }
 
         protected static void TryGetAttributeArgumentValue<T>(TargetBase target, Location location, ImmutableArray<TypedConstant> attributeArguments, int index, Action<T> action)
@@ -107,97 +111,96 @@ namespace DTOMaker.Gentime
 
         protected virtual void OnProcessNode(GeneratorSyntaxContext context)
         {
-            if (context.Node is InterfaceDeclarationSyntax ids
-                && ids.Modifiers.Any(SyntaxKind.PublicKeyword)
-                && context.SemanticModel.GetDeclaredSymbol(ids) is INamedTypeSymbol idsSymbol)
+            if (context.Node is InterfaceDeclarationSyntax ids1
+                && ids1.Modifiers.Any(SyntaxKind.PublicKeyword)
+                && context.SemanticModel.GetDeclaredSymbol(ids1) is INamedTypeSymbol ids1Symbol
+                && ids1.Parent is NamespaceDeclarationSyntax nds1
+                && ids1.AttributeLists.Count > 0)
             {
-                if (ids.Parent is NamespaceDeclarationSyntax nds && ids.AttributeLists.Count > 0)
+                Location ndsLocation = Location.Create(nds1.SyntaxTree, nds1.Span);
+                Location idsLocation = Location.Create(ids1.SyntaxTree, ids1.Span);
+                var eTFN = TypeFullName.Create(ids1Symbol);
+                TargetEntity entity = eTFN.IsClosed
+                    ? Domain.ClosedEntities.GetOrAdd(eTFN.FullName, (n) => _factory.CreateEntity(Domain, eTFN, idsLocation))
+                    : Domain.OpenEntities.GetOrAdd(eTFN.FullName, (n) => _factory.CreateEntity(Domain, eTFN, idsLocation));
+                ImmutableArray<AttributeData> entityAttributes = ids1Symbol.GetAttributes();
+                if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == EntityAttribute) is AttributeData entityAttr)
                 {
-                    Location ndsLocation = Location.Create(nds.SyntaxTree, nds.Span);
-                    Location idsLocation = Location.Create(ids.SyntaxTree, ids.Span);
-                    string entityNamespace = nds.Name.ToString();
-                    string interfaceName = ids.Identifier.Text;
-                    if (interfaceName.Length <= 1 || !interfaceName.StartsWith("I"))
+                    // found entity attribute
+                    entity.HasEntityAttribute = true;
+                    // entity base
+                    entity.BaseName = TypeFullName.DefaultBase;
+                    if (ids1Symbol.Interfaces.Length > 1)
                     {
-                        Domain.SyntaxErrors.Add(
+                        // too many interfaces!
+                        entity.SyntaxErrors.Add(
                             new SyntaxDiagnostic(
-                                DiagnosticId.DTOM0001, "Invalid interface name", DiagnosticCategory.Naming, idsLocation, DiagnosticSeverity.Error,
-                                $"Expected interface named '{interfaceName}' to start with 'I'."));
+                                DiagnosticId.DTOM0008, "Invalid base name(s)", DiagnosticCategory.Design, idsLocation, DiagnosticSeverity.Error,
+                                $"This interface can only implement one optional other interface."));
                     }
-                    string entityName = interfaceName.Substring(1);
-                    string entityFullName = entityNamespace + "." + entityName;
-                    var entity = Domain.Entities.GetOrAdd(entityFullName, (n) => _entityFactory(Domain, entityNamespace, entityName, idsLocation));
-                    ImmutableArray<AttributeData> entityAttributes = idsSymbol.GetAttributes();
-                    if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == EntityAttribute) is AttributeData entityAttr)
+                    else if (ids1Symbol.Interfaces.Length == 1)
                     {
-                        // found entity attribute
-                        entity.HasEntityAttribute = true;
-                        // entity base
-                        entity.BaseName = TypeFullName.DefaultBase;
-                        if (idsSymbol.Interfaces.Length > 1)
+                        var intf = ids1Symbol.Interfaces[0];
+                        var bTFN = TypeFullName.Create(intf);
+                        if (bTFN.IsGeneric)
                         {
-                            // too many interfaces!
-                            entity.SyntaxErrors.Add(
-                                new SyntaxDiagnostic(
-                                    DiagnosticId.DTOM0008, "Invalid base name(s)", DiagnosticCategory.Design, idsLocation, DiagnosticSeverity.Error,
-                                    $"This interface can only implement one optional other interface."));
+                            TargetEntity bEntity = bTFN.IsClosed
+                                ? Domain.ClosedEntities.GetOrAdd(bTFN.FullName, (n) => _factory.CreateEntity(Domain, bTFN, idsLocation))
+                                : Domain.OpenEntities.GetOrAdd(bTFN.FullName, (n) => _factory.CreateEntity(Domain, bTFN, idsLocation));
+                            bEntity.HasEntityAttribute = true;
                         }
-                        else if (idsSymbol.Interfaces.Length == 1)
-                        {
-                            var intf = idsSymbol.Interfaces[0];
-                            string baseNameSpace = intf.ContainingNamespace.ToDisplayString();
-                            string baseName = intf.Name;
-                            if (baseName.Length <= 1 || !baseName.StartsWith("I"))
-                            {
-                                entity.SyntaxErrors.Add(
-                                    new SyntaxDiagnostic(
-                                        DiagnosticId.DTOM0001, "Invalid base name", DiagnosticCategory.Naming, idsLocation, DiagnosticSeverity.Error,
-                                        $"Expected interface named '{baseName}' to start with 'I'."));
-                            }
-                            else
-                            {
-                                entity.BaseName = new TypeFullName(baseNameSpace, baseName.Substring(1));
-                            }
-                        }
-                        if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == IdAttribute) is AttributeData idAttr)
-                        {
-                            // found entity id attribute
-                            var attributeArguments = idAttr.ConstructorArguments;
-                            if (CheckAttributeArguments(IdAttribute, attributeArguments, 1, entity, idsLocation))
-                            {
-                                TryGetAttributeArgumentValue<int>(entity, idsLocation, attributeArguments, 0, (value) => { entity.EntityId = value; });
-                            }
-                        }
-                        //var attributeArguments = entityAttr.ConstructorArguments;
-                        //if (CheckAttributeArguments(nameof(EntityAttribute), attributeArguments, 1, entity, idsLocation))
-                        //{
-                        //    TryGetAttributeArgumentValue<int>(entity, idsLocation, attributeArguments, 0, (value) => { entity.xxx = value; });
-                        //}
+                        entity.BaseName = bTFN;
                     }
+                    if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == IdAttribute) is AttributeData idAttr)
+                    {
+                        // found entity id attribute
+                        var attributeArguments = idAttr.ConstructorArguments;
+                        if (CheckAttributeArguments(IdAttribute, attributeArguments, 1, entity, idsLocation))
+                        {
+                            TryGetAttributeArgumentValue<int>(entity, idsLocation, attributeArguments, 0, (value) => { entity.EntityId = value; });
+                        }
+                    }
+                    //var attributeArguments = entityAttr.ConstructorArguments;
+                    //if (CheckAttributeArguments(nameof(EntityAttribute), attributeArguments, 1, entity, idsLocation))
+                    //{
+                    //    TryGetAttributeArgumentValue<int>(entity, idsLocation, attributeArguments, 0, (value) => { entity.xxx = value; });
+                    //}
+                }
+                else
+                {
+                    //
+                }
 
                     // additional entity attribute processing
                     OnProcessEntityAttributes(entity, idsLocation, entityAttributes);
-                }
             }
 
             if (context.Node is PropertyDeclarationSyntax pds
-                && context.SemanticModel.GetDeclaredSymbol(pds) is IPropertySymbol pdsSymbol)
+                && context.SemanticModel.GetDeclaredSymbol(pds) is IPropertySymbol pdsSymbol
+                && pds.Parent is InterfaceDeclarationSyntax ids2
+                && context.SemanticModel.GetDeclaredSymbol(ids2) is INamedTypeSymbol ids2Symbol
+                && ids2.Parent is NamespaceDeclarationSyntax nds2
+                && pds.AttributeLists.Count > 0)
             {
-                if (pds.Parent is InterfaceDeclarationSyntax ids2
-                    && ids2.Parent is NamespaceDeclarationSyntax nds2
-                    && pds.AttributeLists.Count > 0)
+                Location pdsLocation = Location.Create(pds.SyntaxTree, pds.Span);
+                var eTFN = TypeFullName.Create(ids2Symbol);
+                TargetEntity entity;
+                if ((eTFN.IsClosed && Domain.ClosedEntities.TryGetValue(eTFN.FullName, out entity)) ||
+                    !eTFN.IsClosed && Domain.OpenEntities.TryGetValue(eTFN.FullName, out entity))
                 {
-                    string entityNamespace = nds2.Name.ToString();
-                    string entityName = ids2.Identifier.Text.Substring(1);
-                    string entityFullName = entityNamespace + "." + entityName;
-                    if (Domain.Entities.TryGetValue(entityFullName, out var entity)
-                        && pdsSymbol.Type is INamedTypeSymbol pdsSymbolType)
+                    var member = entity.Members.GetOrAdd(pds.Identifier.Text, (n) => _factory.CreateMember(entity, n, pdsLocation));
+                    if (pdsSymbol.Type is INamedTypeSymbol pdsNamedType)
                     {
-                        string memberTypeName = pdsSymbolType.Name;
-                        string memberTypeNameSpace = pdsSymbolType.ContainingNamespace.ToDisplayString();
-                        Location pdsLocation = Location.Create(pds.SyntaxTree, pds.Span);
-                        var member = entity.Members.GetOrAdd(pds.Identifier.Text, (n) => _memberFactory(entity, n, pdsLocation));
-                        member.MemberType = new TypeFullName(memberTypeNameSpace, memberTypeName);
+                        var mTFN = TypeFullName.Create(pdsNamedType);
+                        if (mTFN.IsGeneric)
+                        {
+                            TargetEntity mEntity = mTFN.IsClosed
+                                ? Domain.ClosedEntities.GetOrAdd(mTFN.FullName, (n) => _factory.CreateEntity(Domain, mTFN, pdsLocation))
+                                : Domain.OpenEntities.GetOrAdd(mTFN.FullName, (n) => _factory.CreateEntity(Domain, mTFN, pdsLocation));
+                        }
+                        member.MemberType = mTFN;
+                        member.Kind = mTFN.MemberKind;
+
                         if (member.MemberType.FullName == FullTypeName.MemoryOctets)
                         {
                             // binary
@@ -208,57 +211,75 @@ namespace DTOMaker.Gentime
                             // string
                             member.Kind = MemberKind.String;
                         }
-                        else if (pdsSymbolType.IsGenericType && pdsSymbolType.Name == "ReadOnlyMemory" && pdsSymbolType.TypeArguments.Length == 1)
+                        else if (pdsNamedType.IsGenericType && pdsNamedType.Name == "ReadOnlyMemory" && pdsNamedType.TypeArguments.Length == 1)
                         {
                             member.Kind = MemberKind.Vector;
-                            ITypeSymbol typeArg0 = pdsSymbolType.TypeArguments[0];
-                            member.MemberType = new TypeFullName(typeArg0.ContainingNamespace.ToDisplayString(), typeArg0.Name);
+                            ITypeSymbol typeArg0 = pdsNamedType.TypeArguments[0];
+                            member.MemberType = TypeFullName.Create(typeArg0);
                         }
-                        else if (pdsSymbolType.IsGenericType && pdsSymbolType.Name == "Nullable" && pdsSymbolType.TypeArguments.Length == 1)
+                        else if (pdsNamedType.IsGenericType && pdsNamedType.Name == "Nullable" && pdsNamedType.TypeArguments.Length == 1)
                         {
+                            // nullable value type
                             member.MemberIsNullable = true;
-                            ITypeSymbol typeArg0 = pdsSymbolType.TypeArguments[0];
-                            member.MemberType = new TypeFullName(typeArg0.ContainingNamespace.ToDisplayString(), typeArg0.Name);
+                            ITypeSymbol typeArg0 = pdsNamedType.TypeArguments[0];
+                            member.MemberType = TypeFullName.Create(typeArg0);
+                            member.Kind = member.MemberType.MemberKind;
                         }
 
-                        if (pdsSymbolType.IsReferenceType && pdsSymbolType.NullableAnnotation == NullableAnnotation.Annotated)
+                        if (pdsNamedType.IsReferenceType && pdsNamedType.NullableAnnotation == NullableAnnotation.Annotated)
                         {
                             // nullable ref type
                             member.MemberIsNullable = true;
                         }
-
-                        ImmutableArray<AttributeData> allAttributes = pdsSymbol.GetAttributes();
-                        if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(ObsoleteAttribute)) is AttributeData obsoleteAttr)
+                    }
+                    else if (pdsSymbol.Type is ITypeSymbol pdsType)
+                    {
+                        // generic type parameter?
+                        var mTFN = TypeFullName.Create(pdsType);
+                        member.MemberType = mTFN;
+                        if (pdsType.NullableAnnotation == NullableAnnotation.Annotated)
                         {
-                            member.IsObsolete = true;
-                            var attributeArguments = obsoleteAttr.ConstructorArguments;
-                            if (attributeArguments.Length == 1)
-                            {
-                                TryGetAttributeArgumentValue<string>(member, pdsLocation, attributeArguments, 0, (value) => { member.ObsoleteMessage = value; });
-                            }
-                            if (attributeArguments.Length == 2)
-                            {
-                                TryGetAttributeArgumentValue<string>(member, pdsLocation, attributeArguments, 0, (value) => { member.ObsoleteMessage = value; });
-                                TryGetAttributeArgumentValue<bool>(member, pdsLocation, attributeArguments, 1, (value) => { member.ObsoleteIsError = value; });
-                            }
+                            // nullable ref type
+                            member.MemberIsNullable = true;
                         }
-                        if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == MemberAttribute) is AttributeData memberAttr)
-                        {
-                            member.HasMemberAttribute = true;
-                            var attributeArguments = memberAttr.ConstructorArguments;
-                            if (CheckAttributeArguments(MemberAttribute, attributeArguments, 1, member, pdsLocation))
-                            {
-                                TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 0, (value) => { member.Sequence = value; });
-                            }
-                        }
-
-                        // additional member attribute processing
-                        OnProcessMemberAttributes(member, pdsLocation, allAttributes);
                     }
                     else
                     {
-                        // ignore orphan member
+                        // unknown 
+                        member.Kind = MemberKind.Unknown;
                     }
+
+                    ImmutableArray<AttributeData> allAttributes = pdsSymbol.GetAttributes();
+                    if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == nameof(ObsoleteAttribute)) is AttributeData obsoleteAttr)
+                    {
+                        member.IsObsolete = true;
+                        var attributeArguments = obsoleteAttr.ConstructorArguments;
+                        if (attributeArguments.Length == 1)
+                        {
+                            TryGetAttributeArgumentValue<string>(member, pdsLocation, attributeArguments, 0, (value) => { member.ObsoleteMessage = value; });
+                        }
+                        if (attributeArguments.Length == 2)
+                        {
+                            TryGetAttributeArgumentValue<string>(member, pdsLocation, attributeArguments, 0, (value) => { member.ObsoleteMessage = value; });
+                            TryGetAttributeArgumentValue<bool>(member, pdsLocation, attributeArguments, 1, (value) => { member.ObsoleteIsError = value; });
+                        }
+                    }
+                    if (allAttributes.FirstOrDefault(a => a.AttributeClass?.Name == MemberAttribute) is AttributeData memberAttr)
+                    {
+                        member.HasMemberAttribute = true;
+                        var attributeArguments = memberAttr.ConstructorArguments;
+                        if (CheckAttributeArguments(MemberAttribute, attributeArguments, 1, member, pdsLocation))
+                        {
+                            TryGetAttributeArgumentValue<int>(member, pdsLocation, attributeArguments, 0, (value) => { member.Sequence = value; });
+                        }
+                    }
+
+                    // additional member attribute processing
+                    OnProcessMemberAttributes(member, pdsLocation, allAttributes);
+                }
+                else
+                {
+                    // ignore orphan member
                 }
             }
         }
