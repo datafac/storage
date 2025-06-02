@@ -12,7 +12,6 @@ namespace DTOMaker.MessagePack.Tests
             """
             using System;
             using DTOMaker.Models;
-            using DTOMaker.Models.MessagePack;
             namespace MyOrg.Models
             {
                 [Entity][Id(1)]
@@ -78,7 +77,6 @@ namespace DTOMaker.MessagePack.Tests
             using System;
             using DataFac.Memory;
             using DTOMaker.Models;
-            using DTOMaker.Models.MessagePack;
             namespace MyOrg.Models
             {
                 [Entity][Id(1)]
@@ -301,7 +299,6 @@ namespace DTOMaker.MessagePack.Tests
             using System;
             using DataFac.Memory;
             using DTOMaker.Models;
-            using DTOMaker.Models.MessagePack;
             namespace MyOrg.Models
             {
                 [Entity][Id(1)]
@@ -365,7 +362,6 @@ namespace DTOMaker.MessagePack.Tests
             using System;
             using DataFac.Memory;
             using DTOMaker.Models;
-            using DTOMaker.Models.MessagePack;
             namespace MyOrg.Models
             {
                 [Entity][Id(1)]
