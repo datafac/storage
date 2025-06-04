@@ -229,7 +229,11 @@ namespace MyOrg.Models.MemBlocks
             get => IfUnpacked(_Left);
             set => _Left = IfNotFrozen(value);
         }
-        MyOrg.Models.ITree<String, Octets>? ITree<String, Octets>.Left => IfUnpacked(_Left);
+        MyOrg.Models.ITree<String, Octets>? ITree<String, Octets>.Left
+        {
+            get => IfUnpacked(_Left);
+            set => _Left = IfNotFrozen(value is null ? null :  MyOrg.Models.MemBlocks.Tree_2_String_Octets.CreateFrom(value));
+        }
 
         private async ValueTask Right_Pack(IDataStore dataStore)
         {
@@ -259,7 +263,11 @@ namespace MyOrg.Models.MemBlocks
             get => IfUnpacked(_Right);
             set => _Right = IfNotFrozen(value);
         }
-        MyOrg.Models.ITree<String, Octets>? ITree<String, Octets>.Right => IfUnpacked(_Right);
+        MyOrg.Models.ITree<String, Octets>? ITree<String, Octets>.Right
+        {
+            get => IfUnpacked(_Right);
+            set => _Right = IfNotFrozen(value is null ? null :  MyOrg.Models.MemBlocks.Tree_2_String_Octets.CreateFrom(value));
+        }
 
 
         public bool Equals(Tree_2_String_Octets? other)

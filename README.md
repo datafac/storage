@@ -62,7 +62,7 @@ Models are defined as C# interfaces with additional attributes. Here's a trivial
 [Entity][Id(1)]
 public interface IMyFirstDTO
 {
-    [Member(1)] string Name { get; }
+    [Member(1)] string Name { get; set; }
 }
 ```
 If using the MessagePack source generator, the following implmentation will be 
@@ -137,8 +137,8 @@ mitigate the single assembly constraint.
 
 # Development
 ## In progress
+- generic (template) model types
 - custom struct members (to avoid primitive obsession)
-- generic/open types
 
 ## Coming soon
 - Json (System.Text) generator

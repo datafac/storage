@@ -95,6 +95,7 @@ namespace MyOrg.Models.MessagePack
         MyOrg.Models.IOther? IMyDTO.Other1
         {
             get => _Other1;
+            set => _Other1 = IfNotFrozen(value is null ? null : MyOrg.Models.MessagePack.Other.CreateFrom(value));
         }
 
         [IgnoreMember]
@@ -108,6 +109,7 @@ namespace MyOrg.Models.MessagePack
         Octets IMyDTO.Field1
         {
             get => Octets.UnsafeWrap(_Field1);
+            set => _Field1 = IfNotFrozen(value.AsMemory());
         }
 
         [IgnoreMember]
@@ -121,6 +123,7 @@ namespace MyOrg.Models.MessagePack
         Octets? IMyDTO.Field2
         {
             get => _Field2 is null ? null : Octets.UnsafeWrap(_Field2.Value);
+            set => _Field2 = IfNotFrozen(value is null ? null : value.AsMemory());
         }
 
 

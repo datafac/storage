@@ -164,7 +164,11 @@ namespace MyOrg.Models.MemBlocks
             get => IfUnpacked(_Pair);
             set => _Pair = IfNotFrozen(value);
         }
-        MyOrg.Models.IPair<Int64, String>? IMyDTO3.Pair => IfUnpacked(_Pair);
+        MyOrg.Models.IPair<Int64, String>? IMyDTO3.Pair
+        {
+            get => IfUnpacked(_Pair);
+            set => _Pair = IfNotFrozen(value is null ? null :  MyOrg.Models.MemBlocks.Pair_2_Int64_String.CreateFrom(value));
+        }
 
 
         public bool Equals(MyDTO3? other)

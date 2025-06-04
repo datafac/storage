@@ -167,7 +167,11 @@ namespace MyOrg.Models.MemBlocks
             get => IfUnpacked(_Left);
             set => _Left = IfNotFrozen(value);
         }
-        MyOrg.Models.ITree? ITree.Left => IfUnpacked(_Left);
+        MyOrg.Models.ITree? ITree.Left
+        {
+            get => IfUnpacked(_Left);
+            set => _Left = IfNotFrozen(value is null ? null :  MyOrg.Models.MemBlocks.Tree.CreateFrom(value));
+        }
 
         private async ValueTask Right_Pack(IDataStore dataStore)
         {
@@ -197,7 +201,11 @@ namespace MyOrg.Models.MemBlocks
             get => IfUnpacked(_Right);
             set => _Right = IfNotFrozen(value);
         }
-        MyOrg.Models.ITree? ITree.Right => IfUnpacked(_Right);
+        MyOrg.Models.ITree? ITree.Right
+        {
+            get => IfUnpacked(_Right);
+            set => _Right = IfNotFrozen(value is null ? null :  MyOrg.Models.MemBlocks.Tree.CreateFrom(value));
+        }
 
         private async ValueTask Node_Pack(IDataStore dataStore)
         {
@@ -227,7 +235,11 @@ namespace MyOrg.Models.MemBlocks
             get => IfUnpacked(_Node);
             set => _Node = IfNotFrozen(value);
         }
-        MyOrg.Models.INode? ITree.Node => IfUnpacked(_Node);
+        MyOrg.Models.INode? ITree.Node
+        {
+            get => IfUnpacked(_Node);
+            set => _Node = IfNotFrozen(value is null ? null :  MyOrg.Models.MemBlocks.Node.CreateFrom(value));
+        }
 
 
         public bool Equals(Tree? other)

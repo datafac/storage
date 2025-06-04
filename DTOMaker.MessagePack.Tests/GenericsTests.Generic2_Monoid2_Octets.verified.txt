@@ -83,6 +83,7 @@ namespace MyOrg.Models.MessagePack
         Octets IMonoid<Octets>.Value
         {
             get => Octets.UnsafeWrap(_Value);
+            set => _Value = IfNotFrozen(value.AsMemory());
         }
 
 

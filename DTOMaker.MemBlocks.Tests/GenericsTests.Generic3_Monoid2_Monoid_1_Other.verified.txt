@@ -159,7 +159,11 @@ namespace MyOrg.Models.MemBlocks
             get => IfUnpacked(_Value);
             set => _Value = IfNotFrozen(value);
         }
-        MyOrg.Models.IOther? IMonoid<IOther>.Value => IfUnpacked(_Value);
+        MyOrg.Models.IOther? IMonoid<IOther>.Value
+        {
+            get => IfUnpacked(_Value);
+            set => _Value = IfNotFrozen(value is null ? null :  MyOrg.Models.MemBlocks.Other.CreateFrom(value));
+        }
 
 
         public bool Equals(Monoid_1_Other? other)

@@ -88,6 +88,7 @@ namespace MyOrg.DomainB.MessagePack
         MyOrg.DomainA.IMyDTO1? IMyDTO2.Member1
         {
             get => _Member1;
+            set => _Member1 = IfNotFrozen(value is null ? null : MyOrg.DomainA.MessagePack.MyDTO1.CreateFrom(value));
         }
 
 

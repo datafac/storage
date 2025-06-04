@@ -81,7 +81,11 @@ namespace MyOrg.Models.MessagePack
             get => _Value;
             set => _Value = IfNotFrozen(value);
         }
-        MyOrg.Models.IOther? IMonoid<IOther>.Value => _Value;
+        MyOrg.Models.IOther? IMonoid<IOther>.Value
+        {
+            get => _Value;
+            set => _Value = IfNotFrozen(value is null ? null : MyOrg.Models.MessagePack.Other.CreateFrom(value));
+        }
 
 
         public bool Equals(Monoid_1_Other? other)

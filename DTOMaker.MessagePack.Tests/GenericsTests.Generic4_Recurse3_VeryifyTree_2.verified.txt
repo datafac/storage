@@ -111,6 +111,7 @@ namespace MyOrg.Models.MessagePack
         Octets ITree<String, Octets>.Value
         {
             get => Octets.UnsafeWrap(_Value);
+            set => _Value = IfNotFrozen(value.AsMemory());
         }
 
         [IgnoreMember]
@@ -121,7 +122,11 @@ namespace MyOrg.Models.MessagePack
             get => _Left;
             set => _Left = IfNotFrozen(value);
         }
-        MyOrg.Models.ITree<String, Octets>? ITree<String, Octets>.Left => _Left;
+        MyOrg.Models.ITree<String, Octets>? ITree<String, Octets>.Left
+        {
+            get => _Left;
+            set => _Left = IfNotFrozen(value is null ? null : MyOrg.Models.MessagePack.Tree_2_String_Octets.CreateFrom(value));
+        }
 
         [IgnoreMember]
         private MyOrg.Models.MessagePack.Tree_2_String_Octets? _Right;
@@ -131,7 +136,11 @@ namespace MyOrg.Models.MessagePack
             get => _Right;
             set => _Right = IfNotFrozen(value);
         }
-        MyOrg.Models.ITree<String, Octets>? ITree<String, Octets>.Right => _Right;
+        MyOrg.Models.ITree<String, Octets>? ITree<String, Octets>.Right
+        {
+            get => _Right;
+            set => _Right = IfNotFrozen(value is null ? null : MyOrg.Models.MessagePack.Tree_2_String_Octets.CreateFrom(value));
+        }
 
 
         public bool Equals(Tree_2_String_Octets? other)

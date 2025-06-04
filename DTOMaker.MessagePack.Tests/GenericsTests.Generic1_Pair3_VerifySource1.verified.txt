@@ -99,6 +99,7 @@ namespace MyOrg.Models.MessagePack
         MyOrg.Models.IPair<Int64, String>? IMyDTO3.Pair
         {
             get => _Pair;
+            set => _Pair = IfNotFrozen(value is null ? null : MyOrg.Models.MessagePack.Pair_2_Int64_String.CreateFrom(value));
         }
 
 
