@@ -15,7 +15,7 @@ namespace Sandbox.Tests
             {
                 Count = 1,
                 Key = "abc",
-                Value = Octets.Empty.Memory,
+                Value = Octets.Empty.AsMemory(),
                 // todo recurse
             };
             orig.Freeze();

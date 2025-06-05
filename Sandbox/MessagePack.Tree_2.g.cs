@@ -78,7 +78,7 @@ namespace MyOrg.Models.MessagePack
             if (source is null) throw new ArgumentNullException(nameof(source));
             _Count = source.Count;
             _Key = source.Key;
-            _Value = source.Value.Memory;
+            _Value = source.Value.AsMemory();
             _Left = source.Left is null ? null : MyOrg.Models.MessagePack.Tree_2_String_Octets.CreateFrom(source.Left);
             _Right = source.Right is null ? null : MyOrg.Models.MessagePack.Tree_2_String_Octets.CreateFrom(source.Right);
         }
