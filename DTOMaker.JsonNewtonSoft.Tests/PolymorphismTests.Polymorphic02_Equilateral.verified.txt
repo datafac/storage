@@ -63,7 +63,7 @@ namespace MyOrg.Models.JsonNewtonSoft
         public Double Length
         {
             get => _Length;
-            set => _Length = IfNotFrozen(ref value);
+            set => _Length = IfNotFrozen(value);
         }
 
 

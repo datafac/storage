@@ -63,7 +63,7 @@ namespace MyOrg.DomainB.JsonNewtonSoft
         public Double Field1
         {
             get => _Field1;
-            set => _Field1 = IfNotFrozen(ref value);
+            set => _Field1 = IfNotFrozen(value);
         }
 
 

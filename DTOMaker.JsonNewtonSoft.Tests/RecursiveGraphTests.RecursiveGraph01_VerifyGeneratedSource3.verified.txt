@@ -78,7 +78,7 @@ namespace MyOrg.Models.JsonNewtonSoft
         public string Key
         {
             get => _Key;
-            set => _Key = IfNotFrozen(ref value);
+            set => _Key = IfNotFrozen(value);
         }
 
 

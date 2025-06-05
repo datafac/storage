@@ -63,9 +63,13 @@ namespace MyOrg.Models.JsonNewtonSoft
         public Double[] Field1
         {
             get => _Field1;
-            set => _Field1 = IfNotFrozen(ref value);
+            set => _Field1 = IfNotFrozen(value);
         }
-        ReadOnlyMemory<Double> IMyDTO.Field1 => IsFrozen ? _Field1 : _Field1.ToArray().AsMemory();
+        ReadOnlyMemory<Double> IMyDTO.Field1
+        {
+            get => IsFrozen ? _Field1 : _Field1.ToArray().AsMemory();
+            set => _Field1 = IfNotFrozen(value.ToArray());
+        }
 
 
         public bool Equals(MyDTO? other)

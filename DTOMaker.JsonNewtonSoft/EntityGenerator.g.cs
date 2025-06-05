@@ -94,15 +94,15 @@ Emit("namespace T_NameSpace_");
 Emit("{");
 Emit("    public interface IT_EntityIntfName_ : T_BaseNameSpace_.IT_BaseName_");
 Emit("    {");
-Emit("        T_MemberType_? T_NullableScalarMemberName_ { get; }");
-Emit("        T_MemberType_ T_RequiredScalarMemberName_ { get; }");
-Emit("        ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; }");
-Emit("        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? T_NullableEntityMemberName_ { get; }");
-Emit("        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ T_RequiredEntityMemberName_ { get; }");
-Emit("        Octets? T_NullableBinaryMemberName_ { get; }");
-Emit("        Octets T_RequiredBinaryMemberName_ { get; }");
-Emit("        string? T_NullableStringMemberName_ { get; }");
-Emit("        string T_RequiredStringMemberName_ { get; }");
+Emit("        T_MemberType_? T_NullableScalarMemberName_ { get; set; }");
+Emit("        T_MemberType_ T_RequiredScalarMemberName_ { get; set; }");
+Emit("        ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }");
+Emit("        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? T_NullableEntityMemberName_ { get; set; }");
+Emit("        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ T_RequiredEntityMemberName_ { get; set; }");
+Emit("        Octets? T_NullableBinaryMemberName_ { get; set; }");
+Emit("        Octets T_RequiredBinaryMemberName_ { get; set; }");
+Emit("        string? T_NullableStringMemberName_ { get; set; }");
+Emit("        string T_RequiredStringMemberName_ { get; set; }");
 Emit("    }");
 Emit("}");
 }
@@ -249,13 +249,13 @@ Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]
 Emit("        public T_MemberType_? T_NullableScalarMemberName_");
 Emit("        {");
 Emit("            get => _T_NullableScalarMemberName_;");
-Emit("            set => _T_NullableScalarMemberName_ = IfNotFrozen(ref value);");
+Emit("            set => _T_NullableScalarMemberName_ = IfNotFrozen(value);");
 Emit("        }");
         } else {
 Emit("        public T_MemberType_ T_RequiredScalarMemberName_");
 Emit("        {");
 Emit("            get => _T_RequiredScalarMemberName_;");
-Emit("            set => _T_RequiredScalarMemberName_ = IfNotFrozen(ref value);");
+Emit("            set => _T_RequiredScalarMemberName_ = IfNotFrozen(value);");
 Emit("        }");
         }
         break;
@@ -267,9 +267,13 @@ Emit("        [Obsolete(\"T_MemberObsoleteMessage_\", T_MemberObsoleteIsError_)]
 Emit("        public T_MemberType_[] T_VectorMemberName_");
 Emit("        {");
 Emit("            get => _T_VectorMemberName_;");
-Emit("            set => _T_VectorMemberName_ = IfNotFrozen(ref value);");
+Emit("            set => _T_VectorMemberName_ = IfNotFrozen(value);");
 Emit("        }");
-Emit("        ReadOnlyMemory<T_MemberType_> IT_EntityIntfName_.T_VectorMemberName_ => IsFrozen ? _T_VectorMemberName_ : _T_VectorMemberName_.ToArray().AsMemory();");
+Emit("        ReadOnlyMemory<T_MemberType_> IT_EntityIntfName_.T_VectorMemberName_");
+Emit("        {");
+Emit("            get => IsFrozen ? _T_VectorMemberName_ : _T_VectorMemberName_.ToArray().AsMemory();");
+Emit("            set => _T_VectorMemberName_ = IfNotFrozen(value.ToArray());");
+Emit("        }");
         break;
         case MemberKind.Entity:
         if (member.IsNullable) {
@@ -277,17 +281,25 @@ Emit("        private T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeImplName
 Emit("        public T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeImplName_? T_NullableEntityMemberName_");
 Emit("        {");
 Emit("            get => _T_NullableEntityMemberName_;");
-Emit("            set => _T_NullableEntityMemberName_ = IfNotFrozen(ref value);");
+Emit("            set => _T_NullableEntityMemberName_ = IfNotFrozen(value);");
 Emit("        }");
-Emit("        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => _T_NullableEntityMemberName_;");
+Emit("        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? IT_EntityIntfName_.T_NullableEntityMemberName_");
+Emit("        {");
+Emit("            get => _T_NullableEntityMemberName_;");
+Emit("            set => _T_NullableEntityMemberName_ = IfNotFrozen(value is null ? null : T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeImplName_.CreateFrom(value));");
+Emit("        }");
         } else {
 Emit("        private T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeImplName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeImplName_.Empty;");
 Emit("        public T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeImplName_ T_RequiredEntityMemberName_");
 Emit("        {");
 Emit("            get => _T_RequiredEntityMemberName_;");
-Emit("            set => _T_RequiredEntityMemberName_ = IfNotFrozen(ref value);");
+Emit("            set => _T_RequiredEntityMemberName_ = IfNotFrozen(value);");
 Emit("        }");
-Emit("        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ IT_EntityIntfName_.T_RequiredEntityMemberName_ => _T_RequiredEntityMemberName_;");
+Emit("        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ IT_EntityIntfName_.T_RequiredEntityMemberName_");
+Emit("        {");
+Emit("            get => _T_RequiredEntityMemberName_;");
+Emit("            set => _T_RequiredEntityMemberName_ = IfNotFrozen(T_MemberTypeNameSpace_.JsonNewtonSoft.T_MemberTypeImplName_.CreateFrom(value));");
+Emit("        }");
         }
         break;
         case MemberKind.Binary:
@@ -296,18 +308,25 @@ Emit("        private byte[]? _T_NullableBinaryMemberName_;");
 Emit("        public byte[]? T_NullableBinaryMemberName_");
 Emit("        {");
 Emit("            get => _T_NullableBinaryMemberName_;");
-Emit("            set => _T_NullableBinaryMemberName_ = IfNotFrozen(ref value);");
+Emit("            set => _T_NullableBinaryMemberName_ = IfNotFrozen(value);");
 Emit("        }");
-Emit("        Octets? IT_EntityIntfName_.T_NullableBinaryMemberName_ => _T_NullableBinaryMemberName_ is null ? null");
-Emit("            : IsFrozen ? Octets.UnsafeWrap(_T_NullableBinaryMemberName_) : new Octets(_T_NullableBinaryMemberName_);");
+Emit("        Octets? IT_EntityIntfName_.T_NullableBinaryMemberName_");
+Emit("        {");
+Emit("            get => _T_NullableBinaryMemberName_ is null ? null : _T_NullableBinaryMemberName_.Length == 0 ? Octets.Empty : new Octets(_T_NullableBinaryMemberName_);");
+Emit("            set => _T_NullableBinaryMemberName_ = IfNotFrozen(value is null ? null : value.ToByteArray());");
+Emit("        }");
         } else {
 Emit("        private byte[] _T_RequiredBinaryMemberName_ = Array.Empty<byte>();");
 Emit("        public byte[] T_RequiredBinaryMemberName_");
 Emit("        {");
 Emit("            get => _T_RequiredBinaryMemberName_;");
-Emit("            set => _T_RequiredBinaryMemberName_ = IfNotFrozen(ref value);");
+Emit("            set => _T_RequiredBinaryMemberName_ = IfNotFrozen(value);");
 Emit("        }");
-Emit("        Octets IT_EntityIntfName_.T_RequiredBinaryMemberName_ => IsFrozen ? Octets.UnsafeWrap(_T_RequiredBinaryMemberName_) : new Octets(_T_RequiredBinaryMemberName_);");
+Emit("        Octets IT_EntityIntfName_.T_RequiredBinaryMemberName_");
+Emit("        {");
+Emit("            get => _T_RequiredBinaryMemberName_.Length == 0 ? Octets.Empty : new Octets(_T_RequiredBinaryMemberName_);");
+Emit("            set => _T_RequiredBinaryMemberName_ = IfNotFrozen(value.ToByteArray());");
+Emit("        }");
         }
         break;
         case MemberKind.String:
@@ -316,14 +335,14 @@ Emit("        private string? _T_NullableStringMemberName_;");
 Emit("        public string? T_NullableStringMemberName_");
 Emit("        {");
 Emit("            get => _T_NullableStringMemberName_;");
-Emit("            set => _T_NullableStringMemberName_ = IfNotFrozen(ref value);");
+Emit("            set => _T_NullableStringMemberName_ = IfNotFrozen(value);");
 Emit("        }");
         } else {
 Emit("        private string _T_RequiredStringMemberName_ = string.Empty;");
 Emit("        public string T_RequiredStringMemberName_");
 Emit("        {");
 Emit("            get => _T_RequiredStringMemberName_;");
-Emit("            set => _T_RequiredStringMemberName_ = IfNotFrozen(ref value);");
+Emit("            set => _T_RequiredStringMemberName_ = IfNotFrozen(value);");
 Emit("        }");
         }
         break;

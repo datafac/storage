@@ -66,26 +66,37 @@ namespace MyOrg.Models.JsonNewtonSoft
         public MyOrg.Models.JsonNewtonSoft.Other? Other1
         {
             get => _Other1;
-            set => _Other1 = IfNotFrozen(ref value);
+            set => _Other1 = IfNotFrozen(value);
         }
-        MyOrg.Models.IOther? IMyDTO.Other1 => _Other1;
+        MyOrg.Models.IOther? IMyDTO.Other1
+        {
+            get => _Other1;
+            set => _Other1 = IfNotFrozen(value is null ? null : MyOrg.Models.JsonNewtonSoft.Other.CreateFrom(value));
+        }
 
         private byte[] _Field1 = Array.Empty<byte>();
         public byte[] Field1
         {
             get => _Field1;
-            set => _Field1 = IfNotFrozen(ref value);
+            set => _Field1 = IfNotFrozen(value);
         }
-        Octets IMyDTO.Field1 => IsFrozen ? Octets.UnsafeWrap(_Field1) : new Octets(_Field1);
+        Octets IMyDTO.Field1
+        {
+            get => _Field1.Length == 0 ? Octets.Empty : new Octets(_Field1);
+            set => _Field1 = IfNotFrozen(value.ToByteArray());
+        }
 
         private byte[]? _Field2;
         public byte[]? Field2
         {
             get => _Field2;
-            set => _Field2 = IfNotFrozen(ref value);
+            set => _Field2 = IfNotFrozen(value);
         }
-        Octets? IMyDTO.Field2 => _Field2 is null ? null
-            : IsFrozen ? Octets.UnsafeWrap(_Field2) : new Octets(_Field2);
+        Octets? IMyDTO.Field2
+        {
+            get => _Field2 is null ? null : _Field2.Length == 0 ? Octets.Empty : new Octets(_Field2);
+            set => _Field2 = IfNotFrozen(value is null ? null : value.ToByteArray());
+        }
 
 
         public bool Equals(MyDTO? other)

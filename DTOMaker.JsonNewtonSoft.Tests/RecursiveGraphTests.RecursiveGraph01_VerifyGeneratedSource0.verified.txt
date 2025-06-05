@@ -63,7 +63,7 @@ namespace MyOrg.Models.JsonNewtonSoft
         public Boolean Value
         {
             get => _Value;
-            set => _Value = IfNotFrozen(ref value);
+            set => _Value = IfNotFrozen(value);
         }
 
 

@@ -66,9 +66,13 @@ namespace MyOrg.Models.JsonNewtonSoft
         public byte[] Value
         {
             get => _Value;
-            set => _Value = IfNotFrozen(ref value);
+            set => _Value = IfNotFrozen(value);
         }
-        Octets IMonoid<Octets>.Value => IsFrozen ? Octets.UnsafeWrap(_Value) : new Octets(_Value);
+        Octets IMonoid<Octets>.Value
+        {
+            get => _Value.Length == 0 ? Octets.Empty : new Octets(_Value);
+            set => _Value = IfNotFrozen(value.ToByteArray());
+        }
 
 
         public bool Equals(Monoid_1_Octets? other)

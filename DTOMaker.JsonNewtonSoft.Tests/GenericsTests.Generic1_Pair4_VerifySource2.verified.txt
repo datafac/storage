@@ -67,14 +67,14 @@ namespace MyOrg.Models.JsonNewtonSoft
         public Int64 Item1
         {
             get => _Item1;
-            set => _Item1 = IfNotFrozen(ref value);
+            set => _Item1 = IfNotFrozen(value);
         }
 
         private string _Item2 = string.Empty;
         public string Item2
         {
             get => _Item2;
-            set => _Item2 = IfNotFrozen(ref value);
+            set => _Item2 = IfNotFrozen(value);
         }
 
 

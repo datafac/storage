@@ -63,7 +63,7 @@ namespace MyOrg.Models.JsonNewtonSoft
         public Int32 Id
         {
             get => _Id;
-            set => _Id = IfNotFrozen(ref value);
+            set => _Id = IfNotFrozen(value);
         }
 
 

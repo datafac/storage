@@ -67,9 +67,13 @@ namespace MyOrg.Models.JsonNewtonSoft
         public MyOrg.Models.JsonNewtonSoft.Other? Value
         {
             get => _Value;
-            set => _Value = IfNotFrozen(ref value);
+            set => _Value = IfNotFrozen(value);
         }
-        MyOrg.Models.IOther? IMonoid<IOther>.Value => _Value;
+        MyOrg.Models.IOther? IMonoid<IOther>.Value
+        {
+            get => _Value;
+            set => _Value = IfNotFrozen(value is null ? null : MyOrg.Models.JsonNewtonSoft.Other.CreateFrom(value));
+        }
 
 
         public bool Equals(Monoid_1_Other? other)

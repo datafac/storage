@@ -64,14 +64,14 @@ namespace MyOrg.Models.JsonNewtonSoft
         public Int64 Value1
         {
             get => _Value1;
-            set => _Value1 = IfNotFrozen(ref value);
+            set => _Value1 = IfNotFrozen(value);
         }
 
         private Int64 _Value2 = default;
         public Int64 Value2
         {
             get => _Value2;
-            set => _Value2 = IfNotFrozen(ref value);
+            set => _Value2 = IfNotFrozen(value);
         }
 
 

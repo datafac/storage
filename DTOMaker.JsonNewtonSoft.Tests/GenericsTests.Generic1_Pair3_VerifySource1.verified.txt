@@ -65,16 +65,20 @@ namespace MyOrg.Models.JsonNewtonSoft
         public Int32 Id
         {
             get => _Id;
-            set => _Id = IfNotFrozen(ref value);
+            set => _Id = IfNotFrozen(value);
         }
 
         private MyOrg.Models.JsonNewtonSoft.Pair_2_Int64_String? _Pair;
         public MyOrg.Models.JsonNewtonSoft.Pair_2_Int64_String? Pair
         {
             get => _Pair;
-            set => _Pair = IfNotFrozen(ref value);
+            set => _Pair = IfNotFrozen(value);
         }
-        MyOrg.Models.IPair<Int64, String>? IMyDTO3.Pair => _Pair;
+        MyOrg.Models.IPair<Int64, String>? IMyDTO3.Pair
+        {
+            get => _Pair;
+            set => _Pair = IfNotFrozen(value is null ? null : MyOrg.Models.JsonNewtonSoft.Pair_2_Int64_String.CreateFrom(value));
+        }
 
 
         public bool Equals(MyDTO3? other)

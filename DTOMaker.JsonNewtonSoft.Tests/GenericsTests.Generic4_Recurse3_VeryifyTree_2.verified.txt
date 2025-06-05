@@ -72,39 +72,51 @@ namespace MyOrg.Models.JsonNewtonSoft
         public Int32 Count
         {
             get => _Count;
-            set => _Count = IfNotFrozen(ref value);
+            set => _Count = IfNotFrozen(value);
         }
 
         private string _Key = string.Empty;
         public string Key
         {
             get => _Key;
-            set => _Key = IfNotFrozen(ref value);
+            set => _Key = IfNotFrozen(value);
         }
 
         private byte[] _Value = Array.Empty<byte>();
         public byte[] Value
         {
             get => _Value;
-            set => _Value = IfNotFrozen(ref value);
+            set => _Value = IfNotFrozen(value);
         }
-        Octets ITree<String, Octets>.Value => IsFrozen ? Octets.UnsafeWrap(_Value) : new Octets(_Value);
+        Octets ITree<String, Octets>.Value
+        {
+            get => _Value.Length == 0 ? Octets.Empty : new Octets(_Value);
+            set => _Value = IfNotFrozen(value.ToByteArray());
+        }
 
         private MyOrg.Models.JsonNewtonSoft.Tree_2_String_Octets? _Left;
         public MyOrg.Models.JsonNewtonSoft.Tree_2_String_Octets? Left
         {
             get => _Left;
-            set => _Left = IfNotFrozen(ref value);
+            set => _Left = IfNotFrozen(value);
         }
-        MyOrg.Models.ITree<String, Octets>? ITree<String, Octets>.Left => _Left;
+        MyOrg.Models.ITree<String, Octets>? ITree<String, Octets>.Left
+        {
+            get => _Left;
+            set => _Left = IfNotFrozen(value is null ? null : MyOrg.Models.JsonNewtonSoft.Tree_2_String_Octets.CreateFrom(value));
+        }
 
         private MyOrg.Models.JsonNewtonSoft.Tree_2_String_Octets? _Right;
         public MyOrg.Models.JsonNewtonSoft.Tree_2_String_Octets? Right
         {
             get => _Right;
-            set => _Right = IfNotFrozen(ref value);
+            set => _Right = IfNotFrozen(value);
         }
-        MyOrg.Models.ITree<String, Octets>? ITree<String, Octets>.Right => _Right;
+        MyOrg.Models.ITree<String, Octets>? ITree<String, Octets>.Right
+        {
+            get => _Right;
+            set => _Right = IfNotFrozen(value is null ? null : MyOrg.Models.JsonNewtonSoft.Tree_2_String_Octets.CreateFrom(value));
+        }
 
 
         public bool Equals(Tree_2_String_Octets? other)
