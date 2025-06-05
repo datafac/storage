@@ -110,7 +110,7 @@ namespace DTOMaker.Gentime
                             foreach (TargetMember openMember in openEntity.Members.Values)
                             {
                                 TargetMember member = syntaxReceiver.Factory.CloneMember(entity, openMember);
-                                if(member.Kind == MemberKind.Unknown)
+                                if (member.Kind == MemberKind.Unknown)
                                 {
                                     var mTFN = ResolveMemberType(domain, entity.TFN, openMember);
                                     member.MemberType = mTFN;

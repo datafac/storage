@@ -59,7 +59,8 @@ namespace DTOMaker.Gentime
         private SyntaxDiagnostic? CheckMemberKind()
         {
             if (!HasMemberAttribute) return null;
-            return Kind switch {
+            return Kind switch
+            {
                 MemberKind.Native => null,
                 MemberKind.String => null,
                 MemberKind.Binary => null,

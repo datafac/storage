@@ -171,8 +171,8 @@ namespace DTOMaker.Gentime
                     //
                 }
 
-                    // additional entity attribute processing
-                    OnProcessEntityAttributes(entity, idsLocation, entityAttributes);
+                // additional entity attribute processing
+                OnProcessEntityAttributes(entity, idsLocation, entityAttributes);
             }
 
             if (context.Node is PropertyDeclarationSyntax pds

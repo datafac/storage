@@ -1,9 +1,9 @@
-using Shouldly;
-using System.Linq;
-using System;
-using Xunit;
 using Newtonsoft.Json;
+using Shouldly;
+using System;
+using System.Linq;
 using T_NameSpace_.JsonNewtonSoft;
+using Xunit;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 

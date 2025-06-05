@@ -12,13 +12,13 @@ namespace DTOMaker.MemBlocks
         {
             get => _layoutMethod != LayoutMethod.Undefined
                 ? _layoutMethod
-                : (OpenEntity as MemBlockEntity)?.LayoutMethod ?? LayoutMethod.Undefined; 
+                : (OpenEntity as MemBlockEntity)?.LayoutMethod ?? LayoutMethod.Undefined;
             set => _layoutMethod = value;
         }
         public int BlockLength { get; set; }
         public long BlockStructureCode { get; set; }
 
-        public MemBlockEntity(TargetDomain domain, TypeFullName entityName, Location location) 
+        public MemBlockEntity(TargetDomain domain, TypeFullName entityName, Location location)
             : base(domain, entityName, location) { }
 
         private static int GetFieldLength(TargetMember member)

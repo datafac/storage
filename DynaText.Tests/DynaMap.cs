@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System;
 using System.Linq;
 
 namespace DTOMaker.Gentime.Tests

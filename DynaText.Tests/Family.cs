@@ -2,7 +2,8 @@ namespace DTOMaker.Gentime.Tests
 {
     internal class Family : DynaTextBase
     {
-        public Person? Leader {
+        public Person? Leader
+        {
             get { return _map.GetObject<Person>(nameof(Leader)); }
             set { _map.SetObject<Person>(nameof(Leader), value); }
         }

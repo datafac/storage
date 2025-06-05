@@ -1,10 +1,10 @@
-using Xunit;
+using DataFac.Memory;
+using MessagePack;
 using Newtonsoft.Json;
 using Shouldly;
-using System.Linq;
 using System;
-using MessagePack;
-using DataFac.Memory;
+using System.Linq;
+using Xunit;
 
 namespace Template.JsonNewtonSoft.Tests
 {

@@ -92,7 +92,7 @@ namespace DTOMaker.Gentime
         public int SyntheticId => _syntheticId;
         public MemberKind MemberKind => _memberKind;
         public bool IsGeneric => _typeParameters.Length > 0;
-        public bool IsClosed => (_typeArguments.Length == _typeParameters.Length) 
+        public bool IsClosed => (_typeArguments.Length == _typeParameters.Length)
                                 && _typeArguments.All(ta => ta.Kind != SymbolKind.TypeParameter);
 
         public ImmutableArray<ITypeParameterSymbol> TypeParameters => _typeParameters;
