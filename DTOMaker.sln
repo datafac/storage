@@ -81,8 +81,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox.Tests", "Sandbox.Te
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DTOMaker.MemBlocks.Shared", "DTOMaker.MemBlocks.Shared\DTOMaker.MemBlocks.Shared.shproj", "{4AE6A305-935C-4344-A5A7-0554A2CCCFD4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CSRecord", "CSRecord", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DTOMaker.Models.Shared", "DTOMaker.Models.Shared\DTOMaker.Models.Shared.shproj", "{3447BA3D-088A-4724-BE9D-037C0388B0DA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynaText.Tests", "DynaText.Tests\DynaText.Tests.csproj", "{FE740A1F-CF62-4ECB-B896-AC1169D27127}"

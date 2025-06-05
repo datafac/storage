@@ -14,7 +14,6 @@
   - [DTOMaker.MemBlocks](#dtomaker.memblocks)
   - [DTOMaker.Models.MemBlocks](#dtomaker.models.memblocks)
   - [DTOMaker.CSPoco](#dtomaker.cspoco)
-  - [DTOMaker.CSRecord (.NET 8+)](#dtomaker.csrecord-.net-8)
   - [DTOMaker.Runtime](#dtomaker.runtime)
 - [Model features](#model-features)
   - [MemBlocks features](#memblocks-features)
@@ -102,9 +101,6 @@ manage entity and member memory layout.
 
 ## DTOMaker.CSPoco
 Generates basic POCOs (Plain Old C# Objects) that implement the model interfaces.
-
-## DTOMaker.CSRecord (.NET 8+)
-Generates C# records that implement the model interfaces.
 
 ## DTOMaker.Runtime
 Common types used at runtime by DTOMaker generated entities.
