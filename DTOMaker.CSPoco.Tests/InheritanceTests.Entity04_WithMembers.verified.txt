@@ -62,7 +62,7 @@ namespace MyOrg.Models.CSPoco
         public Double DTOField1
         {
             get => _DTOField1;
-            set => _DTOField1 = IfNotFrozen(ref value);
+            set => _DTOField1 = IfNotFrozen(value);
         }
 
 

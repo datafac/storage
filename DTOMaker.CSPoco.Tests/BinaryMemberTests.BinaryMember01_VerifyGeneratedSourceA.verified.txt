@@ -65,22 +65,26 @@ namespace MyOrg.Models.CSPoco
         public MyOrg.Models.CSPoco.Other? Other1
         {
             get => _Other1;
-            set => _Other1 = IfNotFrozen(ref value);
+            set => _Other1 = IfNotFrozen(value);
         }
-        MyOrg.Models.IOther? IMyDTO.Other1 => _Other1;
+        MyOrg.Models.IOther? IMyDTO.Other1
+        {
+            get => _Other1;
+            set => _Other1 = IfNotFrozen(value is null ? null : MyOrg.Models.CSPoco.Other.CreateFrom(value));
+        }
 
         private Octets _Field1 = Octets.Empty;
         public Octets Field1
         {
             get => _Field1;
-            set => _Field1 = IfNotFrozen(ref value);
+            set => _Field1 = IfNotFrozen(value);
         }
 
         private Octets? _Field2;
         public Octets? Field2
         {
             get => _Field2;
-            set => _Field2 = IfNotFrozen(ref value);
+            set => _Field2 = IfNotFrozen(value);
         }
 
 

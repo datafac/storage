@@ -83,15 +83,15 @@ namespace T_NameSpace_
 {
     public interface IT_EntityIntfName_ : T_BaseNameSpace_.IT_BaseName_
     {
-        T_MemberType_? T_NullableScalarMemberName_ { get; }
-        T_MemberType_ T_RequiredScalarMemberName_ { get; }
-        ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; }
-        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? T_NullableEntityMemberName_ { get; }
-        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ T_RequiredEntityMemberName_ { get; }
-        Octets? T_NullableBinaryMemberName_ { get; }
-        Octets T_RequiredBinaryMemberName_ { get; }
-        string? T_NullableStringMemberName_ { get; }
-        string T_RequiredStringMemberName_ { get; }
+        T_MemberType_? T_NullableScalarMemberName_ { get; set; }
+        T_MemberType_ T_RequiredScalarMemberName_ { get; set; }
+        ReadOnlyMemory<T_MemberType_> T_VectorMemberName_ { get; set; }
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? T_NullableEntityMemberName_ { get; set; }
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ T_RequiredEntityMemberName_ { get; set; }
+        Octets? T_NullableBinaryMemberName_ { get; set; }
+        Octets T_RequiredBinaryMemberName_ { get; set; }
+        string? T_NullableStringMemberName_ { get; set; }
+        string T_RequiredStringMemberName_ { get; set; }
     }
 }
 //##}
@@ -240,13 +240,13 @@ namespace T_NameSpace_.CSPoco
         public T_MemberType_? T_NullableScalarMemberName_
         {
             get => _T_NullableScalarMemberName_;
-            set => _T_NullableScalarMemberName_ = IfNotFrozen(ref value);
+            set => _T_NullableScalarMemberName_ = IfNotFrozen(value);
         }
         //##} else {
         public T_MemberType_ T_RequiredScalarMemberName_
         {
             get => _T_RequiredScalarMemberName_;
-            set => _T_RequiredScalarMemberName_ = IfNotFrozen(ref value);
+            set => _T_RequiredScalarMemberName_ = IfNotFrozen(value);
         }
         //##}
         //##break;
@@ -258,7 +258,7 @@ namespace T_NameSpace_.CSPoco
         public ReadOnlyMemory<T_MemberType_> T_VectorMemberName_
         {
             get => _T_VectorMemberName_;
-            set => _T_VectorMemberName_ = IfNotFrozen(ref value);
+            set => _T_VectorMemberName_ = IfNotFrozen(value);
         }
         //##break;
         //##case MemberKind.Entity:
@@ -267,17 +267,25 @@ namespace T_NameSpace_.CSPoco
         public T_MemberTypeNameSpace_.CSPoco.T_MemberTypeImplName_? T_NullableEntityMemberName_
         {
             get => _T_NullableEntityMemberName_;
-            set => _T_NullableEntityMemberName_ = IfNotFrozen(ref value);
+            set => _T_NullableEntityMemberName_ = IfNotFrozen(value);
         }
-        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? IT_EntityIntfName_.T_NullableEntityMemberName_ => _T_NullableEntityMemberName_;
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_? IT_EntityIntfName_.T_NullableEntityMemberName_
+        {
+            get => _T_NullableEntityMemberName_;
+            set => _T_NullableEntityMemberName_ = IfNotFrozen(value is null ? null : T_MemberTypeNameSpace_.CSPoco.T_MemberTypeImplName_.CreateFrom(value));
+        }
         //##} else {
         private T_MemberTypeNameSpace_.CSPoco.T_MemberTypeImplName_ _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.CSPoco.T_MemberTypeImplName_.Empty;
         public T_MemberTypeNameSpace_.CSPoco.T_MemberTypeImplName_ T_RequiredEntityMemberName_
         {
             get => _T_RequiredEntityMemberName_;
-            set => _T_RequiredEntityMemberName_ = IfNotFrozen(ref value);
+            set => _T_RequiredEntityMemberName_ = IfNotFrozen(value);
         }
-        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ IT_EntityIntfName_.T_RequiredEntityMemberName_ => _T_RequiredEntityMemberName_;
+        T_MemberTypeNameSpace_.IT_MemberTypeIntfName_ IT_EntityIntfName_.T_RequiredEntityMemberName_
+        {
+            get => _T_RequiredEntityMemberName_;
+            set => _T_RequiredEntityMemberName_ = IfNotFrozen(T_MemberTypeNameSpace_.CSPoco.T_MemberTypeImplName_.CreateFrom(value));
+        }
         //##}
         //##break;
         //##case MemberKind.Binary:
@@ -286,14 +294,14 @@ namespace T_NameSpace_.CSPoco
         public Octets? T_NullableBinaryMemberName_
         {
             get => _T_NullableBinaryMemberName_;
-            set => _T_NullableBinaryMemberName_ = IfNotFrozen(ref value);
+            set => _T_NullableBinaryMemberName_ = IfNotFrozen(value);
         }
         //##} else {
         private Octets _T_RequiredBinaryMemberName_ = Octets.Empty;
         public Octets T_RequiredBinaryMemberName_
         {
             get => _T_RequiredBinaryMemberName_;
-            set => _T_RequiredBinaryMemberName_ = IfNotFrozen(ref value);
+            set => _T_RequiredBinaryMemberName_ = IfNotFrozen(value);
         }
         //##}
         //##break;
@@ -303,14 +311,14 @@ namespace T_NameSpace_.CSPoco
         public string? T_NullableStringMemberName_
         {
             get => _T_NullableStringMemberName_;
-            set => _T_NullableStringMemberName_ = IfNotFrozen(ref value);
+            set => _T_NullableStringMemberName_ = IfNotFrozen(value);
         }
         //##} else {
         private string _T_RequiredStringMemberName_ = string.Empty;
         public string T_RequiredStringMemberName_
         {
             get => _T_RequiredStringMemberName_;
-            set => _T_RequiredStringMemberName_ = IfNotFrozen(ref value);
+            set => _T_RequiredStringMemberName_ = IfNotFrozen(value);
         }
         //##}
         //##break;

@@ -26,10 +26,10 @@ namespace DTOMaker.Runtime.CSPoco
         private void ThrowIsFrozenException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} when frozen.");
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected ref T IfNotFrozen<T>(ref T value, [CallerMemberName] string? methodName = null)
+        protected T IfNotFrozen<T>(T value, [CallerMemberName] string? methodName = null)
         {
             if (_frozen) ThrowIsFrozenException(methodName);
-            return ref value;
+            return value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -63,14 +63,14 @@ namespace MyOrg.Models.CSPoco
         public Double Field1
         {
             get => _Field1;
-            set => _Field1 = IfNotFrozen(ref value);
+            set => _Field1 = IfNotFrozen(value);
         }
 
         private Int64 _Field2 = default;
         public Int64 Field2
         {
             get => _Field2;
-            set => _Field2 = IfNotFrozen(ref value);
+            set => _Field2 = IfNotFrozen(value);
         }
 
 

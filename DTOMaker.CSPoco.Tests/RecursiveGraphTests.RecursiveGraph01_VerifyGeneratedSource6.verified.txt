@@ -67,25 +67,37 @@ namespace MyOrg.Models.CSPoco
         public MyOrg.Models.CSPoco.Tree? Left
         {
             get => _Left;
-            set => _Left = IfNotFrozen(ref value);
+            set => _Left = IfNotFrozen(value);
         }
-        MyOrg.Models.ITree? ITree.Left => _Left;
+        MyOrg.Models.ITree? ITree.Left
+        {
+            get => _Left;
+            set => _Left = IfNotFrozen(value is null ? null : MyOrg.Models.CSPoco.Tree.CreateFrom(value));
+        }
 
         private MyOrg.Models.CSPoco.Tree? _Right;
         public MyOrg.Models.CSPoco.Tree? Right
         {
             get => _Right;
-            set => _Right = IfNotFrozen(ref value);
+            set => _Right = IfNotFrozen(value);
         }
-        MyOrg.Models.ITree? ITree.Right => _Right;
+        MyOrg.Models.ITree? ITree.Right
+        {
+            get => _Right;
+            set => _Right = IfNotFrozen(value is null ? null : MyOrg.Models.CSPoco.Tree.CreateFrom(value));
+        }
 
         private MyOrg.Models.CSPoco.Node? _Node;
         public MyOrg.Models.CSPoco.Node? Node
         {
             get => _Node;
-            set => _Node = IfNotFrozen(ref value);
+            set => _Node = IfNotFrozen(value);
         }
-        MyOrg.Models.INode? ITree.Node => _Node;
+        MyOrg.Models.INode? ITree.Node
+        {
+            get => _Node;
+            set => _Node = IfNotFrozen(value is null ? null : MyOrg.Models.CSPoco.Node.CreateFrom(value));
+        }
 
 
         public bool Equals(Tree? other)

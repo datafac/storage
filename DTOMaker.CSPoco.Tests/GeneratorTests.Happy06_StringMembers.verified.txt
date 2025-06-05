@@ -64,21 +64,21 @@ namespace MyOrg.Models.CSPoco
         public string FamilyName
         {
             get => _FamilyName;
-            set => _FamilyName = IfNotFrozen(ref value);
+            set => _FamilyName = IfNotFrozen(value);
         }
 
         private string _GivenName = string.Empty;
         public string GivenName
         {
             get => _GivenName;
-            set => _GivenName = IfNotFrozen(ref value);
+            set => _GivenName = IfNotFrozen(value);
         }
 
         private string? _OtherNames;
         public string? OtherNames
         {
             get => _OtherNames;
-            set => _OtherNames = IfNotFrozen(ref value);
+            set => _OtherNames = IfNotFrozen(value);
         }
 
 

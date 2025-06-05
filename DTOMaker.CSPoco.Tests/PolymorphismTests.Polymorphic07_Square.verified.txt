@@ -62,7 +62,7 @@ namespace MyOrg.Models.CSPoco
         public Double Length
         {
             get => _Length;
-            set => _Length = IfNotFrozen(ref value);
+            set => _Length = IfNotFrozen(value);
         }
 
 
