@@ -17,19 +17,19 @@ namespace DTOMaker.MessagePack.Tests
                 [Entity][Id(1)]
                 public interface IPair<T1, T2>
                 {
-                    [Member(1)] T1 Item1 {get;}
-                    [Member(2)] T2 Item2 {get;}
+                    [Member(1)] T1 Item1 {get;set;}
+                    [Member(2)] T2 Item2 {get;set;}
                 }
                 [Entity][Id(2)]
                 public interface IMyDTO2 : IPair<long, string>
                 {
-                    [Member(1)] int Id {get;}
+                    [Member(1)] int Id {get;set;}
                 }
                 [Entity][Id(3)]
                 public interface IMyDTO3
                 {
-                    [Member(1)] int Id {get;}
-                    [Member(2)] IPair<long, string>? Pair {get;}
+                    [Member(1)] int Id {get;set;}
+                    [Member(2)] IPair<long, string>? Pair {get;set;}
                 }
             }
             """;
@@ -82,7 +82,7 @@ namespace DTOMaker.MessagePack.Tests
                 [Entity][Id(1)]
                 public interface IMonoid<T1>
                 {
-                    [Member(1)] T1 Value {get;}
+                    [Member(1)] T1 Value {get;set;}
                 }
                 [Entity][Id(2)]
                 public interface IMyDTO : IMonoid<_T1_>
@@ -304,7 +304,7 @@ namespace DTOMaker.MessagePack.Tests
                 [Entity][Id(1)]
                 public interface IMonoid<T1>
                 {
-                    [Member(1)] T1? Value {get;}
+                    [Member(1)] T1? Value {get;set;}
                 }
                 [Entity][Id(2)]
                 public interface IMyDTO : IMonoid<IOther>
@@ -367,11 +367,11 @@ namespace DTOMaker.MessagePack.Tests
                 [Entity][Id(1)]
                 public interface ITree<TK, TV>
                 {
-                    [Member(1)] int Count {get;}
-                    [Member(2)] TK  Key   {get;}
-                    [Member(3)] TV  Value {get;}
-                    [Member(4)] ITree<TK, TV>? Left  {get;}
-                    [Member(5)] ITree<TK, TV>? Right {get;}
+                    [Member(1)] int Count {get;set;}
+                    [Member(2)] TK  Key   {get;set;}
+                    [Member(3)] TV  Value {get;set;}
+                    [Member(4)] ITree<TK, TV>? Left  {get;set;}
+                    [Member(5)] ITree<TK, TV>? Right {get;set;}
                 }
                 [Entity][Id(2)]
                 public interface IMyTree : ITree<String, Octets>

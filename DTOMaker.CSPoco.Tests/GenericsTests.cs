@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using VerifyXunit;
 using Xunit;
 
-namespace DTOMaker.JsonNewtonSoft.Tests
+namespace DTOMaker.CSPoco.Tests
 {
     public class GenericsTests
     {
@@ -42,9 +42,9 @@ namespace DTOMaker.JsonNewtonSoft.Tests
             grr.Diagnostics.ShouldBeEmpty();
 
             grr.GeneratedSources.Length.ShouldBe(3);
-            grr.GeneratedSources[0].HintName.ShouldBe("MyOrg.Models.MyDTO2.JsonNewtonSoft.g.cs");
-            grr.GeneratedSources[1].HintName.ShouldBe("MyOrg.Models.MyDTO3.JsonNewtonSoft.g.cs");
-            grr.GeneratedSources[2].HintName.ShouldBe("MyOrg.Models.Pair_2_Int64_String.JsonNewtonSoft.g.cs");
+            grr.GeneratedSources[0].HintName.ShouldBe("MyOrg.Models.MyDTO2.CSPoco.g.cs");
+            grr.GeneratedSources[1].HintName.ShouldBe("MyOrg.Models.MyDTO3.CSPoco.g.cs");
+            grr.GeneratedSources[2].HintName.ShouldBe("MyOrg.Models.Pair_2_Int64_String.CSPoco.g.cs");
         }
 
         [Fact]
@@ -100,8 +100,8 @@ namespace DTOMaker.JsonNewtonSoft.Tests
             grr.Diagnostics.ShouldBeEmpty();
 
             grr.GeneratedSources.Length.ShouldBe(2);
-            grr.GeneratedSources[0].HintName.ShouldBe("MyOrg.Models.Monoid_1_Boolean.JsonNewtonSoft.g.cs");
-            grr.GeneratedSources[1].HintName.ShouldBe("MyOrg.Models.MyDTO.JsonNewtonSoft.g.cs");
+            grr.GeneratedSources[0].HintName.ShouldBe("MyOrg.Models.Monoid_1_Boolean.CSPoco.g.cs");
+            grr.GeneratedSources[1].HintName.ShouldBe("MyOrg.Models.MyDTO.CSPoco.g.cs");
         }
 
         [Fact]
@@ -325,9 +325,9 @@ namespace DTOMaker.JsonNewtonSoft.Tests
             grr.Diagnostics.ShouldBeEmpty();
 
             grr.GeneratedSources.Length.ShouldBe(3);
-            grr.GeneratedSources[0].HintName.ShouldBe("MyOrg.Models.Monoid_1_Other.JsonNewtonSoft.g.cs");
-            grr.GeneratedSources[1].HintName.ShouldBe("MyOrg.Models.MyDTO.JsonNewtonSoft.g.cs");
-            grr.GeneratedSources[2].HintName.ShouldBe("MyOrg.Models.Other.JsonNewtonSoft.g.cs");
+            grr.GeneratedSources[0].HintName.ShouldBe("MyOrg.Models.Monoid_1_Other.CSPoco.g.cs");
+            grr.GeneratedSources[1].HintName.ShouldBe("MyOrg.Models.MyDTO.CSPoco.g.cs");
+            grr.GeneratedSources[2].HintName.ShouldBe("MyOrg.Models.Other.CSPoco.g.cs");
         }
 
         [Fact]
@@ -388,8 +388,8 @@ namespace DTOMaker.JsonNewtonSoft.Tests
             grr.Diagnostics.ShouldBeEmpty();
 
             grr.GeneratedSources.Length.ShouldBe(2);
-            grr.GeneratedSources[0].HintName.ShouldBe("MyOrg.Models.MyTree.JsonNewtonSoft.g.cs");
-            grr.GeneratedSources[1].HintName.ShouldBe("MyOrg.Models.Tree_2_String_Octets.JsonNewtonSoft.g.cs");
+            grr.GeneratedSources[0].HintName.ShouldBe("MyOrg.Models.MyTree.CSPoco.g.cs");
+            grr.GeneratedSources[1].HintName.ShouldBe("MyOrg.Models.Tree_2_String_Octets.CSPoco.g.cs");
         }
 
         [Fact]
