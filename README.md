@@ -107,12 +107,10 @@ Common types used at runtime by DTOMaker generated entities.
 
 # Model features
 - Member value types: Boolean, S/Byte, U/Int16/32/64/128, Double, Single, Half, Char, Guid, Decimal
-- String member types.
-- Binary member types:
-  - Octets (model interfaces, CSPoco, CSRecord, MemBlocks)
-  - ReadOnlyMemory\<byte\> (MessagePack)
-  - byte[] (JsonNewtonSoft)
+- String member types
+- Binary member types (Octets)
 - polymorphic types
+- generic types
 - entity members
 - Built-in freezability (mutable until frozen) support
 - [Obsolete] members
@@ -133,7 +131,6 @@ mitigate the single assembly constraint.
 
 # Development
 ## In progress
-- generic (template) model types
 - custom struct members (to avoid primitive obsession)
 
 ## Coming soon
