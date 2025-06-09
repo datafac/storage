@@ -204,9 +204,9 @@ namespace T_NameSpace_.JsonNewtonSoft
             //##break;
             //##case MemberKind.Binary:
             //##if (member.IsNullable) {
-            _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_ is null ? null : source.T_NullableBinaryMemberName_.Memory.ToArray();
+            _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_ is null ? null : source.T_NullableBinaryMemberName_.ToByteArray();
             //##} else {
-            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_.Memory.ToArray();
+            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_.ToByteArray();
             //##}
             //##break;
             //##case MemberKind.String:

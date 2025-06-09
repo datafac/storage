@@ -283,9 +283,9 @@ namespace T_NameSpace_.MessagePack
             if (source.T_NullableBinaryMemberName_ is null)
                 _T_NullableBinaryMemberName_ = null;
             else
-                _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_.Memory;
+                _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_.AsMemory();
             //##} else {
-            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_.Memory;
+            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_.AsMemory();
             //##}
             //##break;
             //##case MemberKind.String:
@@ -748,9 +748,9 @@ namespace T_NameSpace_.MessagePack
             if (source.T_NullableBinaryMemberName_ is null)
                 _T_NullableBinaryMemberName_ = null;
             else
-                _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_.Memory;
+                _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_.AsMemory();
             //##} else {
-            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_.Memory;
+            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_.AsMemory();
             //##}
             //##break;
             //##case MemberKind.String:

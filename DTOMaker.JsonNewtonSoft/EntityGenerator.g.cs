@@ -214,9 +214,9 @@ Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.JsonNewt
             break;
             case MemberKind.Binary:
             if (member.IsNullable) {
-Emit("            _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_ is null ? null : source.T_NullableBinaryMemberName_.Memory.ToArray();");
+Emit("            _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_ is null ? null : source.T_NullableBinaryMemberName_.ToByteArray();");
             } else {
-Emit("            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_.Memory.ToArray();");
+Emit("            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_.ToByteArray();");
             }
             break;
             case MemberKind.String:

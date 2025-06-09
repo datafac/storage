@@ -63,7 +63,7 @@ namespace MyOrg.Models.JsonNewtonSoft
         {
             _Count = source.Count;
             _Key = source.Key;
-            _Value = source.Value.Memory.ToArray();
+            _Value = source.Value.ToByteArray();
             _Left = source.Left is null ? null : MyOrg.Models.JsonNewtonSoft.Tree_2_String_Octets.CreateFrom(source.Left);
             _Right = source.Right is null ? null : MyOrg.Models.JsonNewtonSoft.Tree_2_String_Octets.CreateFrom(source.Right);
         }

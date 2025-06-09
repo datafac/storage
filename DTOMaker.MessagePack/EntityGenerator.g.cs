@@ -293,9 +293,9 @@ Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessageP
 Emit("            if (source.T_NullableBinaryMemberName_ is null)");
 Emit("                _T_NullableBinaryMemberName_ = null;");
 Emit("            else");
-Emit("                _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_.Memory;");
+Emit("                _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_.AsMemory();");
             } else {
-Emit("            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_.Memory;");
+Emit("            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_.AsMemory();");
             }
             break;
             case MemberKind.String:
@@ -758,9 +758,9 @@ Emit("            _T_RequiredEntityMemberName_ = T_MemberTypeNameSpace_.MessageP
 Emit("            if (source.T_NullableBinaryMemberName_ is null)");
 Emit("                _T_NullableBinaryMemberName_ = null;");
 Emit("            else");
-Emit("                _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_.Memory;");
+Emit("                _T_NullableBinaryMemberName_ = source.T_NullableBinaryMemberName_.AsMemory();");
             } else {
-Emit("            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_.Memory;");
+Emit("            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberName_.AsMemory();");
             }
             break;
             case MemberKind.String:

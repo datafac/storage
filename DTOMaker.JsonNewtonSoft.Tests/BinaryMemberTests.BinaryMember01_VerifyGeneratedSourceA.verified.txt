@@ -58,8 +58,8 @@ namespace MyOrg.Models.JsonNewtonSoft
         public MyDTO(IMyDTO source) : base(source)
         {
             _Other1 = source.Other1 is null ? null : MyOrg.Models.JsonNewtonSoft.Other.CreateFrom(source.Other1);
-            _Field1 = source.Field1.Memory.ToArray();
-            _Field2 = source.Field2 is null ? null : source.Field2.Memory.ToArray();
+            _Field1 = source.Field1.ToByteArray();
+            _Field2 = source.Field2 is null ? null : source.Field2.ToByteArray();
         }
 
         private MyOrg.Models.JsonNewtonSoft.Other? _Other1;

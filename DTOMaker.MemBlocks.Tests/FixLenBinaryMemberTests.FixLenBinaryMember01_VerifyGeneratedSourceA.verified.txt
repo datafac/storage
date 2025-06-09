@@ -134,7 +134,7 @@ namespace MyOrg.Models.MemBlocks
         private void Field1_Pack()
         {
             Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(0, 128),
-                _Field1.Memory);
+                _Field1.AsMemory());
         }
         private void Field1_Unpack()
         {
@@ -151,7 +151,7 @@ namespace MyOrg.Models.MemBlocks
         private void Field2_Pack()
         {
             Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(128, 32),
-                _Field2 is null ? (ReadOnlyMemory<byte>?)null : _Field2.Memory);
+                _Field2 is null ? (ReadOnlyMemory<byte>?)null : _Field2.AsMemory());
         }
         private void Field2_Unpack()
         {

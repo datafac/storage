@@ -704,14 +704,13 @@ namespace T_NameSpace_.MemBlocks
         //##} else {
         private async ValueTask T_RequiredEntityMemberName__Pack(IDataStore dataStore)
         {
-            BlobIdV1 blobId = default;
             if (_T_RequiredEntityMemberName_ is null)
             {
                 _T_RequiredEntityMemberName_ = await CreateEmpty<T_MemberTypeNameSpace_.MemBlocks.T_MemberTypeImplName_>(dataStore);
             }
             await _T_RequiredEntityMemberName_.Pack(dataStore);
             var buffer = _T_RequiredEntityMemberName_.GetBuffers();
-            blobId = await dataStore.PutBlob(buffer.Compact());
+            BlobIdV1 blobId = await dataStore.PutBlob(buffer.Compact());
             blobId.WriteTo(_writableLocalBlock.Slice(T_RequiredEntityFieldOffset_, 64).Span);
         }
         private async ValueTask T_RequiredEntityMemberName__Unpack(IDataStore dataStore, int depth)
@@ -750,7 +749,7 @@ namespace T_NameSpace_.MemBlocks
         private void T_NullableFixLenBinaryMemberName__Pack()
         {
             Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(T_NullableFixLenBinaryFieldOffset_, T_NullableFixLenBinaryFieldLength_),
-                _T_NullableFixLenBinaryMemberName_ is null ? (ReadOnlyMemory<byte>?)null : _T_NullableFixLenBinaryMemberName_.Memory);
+                _T_NullableFixLenBinaryMemberName_ is null ? (ReadOnlyMemory<byte>?)null : _T_NullableFixLenBinaryMemberName_.AsMemory());
         }
         private void T_NullableFixLenBinaryMemberName__Unpack()
         {
@@ -769,12 +768,9 @@ namespace T_NameSpace_.MemBlocks
         //##} else {
         private async ValueTask T_NullableVarLenBinaryMemberName__Pack(IDataStore dataStore)
         {
-            BlobIdV1 blobId = default;
-            if (_T_NullableVarLenBinaryMemberName_ is not null)
-            {
-                var buffer = _T_NullableVarLenBinaryMemberName_.Memory;
-                blobId = await dataStore.PutBlob(buffer);
-            }
+            BlobIdV1 blobId = _T_NullableVarLenBinaryMemberName_ is null
+                ? default
+                : await dataStore.PutBlob(_T_NullableVarLenBinaryMemberName_.AsMemory());
             blobId.WriteTo(_writableLocalBlock.Slice(T_NullableVarLenBinaryFieldOffset_, 64).Span);
         }
         private async ValueTask T_NullableVarLenBinaryMemberName__Unpack(IDataStore dataStore)
@@ -798,7 +794,7 @@ namespace T_NameSpace_.MemBlocks
         private void T_RequiredFixLenBinaryMemberName__Pack()
         {
             Codec_Memory_NE.WriteToSpan(_writableLocalBlock.Slice(T_RequiredFixLenBinaryFieldOffset_, T_RequiredFixLenBinaryFieldLength_),
-                _T_RequiredFixLenBinaryMemberName_.Memory);
+                _T_RequiredFixLenBinaryMemberName_.AsMemory());
         }
         private void T_RequiredFixLenBinaryMemberName__Unpack()
         {
@@ -817,9 +813,8 @@ namespace T_NameSpace_.MemBlocks
         //##} else {
         private async ValueTask T_RequiredVarLenBinaryMemberName__Pack(IDataStore dataStore)
         {
-            BlobIdV1 blobId = default;
-            var buffer = _T_RequiredVarLenBinaryMemberName_.Memory;
-            blobId = await dataStore.PutBlob(buffer);
+            var buffer = _T_RequiredVarLenBinaryMemberName_.AsMemory();
+            BlobIdV1 blobId = await dataStore.PutBlob(buffer);
             blobId.WriteTo(_writableLocalBlock.Slice(T_RequiredVarLenBinaryFieldOffset_, 64).Span);
         }
         private async ValueTask T_RequiredVarLenBinaryMemberName__Unpack(IDataStore dataStore)
@@ -870,12 +865,9 @@ namespace T_NameSpace_.MemBlocks
         //##} else {
         private async ValueTask T_NullableVarLenStringMemberName__Pack(IDataStore dataStore)
         {
-            BlobIdV1 blobId = default;
-            if (_T_NullableVarLenStringMemberName_ is not null)
-            {
-                ReadOnlyMemory<byte> buffer = System.Text.Encoding.UTF8.GetBytes(_T_NullableVarLenStringMemberName_);
-                blobId = await dataStore.PutBlob(buffer);
-            }
+            BlobIdV1 blobId = _T_NullableVarLenStringMemberName_ is null
+                ? default
+                : blobId = await dataStore.PutBlob(System.Text.Encoding.UTF8.GetBytes(_T_NullableVarLenStringMemberName_));
             blobId.WriteTo(_writableLocalBlock.Slice(T_NullableVarLenStringFieldOffset_, 64).Span);
         }
         private async ValueTask T_NullableVarLenStringMemberName__Unpack(IDataStore dataStore)

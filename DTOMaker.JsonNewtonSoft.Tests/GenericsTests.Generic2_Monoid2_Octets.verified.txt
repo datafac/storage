@@ -59,7 +59,7 @@ namespace MyOrg.Models.JsonNewtonSoft
         public Monoid_1_Octets() { }
         public Monoid_1_Octets(IMonoid<Octets> source) : base(source)
         {
-            _Value = source.Value.Memory.ToArray();
+            _Value = source.Value.ToByteArray();
         }
 
         private byte[] _Value = Array.Empty<byte>();

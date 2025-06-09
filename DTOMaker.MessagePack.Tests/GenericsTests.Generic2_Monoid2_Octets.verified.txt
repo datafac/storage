@@ -69,7 +69,7 @@ namespace MyOrg.Models.MessagePack
         public Monoid_1_Octets(IMonoid<Octets> source) : base(source)
         {
             if (source is null) throw new ArgumentNullException(nameof(source));
-            _Value = source.Value.Memory;
+            _Value = source.Value.AsMemory();
         }
 
         [IgnoreMember]
