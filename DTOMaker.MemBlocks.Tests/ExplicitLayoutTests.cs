@@ -298,7 +298,7 @@ namespace DTOMaker.MemBlocks.Tests
 
             var errors = generatorResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
             errors.Length.ShouldBe(1);
-            errors[0].GetMessage().ShouldBe("[Entity] attribute is missing.");
+            errors[0].GetMessage().ShouldBe("Entity identifier must be unique positive number. Have you forgotten the entity [Id] attribute?");
         }
 
         [Fact]

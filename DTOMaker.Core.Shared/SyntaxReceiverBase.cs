@@ -130,7 +130,7 @@ namespace DTOMaker.Gentime
                     {
                         bEntity = Domain.OpenEntities.GetOrAdd(bTFN.FullName, (n) => _factory.CreateEntity(Domain, bTFN, parentLocation));
                     }
-                    bEntity.HasEntityAttribute = true;
+                    //bEntity.HasEntityAttribute = true;
                 }
                 return bTFN;
             }
@@ -165,7 +165,7 @@ namespace DTOMaker.Gentime
                 if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == EntityAttribute) is AttributeData)
                 {
                     // found entity attribute
-                    entity.HasEntityAttribute = true;
+                    //entity.HasEntityAttribute = true;
                     // entity base
                     entity.BaseName = TryCreateBaseEntity(ids1Symbol, idsLocation, entity.SyntaxErrors);
                     if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == IdAttribute) is AttributeData idAttr)

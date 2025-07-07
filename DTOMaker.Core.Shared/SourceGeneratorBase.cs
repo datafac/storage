@@ -135,7 +135,7 @@ namespace DTOMaker.Gentime
                     {
                         // generate id and members
                         entity.OpenEntity = openEntity;
-                        entity.HasEntityAttribute = true; // implied
+                        //entity.HasEntityAttribute = true; // implied
 
                         // generate id
                         SyntheticId syntheticId = new SyntheticId(openEntity.EntityId);

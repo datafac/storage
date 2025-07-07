@@ -19,20 +19,20 @@ namespace DTOMaker.Gentime
         }
         public TargetEntity? OpenEntity { get; set; }
         public int EntityId { get; set; }
-        public bool HasEntityAttribute { get; set; }
+        //public bool HasEntityAttribute { get; set; }
         public TypeFullName BaseName { get; set; } = TypeFullName.DefaultBase;
         public TargetEntity? Base { get; set; }
         public TargetEntity[] DerivedEntities { get; set; } = [];
 
         public int GetClassHeight() => Base is not null ? Base.GetClassHeight() + 1 : 1;
 
-        private SyntaxDiagnostic? CheckHasEntityAttribute()
-        {
-            if (HasEntityAttribute) return null;
-            return new SyntaxDiagnostic(
-                        DiagnosticId.DTOM0006, "Missing [Entity] attribute", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
-                        $"[Entity] attribute is missing.");
-        }
+        //private SyntaxDiagnostic? CheckHasEntityAttribute()
+        //{
+        //    if (HasEntityAttribute) return null;
+        //    return new SyntaxDiagnostic(
+        //                DiagnosticId.DTOM0006, "Missing [Entity] attribute", DiagnosticCategory.Design, Location, DiagnosticSeverity.Error,
+        //                $"[Entity] attribute is missing.");
+        //}
 
         private SyntaxDiagnostic? CheckMemberSequenceIsValid()
         {
@@ -50,7 +50,7 @@ namespace DTOMaker.Gentime
 
         private SyntaxDiagnostic? CheckEntityIdIsValid()
         {
-            if (!HasEntityAttribute) return null;
+            //if (!HasEntityAttribute) return null;
 
             if (EntityId > 0) return null;
 
@@ -62,7 +62,7 @@ namespace DTOMaker.Gentime
         protected override IEnumerable<SyntaxDiagnostic> OnGetValidationDiagnostics()
         {
             SyntaxDiagnostic? diagnostic;
-            if ((diagnostic = CheckHasEntityAttribute()) is not null) yield return diagnostic;
+            //if ((diagnostic = CheckHasEntityAttribute()) is not null) yield return diagnostic;
             if ((diagnostic = CheckMemberSequenceIsValid()) is not null) yield return diagnostic;
             if ((diagnostic = CheckEntityIdIsValid()) is not null) yield return diagnostic;
         }
