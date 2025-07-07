@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -109,6 +110,33 @@ namespace DTOMaker.Gentime
                 return (false, Guid.Empty);
         }
 
+        private TypeFullName TryCreateBaseEntity(INamedTypeSymbol parentSymbol, Location parentLocation, ConcurrentBag<SyntaxDiagnostic> syntaxErrors)
+        {
+            if (parentSymbol.Interfaces.Length == 1)
+            {
+                INamedTypeSymbol intf = parentSymbol.Interfaces[0];
+                TypeFullName bTFN = TypeFullName.Create(intf);
+                if (bTFN.IsGeneric)
+                {
+                    // recursively create open entities
+                    TargetEntity bEntity;
+                    if (bTFN.IsClosed)
+                    {
+                        // todo TryAdd
+                        bEntity = Domain.ClosedEntities.GetOrAdd(bTFN.FullName, (n) => _factory.CreateEntity(Domain, bTFN, parentLocation));
+                        bEntity.BaseName = TryCreateBaseEntity(intf, parentLocation, syntaxErrors);
+                    }
+                    else
+                    {
+                        bEntity = Domain.OpenEntities.GetOrAdd(bTFN.FullName, (n) => _factory.CreateEntity(Domain, bTFN, parentLocation));
+                    }
+                    bEntity.HasEntityAttribute = true;
+                }
+                return bTFN;
+            }
+            return TypeFullName.DefaultBase;
+        }
+
         protected virtual void OnProcessNode(GeneratorSyntaxContext context)
         {
             if (context.Node is InterfaceDeclarationSyntax ids1
@@ -120,37 +148,26 @@ namespace DTOMaker.Gentime
                 Location ndsLocation = Location.Create(nds1.SyntaxTree, nds1.Span);
                 Location idsLocation = Location.Create(ids1.SyntaxTree, ids1.Span);
                 var eTFN = TypeFullName.Create(ids1Symbol);
-                TargetEntity entity = eTFN.IsClosed
-                    ? Domain.ClosedEntities.GetOrAdd(eTFN.FullName, (n) => _factory.CreateEntity(Domain, eTFN, idsLocation))
-                    : Domain.OpenEntities.GetOrAdd(eTFN.FullName, (n) => _factory.CreateEntity(Domain, eTFN, idsLocation));
+                TargetEntity entity;
+                if (eTFN.IsClosed)
+                    entity = Domain.ClosedEntities.GetOrAdd(eTFN.FullName, (n) => _factory.CreateEntity(Domain, eTFN, idsLocation));
+                else
+                    entity = Domain.OpenEntities.GetOrAdd(eTFN.FullName, (n) => _factory.CreateEntity(Domain, eTFN, idsLocation));
+                if (ids1Symbol.Interfaces.Length > 1)
+                {
+                    // too many interfaces!
+                    entity.SyntaxErrors.Add(
+                        new SyntaxDiagnostic(
+                            DiagnosticId.DTOM0008, "Invalid base name(s)", DiagnosticCategory.Design, idsLocation, DiagnosticSeverity.Error,
+                            $"This interface can only implement one optional other interface."));
+                }
                 ImmutableArray<AttributeData> entityAttributes = ids1Symbol.GetAttributes();
-                if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == EntityAttribute) is AttributeData entityAttr)
+                if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == EntityAttribute) is AttributeData)
                 {
                     // found entity attribute
                     entity.HasEntityAttribute = true;
                     // entity base
-                    entity.BaseName = TypeFullName.DefaultBase;
-                    if (ids1Symbol.Interfaces.Length > 1)
-                    {
-                        // too many interfaces!
-                        entity.SyntaxErrors.Add(
-                            new SyntaxDiagnostic(
-                                DiagnosticId.DTOM0008, "Invalid base name(s)", DiagnosticCategory.Design, idsLocation, DiagnosticSeverity.Error,
-                                $"This interface can only implement one optional other interface."));
-                    }
-                    else if (ids1Symbol.Interfaces.Length == 1)
-                    {
-                        var intf = ids1Symbol.Interfaces[0];
-                        var bTFN = TypeFullName.Create(intf);
-                        if (bTFN.IsGeneric)
-                        {
-                            TargetEntity bEntity = bTFN.IsClosed
-                                ? Domain.ClosedEntities.GetOrAdd(bTFN.FullName, (n) => _factory.CreateEntity(Domain, bTFN, idsLocation))
-                                : Domain.OpenEntities.GetOrAdd(bTFN.FullName, (n) => _factory.CreateEntity(Domain, bTFN, idsLocation));
-                            bEntity.HasEntityAttribute = true;
-                        }
-                        entity.BaseName = bTFN;
-                    }
+                    entity.BaseName = TryCreateBaseEntity(ids1Symbol, idsLocation, entity.SyntaxErrors);
                     if (entityAttributes.FirstOrDefault(a => a.AttributeClass?.Name == IdAttribute) is AttributeData idAttr)
                     {
                         // found entity id attribute
@@ -194,9 +211,17 @@ namespace DTOMaker.Gentime
                         var mTFN = TypeFullName.Create(pdsNamedType);
                         if (mTFN.IsGeneric)
                         {
-                            TargetEntity mEntity = mTFN.IsClosed
-                                ? Domain.ClosedEntities.GetOrAdd(mTFN.FullName, (n) => _factory.CreateEntity(Domain, mTFN, pdsLocation))
-                                : Domain.OpenEntities.GetOrAdd(mTFN.FullName, (n) => _factory.CreateEntity(Domain, mTFN, pdsLocation));
+                            TargetEntity mEntity;
+                            if (mTFN.IsClosed)
+                            {
+                                // todo TryAdd
+                                mEntity = Domain.ClosedEntities.GetOrAdd(mTFN.FullName, (n) => _factory.CreateEntity(Domain, mTFN, pdsLocation));
+                                mEntity.BaseName = TryCreateBaseEntity(pdsNamedType, pdsLocation, member.SyntaxErrors);
+                            }
+                            else
+                            {
+                                mEntity = Domain.OpenEntities.GetOrAdd(mTFN.FullName, (n) => _factory.CreateEntity(Domain, mTFN, pdsLocation));
+                            }
                         }
                         member.MemberType = mTFN;
                         member.Kind = mTFN.MemberKind;

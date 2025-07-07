@@ -25,7 +25,7 @@ namespace DTOMaker.Gentime
             int length = Math.Min(typeParameters.Length, typeArguments.Length);
             for (int i = 0; i < length; i++)
             {
-                string pattern = TypeFullName.Create(typeParameters[i]).ShortImplName;
+                string pattern = $"T{i}";
                 string replace = TypeFullName.Create(typeArguments[i]).ShortImplName;
                 result = result.Replace(pattern, replace);
             }
@@ -85,43 +85,81 @@ namespace DTOMaker.Gentime
                 }
             }
 
+            // generate closed base entities (recursively)
+            // todo replace thes loop with a queue
+            //int entitiesAdded = 0;
+            //do
+            //{
+            //    entitiesAdded = 0;
+            //    foreach (var entity in entities)
+            //    {
+            //        if (entity.TFN.IsGeneric && entity.TFN.IsClosed)
+            //        {
+            //            var openTFN = entity.TFN.AsOpenGeneric();
+            //            if (domain.OpenEntities.TryGetValue(openTFN.FullName, out var openEntity))
+            //            {
+            //                // check if open entity has base
+            //                if (!openEntity.BaseName.Equals(TypeFullName.DefaultBase))
+            //                {
+            //                    // generate closed base name
+            //                    TypeFullName closedBaseTFN = openEntity.BaseName.AsClosedGeneric(ImmutableArray<ITypeSymbol>.Empty);
+
+            //                    // create closed base entity if not exists
+            //                    if (!domain.ClosedEntities.TryGetValue(closedBaseTFN.FullName, out var closedBaseEntity))
+            //                    {
+            //                        closedBaseEntity = syntaxReceiver.Factory.CreateEntity(domain, closedBaseTFN, entity.Location);
+            //                        domain.ClosedEntities.TryAdd(closedBaseTFN.FullName, closedBaseEntity);
+            //                        entitiesAdded++;
+            //                    }
+            //                }
+            //            }
+            //            else
+            //            {
+            //                // open entity not found!
+            //                entity.SyntaxErrors.Add(
+            //                    new SyntaxDiagnostic(
+            //                        DiagnosticId.DTOM0011, "Invalid generic entity", DiagnosticCategory.Design, entity.Location, DiagnosticSeverity.Error,
+            //                        $"Cannot find open entity '{openTFN}' for closed entity '{entity.TFN}'."));
+            //            }
+            //        }
+            //    }
+            //} while (entitiesAdded > 0);
+
             // bind closed/open generic entities
             foreach (var entity in entities)
             {
-                if (entity.TFN.IsGeneric && entity.TFN.IsClosed)
+                if (entity.TFN.IsGeneric && entity.TFN.IsClosed && entity.OpenEntity is null)
                 {
                     var openTFN = entity.TFN.AsOpenGeneric();
                     if (domain.OpenEntities.TryGetValue(openTFN.FullName, out var openEntity))
                     {
-                        // generate id and members if required
-                        if (entity.OpenEntity is null)
-                        {
-                            entity.OpenEntity = openEntity;
-                            entity.HasEntityAttribute = true; // implied
+                        // generate id and members
+                        entity.OpenEntity = openEntity;
+                        entity.HasEntityAttribute = true; // implied
 
-                            // generate id
-                            SyntheticId syntheticId = new SyntheticId(openEntity.EntityId);
-                            foreach (var ta in entity.TFN.TypeArguments)
+                        // generate id
+                        SyntheticId syntheticId = new SyntheticId(openEntity.EntityId);
+                        foreach (var ta in entity.TFN.TypeArguments)
+                        {
+                            syntheticId = syntheticId.Add(TypeFullName.Create(ta).SyntheticId);
+                        }
+                        entity.EntityId = syntheticId.Id;
+
+                        // generate members
+                        foreach (TargetMember openMember in openEntity.Members.Values)
+                        {
+                            TargetMember member = syntaxReceiver.Factory.CloneMember(entity, openMember);
+                            if (member.Kind == MemberKind.Unknown)
                             {
-                                syntheticId = syntheticId.Add(TypeFullName.Create(ta).SyntheticId);
-                            }
-                            entity.EntityId = syntheticId.Id;
-                            // generate members
-                            foreach (TargetMember openMember in openEntity.Members.Values)
-                            {
-                                TargetMember member = syntaxReceiver.Factory.CloneMember(entity, openMember);
-                                if (member.Kind == MemberKind.Unknown)
+                                var mTFN = ResolveMemberType(domain, entity.TFN, openMember);
+                                member.MemberType = mTFN;
+                                member.Kind = mTFN.MemberKind;
+                                if (mTFN.MemberKind == MemberKind.Unknown && domain.ClosedEntities.TryGetValue(mTFN.FullName, out var _))
                                 {
-                                    var mTFN = ResolveMemberType(domain, entity.TFN, openMember);
-                                    member.MemberType = mTFN;
-                                    member.Kind = mTFN.MemberKind;
-                                    if (mTFN.MemberKind == MemberKind.Unknown && domain.ClosedEntities.TryGetValue(mTFN.FullName, out var _))
-                                    {
-                                        member.Kind = MemberKind.Entity;
-                                    }
+                                    member.Kind = MemberKind.Entity;
                                 }
-                                entity.Members.TryAdd(member.Name, member);
                             }
+                            entity.Members.TryAdd(member.Name, member);
                         }
                     }
                     else

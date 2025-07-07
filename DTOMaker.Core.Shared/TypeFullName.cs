@@ -101,6 +101,10 @@ namespace DTOMaker.Gentime
         {
             return new TypeFullName(_nameSpace, _name, _typeParameters, ImmutableArray<ITypeSymbol>.Empty);
         }
+        public TypeFullName AsClosedGeneric(ImmutableArray<ITypeSymbol> typeArguments)
+        {
+            return new TypeFullName(_nameSpace, _name, _typeParameters, typeArguments);
+        }
 
         public bool Equals(TypeFullName other) => string.Equals(_fullName, other._fullName, StringComparison.Ordinal);
         public override bool Equals(object? obj) => obj is TypeFullName other && Equals(other);
@@ -127,16 +131,15 @@ namespace DTOMaker.Gentime
             for (int i = 0; i < typeParameters.Length; i++)
             {
                 result.Append('_');
-                if (i < typeArguments.Length)
+                if (i < typeArguments.Length && typeArguments[i].Kind == SymbolKind.NamedType)
                 {
                     var aTFN = TypeFullName.Create(typeArguments[i]);
-                    //var ta = typeArguments[i];
                     result.Append(aTFN.ShortImplName);
                 }
                 else
                 {
-                    var tp = typeParameters[i];
-                    result.Append(tp.Name);
+                    //var tp = typeParameters[i];
+                    result.Append($"T{i}");
                 }
             }
             return result.ToString();
