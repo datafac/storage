@@ -410,5 +410,104 @@ namespace DTOMaker.MessagePack.Tests
             await Verifier.Verify(outputCode);
         }
 
+        private readonly string source5 =
+            """
+            using System;
+            using DataFac.Memory;
+            using DTOMaker.Models;
+            namespace MyOrg.Models
+            {
+                [Entity][Id(100)]
+                public interface IBase<T>
+                {
+                    [Member(1)] T Value {get; set;}
+                }
+                [Entity][Id(101)
+                public interface IPoco<TK, TV> : IBase<TV>
+                {
+                    [Member(1)] TK Key {get; set;}
+                }
+                [Entity][Id(1)]
+                public interface IMyPoco1 : IPoco<String, Octets>
+                {
+                }
+                [Entity][Id(2)]
+                public interface IMyPoco2
+                {
+                    [Member(1)] IPoco<String, Int64>? Field1 {get; set;}
+                }
+            }
+            """;
+
+        [Fact]
+        public void Generic5_Nested1_CheckGeneratedSources()
+        {
+            var grr = GeneratorTestHelper.RunSourceGenerator(source5, LanguageVersion.LatestMajor);
+            grr.Exception.ShouldBeNull();
+            grr.Diagnostics.ShouldBeEmpty();
+
+            grr.GeneratedSources.Length.ShouldBe(6);
+            grr.GeneratedSources[0].HintName.ShouldBe("MyOrg.Models.Base_1_Int64.MessagePack.g.cs");
+            grr.GeneratedSources[1].HintName.ShouldBe("MyOrg.Models.Base_1_Octets.MessagePack.g.cs");
+            grr.GeneratedSources[2].HintName.ShouldBe("MyOrg.Models.MyPoco1.MessagePack.g.cs");
+            grr.GeneratedSources[3].HintName.ShouldBe("MyOrg.Models.MyPoco2.MessagePack.g.cs");
+            grr.GeneratedSources[4].HintName.ShouldBe("MyOrg.Models.Poco_2_String_Int64.MessagePack.g.cs");
+            grr.GeneratedSources[5].HintName.ShouldBe("MyOrg.Models.Poco_2_String_Octets.MessagePack.g.cs");
+        }
+
+        [Fact]
+        public async Task Generic5_Nested1_Verify0_Base_1_Int64()
+        {
+            var grr = GeneratorTestHelper.RunSourceGenerator(source5, LanguageVersion.LatestMajor);
+            grr.Diagnostics.ShouldBeEmpty();
+            string outputCode = grr.GeneratedSources[0].SourceText.ToString();
+            await Verifier.Verify(outputCode);
+        }
+
+        [Fact]
+        public async Task Generic5_Nested1_Verify1_Base_1_Octets()
+        {
+            var grr = GeneratorTestHelper.RunSourceGenerator(source5, LanguageVersion.LatestMajor);
+            grr.Diagnostics.ShouldBeEmpty();
+            string outputCode = grr.GeneratedSources[1].SourceText.ToString();
+            await Verifier.Verify(outputCode);
+        }
+
+        [Fact]
+        public async Task Generic5_Nested1_Verify2_MyPoco1()
+        {
+            var grr = GeneratorTestHelper.RunSourceGenerator(source5, LanguageVersion.LatestMajor);
+            grr.Diagnostics.ShouldBeEmpty();
+            string outputCode = grr.GeneratedSources[2].SourceText.ToString();
+            await Verifier.Verify(outputCode);
+        }
+
+        [Fact]
+        public async Task Generic5_Nested1_Verify3_MyPoco2()
+        {
+            var grr = GeneratorTestHelper.RunSourceGenerator(source5, LanguageVersion.LatestMajor);
+            grr.Diagnostics.ShouldBeEmpty();
+            string outputCode = grr.GeneratedSources[3].SourceText.ToString();
+            await Verifier.Verify(outputCode);
+        }
+
+        [Fact]
+        public async Task Generic5_Nested1_Verify4_Poco_2_String_Int64()
+        {
+            var grr = GeneratorTestHelper.RunSourceGenerator(source5, LanguageVersion.LatestMajor);
+            grr.Diagnostics.ShouldBeEmpty();
+            string outputCode = grr.GeneratedSources[4].SourceText.ToString();
+            await Verifier.Verify(outputCode);
+        }
+
+        [Fact]
+        public async Task Generic5_Nested1_Verify5_Poco_2_String_Octets()
+        {
+            var grr = GeneratorTestHelper.RunSourceGenerator(source5, LanguageVersion.LatestMajor);
+            grr.Diagnostics.ShouldBeEmpty();
+            string outputCode = grr.GeneratedSources[5].SourceText.ToString();
+            await Verifier.Verify(outputCode);
+        }
+
     }
 }
