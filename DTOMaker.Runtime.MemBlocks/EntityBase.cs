@@ -74,7 +74,7 @@ namespace DTOMaker.Runtime.MemBlocks
         public IEntityBase PartCopy() => OnPartCopy();
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private void ThrowIsFrozenException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} when frozen.");
+        private void ThrowIsFrozenException(string? methodName) => throw new InvalidOperationException($"Cannot set {methodName} when frozen.");
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void ThrowIfFrozen([CallerMemberName] string? methodName = null)

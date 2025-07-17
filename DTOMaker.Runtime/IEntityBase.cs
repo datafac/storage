@@ -1,4 +1,6 @@
-﻿namespace DTOMaker.Runtime
+﻿using System;
+
+namespace DTOMaker.Runtime
 {
     /// <summary>
     /// Represents an entity, a freezable type which is modifiable until frozen.
@@ -6,19 +8,18 @@
     public interface IEntityBase
     {
         /// <summary>
-        /// Returns true if the graph cannot be modified.
+        /// Returns true if the entity is frozen, otherwise false.
         /// </summary>
         bool IsFrozen { get; }
 
         /// <summary>
-        /// Freezes this graph including all freezable children.
+        /// If not already frozen, recursively freezes the entity, making it immutable.
         /// </summary>
         void Freeze();
 
         /// <summary>
-        /// Returns a clone of the graph, copying the mutable parts.
+        /// Returns an unfrozen, shallow copy of the entity.
         /// </summary>
-        /// <returns></returns>
         IEntityBase PartCopy();
     }
 }
