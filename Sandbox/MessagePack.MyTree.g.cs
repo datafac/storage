@@ -59,7 +59,7 @@ namespace MyOrg.Models.MessagePack
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new MyTree(this);
+        protected override IEntityBase OnPartCopy() => new MyTree(this);
 
         [SerializationConstructor]
         public MyTree() { }

@@ -56,7 +56,7 @@ namespace MyOrg.Models.JsonNewtonSoft
             _Right?.Freeze();
         }
 
-        protected override IFreezable OnPartCopy() => new Tree_2_String_Octets(this);
+        protected override IEntityBase OnPartCopy() => new Tree_2_String_Octets(this);
 
         public Tree_2_String_Octets() { }
         public Tree_2_String_Octets(ITree<String, Octets> source) : base(source)

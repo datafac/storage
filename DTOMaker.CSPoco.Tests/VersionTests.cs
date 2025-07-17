@@ -29,7 +29,7 @@ namespace DTOMaker.CSPoco.Tests
         [Fact]
         public void RuntimeVersionChecks()
         {
-            Version coreVersion = typeof(DTOMaker.Runtime.IMutability).Assembly.GetName().Version ?? new Version(99, 99, 9999);
+            Version coreVersion = typeof(DTOMaker.Runtime.IEntityBase).Assembly.GetName().Version ?? new Version(99, 99, 9999);
             Version thisVersion = typeof(DTOMaker.Runtime.CSPoco.EntityBase).Assembly.GetName().Version ?? new Version(0, 0, 0);
 
             thisVersion.Major.ShouldBe(coreVersion.Major);

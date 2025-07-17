@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace DTOMaker.Runtime.MessagePack
 {
     [MessagePackObject]
-    public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
+    public abstract class EntityBase : IEntityBase, IEquatable<EntityBase>
     {
         public const int EntityId = 0;
         protected abstract int OnGetEntityId();
@@ -25,8 +25,8 @@ namespace DTOMaker.Runtime.MessagePack
             OnFreeze();
             _frozen = true;
         }
-        protected abstract IFreezable OnPartCopy();
-        public IFreezable PartCopy() => OnPartCopy();
+        protected abstract IEntityBase OnPartCopy();
+        public IEntityBase PartCopy() => OnPartCopy();
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void ThrowIsFrozenException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} when frozen.");

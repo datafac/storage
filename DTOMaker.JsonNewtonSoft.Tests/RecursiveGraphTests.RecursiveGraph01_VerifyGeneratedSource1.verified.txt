@@ -51,7 +51,7 @@ namespace MyOrg.Models.JsonNewtonSoft
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new DoubleNode(this);
+        protected override IEntityBase OnPartCopy() => new DoubleNode(this);
 
         public DoubleNode() { }
         public DoubleNode(IDoubleNode source) : base(source)

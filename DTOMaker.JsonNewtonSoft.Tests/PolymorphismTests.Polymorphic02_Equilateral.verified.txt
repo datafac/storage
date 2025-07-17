@@ -51,7 +51,7 @@ namespace MyOrg.Models.JsonNewtonSoft
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new Equilateral(this);
+        protected override IEntityBase OnPartCopy() => new Equilateral(this);
 
         public Equilateral() { }
         public Equilateral(IEquilateral source) : base(source)

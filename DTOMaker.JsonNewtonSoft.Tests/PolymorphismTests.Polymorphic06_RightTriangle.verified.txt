@@ -51,7 +51,7 @@ namespace MyOrg.Models.JsonNewtonSoft
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new RightTriangle(this);
+        protected override IEntityBase OnPartCopy() => new RightTriangle(this);
 
         public RightTriangle() { }
         public RightTriangle(IRightTriangle source) : base(source)

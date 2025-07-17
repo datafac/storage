@@ -68,7 +68,7 @@ namespace MyOrg.Models.MemBlocks
         protected override int OnGetEntityId() => 112199;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
-        protected override IFreezable OnPartCopy() => new Base_1_Octets(this);
+        protected override IEntityBase OnPartCopy() => new Base_1_Octets(this);
 
         protected override void OnFreeze()
         {

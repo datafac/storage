@@ -51,7 +51,7 @@ namespace MyOrg.Models.JsonNewtonSoft
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new StringNode(this);
+        protected override IEntityBase OnPartCopy() => new StringNode(this);
 
         public StringNode() { }
         public StringNode(IStringNode source) : base(source)

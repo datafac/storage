@@ -51,7 +51,7 @@ namespace MyOrg.Models.JsonNewtonSoft
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new Square(this);
+        protected override IEntityBase OnPartCopy() => new Square(this);
 
         public Square() { }
         public Square(ISquare source) : base(source)

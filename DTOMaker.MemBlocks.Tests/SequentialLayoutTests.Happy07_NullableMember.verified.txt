@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 using DTOMaker.Runtime;
 namespace MyOrg.Models.MemBlocks
 {
-    public sealed partial class MyDTO : IMyDTO, IFreezable
+    public sealed partial class MyDTO : IMyDTO, IEntityBase
     {
         private const int BlockLength = 16;
         private readonly Memory<byte> _writableBlock;
@@ -47,7 +47,7 @@ namespace MyOrg.Models.MemBlocks
         // todo move to base
         private volatile bool _frozen = false;
         public bool IsFrozen => _frozen;
-        public IFreezable PartCopy() => new MyDTO(this);
+        public IEntityBase PartCopy() => new MyDTO(this);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void ThrowIsFrozenException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} when frozen.");

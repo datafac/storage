@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace DTOMaker.Runtime.MemBlocks
 {
-    public abstract class EntityBase : IFreezable, IEquatable<EntityBase>, IPackable
+    public abstract class EntityBase : IEntityBase, IEquatable<EntityBase>, IPackable
     {
         #region Static Helpers
-        public static async ValueTask<T> CreateEmpty<T>(IDataStore dataStore) where T : class, IPackable, IFreezable, new()
+        public static async ValueTask<T> CreateEmpty<T>(IDataStore dataStore) where T : class, IPackable, IEntityBase, new()
         {
             var empty = new T();
             await empty.Pack(dataStore);
@@ -70,8 +70,8 @@ namespace DTOMaker.Runtime.MemBlocks
         //    OnLoadBuffers(buffers);
         //}
 
-        protected virtual IFreezable OnPartCopy() => throw new NotImplementedException();
-        public IFreezable PartCopy() => OnPartCopy();
+        protected virtual IEntityBase OnPartCopy() => throw new NotImplementedException();
+        public IEntityBase PartCopy() => OnPartCopy();
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void ThrowIsFrozenException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} when frozen.");

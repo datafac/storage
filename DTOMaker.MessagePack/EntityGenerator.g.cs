@@ -49,7 +49,7 @@ Emit("        public static T_MemberTypeImplName_ CreateFrom(IT_MemberTypeIntfNa
 Emit("        protected override int OnGetEntityId() => 3;");
 Emit("        public T_MemberTypeImplName_() { }");
 Emit("        public T_MemberTypeImplName_(IT_MemberTypeIntfName_ source) { }");
-Emit("        protected override IFreezable OnPartCopy() => throw new NotImplementedException();");
+Emit("        protected override IEntityBase OnPartCopy() => throw new NotImplementedException();");
 Emit("");
 Emit("        public bool Equals(T_MemberTypeImplName_? other)");
 Emit("        {");
@@ -681,7 +681,7 @@ Emit("            _T_RequiredEntityMemberName_.Freeze();");
             }
 Emit("        }");
 Emit("");
-Emit("        protected override IFreezable OnPartCopy() => new T_ConcreteEntity_(this);");
+Emit("        protected override IEntityBase OnPartCopy() => new T_ConcreteEntity_(this);");
 Emit("");
 Emit("        [SerializationConstructor]");
 Emit("        public T_ConcreteEntity_() { }");

@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace DTOMaker.Gentime
 {
-    public interface IFreezable
+    public interface IEntityBase
     {
         bool IsFreezable();
 
@@ -14,7 +14,7 @@ namespace DTOMaker.Gentime
 
         bool TryFreeze();
     }
-    public abstract class EntityBase : IFreezable
+    public abstract class EntityBase : IEntityBase
     {
         public static EntityBase Empty => throw new NotSupportedException();
         public const int EntityTag = 0;

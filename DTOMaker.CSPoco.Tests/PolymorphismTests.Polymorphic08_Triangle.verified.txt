@@ -56,7 +56,7 @@ namespace MyOrg.Models.CSPoco
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new Triangle(this);
+        protected override IEntityBase OnPartCopy() => new Triangle(this);
 
         public Triangle() { }
         public Triangle(ITriangle source) : base(source)

@@ -53,7 +53,7 @@ namespace MyOrg.Models.CSPoco
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new Monoid_1_Octets(this);
+        protected override IEntityBase OnPartCopy() => new Monoid_1_Octets(this);
 
         public Monoid_1_Octets() { }
         public Monoid_1_Octets(IMonoid<Octets> source) : base(source)

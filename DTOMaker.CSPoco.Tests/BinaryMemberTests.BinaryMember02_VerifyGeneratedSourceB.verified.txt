@@ -50,7 +50,7 @@ namespace MyOrg.Models.CSPoco
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new Other(this);
+        protected override IEntityBase OnPartCopy() => new Other(this);
 
         public Other() { }
         public Other(IOther source) : base(source)

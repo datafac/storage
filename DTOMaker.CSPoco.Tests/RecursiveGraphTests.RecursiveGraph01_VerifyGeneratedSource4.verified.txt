@@ -56,7 +56,7 @@ namespace MyOrg.Models.CSPoco
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new NumericNode(this);
+        protected override IEntityBase OnPartCopy() => new NumericNode(this);
 
         public NumericNode() { }
         public NumericNode(INumericNode source) : base(source)

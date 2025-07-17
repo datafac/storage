@@ -60,7 +60,7 @@ namespace MyOrg.Models.MemBlocks
         protected override int OnGetEntityId() => 116661506;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
-        protected override IFreezable OnPartCopy() => new Poco_2_String_Int64(this);
+        protected override IEntityBase OnPartCopy() => new Poco_2_String_Int64(this);
 
         protected override void OnFreeze()
         {

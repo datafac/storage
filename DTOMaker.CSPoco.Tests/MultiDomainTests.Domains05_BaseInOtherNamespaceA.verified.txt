@@ -53,7 +53,7 @@ namespace MyOrg.DomainA.CSPoco
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new MyBase(this);
+        protected override IEntityBase OnPartCopy() => new MyBase(this);
 
         public MyBase() { }
         public MyBase(IMyBase source) : base(source)

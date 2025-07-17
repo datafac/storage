@@ -93,7 +93,7 @@ namespace T_MemberTypeNameSpace_.MemBlocks
         public T_MemberTypeImplName_(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
-        protected override IFreezable OnPartCopy() => throw new NotImplementedException();
+        protected override IEntityBase OnPartCopy() => throw new NotImplementedException();
         protected override int OnGetEntityId() => 3;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ValueTask OnPack(IDataStore dataStore) => default;
@@ -278,7 +278,7 @@ namespace T_NameSpace_.MemBlocks
         protected override int OnGetEntityId() => T_EntityId_;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
-        protected override IFreezable OnPartCopy() => new T_EntityImplName_(this);
+        protected override IEntityBase OnPartCopy() => new T_EntityImplName_(this);
 
         protected override void OnFreeze()
         {

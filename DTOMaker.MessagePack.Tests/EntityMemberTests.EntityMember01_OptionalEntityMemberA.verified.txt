@@ -59,7 +59,7 @@ namespace MyOrg.DomainA.MessagePack
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new MyDTO1(this);
+        protected override IEntityBase OnPartCopy() => new MyDTO1(this);
 
         [SerializationConstructor]
         public MyDTO1() { }

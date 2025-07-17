@@ -39,7 +39,7 @@ namespace T_MemberTypeNameSpace_.JsonNewtonSoft
         public static T_MemberTypeImplName_ CreateFrom(IT_MemberTypeIntfName_ source) => throw new NotImplementedException();
         public T_MemberTypeImplName_() { }
         public T_MemberTypeImplName_(IT_MemberTypeIntfName_ source) { }
-        protected override IFreezable OnPartCopy() => throw new NotImplementedException();
+        protected override IEntityBase OnPartCopy() => throw new NotImplementedException();
     }
 }
 namespace T_BaseNameSpace_
@@ -65,7 +65,7 @@ namespace T_BaseNameSpace_.JsonNewtonSoft
         public T_BaseName_(IT_BaseName_ source) : base(source) { }
 
         protected override void OnFreeze() => base.OnFreeze();
-        protected override IFreezable OnPartCopy() => throw new NotImplementedException();
+        protected override IEntityBase OnPartCopy() => throw new NotImplementedException();
 
         public T_MemberType_ BaseField1 { get; set; }
 
@@ -177,7 +177,7 @@ namespace T_NameSpace_.JsonNewtonSoft
             //##}
         }
 
-        protected override IFreezable OnPartCopy() => new T_EntityImplName_(this);
+        protected override IEntityBase OnPartCopy() => new T_EntityImplName_(this);
 
         public T_EntityImplName_() { }
         public T_EntityImplName_(IT_EntityIntfName_ source) : base(source)

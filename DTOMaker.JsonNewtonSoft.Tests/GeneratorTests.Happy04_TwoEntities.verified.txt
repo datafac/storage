@@ -51,7 +51,7 @@ namespace MyOrg.Models.JsonNewtonSoft
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new MyOtherDTO(this);
+        protected override IEntityBase OnPartCopy() => new MyOtherDTO(this);
 
         public MyOtherDTO() { }
         public MyOtherDTO(IMyOtherDTO source) : base(source)

@@ -50,7 +50,7 @@ namespace MyOrg.DomainA.CSPoco
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new MyDTO1(this);
+        protected override IEntityBase OnPartCopy() => new MyDTO1(this);
 
         public MyDTO1() { }
         public MyDTO1(IMyDTO1 source) : base(source)

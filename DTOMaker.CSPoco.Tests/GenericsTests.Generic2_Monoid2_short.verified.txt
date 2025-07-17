@@ -53,7 +53,7 @@ namespace MyOrg.Models.CSPoco
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new Monoid_1_Int16(this);
+        protected override IEntityBase OnPartCopy() => new Monoid_1_Int16(this);
 
         public Monoid_1_Int16() { }
         public Monoid_1_Int16(IMonoid<Int16> source) : base(source)

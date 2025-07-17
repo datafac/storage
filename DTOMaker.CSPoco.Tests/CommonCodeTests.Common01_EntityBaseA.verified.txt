@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 
 namespace DTOMaker.Common.CSPoco
 {
-    public abstract class EntityBase : IFreezable, IEquatable<EntityBase>
+    public abstract class EntityBase : IEntityBase, IEquatable<EntityBase>
     {
         public EntityBase() { }
         public EntityBase(object? notUsed, bool frozen)
@@ -26,8 +26,8 @@ namespace DTOMaker.Common.CSPoco
             _frozen = true;
             OnFreeze();
         }
-        protected virtual IFreezable OnPartCopy() => throw new NotImplementedException();
-        public IFreezable PartCopy() => OnPartCopy();
+        protected virtual IEntityBase OnPartCopy() => throw new NotImplementedException();
+        public IEntityBase PartCopy() => OnPartCopy();
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void ThrowIsFrozenException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} when frozen.");

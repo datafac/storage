@@ -56,7 +56,7 @@ namespace MyOrg.Models.CSPoco
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new Base_1_Octets(this);
+        protected override IEntityBase OnPartCopy() => new Base_1_Octets(this);
 
         public Base_1_Octets() { }
         public Base_1_Octets(IBase<Octets> source) : base(source)

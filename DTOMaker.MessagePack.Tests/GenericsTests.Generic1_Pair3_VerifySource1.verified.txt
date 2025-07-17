@@ -60,7 +60,7 @@ namespace MyOrg.Models.MessagePack
             _Pair?.Freeze();
         }
 
-        protected override IFreezable OnPartCopy() => new MyDTO3(this);
+        protected override IEntityBase OnPartCopy() => new MyDTO3(this);
 
         [SerializationConstructor]
         public MyDTO3() { }

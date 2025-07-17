@@ -59,7 +59,7 @@ namespace MyOrg.Models.MessagePack
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new MyPoco1(this);
+        protected override IEntityBase OnPartCopy() => new MyPoco1(this);
 
         [SerializationConstructor]
         public MyPoco1() { }

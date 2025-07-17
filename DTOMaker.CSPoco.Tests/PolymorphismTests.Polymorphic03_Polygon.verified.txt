@@ -68,7 +68,7 @@ namespace MyOrg.Models.CSPoco
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new Polygon(this);
+        protected override IEntityBase OnPartCopy() => new Polygon(this);
 
         public Polygon() { }
         public Polygon(IPolygon source) : base(source)

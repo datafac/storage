@@ -39,7 +39,7 @@ namespace T_MemberTypeNameSpace_.MessagePack
         protected override int OnGetEntityId() => 3;
         public T_MemberTypeImplName_() { }
         public T_MemberTypeImplName_(IT_MemberTypeIntfName_ source) { }
-        protected override IFreezable OnPartCopy() => throw new NotImplementedException();
+        protected override IEntityBase OnPartCopy() => throw new NotImplementedException();
 
         public bool Equals(T_MemberTypeImplName_? other)
         {
@@ -671,7 +671,7 @@ namespace T_NameSpace_.MessagePack
             //##}
         }
 
-        protected override IFreezable OnPartCopy() => new T_ConcreteEntity_(this);
+        protected override IEntityBase OnPartCopy() => new T_ConcreteEntity_(this);
 
         [SerializationConstructor]
         public T_ConcreteEntity_() { }

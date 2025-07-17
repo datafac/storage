@@ -50,7 +50,7 @@ namespace MyOrg.Models.CSPoco
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new Rectangle(this);
+        protected override IEntityBase OnPartCopy() => new Rectangle(this);
 
         public Rectangle() { }
         public Rectangle(IRectangle source) : base(source)

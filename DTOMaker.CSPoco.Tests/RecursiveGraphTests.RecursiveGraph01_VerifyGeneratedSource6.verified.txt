@@ -53,7 +53,7 @@ namespace MyOrg.Models.CSPoco
             _Node?.Freeze();
         }
 
-        protected override IFreezable OnPartCopy() => new Tree(this);
+        protected override IEntityBase OnPartCopy() => new Tree(this);
 
         public Tree() { }
         public Tree(ITree source) : base(source)

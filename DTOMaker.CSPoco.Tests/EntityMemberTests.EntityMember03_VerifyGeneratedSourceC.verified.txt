@@ -52,7 +52,7 @@ namespace MyOrg.DomainC.CSPoco
             _Member2.Freeze();
         }
 
-        protected override IFreezable OnPartCopy() => new MyDTO2(this);
+        protected override IEntityBase OnPartCopy() => new MyDTO2(this);
 
         public MyDTO2() { }
         public MyDTO2(IMyDTO2 source) : base(source)

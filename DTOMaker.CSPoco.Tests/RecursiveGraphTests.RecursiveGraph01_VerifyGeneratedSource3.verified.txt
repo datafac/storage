@@ -65,7 +65,7 @@ namespace MyOrg.Models.CSPoco
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new Node(this);
+        protected override IEntityBase OnPartCopy() => new Node(this);
 
         public Node() { }
         public Node(INode source) : base(source)

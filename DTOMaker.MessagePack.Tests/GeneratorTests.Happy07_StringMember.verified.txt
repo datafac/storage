@@ -12,7 +12,7 @@ using System;
 namespace MyOrg.Models.MessagePack
 {
     [MessagePackObject]
-    public partial class MyDTO : DTOMaker.Runtime.MessagePack.EntityBase, IMyDTO, IFreezable
+    public partial class MyDTO : DTOMaker.Runtime.MessagePack.EntityBase, IMyDTO, IEntityBase
     {
 
         public new const int EntityKey = 1;
@@ -22,7 +22,7 @@ namespace MyOrg.Models.MessagePack
             // todo freezable members
         }
 
-        protected override IFreezable OnPartCopy() => new MyDTO(this);
+        protected override IEntityBase OnPartCopy() => new MyDTO(this);
 
         public MyDTO() { }
         public MyDTO(IMyDTO source, bool frozen = false) : base(source, frozen)

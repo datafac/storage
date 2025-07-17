@@ -13,13 +13,13 @@ using System.Runtime.CompilerServices;
 namespace MyOrg.Models.CSPoco
 {
     [CSPocoObject]
-    public partial class MyDTO : IMyDTO, IFreezable
+    public partial class MyDTO : IMyDTO, IEntityBase
     {
         // todo move to base
         [IgnoreMember]
         private volatile bool _frozen;
         public bool IsFrozen => _frozen;
-        public IFreezable PartCopy() => new MyDTO(this);
+        public IEntityBase PartCopy() => new MyDTO(this);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void ThrowIsFrozenException(string? methodName) => throw new InvalidOperationException($"Cannot call {methodName} when frozen.");

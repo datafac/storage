@@ -51,7 +51,7 @@ namespace MyOrg.Models.JsonNewtonSoft
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new Int64Node(this);
+        protected override IEntityBase OnPartCopy() => new Int64Node(this);
 
         public Int64Node() { }
         public Int64Node(IInt64Node source) : base(source)

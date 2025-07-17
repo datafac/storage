@@ -53,7 +53,7 @@ namespace MyOrg.Models.CSPoco
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new Monoid_1_Decimal(this);
+        protected override IEntityBase OnPartCopy() => new Monoid_1_Decimal(this);
 
         public Monoid_1_Decimal() { }
         public Monoid_1_Decimal(IMonoid<Decimal> source) : base(source)

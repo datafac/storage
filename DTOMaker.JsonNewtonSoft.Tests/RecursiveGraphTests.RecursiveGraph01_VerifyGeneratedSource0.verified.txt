@@ -51,7 +51,7 @@ namespace MyOrg.Models.JsonNewtonSoft
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new BooleanNode(this);
+        protected override IEntityBase OnPartCopy() => new BooleanNode(this);
 
         public BooleanNode() { }
         public BooleanNode(IBooleanNode source) : base(source)

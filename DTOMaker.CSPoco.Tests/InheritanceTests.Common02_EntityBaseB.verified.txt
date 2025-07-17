@@ -19,7 +19,7 @@ namespace MyOrg.Models.CSPoco
             // todo freezable members
         }
 
-        protected override IFreezable OnPartCopy() => new MyBase(this);
+        protected override IEntityBase OnPartCopy() => new MyBase(this);
 
         public MyBase() { }
         public MyBase(IMyBase source, bool frozen = false) : base(source, frozen)

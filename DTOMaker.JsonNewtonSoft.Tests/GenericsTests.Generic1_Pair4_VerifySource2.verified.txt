@@ -54,7 +54,7 @@ namespace MyOrg.Models.JsonNewtonSoft
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new Pair_2_Int64_String(this);
+        protected override IEntityBase OnPartCopy() => new Pair_2_Int64_String(this);
 
         public Pair_2_Int64_String() { }
         public Pair_2_Int64_String(IPair<Int64, String> source) : base(source)

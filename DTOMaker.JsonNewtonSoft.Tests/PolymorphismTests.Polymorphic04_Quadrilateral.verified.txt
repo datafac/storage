@@ -57,7 +57,7 @@ namespace MyOrg.Models.JsonNewtonSoft
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new Quadrilateral(this);
+        protected override IEntityBase OnPartCopy() => new Quadrilateral(this);
 
         public Quadrilateral() { }
         public Quadrilateral(IQuadrilateral source) : base(source)

@@ -51,7 +51,7 @@ namespace MyOrg.Models.JsonNewtonSoft
             base.OnFreeze();
         }
 
-        protected override IFreezable OnPartCopy() => new MyTree(this);
+        protected override IEntityBase OnPartCopy() => new MyTree(this);
 
         public MyTree() { }
         public MyTree(IMyTree source) : base(source)

@@ -32,7 +32,7 @@ namespace MyOrg.Models.MessagePack
             // todo freezable members
         }
 
-        protected override IFreezable OnPartCopy() => new MyDTO(this);
+        protected override IEntityBase OnPartCopy() => new MyDTO(this);
 
         public MyDTO() { }
         public MyDTO(IMyDTO source, bool frozen = false) : base(source, frozen)
