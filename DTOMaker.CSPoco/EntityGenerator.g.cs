@@ -53,7 +53,7 @@ Emit("    }");
 Emit("}");
 Emit("namespace T_BaseNameSpace_");
 Emit("{");
-Emit("    public interface IT_BaseName_ { }");
+Emit("    public interface IT_BaseName_ : IEntityBase { }");
 Emit("}");
 Emit("namespace T_BaseNameSpace_.CSPoco");
 Emit("{");
@@ -72,6 +72,7 @@ Emit("        public static new T_BaseName_ Empty => _empty;");
 Emit("");
 Emit("        public T_BaseName_() { }");
 Emit("        public T_BaseName_(IT_BaseName_ source) : base(source) { }");
+Emit("        public T_BaseName_(T_BaseName_ source) : base(source) { }");
 Emit("");
 Emit("        protected override void OnFreeze() => base.OnFreeze();");
 Emit("        protected override IEntityBase OnPartCopy() => throw new NotImplementedException();");
@@ -225,6 +226,48 @@ Emit("            _T_RequiredBinaryMemberName_ = source.T_RequiredBinaryMemberNa
 Emit("            _T_NullableStringMemberName_ = source.T_NullableStringMemberName_;");
             } else {
 Emit("            _T_RequiredStringMemberName_ = source.T_RequiredStringMemberName_;");
+            }
+            break;
+            default:
+            Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
+            break;
+            } // switch
+            } // foreach
+Emit("        }");
+Emit("        public T_EntityImplName_(T_EntityImplName_ source) : base(source)");
+Emit("        {");
+            foreach (var member in entity.Members) {
+            using var _ = NewScope(member);
+            switch(member.Kind) {
+            case MemberKind.Native:
+            if (member.IsNullable) {
+Emit("            _T_NullableScalarMemberName_ = source._T_NullableScalarMemberName_;");
+            } else {
+Emit("            _T_RequiredScalarMemberName_ = source._T_RequiredScalarMemberName_;");
+            }
+            break;
+            case MemberKind.Vector:
+Emit("            _T_VectorMemberName_ = source._T_VectorMemberName_;");
+            break;
+            case MemberKind.Entity:
+            if (member.IsNullable) {
+Emit("            _T_NullableEntityMemberName_ = source._T_NullableEntityMemberName_;");
+            } else {
+Emit("            _T_RequiredEntityMemberName_ = source._T_RequiredEntityMemberName_;");
+            }
+            break;
+            case MemberKind.Binary:
+            if (member.IsNullable) {
+Emit("            _T_NullableBinaryMemberName_ = source._T_NullableBinaryMemberName_;");
+            } else {
+Emit("            _T_RequiredBinaryMemberName_ = source._T_RequiredBinaryMemberName_;");
+            }
+            break;
+            case MemberKind.String:
+            if (member.IsNullable) {
+Emit("            _T_NullableStringMemberName_ = source._T_NullableStringMemberName_;");
+            } else {
+Emit("            _T_RequiredStringMemberName_ = source._T_RequiredStringMemberName_;");
             }
             break;
             default:
