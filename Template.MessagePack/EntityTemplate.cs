@@ -58,13 +58,14 @@ namespace T_MemberTypeNameSpace_.MessagePack
 }
 namespace T_BaseNameSpace_.MessagePack
 {
-    public interface IT_BaseName_ { }
+    public interface IT_BaseName_ : IEntityBase { }
     [MessagePackObject]
     [Union(T_NameSpace_.MessagePack.T_ConcreteEntity_.EntityId, typeof(T_NameSpace_.MessagePack.T_ConcreteEntity_))]
     public abstract class T_BaseName_ : EntityBase, IT_BaseName_, IEquatable<T_BaseName_>
     {
         public T_BaseName_() { }
         public T_BaseName_(IT_BaseName_ source) : base(source) { }
+        public T_BaseName_(T_BaseName_ source) : base(source) { }
 
         [Key(1)] public T_MemberType_ BaseField1 { get; set; }
 

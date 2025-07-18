@@ -10,7 +10,8 @@ namespace DTOMaker.Runtime.JsonNewtonSoft
         public int GetEntityId() => OnGetEntityId();
 
         public EntityBase() { }
-        public EntityBase(object? notUsed) { }
+        public EntityBase(IEntityBase notUsed) { }
+        public EntityBase(EntityBase notUsed) { }
         private volatile bool _frozen;
 
         [JsonIgnore]

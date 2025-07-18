@@ -44,7 +44,7 @@ namespace T_MemberTypeNameSpace_.JsonNewtonSoft
 }
 namespace T_BaseNameSpace_
 {
-    public interface IT_BaseName_ { }
+    public interface IT_BaseName_ : IEntityBase { }
 }
 namespace T_BaseNameSpace_.JsonNewtonSoft
 {
@@ -63,6 +63,7 @@ namespace T_BaseNameSpace_.JsonNewtonSoft
 
         public T_BaseName_() { }
         public T_BaseName_(IT_BaseName_ source) : base(source) { }
+        public T_BaseName_(T_BaseName_ source) : base(source) { }
 
         protected override void OnFreeze() => base.OnFreeze();
         protected override IEntityBase OnPartCopy() => throw new NotImplementedException();
@@ -214,6 +215,48 @@ namespace T_NameSpace_.JsonNewtonSoft
             _T_NullableStringMemberName_ = source.T_NullableStringMemberName_;
             //##} else {
             _T_RequiredStringMemberName_ = source.T_RequiredStringMemberName_;
+            //##}
+            //##break;
+            //##default:
+            //##Emit($"#error Implementation for MemberKind '{member.Kind}' is missing");
+            //##break;
+            //##} // switch
+            //##} // foreach
+        }
+        public T_EntityImplName_(T_EntityImplName_ source) : base(source)
+        {
+            //##foreach (var member in entity.Members) {
+            //##using var _ = NewScope(member);
+            //##switch(member.Kind) {
+            //##case MemberKind.Native:
+            //##if (member.IsNullable) {
+            _T_NullableScalarMemberName_ = source._T_NullableScalarMemberName_;
+            //##} else {
+            _T_RequiredScalarMemberName_ = source._T_RequiredScalarMemberName_;
+            //##}
+            //##break;
+            //##case MemberKind.Vector:
+            _T_VectorMemberName_ = source._T_VectorMemberName_;
+            //##break;
+            //##case MemberKind.Entity:
+            //##if (member.IsNullable) {
+            _T_NullableEntityMemberName_ = source._T_NullableEntityMemberName_;
+            //##} else {
+            _T_RequiredEntityMemberName_ = source._T_RequiredEntityMemberName_;
+            //##}
+            //##break;
+            //##case MemberKind.Binary:
+            //##if (member.IsNullable) {
+            _T_NullableBinaryMemberName_ = source._T_NullableBinaryMemberName_;
+            //##} else {
+            _T_RequiredBinaryMemberName_ = source._T_RequiredBinaryMemberName_;
+            //##}
+            //##break;
+            //##case MemberKind.String:
+            //##if (member.IsNullable) {
+            _T_NullableStringMemberName_ = source._T_NullableStringMemberName_;
+            //##} else {
+            _T_RequiredStringMemberName_ = source._T_RequiredStringMemberName_;
             //##}
             //##break;
             //##default:

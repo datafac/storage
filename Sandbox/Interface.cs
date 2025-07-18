@@ -1,11 +1,12 @@
 ﻿using DataFac.Memory;
 using DTOMaker.Models;
+using DTOMaker.Runtime;
 using System;
 namespace MyOrg.Models
 {
     [Entity]
     [Id(1)]
-    public interface ITree<TK, TV>
+    public interface ITree<TK, TV> : IEntityBase
     {
         [Member(1)] int Count { get; }
         [Member(2)] TK Key { get; }

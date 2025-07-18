@@ -9,7 +9,8 @@ namespace DTOMaker.Runtime.CSPoco
         public int GetEntityId() => OnGetEntityId();
 
         public EntityBase() { }
-        public EntityBase(object? notUsed) { }
+        public EntityBase(IEntityBase notUsed) { }
+        public EntityBase(EntityBase notUsed) { }
         private volatile bool _frozen;
         public bool IsFrozen => _frozen;
         protected virtual void OnFreeze() { }

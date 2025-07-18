@@ -12,7 +12,8 @@ namespace DTOMaker.Runtime.MessagePack
         public int GetEntityId() => OnGetEntityId();
 
         public EntityBase() { }
-        public EntityBase(object? notUsed) { }
+        public EntityBase(IEntityBase notUsed) { }
+        public EntityBase(EntityBase notUsed) { }
 
         [IgnoreMember]
         private volatile bool _frozen;
