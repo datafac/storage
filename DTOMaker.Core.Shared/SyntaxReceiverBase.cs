@@ -226,7 +226,7 @@ namespace DTOMaker.Gentime
                         member.MemberType = mTFN;
                         member.Kind = mTFN.MemberKind;
 
-                        if (member.MemberType.FullName == FullTypeName.MemoryOctets)
+                        if (member.MemberType.FullName == FullTypeName.MemoryOctetsqqq)
                         {
                             // binary
                             member.Kind = MemberKind.Binary;

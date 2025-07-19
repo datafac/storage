@@ -69,8 +69,12 @@ namespace DTOMaker.Gentime
                 FullTypeName.SystemUInt128 => (9015, MemberKind.Native),
                 FullTypeName.SystemGuid => (9016, MemberKind.Native),
                 FullTypeName.SystemDecimal => (9017, MemberKind.Native),
-                FullTypeName.SystemString => (9014, MemberKind.String),
-                FullTypeName.MemoryOctets => (9099, MemberKind.Binary),
+                FullTypeName.SystemString => (9018, MemberKind.String),
+                // custom types
+                FullTypeName.PairOfInt16 => (9096, MemberKind.Native),
+                FullTypeName.PairOfInt32 => (9097, MemberKind.Native),
+                FullTypeName.PairOfInt64 => (9098, MemberKind.Native),
+                FullTypeName.MemoryOctetsqqq => (9099, MemberKind.Binary),
                 _ => (0, MemberKind.Unknown),
             };
         }

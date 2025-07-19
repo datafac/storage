@@ -38,19 +38,22 @@ namespace DTOMaker.MemBlocks
                 case "System.Int32":
                 case "System.UInt32":
                 case "System.Single":
+                case FullTypeName.PairOfInt16:
                     return 4;
                 case "System.Int64":
                 case "System.UInt64":
                 case "System.Double":
+                case FullTypeName.PairOfInt32:
                     return 8;
                 case "System.Int128":
                 case "System.UInt128":
                 case "System.Guid":
                 case "System.Decimal":
+                case FullTypeName.PairOfInt64:
                     return 16;
                 // encoded as BlobIdV1
                 case FullTypeName.SystemString:
-                case FullTypeName.MemoryOctets:
+                case FullTypeName.MemoryOctetsqqq:
                     return Constants.BlobIdV1Size;
                 default:
                     return 0;

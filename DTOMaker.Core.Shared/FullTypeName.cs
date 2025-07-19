@@ -20,6 +20,9 @@
         public const string SystemGuid = "System.Guid";
         public const string SystemDecimal = "System.Decimal";
         public const string SystemString = "System.String";
-        public const string MemoryOctets = "DataFac.Memory.Octets";
+        public const string MemoryOctetsqqq = "DataFac.Memory.Octets";
+        public const string PairOfInt16 = "DataFac.Memory.PairOfInt16";
+        public const string PairOfInt32 = "DataFac.Memory.PairOfInt32";
+        public const string PairOfInt64 = "DataFac.Memory.PairOfInt64";
     }
 }

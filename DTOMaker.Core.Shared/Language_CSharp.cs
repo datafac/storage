@@ -45,7 +45,10 @@
             return typeFullName.FullName switch
             {
                 FullTypeName.SystemString => "String",
-                FullTypeName.MemoryOctets => "Octets",
+                FullTypeName.MemoryOctetsqqq => "Octets",
+                FullTypeName.PairOfInt16 => "PairOfInt16",
+                FullTypeName.PairOfInt32 => "PairOfInt32",
+                FullTypeName.PairOfInt64 => "PairOfInt64",
                 _ => typeFullName.ShortImplName
             };
         }
@@ -55,7 +58,7 @@
             return typeFullName.FullName switch
             {
                 FullTypeName.SystemString => "string.Empty",
-                FullTypeName.MemoryOctets => "Octets.Empty",
+                FullTypeName.MemoryOctetsqqq => "Octets.Empty",
                 _ => "default"
             };
         }
