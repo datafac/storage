@@ -61,6 +61,10 @@ namespace MyOrg.Models.JsonNewtonSoft
         {
             _Value = source.Value;
         }
+        public Monoid_1_Boolean(Monoid_1_Boolean source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private Boolean _Value = default;
         public Boolean Value

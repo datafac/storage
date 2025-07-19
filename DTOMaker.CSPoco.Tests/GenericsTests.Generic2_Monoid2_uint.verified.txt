@@ -60,6 +60,10 @@ namespace MyOrg.Models.CSPoco
         {
             _Value = source.Value;
         }
+        public Monoid_1_UInt32(Monoid_1_UInt32 source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private UInt32 _Value = default;
         public UInt32 Value

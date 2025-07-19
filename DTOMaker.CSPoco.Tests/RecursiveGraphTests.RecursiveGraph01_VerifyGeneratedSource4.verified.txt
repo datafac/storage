@@ -62,6 +62,9 @@ namespace MyOrg.Models.CSPoco
         public NumericNode(INumericNode source) : base(source)
         {
         }
+        public NumericNode(NumericNode source) : base(source)
+        {
+        }
 
 
         public bool Equals(NumericNode? other)

@@ -56,6 +56,9 @@ namespace MyOrg.Models.CSPoco
         public Other(IOther source) : base(source)
         {
         }
+        public Other(Other source) : base(source)
+        {
+        }
 
 
         public bool Equals(Other? other)

@@ -74,6 +74,9 @@ namespace MyOrg.Models.CSPoco
         public Polygon(IPolygon source) : base(source)
         {
         }
+        public Polygon(Polygon source) : base(source)
+        {
+        }
 
 
         public bool Equals(Polygon? other)

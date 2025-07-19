@@ -59,6 +59,11 @@ namespace MyOrg.Models.JsonNewtonSoft
             _Value1 = source.Value1;
             _Value2 = source.Value2;
         }
+        public Other(Other source) : base(source)
+        {
+            _Value1 = source._Value1;
+            _Value2 = source._Value2;
+        }
 
         private Int64 _Value1 = default;
         public Int64 Value1

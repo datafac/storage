@@ -61,6 +61,10 @@ namespace MyOrg.Models.JsonNewtonSoft
         {
             _Value = source.Value;
         }
+        public Monoid_1_Decimal(Monoid_1_Decimal source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private Decimal _Value = default;
         public Decimal Value

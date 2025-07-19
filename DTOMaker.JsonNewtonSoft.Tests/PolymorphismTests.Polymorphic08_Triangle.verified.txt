@@ -63,6 +63,9 @@ namespace MyOrg.Models.JsonNewtonSoft
         public Triangle(ITriangle source) : base(source)
         {
         }
+        public Triangle(Triangle source) : base(source)
+        {
+        }
 
 
         public bool Equals(Triangle? other)

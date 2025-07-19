@@ -61,6 +61,10 @@ namespace MyOrg.Models.JsonNewtonSoft
         {
             _Value = source.Value.ToByteArray();
         }
+        public Monoid_1_Octets(Monoid_1_Octets source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private byte[] _Value = Array.Empty<byte>();
         public byte[] Value

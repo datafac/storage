@@ -63,6 +63,12 @@ namespace MyOrg.Models.JsonNewtonSoft
             _Right = source.Right is null ? null : MyOrg.Models.JsonNewtonSoft.Tree.CreateFrom(source.Right);
             _Node = source.Node is null ? null : MyOrg.Models.JsonNewtonSoft.Node.CreateFrom(source.Node);
         }
+        public Tree(Tree source) : base(source)
+        {
+            _Left = source._Left;
+            _Right = source._Right;
+            _Node = source._Node;
+        }
 
         private MyOrg.Models.JsonNewtonSoft.Tree? _Left;
         public MyOrg.Models.JsonNewtonSoft.Tree? Left

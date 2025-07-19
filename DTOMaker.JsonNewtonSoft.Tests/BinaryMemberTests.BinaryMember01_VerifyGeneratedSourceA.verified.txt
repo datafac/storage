@@ -61,6 +61,12 @@ namespace MyOrg.Models.JsonNewtonSoft
             _Field1 = source.Field1.ToByteArray();
             _Field2 = source.Field2 is null ? null : source.Field2.ToByteArray();
         }
+        public MyDTO(MyDTO source) : base(source)
+        {
+            _Other1 = source._Other1;
+            _Field1 = source._Field1;
+            _Field2 = source._Field2;
+        }
 
         private MyOrg.Models.JsonNewtonSoft.Other? _Other1;
         public MyOrg.Models.JsonNewtonSoft.Other? Other1

@@ -60,6 +60,10 @@ namespace MyOrg.Models.CSPoco
         {
             _Value = source.Value;
         }
+        public Base_1_Int64(Base_1_Int64 source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private Int64 _Value = default;
         public Int64 Value

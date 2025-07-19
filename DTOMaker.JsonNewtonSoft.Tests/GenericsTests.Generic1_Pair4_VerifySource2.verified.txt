@@ -62,6 +62,11 @@ namespace MyOrg.Models.JsonNewtonSoft
             _Item1 = source.Item1;
             _Item2 = source.Item2;
         }
+        public Pair_2_Int64_String(Pair_2_Int64_String source) : base(source)
+        {
+            _Item1 = source._Item1;
+            _Item2 = source._Item2;
+        }
 
         private Int64 _Item1 = default;
         public Int64 Item1

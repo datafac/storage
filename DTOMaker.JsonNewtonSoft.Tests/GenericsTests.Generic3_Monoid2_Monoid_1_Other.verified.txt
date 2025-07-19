@@ -62,6 +62,10 @@ namespace MyOrg.Models.JsonNewtonSoft
         {
             _Value = source.Value is null ? null : MyOrg.Models.JsonNewtonSoft.Other.CreateFrom(source.Value);
         }
+        public Monoid_1_Other(Monoid_1_Other source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private MyOrg.Models.JsonNewtonSoft.Other? _Value;
         public MyOrg.Models.JsonNewtonSoft.Other? Value

@@ -58,6 +58,10 @@ namespace MyOrg.Models.JsonNewtonSoft
         {
             _Value = source.Value;
         }
+        public StringNode(StringNode source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private string _Value = string.Empty;
         public string Value

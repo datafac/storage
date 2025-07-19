@@ -63,6 +63,10 @@ namespace MyOrg.Models.CSPoco
         {
             _Value = source.Value;
         }
+        public Base_1_Octets(Base_1_Octets source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private Octets _Value = Octets.Empty;
         public Octets Value

@@ -63,6 +63,9 @@ namespace MyOrg.Models.JsonNewtonSoft
         public Quadrilateral(IQuadrilateral source) : base(source)
         {
         }
+        public Quadrilateral(Quadrilateral source) : base(source)
+        {
+        }
 
 
         public bool Equals(Quadrilateral? other)

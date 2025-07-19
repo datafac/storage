@@ -57,6 +57,10 @@ namespace MyOrg.Models.CSPoco
         {
             _Value = source.Value;
         }
+        public DoubleNode(DoubleNode source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private Double _Value = default;
         public Double Value

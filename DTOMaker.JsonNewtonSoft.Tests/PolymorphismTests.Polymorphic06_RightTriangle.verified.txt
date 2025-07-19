@@ -59,6 +59,11 @@ namespace MyOrg.Models.JsonNewtonSoft
             _Length = source.Length;
             _Height = source.Height;
         }
+        public RightTriangle(RightTriangle source) : base(source)
+        {
+            _Length = source._Length;
+            _Height = source._Height;
+        }
 
         private Double _Length = default;
         public Double Length

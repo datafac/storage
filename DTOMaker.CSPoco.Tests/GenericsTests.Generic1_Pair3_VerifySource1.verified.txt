@@ -59,6 +59,11 @@ namespace MyOrg.Models.CSPoco
             _Id = source.Id;
             _Pair = source.Pair is null ? null : MyOrg.Models.CSPoco.Pair_2_Int64_String.CreateFrom(source.Pair);
         }
+        public MyDTO3(MyDTO3 source) : base(source)
+        {
+            _Id = source._Id;
+            _Pair = source._Pair;
+        }
 
         private Int32 _Id = default;
         public Int32 Id

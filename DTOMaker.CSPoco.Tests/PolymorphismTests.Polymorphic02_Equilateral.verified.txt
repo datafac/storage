@@ -57,6 +57,10 @@ namespace MyOrg.Models.CSPoco
         {
             _Length = source.Length;
         }
+        public Equilateral(Equilateral source) : base(source)
+        {
+            _Length = source._Length;
+        }
 
         private Double _Length = default;
         public Double Length

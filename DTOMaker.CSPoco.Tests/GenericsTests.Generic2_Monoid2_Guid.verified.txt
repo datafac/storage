@@ -60,6 +60,10 @@ namespace MyOrg.Models.CSPoco
         {
             _Value = source.Value;
         }
+        public Monoid_1_Guid(Monoid_1_Guid source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private Guid _Value = default;
         public Guid Value

@@ -60,6 +60,10 @@ namespace MyOrg.Models.CSPoco
         {
             _Value = source.Value;
         }
+        public Monoid_1_Half(Monoid_1_Half source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private Half _Value = default;
         public Half Value

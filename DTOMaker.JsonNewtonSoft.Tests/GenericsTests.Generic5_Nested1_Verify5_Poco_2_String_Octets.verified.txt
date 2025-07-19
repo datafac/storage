@@ -61,6 +61,10 @@ namespace MyOrg.Models.JsonNewtonSoft
         {
             _Key = source.Key;
         }
+        public Poco_2_String_Octets(Poco_2_String_Octets source) : base(source)
+        {
+            _Key = source._Key;
+        }
 
         private string _Key = string.Empty;
         public string Key

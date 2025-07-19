@@ -60,6 +60,10 @@ namespace MyOrg.Models.CSPoco
         {
             _Value = source.Value;
         }
+        public Monoid_1_Double(Monoid_1_Double source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private Double _Value = default;
         public Double Value

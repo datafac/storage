@@ -60,6 +60,12 @@ namespace MyOrg.Models.JsonNewtonSoft
             _GivenName = source.GivenName;
             _OtherNames = source.OtherNames;
         }
+        public MyDTO(MyDTO source) : base(source)
+        {
+            _FamilyName = source._FamilyName;
+            _GivenName = source._GivenName;
+            _OtherNames = source._OtherNames;
+        }
 
         private string _FamilyName = string.Empty;
         public string FamilyName

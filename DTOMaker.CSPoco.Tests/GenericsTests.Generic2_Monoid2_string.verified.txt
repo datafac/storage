@@ -60,6 +60,10 @@ namespace MyOrg.Models.CSPoco
         {
             _Value = source.Value;
         }
+        public Monoid_1_String(Monoid_1_String source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private string _Value = string.Empty;
         public string Value

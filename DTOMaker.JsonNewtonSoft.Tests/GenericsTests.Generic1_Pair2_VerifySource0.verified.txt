@@ -58,6 +58,10 @@ namespace MyOrg.Models.JsonNewtonSoft
         {
             _Id = source.Id;
         }
+        public MyDTO2(MyDTO2 source) : base(source)
+        {
+            _Id = source._Id;
+        }
 
         private Int32 _Id = default;
         public Int32 Id

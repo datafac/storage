@@ -60,6 +60,10 @@ namespace MyOrg.Models.CSPoco
         {
             _Value = source.Value;
         }
+        public Monoid_1_SByte(Monoid_1_SByte source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private SByte _Value = default;
         public SByte Value

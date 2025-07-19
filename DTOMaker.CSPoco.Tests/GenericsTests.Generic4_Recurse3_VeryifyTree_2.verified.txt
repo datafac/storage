@@ -66,6 +66,14 @@ namespace MyOrg.Models.CSPoco
             _Left = source.Left is null ? null : MyOrg.Models.CSPoco.Tree_2_String_Octets.CreateFrom(source.Left);
             _Right = source.Right is null ? null : MyOrg.Models.CSPoco.Tree_2_String_Octets.CreateFrom(source.Right);
         }
+        public Tree_2_String_Octets(Tree_2_String_Octets source) : base(source)
+        {
+            _Count = source._Count;
+            _Key = source._Key;
+            _Value = source._Value;
+            _Left = source._Left;
+            _Right = source._Right;
+        }
 
         private Int32 _Count = default;
         public Int32 Count

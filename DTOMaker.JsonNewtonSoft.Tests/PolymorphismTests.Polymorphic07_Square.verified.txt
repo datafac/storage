@@ -58,6 +58,10 @@ namespace MyOrg.Models.JsonNewtonSoft
         {
             _Length = source.Length;
         }
+        public Square(Square source) : base(source)
+        {
+            _Length = source._Length;
+        }
 
         private Double _Length = default;
         public Double Length

@@ -57,6 +57,10 @@ namespace MyOrg.Models.CSPoco
         {
             _Field1 = source.Field1;
         }
+        public MyDTO(MyDTO source) : base(source)
+        {
+            _Field1 = source._Field1;
+        }
 
         private Double _Field1 = default;
         [Obsolete("Removed", false)]

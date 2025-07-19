@@ -61,6 +61,10 @@ namespace MyOrg.Models.CSPoco
         {
             _Value = source.Value is null ? null : MyOrg.Models.CSPoco.Other.CreateFrom(source.Value);
         }
+        public Monoid_1_Other(Monoid_1_Other source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private MyOrg.Models.CSPoco.Other? _Value;
         public MyOrg.Models.CSPoco.Other? Value

@@ -58,6 +58,10 @@ namespace MyOrg.DomainB.JsonNewtonSoft
         {
             _Field1 = source.Field1;
         }
+        public MyDTO1(MyDTO1 source) : base(source)
+        {
+            _Field1 = source._Field1;
+        }
 
         private Double _Field1 = default;
         public Double Field1

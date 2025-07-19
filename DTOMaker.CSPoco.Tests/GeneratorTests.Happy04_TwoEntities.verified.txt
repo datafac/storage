@@ -57,6 +57,10 @@ namespace MyOrg.Models.CSPoco
         {
             _Field1 = source.Field1;
         }
+        public MyOtherDTO(MyOtherDTO source) : base(source)
+        {
+            _Field1 = source._Field1;
+        }
 
         private Int64 _Field1 = default;
         public Int64 Field1

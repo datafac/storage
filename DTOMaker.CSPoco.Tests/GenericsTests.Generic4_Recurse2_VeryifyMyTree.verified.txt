@@ -56,6 +56,9 @@ namespace MyOrg.Models.CSPoco
         public MyTree(IMyTree source) : base(source)
         {
         }
+        public MyTree(MyTree source) : base(source)
+        {
+        }
 
 
         public bool Equals(MyTree? other)

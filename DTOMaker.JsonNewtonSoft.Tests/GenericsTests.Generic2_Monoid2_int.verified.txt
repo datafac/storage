@@ -61,6 +61,10 @@ namespace MyOrg.Models.JsonNewtonSoft
         {
             _Value = source.Value;
         }
+        public Monoid_1_Int32(Monoid_1_Int32 source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private Int32 _Value = default;
         public Int32 Value

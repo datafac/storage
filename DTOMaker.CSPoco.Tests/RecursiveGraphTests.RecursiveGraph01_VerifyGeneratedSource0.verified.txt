@@ -57,6 +57,10 @@ namespace MyOrg.Models.CSPoco
         {
             _Value = source.Value;
         }
+        public BooleanNode(BooleanNode source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private Boolean _Value = default;
         public Boolean Value

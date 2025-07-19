@@ -72,6 +72,10 @@ namespace MyOrg.Models.CSPoco
         {
             _Key = source.Key;
         }
+        public Node(Node source) : base(source)
+        {
+            _Key = source._Key;
+        }
 
         private string _Key = string.Empty;
         public string Key

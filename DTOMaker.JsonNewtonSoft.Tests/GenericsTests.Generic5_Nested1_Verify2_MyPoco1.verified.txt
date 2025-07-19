@@ -57,6 +57,9 @@ namespace MyOrg.Models.JsonNewtonSoft
         public MyPoco1(IMyPoco1 source) : base(source)
         {
         }
+        public MyPoco1(MyPoco1 source) : base(source)
+        {
+        }
 
 
         public bool Equals(MyPoco1? other)

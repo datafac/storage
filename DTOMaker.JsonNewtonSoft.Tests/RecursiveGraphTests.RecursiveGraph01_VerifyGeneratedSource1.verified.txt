@@ -58,6 +58,10 @@ namespace MyOrg.Models.JsonNewtonSoft
         {
             _Value = source.Value;
         }
+        public DoubleNode(DoubleNode source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private Double _Value = default;
         public Double Value

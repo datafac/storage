@@ -60,6 +60,11 @@ namespace MyOrg.DomainC.CSPoco
             _Member1 = source.Member1 is null ? null : MyOrg.DomainA.CSPoco.MyDTO1.CreateFrom(source.Member1);
             _Member2 = MyOrg.DomainB.CSPoco.MyDTO1.CreateFrom(source.Member2);
         }
+        public MyDTO2(MyDTO2 source) : base(source)
+        {
+            _Member1 = source._Member1;
+            _Member2 = source._Member2;
+        }
 
         private MyOrg.DomainA.CSPoco.MyDTO1? _Member1;
         public MyOrg.DomainA.CSPoco.MyDTO1? Member1

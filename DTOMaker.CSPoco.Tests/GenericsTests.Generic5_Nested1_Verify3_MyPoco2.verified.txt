@@ -58,6 +58,10 @@ namespace MyOrg.Models.CSPoco
         {
             _Field1 = source.Field1 is null ? null : MyOrg.Models.CSPoco.Poco_2_String_Int64.CreateFrom(source.Field1);
         }
+        public MyPoco2(MyPoco2 source) : base(source)
+        {
+            _Field1 = source._Field1;
+        }
 
         private MyOrg.Models.CSPoco.Poco_2_String_Int64? _Field1;
         public MyOrg.Models.CSPoco.Poco_2_String_Int64? Field1

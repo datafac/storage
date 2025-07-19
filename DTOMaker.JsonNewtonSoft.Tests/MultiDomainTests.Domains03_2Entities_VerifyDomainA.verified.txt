@@ -57,6 +57,9 @@ namespace MyOrg.DomainA.JsonNewtonSoft
         public MyDTO(IMyDTO source) : base(source)
         {
         }
+        public MyDTO(MyDTO source) : base(source)
+        {
+        }
 
 
         public bool Equals(MyDTO? other)

@@ -60,6 +60,9 @@ namespace MyOrg.Models.JsonNewtonSoft
         public MyBase(IMyBase source) : base(source)
         {
         }
+        public MyBase(MyBase source) : base(source)
+        {
+        }
 
 
         public bool Equals(MyBase? other)

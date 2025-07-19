@@ -60,6 +60,10 @@ namespace MyOrg.Models.CSPoco
         {
             _Value = source.Value;
         }
+        public Monoid_1_Single(Monoid_1_Single source) : base(source)
+        {
+            _Value = source._Value;
+        }
 
         private Single _Value = default;
         public Single Value

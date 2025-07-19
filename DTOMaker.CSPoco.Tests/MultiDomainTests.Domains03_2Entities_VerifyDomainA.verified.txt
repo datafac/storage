@@ -56,6 +56,9 @@ namespace MyOrg.DomainA.CSPoco
         public MyDTO(IMyDTO source) : base(source)
         {
         }
+        public MyDTO(MyDTO source) : base(source)
+        {
+        }
 
 
         public bool Equals(MyDTO? other)

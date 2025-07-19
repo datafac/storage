@@ -62,6 +62,12 @@ namespace MyOrg.Models.CSPoco
             _Right = source.Right is null ? null : MyOrg.Models.CSPoco.Tree.CreateFrom(source.Right);
             _Node = source.Node is null ? null : MyOrg.Models.CSPoco.Node.CreateFrom(source.Node);
         }
+        public Tree(Tree source) : base(source)
+        {
+            _Left = source._Left;
+            _Right = source._Right;
+            _Node = source._Node;
+        }
 
         private MyOrg.Models.CSPoco.Tree? _Left;
         public MyOrg.Models.CSPoco.Tree? Left
