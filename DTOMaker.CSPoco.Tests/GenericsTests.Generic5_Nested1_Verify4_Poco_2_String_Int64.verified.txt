@@ -16,7 +16,7 @@ namespace MyOrg.Models.CSPoco
     {
         // Derived entities: 0
 
-        protected override int OnGetEntityId() => 116661506;
+        protected override int OnGetEntityId() => 116665630;
 
         private static Poco_2_String_Int64 CreateEmpty()
         {

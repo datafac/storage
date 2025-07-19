@@ -17,7 +17,7 @@ namespace MyOrg.Models.MessagePack
     public sealed partial class Poco_2_String_Int64 : MyOrg.Models.MessagePack.Base_1_Int64, IPoco<String, Int64>, IEquatable<Poco_2_String_Int64>
     {
 
-        public new const int EntityId = 116661506;
+        public new const int EntityId = 116665630;
 
         private static Poco_2_String_Int64 CreateEmpty()
         {
@@ -52,7 +52,7 @@ namespace MyOrg.Models.MessagePack
                 throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }
 
-        protected override int OnGetEntityId() => 116661506;
+        protected override int OnGetEntityId() => 116665630;
 
         protected override void OnFreeze()
         {

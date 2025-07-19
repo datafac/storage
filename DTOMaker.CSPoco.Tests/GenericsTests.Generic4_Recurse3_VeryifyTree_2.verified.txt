@@ -17,7 +17,7 @@ namespace MyOrg.Models.CSPoco
         // Derived entities: 1
         // - MyTree
 
-        protected override int OnGetEntityId() => 10365494;
+        protected override int OnGetEntityId() => 10369618;
 
         private static Tree_2_String_Octets CreateEmpty()
         {

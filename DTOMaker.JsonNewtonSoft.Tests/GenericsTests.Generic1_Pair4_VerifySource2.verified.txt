@@ -18,7 +18,7 @@ namespace MyOrg.Models.JsonNewtonSoft
         // Derived entities: 1
         // - MyDTO2
 
-        protected override int OnGetEntityId() => 10362316;
+        protected override int OnGetEntityId() => 10362320;
 
         private static Pair_2_Int64_String CreateEmpty()
         {

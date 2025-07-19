@@ -20,7 +20,7 @@ namespace MyOrg.Models.MessagePack
         // Derived entities: 1
         // - MyDTO2
 
-        public new const int EntityId = 10362316;
+        public new const int EntityId = 10362320;
 
         public new static Pair_2_Int64_String CreateFrom(Pair_2_Int64_String source)
         {
@@ -51,7 +51,7 @@ namespace MyOrg.Models.MessagePack
             };
         }
 
-        protected override int OnGetEntityId() => 10362316;
+        protected override int OnGetEntityId() => 10362320;
 
         protected override void OnFreeze()
         {

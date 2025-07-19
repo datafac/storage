@@ -29,7 +29,7 @@ namespace MyOrg.Models.MemBlocks
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        private static readonly BlockHeader _header = BlockHeader.CreateNew(10045, BlockStructureCode);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(10049, BlockStructureCode);
 
         public new static Monoid_1_String CreateFrom(Monoid_1_String source)
         {
@@ -61,7 +61,7 @@ namespace MyOrg.Models.MemBlocks
             };
         }
 
-        protected override int OnGetEntityId() => 10045;
+        protected override int OnGetEntityId() => 10049;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IEntityBase OnPartCopy() => new Monoid_1_String(this);

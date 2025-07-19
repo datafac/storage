@@ -29,7 +29,7 @@ namespace MyOrg.Models.MemBlocks
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        private static readonly BlockHeader _header = BlockHeader.CreateNew(116661594, BlockStructureCode);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(116665718, BlockStructureCode);
 
         public new static Poco_2_String_Octets CreateFrom(Poco_2_String_Octets source)
         {
@@ -61,7 +61,7 @@ namespace MyOrg.Models.MemBlocks
             };
         }
 
-        protected override int OnGetEntityId() => 116661594;
+        protected override int OnGetEntityId() => 116665718;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
         protected override IEntityBase OnPartCopy() => new Poco_2_String_Octets(this);

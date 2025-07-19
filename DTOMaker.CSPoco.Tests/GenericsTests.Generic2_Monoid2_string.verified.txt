@@ -17,7 +17,7 @@ namespace MyOrg.Models.CSPoco
         // Derived entities: 1
         // - MyDTO
 
-        protected override int OnGetEntityId() => 10045;
+        protected override int OnGetEntityId() => 10049;
 
         private static Monoid_1_String CreateEmpty()
         {

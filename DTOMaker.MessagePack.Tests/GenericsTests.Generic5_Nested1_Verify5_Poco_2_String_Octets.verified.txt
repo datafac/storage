@@ -20,7 +20,7 @@ namespace MyOrg.Models.MessagePack
         // Derived entities: 1
         // - MyPoco1
 
-        public new const int EntityId = 116661594;
+        public new const int EntityId = 116665718;
 
         public new static Poco_2_String_Octets CreateFrom(Poco_2_String_Octets source)
         {
@@ -51,7 +51,7 @@ namespace MyOrg.Models.MessagePack
             };
         }
 
-        protected override int OnGetEntityId() => 116661594;
+        protected override int OnGetEntityId() => 116665718;
 
         protected override void OnFreeze()
         {

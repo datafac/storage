@@ -18,53 +18,49 @@ using DTOMaker.Runtime.MemBlocks;
 
 namespace MyOrg.Models.MemBlocks
 {
-    public partial class Base_1_Int64 : DTOMaker.Runtime.MemBlocks.EntityBase, IBase<Int64>, IEquatable<Base_1_Int64>
+    public partial class MyDTO : DTOMaker.Runtime.MemBlocks.EntityBase, IMyDTO, IEquatable<MyDTO>
     {
-        // Derived entities: 1
-        // - Poco_2_String_Int64
+        // Derived entities: 0
 
-        private const long BlockStructureCode = 65L;
+        private const long BlockStructureCode = 97L;
         private const int ClassHeight = 1;
-        private const int BlockLength = 8;
+        private const int BlockLength = 32;
         private readonly Memory<byte> _writableLocalBlock;
         private readonly ReadOnlyMemory<byte> _readonlyLocalBlock;
 
-        private static readonly BlockHeader _header = BlockHeader.CreateNew(112111, BlockStructureCode);
+        private static readonly BlockHeader _header = BlockHeader.CreateNew(1, BlockStructureCode);
 
-        public new static Base_1_Int64 CreateFrom(Base_1_Int64 source)
+        public new static MyDTO CreateFrom(MyDTO source)
         {
             if (source.IsFrozen) return source;
             return source switch
             {
-                MyOrg.Models.MemBlocks.Poco_2_String_Int64 source2 => new MyOrg.Models.MemBlocks.Poco_2_String_Int64(source2),
-                _ => new MyOrg.Models.MemBlocks.Base_1_Int64(source)
+                _ => new MyOrg.Models.MemBlocks.MyDTO(source)
             };
         }
 
-        public new static Base_1_Int64 CreateFrom(MyOrg.Models.IBase<Int64> source)
+        public new static MyDTO CreateFrom(MyOrg.Models.IMyDTO source)
         {
-            if (source is Base_1_Int64 concrete && concrete.IsFrozen) return concrete;
+            if (source is MyDTO concrete && concrete.IsFrozen) return concrete;
             return source switch
             {
-                MyOrg.Models.IPoco<String, Int64> source2 => new MyOrg.Models.MemBlocks.Poco_2_String_Int64(source2),
-                _ => new MyOrg.Models.MemBlocks.Base_1_Int64(source)
+                _ => new MyOrg.Models.MemBlocks.MyDTO(source)
             };
         }
 
-        public new static Base_1_Int64 CreateFrom(ReadOnlySequence<byte> buffers)
+        public new static MyDTO CreateFrom(ReadOnlySequence<byte> buffers)
         {
             SourceBlocks blocks = SourceBlocks.ParseFrom(buffers);
             return blocks.Header.EntityId switch
             {
-                116665630 => new MyOrg.Models.MemBlocks.Poco_2_String_Int64(blocks),
-                _ => new MyOrg.Models.MemBlocks.Base_1_Int64(blocks)
+                _ => new MyOrg.Models.MemBlocks.MyDTO(blocks)
             };
         }
 
-        protected override int OnGetEntityId() => 112111;
+        protected override int OnGetEntityId() => 1;
         protected override int OnGetClassHeight() => ClassHeight;
         protected override ReadOnlySequenceBuilder<byte> OnSequenceBuilder(ReadOnlySequenceBuilder<byte> builder) => base.OnSequenceBuilder(builder).Append(_readonlyLocalBlock);
-        protected override IEntityBase OnPartCopy() => new Base_1_Int64(this);
+        protected override IEntityBase OnPartCopy() => new MyDTO(this);
 
         protected override void OnFreeze()
         {
@@ -84,33 +80,39 @@ namespace MyOrg.Models.MemBlocks
         // -------------------- field map -----------------------------
         //  Seq.  Off.  Len.  N.    Type    End.  Name
         //  ----  ----  ----  ----  ------- ----  -------
-        //     1     0     8        Int64   LE    Value
+        //     1     0    16        PairOfInt64 LE    Custom1
+        //     2    16     8        PairOfInt32 LE    Custom2
+        //     3    24     4        PairOfInt16 LE    Custom3
         // ------------------------------------------------------------
 
-        protected Base_1_Int64(BlockHeader header) : base(header)
+        protected MyDTO(BlockHeader header) : base(header)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
-        public Base_1_Int64() : base(_header)
+        public MyDTO() : base(_header)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
         }
 
-        protected Base_1_Int64(BlockHeader header, Base_1_Int64 source) : base(header, source)
+        protected MyDTO(BlockHeader header, MyDTO source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-            this.Value = source.Value;
+            this.Custom1 = source.Custom1;
+            this.Custom2 = source.Custom2;
+            this.Custom3 = source.Custom3;
         }
-        public Base_1_Int64(Base_1_Int64 source) : this(_header, source) { }
+        public MyDTO(MyDTO source) : this(_header, source) { }
 
-        protected Base_1_Int64(BlockHeader header, IBase<Int64> source) : base(header, source)
+        protected MyDTO(BlockHeader header, IMyDTO source) : base(header, source)
         {
             _readonlyLocalBlock = _writableLocalBlock = new byte[BlockLength];
-            this.Value = source.Value;
+            this.Custom1 = source.Custom1;
+            this.Custom2 = source.Custom2;
+            this.Custom3 = source.Custom3;
         }
-        public Base_1_Int64(IBase<Int64> source) : this(_header, source) { }
+        public MyDTO(IMyDTO source) : this(_header, source) { }
 
-        protected Base_1_Int64(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
+        protected MyDTO(BlockHeader header, SourceBlocks sourceBlocks) : base(header, sourceBlocks)
         {
             var sourceBlock = sourceBlocks.Blocks.Span[ClassHeight];
             if (sourceBlock.Length < BlockLength)
@@ -125,17 +127,29 @@ namespace MyOrg.Models.MemBlocks
                 _writableLocalBlock = Memory<byte>.Empty;
             }
         }
-        internal Base_1_Int64(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
-        public Base_1_Int64(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
+        internal MyDTO(SourceBlocks sourceBlocks) : this(_header, sourceBlocks) { }
+        public MyDTO(ReadOnlySequence<byte> buffers) : this(_header, SourceBlocks.ParseFrom(buffers)) { }
 
-        public Int64 Value
+        public PairOfInt64 Custom1
         {
-            get => Codec_Int64_LE.ReadFromSpan(_readonlyLocalBlock.Slice(0, 8).Span);
-            set => Codec_Int64_LE.WriteToSpan(_writableLocalBlock.Slice(0, 8).Span, IfNotFrozen(value));
+            get => Codec_PairOfInt64_LE.ReadFromSpan(_readonlyLocalBlock.Slice(0, 16).Span);
+            set => Codec_PairOfInt64_LE.WriteToSpan(_writableLocalBlock.Slice(0, 16).Span, IfNotFrozen(value));
+        }
+
+        public PairOfInt32 Custom2
+        {
+            get => Codec_PairOfInt32_LE.ReadFromSpan(_readonlyLocalBlock.Slice(16, 8).Span);
+            set => Codec_PairOfInt32_LE.WriteToSpan(_writableLocalBlock.Slice(16, 8).Span, IfNotFrozen(value));
+        }
+
+        public PairOfInt16 Custom3
+        {
+            get => Codec_PairOfInt16_LE.ReadFromSpan(_readonlyLocalBlock.Slice(24, 4).Span);
+            set => Codec_PairOfInt16_LE.WriteToSpan(_writableLocalBlock.Slice(24, 4).Span, IfNotFrozen(value));
         }
 
 
-        public bool Equals(Base_1_Int64? other)
+        public bool Equals(MyDTO? other)
         {
             if (ReferenceEquals(this, other)) return true;
             if (other is null) return false;
@@ -143,10 +157,10 @@ namespace MyOrg.Models.MemBlocks
             if (!_readonlyLocalBlock.Span.SequenceEqual(other._readonlyLocalBlock.Span)) return false;
             return true;
         }
-        public override bool Equals(object? obj) => obj is Base_1_Int64 other && Equals(other);
+        public override bool Equals(object? obj) => obj is MyDTO other && Equals(other);
         public override int GetHashCode() => base.GetHashCode();
-        public static bool operator ==(Base_1_Int64? left, Base_1_Int64? right) => left is not null ? left.Equals(right) : (right is null);
-        public static bool operator !=(Base_1_Int64? left, Base_1_Int64? right) => left is not null ? !left.Equals(right) : (right is not null);
+        public static bool operator ==(MyDTO? left, MyDTO? right) => left is not null ? left.Equals(right) : (right is null);
+        public static bool operator !=(MyDTO? left, MyDTO? right) => left is not null ? !left.Equals(right) : (right is not null);
 
     }
 }

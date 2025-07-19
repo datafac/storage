@@ -60,7 +60,7 @@ namespace MyOrg.Models.MemBlocks
             return blocks.Header.EntityId switch
             {
                 1 => new MyOrg.Models.MemBlocks.MyPoco1(blocks),
-                116661594 => new MyOrg.Models.MemBlocks.Poco_2_String_Octets(blocks),
+                116665718 => new MyOrg.Models.MemBlocks.Poco_2_String_Octets(blocks),
                 _ => new MyOrg.Models.MemBlocks.Base_1_Octets(blocks)
             };
         }
