@@ -1,3 +1,4 @@
+using DTOMaker.Runtime.JsonNewtonSoft;
 using Newtonsoft.Json;
 using Shouldly;
 using System;
@@ -11,13 +12,6 @@ namespace Template.JsonNewtonSoft.Tests
 {
     public class RoundtripTests
     {
-        private static readonly JsonSerializerSettings settings = new JsonSerializerSettings()
-        {
-            Formatting = Formatting.Indented,
-            DefaultValueHandling = DefaultValueHandling.Ignore,
-            TypeNameHandling = TypeNameHandling.Auto,
-        };
-
         [Fact]
         public void Roundtrip01AsEntity()
         {
@@ -33,8 +27,8 @@ namespace Template.JsonNewtonSoft.Tests
             orig.T_NullableBinaryMemberName_ = smallBinary;
             orig.Freeze();
 
-            string buffer = JsonConvert.SerializeObject(orig, typeof(T_EntityImplName_), settings);
-            var copy = JsonConvert.DeserializeObject<T_EntityImplName_>(buffer, settings);
+            string buffer = orig.ToJson<T_EntityImplName_>();
+            var copy = buffer.FromJson<T_EntityImplName_>();
 
             copy.ShouldNotBeNull();
             copy.Freeze();
@@ -61,8 +55,8 @@ namespace Template.JsonNewtonSoft.Tests
             orig.T_NullableBinaryMemberName_ = smallBinary;
             orig.Freeze();
 
-            string buffer = JsonConvert.SerializeObject(orig, typeof(T_BaseNameSpace_.JsonNewtonSoft.T_BaseName_), settings);
-            var recd = JsonConvert.DeserializeObject<T_BaseNameSpace_.JsonNewtonSoft.T_BaseName_>(buffer, settings);
+            string buffer = orig.ToJson<T_BaseNameSpace_.JsonNewtonSoft.T_BaseName_>();
+            var recd = buffer.FromJson<T_BaseNameSpace_.JsonNewtonSoft.T_BaseName_>();
 
             recd.ShouldNotBeNull();
             recd.ShouldBeOfType<T_EntityImplName_>();

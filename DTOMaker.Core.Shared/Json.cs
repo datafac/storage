@@ -54,15 +54,5 @@ namespace DTOMaker.Gentime.Json
                     .ToArray(),
             };
         }
-
-        //private static readonly JsonSerializerSettings settings = new JsonSerializerSettings()
-        //{
-        //    Formatting = Formatting.Indented,
-        //    DefaultValueHandling = DefaultValueHandling.Ignore
-        //};
-        //public static string ToText(this JsonModel model)
-        //{
-        //    return JsonConvert.SerializeObject(model, settings);
-        //}
     }
 }

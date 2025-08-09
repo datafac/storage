@@ -1,4 +1,5 @@
 using DataFac.Memory;
+using DTOMaker.Runtime.JsonNewtonSoft;
 using MessagePack;
 using Newtonsoft.Json;
 using Shouldly;
@@ -76,13 +77,6 @@ namespace Template.JsonNewtonSoft.Tests
 
     public class SandboxTests
     {
-        private static readonly JsonSerializerSettings settings = new JsonSerializerSettings()
-        {
-            Formatting = Formatting.Indented,
-            DefaultValueHandling = DefaultValueHandling.Ignore,
-            TypeNameHandling = TypeNameHandling.Auto,
-        };
-
         [Fact]
         public void RoundtripSimpleMP()
         {
@@ -111,8 +105,8 @@ namespace Template.JsonNewtonSoft.Tests
             orig.Field1 = 321;
             orig.Field2 = smallBinary.ToArray();
 
-            string buffer = JsonConvert.SerializeObject(orig, settings);
-            var copy = JsonConvert.DeserializeObject<SimpleNS>(buffer, settings);
+            string buffer = orig.ToJson<SimpleNS>();
+            var copy = buffer.FromJson<SimpleNS>();
 
             copy.ShouldNotBeNull();
 
@@ -167,8 +161,8 @@ namespace Template.JsonNewtonSoft.Tests
             orig.Id = 321;
             orig.Name = "Alice";
 
-            string buffer = JsonConvert.SerializeObject(orig, settings);
-            var copy = JsonConvert.DeserializeObject<Child1NS>(buffer, settings);
+            string buffer = orig.ToJson<Child1NS>();
+            var copy = buffer.FromJson<Child1NS>();
 
             copy.ShouldNotBeNull();
 
@@ -185,8 +179,8 @@ namespace Template.JsonNewtonSoft.Tests
             orig.Id = 321;
             orig.Name = "Alice";
 
-            string buffer = JsonConvert.SerializeObject(orig, typeof(ParentNS), settings);
-            var copy = JsonConvert.DeserializeObject<ParentNS>(buffer, settings);
+            string buffer = orig.ToJson<ParentNS>();
+            var copy = buffer.FromJson<ParentNS>();
 
             copy.ShouldNotBeNull();
             copy.ShouldBeOfType<Child1NS>();
