@@ -1,4 +1,5 @@
 using DataFac.Memory;
+using DTOMaker.Runtime.MessagePack;
 using MessagePack;
 using Shouldly;
 using System;
@@ -23,9 +24,9 @@ namespace Sandbox.Tests
             var sender = new MyOrg.Models.MessagePack.MyTree(orig);
             sender.Freeze();
 
-            var buffer = MessagePackSerializer.Serialize<MyOrg.Models.MessagePack.MyTree>(sender);
+            var buffer = sender.SerializeToMessagePack<MyOrg.Models.MessagePack.MyTree>();
 
-            var recver = MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.MyTree>(buffer);
+            var recver = buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.MyTree>();
             recver.Freeze();
 
             recver.Equals(sender).ShouldBeTrue();

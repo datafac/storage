@@ -47,7 +47,7 @@ namespace MyOrg.Models.MessagePack
         public new static StringNode CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
             if (entityId == MyOrg.Models.MessagePack.StringNode.EntityId)
-                return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.StringNode>(buffer, out var _);
+                return buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.StringNode>();
             else
                 throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }

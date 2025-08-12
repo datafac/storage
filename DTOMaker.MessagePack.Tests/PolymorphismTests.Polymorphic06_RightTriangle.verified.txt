@@ -47,7 +47,7 @@ namespace MyOrg.Models.MessagePack
         public new static RightTriangle CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
             if (entityId == MyOrg.Models.MessagePack.RightTriangle.EntityId)
-                return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.RightTriangle>(buffer, out var _);
+                return buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.RightTriangle>();
             else
                 throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }

@@ -173,7 +173,7 @@ namespace T_NameSpace_.MessagePack
                 //##foreach (var derived in entity.DerivedEntities) {
                 //##using var _ = NewScope(derived);
                 //##if (derived.DerivedEntityCount == 0) {
-                T_NameSpace_.MessagePack.T_ConcreteEntity_.EntityId => MessagePackSerializer.Deserialize<T_NameSpace_.MessagePack.T_ConcreteEntity_>(buffer, out var _),
+                T_NameSpace_.MessagePack.T_ConcreteEntity_.EntityId => buffer.DeserializeFromMessagePack<T_NameSpace_.MessagePack.T_ConcreteEntity_>(),
                 //##}
                 //##}
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
@@ -637,7 +637,7 @@ namespace T_NameSpace_.MessagePack
         public new static T_ConcreteEntity_ CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
             if (entityId == T_NameSpace_.MessagePack.T_ConcreteEntity_.EntityId)
-                return MessagePackSerializer.Deserialize<T_NameSpace_.MessagePack.T_ConcreteEntity_>(buffer, out var _);
+                return buffer.DeserializeFromMessagePack<T_NameSpace_.MessagePack.T_ConcreteEntity_>();
             else
                 throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }

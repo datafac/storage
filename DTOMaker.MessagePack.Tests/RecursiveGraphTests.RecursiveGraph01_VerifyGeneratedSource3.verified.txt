@@ -59,10 +59,10 @@ namespace MyOrg.Models.MessagePack
         {
             return entityId switch
             {
-                MyOrg.Models.MessagePack.BooleanNode.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.BooleanNode>(buffer, out var _),
-                MyOrg.Models.MessagePack.DoubleNode.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.DoubleNode>(buffer, out var _),
-                MyOrg.Models.MessagePack.Int64Node.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Int64Node>(buffer, out var _),
-                MyOrg.Models.MessagePack.StringNode.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.StringNode>(buffer, out var _),
+                MyOrg.Models.MessagePack.BooleanNode.EntityId => buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.BooleanNode>(),
+                MyOrg.Models.MessagePack.DoubleNode.EntityId => buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.DoubleNode>(),
+                MyOrg.Models.MessagePack.Int64Node.EntityId => buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.Int64Node>(),
+                MyOrg.Models.MessagePack.StringNode.EntityId => buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.StringNode>(),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }

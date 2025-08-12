@@ -16,7 +16,7 @@ namespace DTOMaker.Runtime.JsonNewtonSoft
 
         private static readonly JsonSerializer _serializer = JsonSerializer.Create(_settings);
 
-        public static string ToJson<T>(this T value)
+        public static string SerializeToJson<T>(this T value)
         {
             using var sw = new StringWriter(new StringBuilder(256), CultureInfo.InvariantCulture);
             using var jw = new JsonTextWriter(sw);
@@ -25,7 +25,7 @@ namespace DTOMaker.Runtime.JsonNewtonSoft
             return sw.ToString();
         }
 
-        public static T? FromJson<T>(this string input)
+        public static T? DeserializeFromJson<T>(this string input)
         {
             using var sr = new StringReader(input);
             using var jr = new JsonTextReader(sr);

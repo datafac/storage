@@ -60,10 +60,10 @@ namespace MyOrg.Models.MessagePack
         {
             return entityId switch
             {
-                MyOrg.Models.MessagePack.Equilateral.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Equilateral>(buffer, out var _),
-                MyOrg.Models.MessagePack.Rectangle.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Rectangle>(buffer, out var _),
-                MyOrg.Models.MessagePack.RightTriangle.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.RightTriangle>(buffer, out var _),
-                MyOrg.Models.MessagePack.Square.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Square>(buffer, out var _),
+                MyOrg.Models.MessagePack.Equilateral.EntityId => buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.Equilateral>(),
+                MyOrg.Models.MessagePack.Rectangle.EntityId => buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.Rectangle>(),
+                MyOrg.Models.MessagePack.RightTriangle.EntityId => buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.RightTriangle>(),
+                MyOrg.Models.MessagePack.Square.EntityId => buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.Square>(),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }

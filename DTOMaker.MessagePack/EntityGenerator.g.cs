@@ -183,7 +183,7 @@ Emit("            {");
                 foreach (var derived in entity.DerivedEntities) {
                 using var _ = NewScope(derived);
                 if (derived.DerivedEntityCount == 0) {
-Emit("                T_NameSpace_.MessagePack.T_ConcreteEntity_.EntityId => MessagePackSerializer.Deserialize<T_NameSpace_.MessagePack.T_ConcreteEntity_>(buffer, out var _),");
+Emit("                T_NameSpace_.MessagePack.T_ConcreteEntity_.EntityId => buffer.DeserializeFromMessagePack<T_NameSpace_.MessagePack.T_ConcreteEntity_>(),");
                 }
                 }
 Emit("                _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)");
@@ -647,7 +647,7 @@ Emit("");
 Emit("        public new static T_ConcreteEntity_ CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)");
 Emit("        {");
 Emit("            if (entityId == T_NameSpace_.MessagePack.T_ConcreteEntity_.EntityId)");
-Emit("                return MessagePackSerializer.Deserialize<T_NameSpace_.MessagePack.T_ConcreteEntity_>(buffer, out var _);");
+Emit("                return buffer.DeserializeFromMessagePack<T_NameSpace_.MessagePack.T_ConcreteEntity_>();");
 Emit("            else");
 Emit("                throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);");
 Emit("        }");

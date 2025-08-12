@@ -47,7 +47,7 @@ namespace MyOrg.Models.MessagePack
         public new static Square CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
             if (entityId == MyOrg.Models.MessagePack.Square.EntityId)
-                return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Square>(buffer, out var _);
+                return buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.Square>();
             else
                 throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }

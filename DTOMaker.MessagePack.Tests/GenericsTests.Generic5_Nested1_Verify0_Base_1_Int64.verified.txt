@@ -46,7 +46,7 @@ namespace MyOrg.Models.MessagePack
         {
             return entityId switch
             {
-                MyOrg.Models.MessagePack.Poco_2_String_Int64.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Poco_2_String_Int64>(buffer, out var _),
+                MyOrg.Models.MessagePack.Poco_2_String_Int64.EntityId => buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.Poco_2_String_Int64>(),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }

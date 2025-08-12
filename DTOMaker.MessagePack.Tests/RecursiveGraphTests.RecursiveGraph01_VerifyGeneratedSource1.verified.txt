@@ -47,7 +47,7 @@ namespace MyOrg.Models.MessagePack
         public new static DoubleNode CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
             if (entityId == MyOrg.Models.MessagePack.DoubleNode.EntityId)
-                return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.DoubleNode>(buffer, out var _);
+                return buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.DoubleNode>();
             else
                 throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }

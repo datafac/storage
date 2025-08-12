@@ -47,7 +47,7 @@ namespace MyOrg.Models.MessagePack
         public new static Int64Node CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
             if (entityId == MyOrg.Models.MessagePack.Int64Node.EntityId)
-                return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Int64Node>(buffer, out var _);
+                return buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.Int64Node>();
             else
                 throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }

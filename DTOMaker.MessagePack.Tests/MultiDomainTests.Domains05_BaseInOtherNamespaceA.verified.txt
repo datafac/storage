@@ -46,7 +46,7 @@ namespace MyOrg.DomainA.MessagePack
         {
             return entityId switch
             {
-                MyOrg.DomainB.MessagePack.MyDTO.EntityId => MessagePackSerializer.Deserialize<MyOrg.DomainB.MessagePack.MyDTO>(buffer, out var _),
+                MyOrg.DomainB.MessagePack.MyDTO.EntityId => buffer.DeserializeFromMessagePack<MyOrg.DomainB.MessagePack.MyDTO>(),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }

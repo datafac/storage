@@ -46,7 +46,7 @@ namespace MyOrg.Models.MessagePack
         {
             return entityId switch
             {
-                MyOrg.Models.MessagePack.MyDTO2.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.MyDTO2>(buffer, out var _),
+                MyOrg.Models.MessagePack.MyDTO2.EntityId => buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.MyDTO2>(),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }

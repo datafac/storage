@@ -26,6 +26,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\DTOMaker.Runtime.MessagePack\DTOMaker.Runtime.MessagePack.csproj" />
 	  <ProjectReference Include="..\Template.JsonNewtonSoft\Template.JsonNewtonSoft.csproj" />
 	</ItemGroup>
 

@@ -47,7 +47,7 @@ namespace MyOrg.DomainA.MessagePack
         public new static MyDTO CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
             if (entityId == MyOrg.DomainA.MessagePack.MyDTO.EntityId)
-                return MessagePackSerializer.Deserialize<MyOrg.DomainA.MessagePack.MyDTO>(buffer, out var _);
+                return buffer.DeserializeFromMessagePack<MyOrg.DomainA.MessagePack.MyDTO>();
             else
                 throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }

@@ -47,7 +47,7 @@ namespace MyOrg.Models.MessagePack
         public new static Other CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
             if (entityId == MyOrg.Models.MessagePack.Other.EntityId)
-                return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Other>(buffer, out var _);
+                return buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.Other>();
             else
                 throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }

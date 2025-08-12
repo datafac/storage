@@ -50,8 +50,8 @@ namespace MyOrg.Models.MessagePack
         {
             return entityId switch
             {
-                MyOrg.Models.MessagePack.DoubleNode.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.DoubleNode>(buffer, out var _),
-                MyOrg.Models.MessagePack.Int64Node.EntityId => MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Int64Node>(buffer, out var _),
+                MyOrg.Models.MessagePack.DoubleNode.EntityId => buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.DoubleNode>(),
+                MyOrg.Models.MessagePack.Int64Node.EntityId => buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.Int64Node>(),
                 _ => throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null)
             };
         }

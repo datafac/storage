@@ -1,5 +1,6 @@
 using DataFac.Memory;
 using DTOMaker.Runtime.JsonNewtonSoft;
+using DTOMaker.Runtime.MessagePack;
 using MessagePack;
 using Newtonsoft.Json;
 using Shouldly;
@@ -86,9 +87,8 @@ namespace Template.JsonNewtonSoft.Tests
             orig.Field1 = 321;
             orig.Field2 = smallBinary;
 
-            ReadOnlyMemory<byte> buffer = MessagePackSerializer.Serialize<SimpleMP>(orig);
-            var copy = MessagePackSerializer.Deserialize<SimpleMP>(buffer, out int bytesRead);
-            bytesRead.ShouldBe(buffer.Length);
+            ReadOnlyMemory<byte> buffer = orig.SerializeToMessagePack<SimpleMP>();
+            var copy = buffer.DeserializeFromMessagePack<SimpleMP>();
 
             ISimple iorig = orig;
             ISimple icopy = copy;
@@ -105,8 +105,8 @@ namespace Template.JsonNewtonSoft.Tests
             orig.Field1 = 321;
             orig.Field2 = smallBinary.ToArray();
 
-            string buffer = orig.ToJson<SimpleNS>();
-            var copy = buffer.FromJson<SimpleNS>();
+            string buffer = orig.SerializeToJson<SimpleNS>();
+            var copy = buffer.DeserializeFromJson<SimpleNS>();
 
             copy.ShouldNotBeNull();
 
@@ -123,9 +123,8 @@ namespace Template.JsonNewtonSoft.Tests
             orig.Id = 321;
             orig.Name = "Alice";
 
-            ReadOnlyMemory<byte> buffer = MessagePackSerializer.Serialize<Child1MP>(orig);
-            var copy = MessagePackSerializer.Deserialize<Child1MP>(buffer, out int bytesRead);
-            bytesRead.ShouldBe(buffer.Length);
+            ReadOnlyMemory<byte> buffer = orig.SerializeToMessagePack<Child1MP>();
+            var copy = buffer.DeserializeFromMessagePack<Child1MP>();
 
             IChild1 iorig = orig;
             IChild1 icopy = copy;
@@ -140,9 +139,8 @@ namespace Template.JsonNewtonSoft.Tests
             orig.Id = 321;
             orig.Name = "Alice";
 
-            ReadOnlyMemory<byte> buffer = MessagePackSerializer.Serialize<ParentMP>(orig);
-            var copy = MessagePackSerializer.Deserialize<ParentMP>(buffer, out int bytesRead);
-            bytesRead.ShouldBe(buffer.Length);
+            ReadOnlyMemory<byte> buffer = orig.SerializeToMessagePack<ParentMP>();
+            var copy = buffer.DeserializeFromMessagePack<ParentMP>();
 
             copy.ShouldNotBeNull();
             copy.ShouldBeOfType<Child1MP>();
@@ -161,8 +159,8 @@ namespace Template.JsonNewtonSoft.Tests
             orig.Id = 321;
             orig.Name = "Alice";
 
-            string buffer = orig.ToJson<Child1NS>();
-            var copy = buffer.FromJson<Child1NS>();
+            string buffer = orig.SerializeToJson<Child1NS>();
+            var copy = buffer.DeserializeFromJson<Child1NS>();
 
             copy.ShouldNotBeNull();
 
@@ -179,8 +177,8 @@ namespace Template.JsonNewtonSoft.Tests
             orig.Id = 321;
             orig.Name = "Alice";
 
-            string buffer = orig.ToJson<ParentNS>();
-            var copy = buffer.FromJson<ParentNS>();
+            string buffer = orig.SerializeToJson<ParentNS>();
+            var copy = buffer.DeserializeFromJson<ParentNS>();
 
             copy.ShouldNotBeNull();
             copy.ShouldBeOfType<Child1NS>();

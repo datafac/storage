@@ -47,7 +47,7 @@ namespace MyOrg.Models.MessagePack
         public new static Tree CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
             if (entityId == MyOrg.Models.MessagePack.Tree.EntityId)
-                return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Tree>(buffer, out var _);
+                return buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.Tree>();
             else
                 throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }

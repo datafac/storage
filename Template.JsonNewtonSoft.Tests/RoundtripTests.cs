@@ -27,8 +27,8 @@ namespace Template.JsonNewtonSoft.Tests
             orig.T_NullableBinaryMemberName_ = smallBinary;
             orig.Freeze();
 
-            string buffer = orig.ToJson<T_EntityImplName_>();
-            var copy = buffer.FromJson<T_EntityImplName_>();
+            string buffer = orig.SerializeToJson<T_EntityImplName_>();
+            var copy = buffer.DeserializeFromJson<T_EntityImplName_>();
 
             copy.ShouldNotBeNull();
             copy.Freeze();
@@ -55,8 +55,8 @@ namespace Template.JsonNewtonSoft.Tests
             orig.T_NullableBinaryMemberName_ = smallBinary;
             orig.Freeze();
 
-            string buffer = orig.ToJson<T_BaseNameSpace_.JsonNewtonSoft.T_BaseName_>();
-            var recd = buffer.FromJson<T_BaseNameSpace_.JsonNewtonSoft.T_BaseName_>();
+            string buffer = orig.SerializeToJson<T_BaseNameSpace_.JsonNewtonSoft.T_BaseName_>();
+            var recd = buffer.DeserializeFromJson<T_BaseNameSpace_.JsonNewtonSoft.T_BaseName_>();
 
             recd.ShouldNotBeNull();
             recd.ShouldBeOfType<T_EntityImplName_>();

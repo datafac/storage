@@ -47,7 +47,7 @@ namespace MyOrg.Models.MessagePack
         public new static Rectangle CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
             if (entityId == MyOrg.Models.MessagePack.Rectangle.EntityId)
-                return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Rectangle>(buffer, out var _);
+                return buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.Rectangle>();
             else
                 throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }

@@ -47,7 +47,7 @@ namespace MyOrg.Models.MessagePack
         public new static BooleanNode CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
             if (entityId == MyOrg.Models.MessagePack.BooleanNode.EntityId)
-                return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.BooleanNode>(buffer, out var _);
+                return buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.BooleanNode>();
             else
                 throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }

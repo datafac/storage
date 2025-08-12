@@ -6,6 +6,7 @@ using System;
 
 using T_NameSpace_.MessagePack;
 using System.Linq;
+using DTOMaker.Runtime.MessagePack;
 
 namespace Template_MessagePack.Tests
 {
@@ -26,9 +27,8 @@ namespace Template_MessagePack.Tests
             orig.T_NullableBinaryMemberName_ = smallBinary;
             orig.Freeze();
 
-            ReadOnlyMemory<byte> buffer = MessagePackSerializer.Serialize<T_ConcreteEntity_>(orig);
-            var copy = MessagePackSerializer.Deserialize<T_ConcreteEntity_>(buffer, out int bytesRead);
-            bytesRead.ShouldBe(buffer.Length);
+            ReadOnlyMemory<byte> buffer = orig.SerializeToMessagePack<T_ConcreteEntity_>();
+            var copy = buffer.DeserializeFromMessagePack<T_ConcreteEntity_>();
 
             copy.Freeze();
             copy.IsFrozen.ShouldBeTrue();
@@ -56,9 +56,9 @@ namespace Template_MessagePack.Tests
             orig.T_NullableBinaryMemberName_ = smallBinary;
             orig.Freeze();
 
-            ReadOnlyMemory<byte> buffer = MessagePackSerializer.Serialize<T_BaseNameSpace_.MessagePack.T_BaseName_>(orig);
-            var recd = MessagePackSerializer.Deserialize<T_BaseNameSpace_.MessagePack.T_BaseName_>(buffer, out int bytesRead);
-            bytesRead.ShouldBe(buffer.Length);
+            ReadOnlyMemory<byte> buffer = orig.SerializeToMessagePack<T_BaseNameSpace_.MessagePack.T_BaseName_>();
+            var recd = buffer.DeserializeFromMessagePack<T_BaseNameSpace_.MessagePack.T_BaseName_>();
+
             recd.ShouldNotBeNull();
             recd.ShouldBeOfType<T_ConcreteEntity_>();
             recd.Freeze();

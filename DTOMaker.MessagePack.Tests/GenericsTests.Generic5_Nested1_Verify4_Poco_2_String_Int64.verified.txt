@@ -47,7 +47,7 @@ namespace MyOrg.Models.MessagePack
         public new static Poco_2_String_Int64 CreateFrom(int entityId, ReadOnlyMemory<byte> buffer)
         {
             if (entityId == MyOrg.Models.MessagePack.Poco_2_String_Int64.EntityId)
-                return MessagePackSerializer.Deserialize<MyOrg.Models.MessagePack.Poco_2_String_Int64>(buffer, out var _);
+                return buffer.DeserializeFromMessagePack<MyOrg.Models.MessagePack.Poco_2_String_Int64>();
             else
                 throw new ArgumentOutOfRangeException(nameof(entityId), entityId, null);
         }
