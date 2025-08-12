@@ -4,8 +4,7 @@ using DTOMaker.Runtime;
 using System;
 namespace MyOrg.Models
 {
-    [Entity]
-    [Id(1)]
+    [Entity][Id(1)]
     public interface ITree<TK, TV> : IEntityBase
     {
         [Member(1)] int Count { get; }
@@ -14,8 +13,8 @@ namespace MyOrg.Models
         [Member(4)] ITree<TK, TV>? Left { get; }
         [Member(5)] ITree<TK, TV>? Right { get; }
     }
-    [Entity]
-    [Id(2)]
+
+    [Entity][Id(2)]
     public interface IMyTree : ITree<String, Octets>
     {
     }
