@@ -53,7 +53,7 @@ namespace DTOMaker.MemBlocks
                     return 16;
                 // encoded as BlobIdV1
                 case FullTypeName.SystemString:
-                case FullTypeName.MemoryOctetsqqq:
+                case FullTypeName.MemoryOctets:
                     return Constants.BlobIdV1Size;
                 default:
                     return 0;

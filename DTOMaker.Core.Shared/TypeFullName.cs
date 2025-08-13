@@ -74,7 +74,7 @@ namespace DTOMaker.Gentime
                 FullTypeName.PairOfInt16 => (9096, MemberKind.Native),
                 FullTypeName.PairOfInt32 => (9097, MemberKind.Native),
                 FullTypeName.PairOfInt64 => (9098, MemberKind.Native),
-                FullTypeName.MemoryOctetsqqq => (9099, MemberKind.Binary),
+                FullTypeName.MemoryOctets => (9099, MemberKind.Binary),
                 _ => (0, MemberKind.Unknown),
             };
         }

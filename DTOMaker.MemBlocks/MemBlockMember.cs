@@ -80,7 +80,7 @@ namespace DTOMaker.MemBlocks
         private SyntaxDiagnostic? CheckFixedLengthIsValid()
         {
             if (MemberType.FullName != FullTypeName.SystemString
-                && MemberType.FullName != FullTypeName.MemoryOctetsqqq) return null;
+                && MemberType.FullName != FullTypeName.MemoryOctets) return null;
             if (FixedLength == 0) return null;
             if (IsPowerOf2(FixedLength, 4, 1024)) return null;
             return new SyntaxDiagnostic(

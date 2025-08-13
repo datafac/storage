@@ -10,12 +10,17 @@ namespace DTOMaker.Runtime.MessagePack
         private CustomResolver() { }
         public IMessagePackFormatter<T>? GetFormatter<T>()
         {
+            if (typeof(T) == typeof(PairOfInt64))
+            {
+                return new PairOfInt64Formatter() is IMessagePackFormatter<T> typedFormatter ? typedFormatter : null;
+            }
+            if (typeof(T) == typeof(PairOfInt32))
+            {
+                return new PairOfInt32Formatter() is IMessagePackFormatter<T> typedFormatter ? typedFormatter : null;
+            }
             if (typeof(T) == typeof(PairOfInt16))
             {
-                if (new PairOfInt16Formatter() is IMessagePackFormatter<T> typedFormatter)
-                {
-                    return typedFormatter;
-                }
+                return new PairOfInt16Formatter() is IMessagePackFormatter<T> typedFormatter ? typedFormatter : null;
             }
             return null;
         }
