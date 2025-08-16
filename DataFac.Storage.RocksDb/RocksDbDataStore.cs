@@ -188,10 +188,10 @@ public sealed class RocksDbDataStore : IDataStore
     public async ValueTask<ReadOnlyMemory<byte>?> GetBlob(BlobIdV1 id)
     {
         ThrowIfDisposed();
-        if (id.IsDefaultOrAllZero) return null;
-        if (id.IsEmbedded)
+        if (id.IsDefault) return null;
+        if (id.TryGetEmbeddedBlob(out var embeddedBlob))
         {
-            return id.GetEmbeddedBlob();
+            return embeddedBlob;
         }
 
         Interlocked.Increment(ref _counters.BlobGetCount);

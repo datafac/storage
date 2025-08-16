@@ -35,7 +35,7 @@ namespace DataFac.Storage
         public ReadOnlyMemory<byte> HashData => _memory.Slice(32, 32);
 
         public ReadOnlyMemory<byte> Memory => _memory;
-        public bool IsDefaultOrAllZero
+        public bool IsDefault
         {
             get
             {
@@ -45,21 +45,6 @@ namespace DataFac.Storage
                     if (nums[i] != 0) return false;
                 }
                 return true;
-            }
-        }
-
-        public bool IsEmbedded
-        {
-            get
-            {
-                char marker = (char)Marker00;
-                return marker switch
-                {
-                    'U' => true, // embedded, uncompressed
-                    'B' => true,    // embedded, Brotli
-                    'G' => true,     // embedded, GZip
-                    _ => false
-                };
             }
         }
 
@@ -88,7 +73,7 @@ namespace DataFac.Storage
         /// <exception cref="ArgumentException"></exception>
         public BlobIdV1(BlobCompAlgo compAlgo, ReadOnlySpan<byte> data)
         {
-            if (data.Length > 62) throw new ArgumentException("Length must be <= 62", nameof(data));
+            if (data.Length > (BlobIdV1.Size - 2)) throw new ArgumentException("Length must be <= 62", nameof(data));
             Memory<byte> memory = new byte[BlobIdV1.Size];
             Span<byte> block = memory.Span;
             block[0] = compAlgo switch
@@ -129,17 +114,34 @@ namespace DataFac.Storage
 
         public bool IsAssigned => Marker00 != 0;
 
-        public ReadOnlyMemory<byte> GetEmbeddedBlob()
+        public bool IsEmbedded
+        {
+            get
+            {
+                char marker = (char)Marker00;
+                return marker switch
+                {
+                    'U' => true, // embedded, uncompressed
+                    'B' => true, // embedded, Brotli
+                    'G' => true, // embedded, GZip
+                    _ => false
+                };
+            }
+        }
+
+        public bool TryGetEmbeddedBlob(out ReadOnlyMemory<byte> embedded)
         {
             char marker = (char)Marker00;
             if (marker == 'U' || marker == 'B' || marker == 'G')
             {
                 int dataSize = _memory.Span[1];
-                return _memory.Slice(2, dataSize);
+                embedded =  _memory.Slice(2, dataSize);
+                return true;
             }
             else
             {
-                throw new InvalidOperationException("Does not contain embedded blob!");
+                embedded = ReadOnlyMemory<byte>.Empty;
+                return false;
             }
         }
 
@@ -149,7 +151,7 @@ namespace DataFac.Storage
         /// <returns></returns>
         public override string ToString()
         {
-            if (IsDefaultOrAllZero) return string.Empty;
+            if (IsDefault) return string.Empty;
             StringBuilder result = new StringBuilder();
             char marker = (char)Marker00;
             if (marker == 'U' || marker == 'B' || marker == 'G')

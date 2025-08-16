@@ -11,7 +11,7 @@ public class BlobIdTests
     public void BlobId01CreateDefault()
     {
         BlobIdV1 id = default;
-        id.IsDefaultOrAllZero.ShouldBeTrue();
+        id.IsDefault.ShouldBeTrue();
         id.ToString().ShouldBe("");
     }
 
@@ -20,7 +20,7 @@ public class BlobIdTests
     {
         ReadOnlySpan<byte> input = stackalloc byte[BlobIdV1.Size];
         BlobIdV1 id = BlobIdV1.FromSpan(input);
-        id.IsDefaultOrAllZero.ShouldBeTrue();
+        id.IsDefault.ShouldBeTrue();
         id.ToString().ShouldBe("");
         id.Equals(default).ShouldBeFalse();
     }
@@ -30,7 +30,7 @@ public class BlobIdTests
     {
         ReadOnlyMemory<byte> input = Enumerable.Range(0, BlobIdV1.Size).Select(i => (byte)i).ToArray();
         BlobIdV1 id = BlobIdV1.UnsafeWrap(input);
-        id.IsDefaultOrAllZero.ShouldBeFalse();
+        id.IsDefault.ShouldBeFalse();
         id.ToString().ShouldBe("V2.3:185207048:4:252579084:5:ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8=");
     }
 
@@ -45,7 +45,7 @@ public class BlobIdTests
 
         ReadOnlyMemory<byte> input = inputStr.Split('-').Select(s => (byte)int.Parse(s, System.Globalization.NumberStyles.HexNumber)).ToArray();
         BlobIdV1 id = BlobIdV1.UnsafeWrap(input);
-        id.IsDefaultOrAllZero.ShouldBeFalse();
+        id.IsDefault.ShouldBeFalse();
         id.ToString().ShouldBe("V1.0:256:0:0:1:QK/y6dLYki5Hr9RkjmlnSXFYeF+9Hahw5xECZr+USIA=");
 
         string.Join("-", id.Memory.ToArray().Select(b => b.ToString("X2"))).ShouldBe(inputStr);
