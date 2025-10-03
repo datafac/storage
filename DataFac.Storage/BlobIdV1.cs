@@ -135,7 +135,7 @@ namespace DataFac.Storage
             if (marker == 'U' || marker == 'B' || marker == 'G')
             {
                 int dataSize = _memory.Span[1];
-                embedded =  _memory.Slice(2, dataSize);
+                embedded = _memory.Slice(2, dataSize);
                 return true;
             }
             else
