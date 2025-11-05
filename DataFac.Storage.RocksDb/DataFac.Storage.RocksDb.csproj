@@ -36,9 +36,9 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="RocksDB" Version="10.2.1.58549" />
+		<PackageReference Include="RocksDB" Version="10.4.2.62171" />
 		<PackageReference Include="System.Memory" Version="4.6.3" />
-		<PackageReference Include="System.Threading.Channels" Version="9.0.9" />
+		<PackageReference Include="System.Threading.Channels" Version="9.0.10" />
 		<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
 	</ItemGroup>
 
