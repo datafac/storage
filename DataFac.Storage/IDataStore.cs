@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -42,17 +43,17 @@ public interface IDataStore : IDisposable
     /// <returns></returns>
     void RemoveNames(IEnumerable<string> keys);
 
-    ValueTask<ReadOnlyMemory<byte>?> GetBlob(BlobIdV1 id);
-    ValueTask<BlobIdV1> PutBlob(ReadOnlyMemory<byte> data, bool withSync = false);
+    ValueTask<ReadOnlySequence<byte>?> GetBlob(BlobIdV1 id);
+    ValueTask<BlobIdV1> PutBlob(ReadOnlySequence<byte> data, bool withSync = false);
 
-    KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetCachedBlobs();
-    KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetStoredBlobs();
+    KeyValuePair<BlobIdV1, ReadOnlySequence<byte>>[] GetCachedBlobs();
+    KeyValuePair<BlobIdV1, ReadOnlySequence<byte>>[] GetStoredBlobs();
 
     /// <summary>
     /// Removes the blob if it exists.
     /// </summary>
     /// <param name="id"></param>
-    ValueTask<ReadOnlyMemory<byte>?> RemoveBlob(BlobIdV1 id, bool withSync);
+    ValueTask<ReadOnlySequence<byte>?> RemoveBlob(BlobIdV1 id, bool withSync);
 
     /// <summary>
     /// Removes the blob if it exists.

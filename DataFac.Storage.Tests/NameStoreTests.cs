@@ -1,5 +1,6 @@
 ﻿using Shouldly;
 using System;
+using System.Buffers;
 using System.Linq;
 using Xunit;
 
@@ -22,8 +23,8 @@ public class NameStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        ReadOnlyMemory<byte> data = default;
-        BlobIdV1 id = data.Span.GetBlobId();
+        ReadOnlySequence<byte> data = default;
+        BlobIdV1 id = data.GetBlobId();
         bool missing = dataStore.PutName("name1", id);
         missing.ShouldBeTrue();
         var counters = dataStore.GetCounters();
@@ -41,8 +42,8 @@ public class NameStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        ReadOnlyMemory<byte> data = default;
-        BlobIdV1 id = data.Span.GetBlobId();
+        ReadOnlySequence<byte> data = default;
+        BlobIdV1 id = data.GetBlobId();
         bool missing = dataStore.PutName("name1", id);
         missing.ShouldBeTrue();
         var counters1 = dataStore.GetCounters();
@@ -69,8 +70,8 @@ public class NameStoreTests
         var names0 = dataStore.GetNames();
         names0.Length.ShouldBe(0);
 
-        ReadOnlyMemory<byte> data = default;
-        BlobIdV1 id = data.Span.GetBlobId();
+        ReadOnlySequence<byte> data = default;
+        BlobIdV1 id = data.GetBlobId();
         dataStore.PutName("name1", id);
         dataStore.PutName("name2", id);
         dataStore.PutName("name2", id);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -13,7 +14,7 @@ namespace DataFac.Storage.Testing;
 public sealed class TestDataStore : IDataStore
 {
     private readonly ConcurrentDictionary<string, BlobIdV1> _nameStore = new ConcurrentDictionary<string, BlobIdV1>();
-    private readonly ConcurrentDictionary<BlobIdV1, ReadOnlyMemory<byte>> _blobStore = new ConcurrentDictionary<BlobIdV1, ReadOnlyMemory<byte>>();
+    private readonly ConcurrentDictionary<BlobIdV1, ReadOnlySequence<byte>> _blobStore = new ConcurrentDictionary<BlobIdV1, ReadOnlySequence<byte>>();
 
     public TestDataStore()
     {
@@ -71,40 +72,40 @@ public sealed class TestDataStore : IDataStore
         return added;
     }
 
-    public KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetCachedBlobs() => _blobStore.ToArray();
+    public KeyValuePair<BlobIdV1, ReadOnlySequence<byte>>[] GetCachedBlobs() => _blobStore.ToArray();
 
-    public KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetStoredBlobs() => _blobStore.ToArray();
+    public KeyValuePair<BlobIdV1, ReadOnlySequence<byte>>[] GetStoredBlobs() => _blobStore.ToArray();
 
-    public ValueTask<ReadOnlyMemory<byte>?> GetBlob(BlobIdV1 id)
+    public ValueTask<ReadOnlySequence<byte>?> GetBlob(BlobIdV1 id)
     {
         if (id.IsDefault)
-            return new ValueTask<ReadOnlyMemory<byte>?>((ReadOnlyMemory<byte>?)null);
+            return new ValueTask<ReadOnlySequence<byte>?>((ReadOnlySequence<byte>?)null);
 
         if (id.TryGetEmbeddedBlob(out var embeddedBlob))
-            return new ValueTask<ReadOnlyMemory<byte>?>(embeddedBlob);
+            return new ValueTask<ReadOnlySequence<byte>?>(embeddedBlob);
 
         Interlocked.Increment(ref _counters.BlobGetCount);
         if (_blobStore.TryGetValue(id, out var data))
         {
             Interlocked.Increment(ref _counters.BlobGetCache);
-            return new ValueTask<ReadOnlyMemory<byte>?>(data);
+            return new ValueTask<ReadOnlySequence<byte>?>(data);
         }
         else
         {
             Interlocked.Increment(ref _counters.BlobGetReads);
-            return new ValueTask<ReadOnlyMemory<byte>?>((ReadOnlyMemory<byte>?)null);
+            return new ValueTask<ReadOnlySequence<byte>?>((ReadOnlySequence<byte>?)null);
         }
     }
 
-    public ValueTask<ReadOnlyMemory<byte>?> RemoveBlob(BlobIdV1 id, bool withSync)
+    public ValueTask<ReadOnlySequence<byte>?> RemoveBlob(BlobIdV1 id, bool withSync)
     {
         if (_blobStore.TryRemove(id, out var data))
         {
-            return new ValueTask<ReadOnlyMemory<byte>?>(data);
+            return new ValueTask<ReadOnlySequence<byte>?>(data);
         }
         else
         {
-            return new ValueTask<ReadOnlyMemory<byte>?>((ReadOnlyMemory<byte>?)null);
+            return new ValueTask<ReadOnlySequence<byte>?>((ReadOnlySequence<byte>?)null);
         }
     }
 
@@ -120,9 +121,9 @@ public sealed class TestDataStore : IDataStore
         return default;
     }
 
-    public ValueTask<BlobIdV1> PutBlob(ReadOnlyMemory<byte> data, bool withSync)
+    public ValueTask<BlobIdV1> PutBlob(ReadOnlySequence<byte> data, bool withSync)
     {
-        var id = data.Span.GetBlobId();
+        var id = data.GetBlobId();
         if (id.IsEmbedded)
             return new ValueTask<BlobIdV1>(id);
         Interlocked.Increment(ref _counters.BlobPutCount);

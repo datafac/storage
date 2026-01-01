@@ -1,5 +1,6 @@
 ﻿using Shouldly;
 using System;
+using System.Buffers;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -54,8 +55,8 @@ public class BlobStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        ReadOnlyMemory<byte> data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobIdV1 id = data.Span.GetBlobId();
+        var data = new ReadOnlySequence<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+        BlobIdV1 id = data.GetBlobId();
         var result = await dataStore.GetBlob(id);
         result.ShouldBeNull();
         var counters = dataStore.GetCounters();
@@ -74,7 +75,7 @@ public class BlobStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        ReadOnlyMemory<byte> data = default;
+        ReadOnlySequence<byte> data = default;
         var id = await dataStore.PutBlob(data, true);
         id.IsEmbedded.ShouldBeTrue();
 
@@ -94,7 +95,7 @@ public class BlobStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        ReadOnlyMemory<byte> data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+        var data = new ReadOnlySequence<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
         await dataStore.PutBlob(data, true);
 
         var counters = dataStore.GetCounters();
@@ -113,8 +114,8 @@ public class BlobStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        ReadOnlyMemory<byte> data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobIdV1 id = data.Span.GetBlobId();
+        var data = new ReadOnlySequence<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+        BlobIdV1 id = data.GetBlobId();
         await dataStore.PutBlob(data, true);
 
         var data2 = await dataStore.GetBlob(id);
@@ -140,10 +141,10 @@ public class BlobStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        ReadOnlyMemory<byte> data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+        var data = new ReadOnlySequence<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
 
         // put first
-        BlobIdV1 id0 = data.Span.GetBlobId();
+        BlobIdV1 id0 = data.GetBlobId();
         await dataStore.PutBlob(data, true);
         var counters1 = dataStore.GetCounters();
         counters1.BlobPutCount.ShouldBe(1);
@@ -152,7 +153,7 @@ public class BlobStoreTests
         counters1.ByteDelta.ShouldBe(256);
 
         // put again
-        BlobIdV1 id1 = data.Span.GetBlobId();
+        BlobIdV1 id1 = data.GetBlobId();
         id1.Equals(id0).ShouldBeTrue();
         await dataStore.PutBlob(data, true);
         var counters2 = dataStore.GetCounters();

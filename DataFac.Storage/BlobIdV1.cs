@@ -1,5 +1,6 @@
 ﻿using DataFac.Memory;
 using System;
+using System.Buffers;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -53,6 +54,12 @@ namespace DataFac.Storage
             _memory = memory;
         }
 
+        public static BlobIdV1 FromSpan(ReadOnlySequence<byte> source)
+        {
+            if (source.Length != BlobIdV1.Size) throw new ArgumentException($"Length must be {BlobIdV1.Size}.", nameof(source));
+            return new BlobIdV1(source.ToArray());
+        }
+
         public static BlobIdV1 FromSpan(ReadOnlySpan<byte> source)
         {
             if (source.Length != BlobIdV1.Size) throw new ArgumentException($"Length must be {BlobIdV1.Size}.", nameof(source));
@@ -63,6 +70,28 @@ namespace DataFac.Storage
         {
             if (memory.Length != BlobIdV1.Size) throw new ArgumentException($"Length must be {BlobIdV1.Size}.", nameof(memory));
             return new BlobIdV1(memory);
+        }
+
+        /// <summary>
+        /// Used to directly embed blob data which is small enough into the id.
+        /// </summary>
+        /// <param name="compAlgo"></param>
+        /// <param name="data"></param>
+        /// <exception cref="ArgumentException"></exception>
+        public BlobIdV1(BlobCompAlgo compAlgo, ReadOnlySequence<byte> data)
+        {
+            if (data.Length > (BlobIdV1.Size - 2)) throw new ArgumentException("Length must be <= 62", nameof(data));
+            Memory<byte> memory = new byte[BlobIdV1.Size];
+            Span<byte> block = memory.Span;
+            block[0] = compAlgo switch
+            {
+                BlobCompAlgo.Brotli => (byte)'B',
+                BlobCompAlgo.GZip => (byte)'G',
+                _ => (byte)'U'
+            };
+            block[1] = (byte)data.Length;
+            data.CopyTo(block.Slice(2));
+            _memory = memory;
         }
 
         /// <summary>
@@ -129,18 +158,18 @@ namespace DataFac.Storage
             }
         }
 
-        public bool TryGetEmbeddedBlob(out ReadOnlyMemory<byte> embedded)
+        public bool TryGetEmbeddedBlob(out ReadOnlySequence<byte> embedded)
         {
             char marker = (char)Marker00;
             if (marker == 'U' || marker == 'B' || marker == 'G')
             {
                 int dataSize = _memory.Span[1];
-                embedded = _memory.Slice(2, dataSize);
+                embedded = new ReadOnlySequence<byte>(_memory.Slice(2, dataSize));
                 return true;
             }
             else
             {
-                embedded = ReadOnlyMemory<byte>.Empty;
+                embedded = ReadOnlySequence<byte>.Empty;
                 return false;
             }
         }

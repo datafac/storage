@@ -1,5 +1,6 @@
 ﻿using Shouldly;
 using System;
+using System.Buffers;
 using System.Linq;
 using Xunit;
 
@@ -54,8 +55,8 @@ public class BlobIdTests
     [Fact]
     public void BlobId06CreateFromCopy()
     {
-        ReadOnlyMemory<byte> data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobIdV1 orig = data.Span.GetBlobId();
+        var data = new ReadOnlySequence<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+        BlobIdV1 orig = data.GetBlobId();
         BlobIdV1 copy = orig;
         copy.ShouldBe(orig);
         copy.Equals(orig).ShouldBeTrue();
