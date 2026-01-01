@@ -4,6 +4,7 @@ using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -209,7 +210,7 @@ public sealed class RocksDbDataStore : IDataStore
 
         // enqueue get
         var complete = new TaskCompletionSource<ReadOnlySequence<byte>?>();
-        _writer.TryWrite(new AsyncOp(id, complete));
+        _writer.TryWrite(AsyncOp.Get(id, complete));
         var data = await complete.Task.ConfigureAwait(false);
         if (data is not null)
         {
@@ -228,13 +229,13 @@ public sealed class RocksDbDataStore : IDataStore
         if (withSync)
         {
             var complete = new TaskCompletionSource<ReadOnlySequence<byte>?>();
-            _writer.TryWrite(new AsyncOp(AsyncOpKind.Del, id, default, complete));
+            _writer.TryWrite(AsyncOp.Del(id, complete));
             var data = await complete.Task.ConfigureAwait(false);
             return data;
         }
         else
         {
-            _writer.TryWrite(new AsyncOp(AsyncOpKind.Del, id, default, null));
+            _writer.TryWrite(AsyncOp.Del(id, null));
             return null;
         }
     }
@@ -248,13 +249,13 @@ public sealed class RocksDbDataStore : IDataStore
         foreach (var id in ids)
         {
             _blobCache.TryRemove(id, out var _);
-            _writer.TryWrite(new AsyncOp(AsyncOpKind.Del, id, default, null));
+            _writer.TryWrite(AsyncOp.Del(id, null));
         }
 
         if (withSync)
         {
             var complete = new TaskCompletionSource<ReadOnlySequence<byte>?>();
-            _writer.TryWrite(new AsyncOp(complete));
+            _writer.TryWrite(AsyncOp.Sync(complete));
             return new ValueTask(complete.Task);
         }
         else
@@ -279,13 +280,13 @@ public sealed class RocksDbDataStore : IDataStore
         if (withSync)
         {
             var complete = new TaskCompletionSource<ReadOnlySequence<byte>?>();
-            _writer.TryWrite(new AsyncOp(id, data, complete));
+            _writer.TryWrite(AsyncOp.Put(id, data, complete));
             await complete.Task.ConfigureAwait(false);
             return id;
         }
         else
         {
-            _writer.TryWrite(new AsyncOp(id, data, null));
+            _writer.TryWrite(AsyncOp.Put(id, data, null));
             return id;
         }
     }
@@ -295,7 +296,7 @@ public sealed class RocksDbDataStore : IDataStore
         ThrowIfDisposed();
         // enqueue sync
         var complete = new TaskCompletionSource<ReadOnlySequence<byte>?>();
-        _writer.TryWrite(new AsyncOp(complete));
+        _writer.TryWrite(AsyncOp.Sync(complete));
         return new ValueTask(complete.Task);
     }
 
