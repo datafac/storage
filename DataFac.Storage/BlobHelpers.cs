@@ -38,8 +38,7 @@ public static class BlobHelpers
         // embed small blobs directly into id
         if (uncompressedData.Length <= (BlobIdV1.Size - 2))
         {
-            BlobIdV1 blobId0 = new BlobIdV1(BlobCompAlgo.UnComp, uncompressedData);
-            return new CompressResult(blobId0, ReadOnlySequence<byte>.Empty);
+            return new CompressResult(new BlobIdV1(BlobCompAlgo.UnComp, uncompressedData), ReadOnlySequence<byte>.Empty);
         }
 
         // try Snappier compression
@@ -50,8 +49,7 @@ public static class BlobHelpers
         // embed compressed if small engough
         if (compressedData.Length <= (BlobIdV1.Size - 2))
         {
-            BlobIdV1 blobId1 = new BlobIdV1(BlobCompAlgo.Snappy, compressedData);
-            return new CompressResult(blobId1, ReadOnlySequence<byte>.Empty);
+            return new CompressResult(new BlobIdV1(BlobCompAlgo.Snappy, compressedData), ReadOnlySequence<byte>.Empty);
         }
 
         ReadOnlySequence<byte> dataToReturn;
