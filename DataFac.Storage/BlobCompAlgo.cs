@@ -2,8 +2,8 @@
 {
     public enum BlobCompAlgo : byte
     {
-        None = 0,
-        Brotli = 1,
-        GZip = 2,
+        UnComp = 0, // 'U'
+        Brotli = 1, // 'B'
+        Snappy = 2, // 'S'
     }
 }

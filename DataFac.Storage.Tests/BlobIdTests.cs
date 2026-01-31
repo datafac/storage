@@ -32,7 +32,7 @@ public class BlobIdTests
         ReadOnlyMemory<byte> input = Enumerable.Range(0, BlobIdV1.Size).Select(i => (byte)i).ToArray();
         BlobIdV1 id = BlobIdV1.UnsafeWrap(input);
         id.IsDefault.ShouldBeFalse();
-        id.ToString().ShouldBe("V2.3:185207048:4:252579084:5:ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8=");
+        id.ToString().ShouldBe("V2.3:185207048:U:252579084:5:ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8=");
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class BlobIdTests
         ReadOnlyMemory<byte> input = inputStr.Split('-').Select(s => (byte)int.Parse(s, System.Globalization.NumberStyles.HexNumber)).ToArray();
         BlobIdV1 id = BlobIdV1.UnsafeWrap(input);
         id.IsDefault.ShouldBeFalse();
-        id.ToString().ShouldBe("V1.0:256:0:0:1:QK/y6dLYki5Hr9RkjmlnSXFYeF+9Hahw5xECZr+USIA=");
+        id.ToString().ShouldBe("V1.0:256:U:0:1:QK/y6dLYki5Hr9RkjmlnSXFYeF+9Hahw5xECZr+USIA=");
 
         string.Join("-", id.Memory.ToArray().Select(b => b.ToString("X2"))).ShouldBe(inputStr);
     }

@@ -15,7 +15,8 @@ namespace DataFac.Storage
 
         // map
         //  offset  path        len fieldname
-        //  00-01   A.A.A.A.A   2   -marker-  "|_"
+        //  00      A.A.A.A.A.A 1   Marker00 '|' for non-embedded or compAlgo char code if embedded
+        //  01      A.A.A.A.A.B 1   Marker01 '_' for non-embedded or data length if embedded
         //  02      A.A.A.A.B.A 1   MajorVer
         //  03      A.A.A.A.B.B 1   MinorVer
         //  04      A.A.A.B.A.A 1   CompAlgo
@@ -83,13 +84,8 @@ namespace DataFac.Storage
             if (data.Length > (BlobIdV1.Size - 2)) throw new ArgumentException("Length must be <= 62", nameof(data));
             Memory<byte> memory = new byte[BlobIdV1.Size];
             Span<byte> block = memory.Span;
-            block[0] = compAlgo switch
-            {
-                BlobCompAlgo.Brotli => (byte)'B',
-                BlobCompAlgo.GZip => (byte)'G',
-                _ => (byte)'U'
-            };
-            block[1] = (byte)data.Length;
+            block[0] = compAlgo.ToCharCode();
+            block[1] = (byte)(data.Length+(byte)'A');
             data.CopyTo(block.Slice(2));
             _memory = memory;
         }
@@ -105,13 +101,8 @@ namespace DataFac.Storage
             if (data.Length > (BlobIdV1.Size - 2)) throw new ArgumentException("Length must be <= 62", nameof(data));
             Memory<byte> memory = new byte[BlobIdV1.Size];
             Span<byte> block = memory.Span;
-            block[0] = compAlgo switch
-            {
-                BlobCompAlgo.Brotli => (byte)'B',
-                BlobCompAlgo.GZip => (byte)'G',
-                _ => (byte)'U'
-            };
-            block[1] = (byte)data.Length;
+            block[0] = compAlgo.ToCharCode();
+            block[1] = (byte)(data.Length + (byte)'A');
             data.CopyTo(block.Slice(2));
             _memory = memory;
         }
@@ -125,7 +116,7 @@ namespace DataFac.Storage
             block[1] = (byte)'_';   // Marker01
             block[2] = majorVer;
             block[3] = minorVer;
-            block[4] = (byte)compAlgo;
+            block[4] = compAlgo.ToCharCode();
             block[5] = (byte)hashAlgo;
             Codec_Int32_LE.WriteToSpan(block.Slice(8, 4), blobSize);
             Codec_Int32_LE.WriteToSpan(block.Slice(12, 4), compSize);
@@ -141,36 +132,29 @@ namespace DataFac.Storage
             _memory.Span.CopyTo(target);
         }
 
-        public bool IsAssigned => Marker00 != 0;
-
-        public bool IsEmbedded
-        {
-            get
-            {
-                char marker = (char)Marker00;
-                return marker switch
-                {
-                    'U' => true, // embedded, uncompressed
-                    'B' => true, // embedded, Brotli
-                    'G' => true, // embedded, GZip
-                    _ => false
-                };
-            }
-        }
+        public bool IsEmbedded => (Marker00 != 0) && Marker00 != (byte)'|';
 
         public bool TryGetEmbeddedBlob(out ReadOnlySequence<byte> embedded)
         {
-            char marker = (char)Marker00;
-            if (marker == 'U' || marker == 'B' || marker == 'G')
-            {
-                int dataSize = _memory.Span[1];
-                embedded = new ReadOnlySequence<byte>(_memory.Slice(2, dataSize));
-                return true;
-            }
-            else
-            {
+            if (!IsEmbedded)            {
                 embedded = ReadOnlySequence<byte>.Empty;
                 return false;
+            }
+            switch(Marker00.ToCompAlgo())
+            {
+                case BlobCompAlgo.UnComp:
+                    int dataSize = Marker01 - (byte)'A';
+                    embedded = new ReadOnlySequence<byte>(_memory.Slice(2, dataSize));
+                    return true;
+                case BlobCompAlgo.Brotli:
+                    throw new NotImplementedException("Brotli embedded blobs are not implemented yet.");
+                    return true;
+                case BlobCompAlgo.Snappy:
+                    throw new NotImplementedException("Snappy embedded blobs are not implemented yet.");
+                    return true;
+                default:
+                    embedded = ReadOnlySequence<byte>.Empty;
+                    return false;
             }
         }
 
@@ -182,10 +166,10 @@ namespace DataFac.Storage
         {
             if (IsDefault) return string.Empty;
             StringBuilder result = new StringBuilder();
-            char marker = (char)Marker00;
-            if (marker == 'U' || marker == 'B' || marker == 'G')
+            if (IsEmbedded)
             {
-                int dataSize = _memory.Span[1];
+                char marker = (char)Marker00;
+                int dataSize = Marker01 - (byte)'A';
                 result.Append(marker);
                 result.Append(':');
                 result.Append(dataSize);
@@ -201,7 +185,7 @@ namespace DataFac.Storage
             result.Append($"V{MajorVer}.{MinorVer}:");
             result.Append(BlobSize);
             result.Append(':');
-            result.Append((int)CompAlgo);
+            result.Append((char)CompAlgo.ToCharCode());
             result.Append(':');
             result.Append(CompSize);
             result.Append(':');
@@ -232,7 +216,7 @@ namespace DataFac.Storage
             int partId = 0;
             int blobSize = default;
             int compAlgoInt = default;
-            var compAlgo = BlobCompAlgo.None;
+            var compAlgo = BlobCompAlgo.UnComp;
             int compSize = default;
             int hashAlgoInt = default;
             var hashAlgo = BlobHashAlgo.Undefined;

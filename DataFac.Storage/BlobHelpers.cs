@@ -9,12 +9,32 @@ namespace DataFac.Storage;
 
 public static class BlobHelpers
 {
+    public static byte ToCharCode(this BlobCompAlgo algo)
+    {
+        return algo switch
+        {
+            BlobCompAlgo.Brotli => (byte)'B',
+            BlobCompAlgo.Snappy => (byte)'S',
+            _ => (byte)'U'
+        };
+    }
+
+    public static BlobCompAlgo ToCompAlgo(this byte charCode)
+    {
+        return charCode switch
+        {
+            (byte)'B' => BlobCompAlgo.Brotli,
+            (byte)'S' => BlobCompAlgo.Snappy,
+            _ => BlobCompAlgo.UnComp,
+        };
+    }
+
     public static BlobIdV1 GetBlobId(this ReadOnlySequence<byte> blob)
     {
         // embed small blobs directly into id
         if (blob.Length <= (BlobIdV1.Size - 2))
         {
-            return new BlobIdV1(BlobCompAlgo.None, blob);
+            return new BlobIdV1(BlobCompAlgo.UnComp, blob);
         }
 
         using var sha256 = SHA256.Create();
@@ -27,13 +47,13 @@ public static class BlobHelpers
             throw new InvalidOperationException("Destination too small");
         }
         // todo compression
-        return new BlobIdV1(blobSpan.Length, BlobCompAlgo.None, 0, BlobHashAlgo.Sha256, hashSpan);
+        return new BlobIdV1(blobSpan.Length, BlobCompAlgo.UnComp, 0, BlobHashAlgo.Sha256, hashSpan);
 #else
         byte[] blobBytes = blob.ToArray();
         byte[] hashBytes = sha256.ComputeHash(blobBytes);
         Span<byte> hashSpan = hashBytes.AsSpan();
         // todo compression
-        return new BlobIdV1(blobBytes.Length, BlobCompAlgo.None, 0, BlobHashAlgo.Sha256, hashSpan);
+        return new BlobIdV1(blobBytes.Length, BlobCompAlgo.UnComp, 0, BlobHashAlgo.Sha256, hashSpan);
 #endif
     }
 
