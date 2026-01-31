@@ -24,7 +24,7 @@ public class NameStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         ReadOnlySequence<byte> data = default;
-        BlobIdV1 id = data.GetBlobId();
+        BlobIdV1 id = data.TryCompressBlob().BlobId;
         bool missing = dataStore.PutName("name1", id);
         missing.ShouldBeTrue();
         var counters = dataStore.GetCounters();
@@ -43,7 +43,7 @@ public class NameStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         ReadOnlySequence<byte> data = default;
-        BlobIdV1 id = data.GetBlobId();
+        BlobIdV1 id = data.TryCompressBlob().BlobId;
         bool missing = dataStore.PutName("name1", id);
         missing.ShouldBeTrue();
         var counters1 = dataStore.GetCounters();
@@ -71,7 +71,7 @@ public class NameStoreTests
         names0.Length.ShouldBe(0);
 
         ReadOnlySequence<byte> data = default;
-        BlobIdV1 id = data.GetBlobId();
+        BlobIdV1 id = data.TryCompressBlob().BlobId;
         dataStore.PutName("name1", id);
         dataStore.PutName("name2", id);
         dataStore.PutName("name2", id);

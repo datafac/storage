@@ -116,7 +116,7 @@ namespace DataFac.Storage
             block[1] = (byte)'_';   // Marker01
             block[2] = majorVer;
             block[3] = minorVer;
-            block[4] = compAlgo.ToCharCode();
+            block[4] = (byte)compAlgo;
             block[5] = (byte)hashAlgo;
             Codec_Int32_LE.WriteToSpan(block.Slice(8, 4), blobSize);
             Codec_Int32_LE.WriteToSpan(block.Slice(12, 4), compSize);

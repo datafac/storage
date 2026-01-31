@@ -56,7 +56,8 @@ public class BlobIdTests
     public void BlobId06CreateFromCopy()
     {
         var data = new ReadOnlySequence<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobIdV1 orig = data.GetBlobId();
+        var result = data.TryCompressBlob();
+        BlobIdV1 orig = result.BlobId;
         BlobIdV1 copy = orig;
         copy.ShouldBe(orig);
         copy.Equals(orig).ShouldBeTrue();

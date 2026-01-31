@@ -56,7 +56,7 @@ public class BlobStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         var data = new ReadOnlySequence<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobIdV1 id = data.GetBlobId();
+        BlobIdV1 id = data.TryCompressBlob().BlobId;
         var result = await dataStore.GetBlob(id);
         result.ShouldBeNull();
         var counters = dataStore.GetCounters();
@@ -115,7 +115,7 @@ public class BlobStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         var data = new ReadOnlySequence<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobIdV1 id = data.GetBlobId();
+        BlobIdV1 id = data.TryCompressBlob().BlobId;
         await dataStore.PutBlob(data, true);
 
         var data2 = await dataStore.GetBlob(id);
@@ -144,8 +144,7 @@ public class BlobStoreTests
         var data = new ReadOnlySequence<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
 
         // put first
-        BlobIdV1 id0 = data.GetBlobId();
-        await dataStore.PutBlob(data, true);
+        BlobIdV1 id1 = await dataStore.PutBlob(data, true);
         var counters1 = dataStore.GetCounters();
         counters1.BlobPutCount.ShouldBe(1);
         counters1.BlobPutWrits.ShouldBe(1);
@@ -153,9 +152,9 @@ public class BlobStoreTests
         counters1.ByteDelta.ShouldBe(256);
 
         // put again
-        BlobIdV1 id1 = data.GetBlobId();
-        id1.Equals(id0).ShouldBeTrue();
-        await dataStore.PutBlob(data, true);
+        BlobIdV1 id2 = await dataStore.PutBlob(data, true);
+        id2.Equals(id1).ShouldBeTrue();
+
         var counters2 = dataStore.GetCounters();
         counters2.BlobPutCount.ShouldBe(2);
         counters2.BlobPutWrits.ShouldBe(1);

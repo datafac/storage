@@ -121,13 +121,15 @@ public sealed class TestDataStore : IDataStore
         return default;
     }
 
-    public ValueTask<BlobIdV1> PutBlob(ReadOnlySequence<byte> data, bool withSync)
+    public ValueTask<BlobIdV1> PutBlob(ReadOnlySequence<byte> uncompressed, bool withSync)
     {
-        var id = data.GetBlobId();
+        var compressResult = uncompressed.TryCompressBlob();
+        var id = compressResult.BlobId;
         if (id.IsEmbedded)
             return new ValueTask<BlobIdV1>(id);
-        Interlocked.Increment(ref _counters.BlobPutCount);
 
+        Interlocked.Increment(ref _counters.BlobPutCount);
+        var data = compressResult.CompressedData;
         if (_blobStore.TryAdd(id, data))
         {
             Interlocked.Increment(ref _counters.BlobPutWrits);

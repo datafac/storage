@@ -267,10 +267,12 @@ public sealed class RocksDbDataStore : IDataStore
     public async ValueTask<BlobIdV1> PutBlob(ReadOnlySequence<byte> data, bool withSync)
     {
         ThrowIfDisposed();
-        var id = data.GetBlobId();
+        var compressResult = data.TryCompressBlob();
+        var id = compressResult.BlobId;
         if (id.IsEmbedded) return id;
+
         Interlocked.Increment(ref _counters.BlobPutCount);
-        if (!_blobCache.TryAdd(id, data))
+        if (!_blobCache.TryAdd(id, compressResult.CompressedData))
         {
             Interlocked.Increment(ref _counters.BlobPutSkips);
             return id;
