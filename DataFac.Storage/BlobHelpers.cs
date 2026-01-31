@@ -38,8 +38,8 @@ public static class BlobHelpers
         // embed small blobs directly into id
         if (uncompressedData.Length <= (BlobIdV1.Size - 2))
         {
-            BlobIdV1 blobId = new BlobIdV1(BlobCompAlgo.UnComp, uncompressedData);
-            return new CompressResult(blobId, BlobCompAlgo.UnComp, ReadOnlySequence<byte>.Empty);
+            BlobIdV1 blobId0 = new BlobIdV1(BlobCompAlgo.UnComp, uncompressedData);
+            return new CompressResult(blobId0, ReadOnlySequence<byte>.Empty);
         }
 
         // try Snappier compression
@@ -50,78 +50,48 @@ public static class BlobHelpers
         // embed compressed if small engough
         if (compressedData.Length <= (BlobIdV1.Size - 2))
         {
-            BlobIdV1 blobId = new BlobIdV1(BlobCompAlgo.Snappy, compressedData);
-            return new CompressResult(blobId, BlobCompAlgo.Snappy, ReadOnlySequence<byte>.Empty);
+            BlobIdV1 blobId1 = new BlobIdV1(BlobCompAlgo.Snappy, compressedData);
+            return new CompressResult(blobId1, ReadOnlySequence<byte>.Empty);
         }
 
-        ReadOnlySequence<byte> dataToHash;
+        ReadOnlySequence<byte> dataToReturn;
         int compSize;
         BlobCompAlgo compAlgo;
         if (compressedData.Length < uncompressedData.Length)
         {
-            // use compressed data
-            dataToHash = compressedData;
+            // compressed is smaller - use compressed data
+            dataToReturn = compressedData;
             compAlgo = BlobCompAlgo.Snappy;
             compSize = (int)compressedData.Length;
         }
         else
         {
-            // use uncompressed data
-            dataToHash = uncompressedData;
+            // compressed is larger - use uncompressed data
+            dataToReturn = uncompressedData;
             compAlgo = BlobCompAlgo.UnComp;
             compSize = 0;
         }
 
-
+        // note: we always hash the original/uncompressed data
+        Span<byte> hashSpan = stackalloc byte[32];
 #if NET8_0_OR_GREATER
         {
-            Span<byte> hashSpan = stackalloc byte[32];
             // todo how to avoid allocation here?
-            ReadOnlySpan<byte> blobSpan = dataToHash.Compact().Span;
+            ReadOnlySpan<byte> blobSpan = uncompressedData.Compact().Span;
             if (!SHA256.TryHashData(blobSpan, hashSpan, out int bytesWritten) || bytesWritten != 32)
             {
                 throw new InvalidOperationException("Destination too small");
             }
-            BlobIdV1 blobId = new BlobIdV1(blobSize, compAlgo, compSize, BlobHashAlgo.Sha256, hashSpan);
-            return new CompressResult(blobId, compAlgo, dataToHash);
         }
 #else
         {
             using var sha256 = SHA256.Create();
-            byte[] blobBytes = dataToHash.ToArray();
+            byte[] blobBytes = uncompressedData.ToArray();
             byte[] hashBytes = sha256.ComputeHash(blobBytes);
-            Span<byte> hashSpan = hashBytes.AsSpan();
-            BlobIdV1 blobId = new BlobIdV1(blobSize, compAlgo, compSize, BlobHashAlgo.Sha256, hashSpan);
-            return new CompressResult(blobId, compAlgo, dataToHash);
+            hashBytes.CopyTo(hashSpan);
         }
 #endif
-    }
-
-    public static BlobIdV1 GetBlobIdOldqqq(this ReadOnlySequence<byte> blob)
-    {
-        // embed small blobs directly into id
-        if (blob.Length <= (BlobIdV1.Size - 2))
-        {
-            return new BlobIdV1(BlobCompAlgo.UnComp, blob);
-        }
-
-        using var sha256 = SHA256.Create();
-#if NET8_0_OR_GREATER
-        Span<byte> hashSpan = stackalloc byte[32];
-        // todo how to avoid allocation here?
-        ReadOnlySpan<byte> blobSpan = blob.Compact().Span;
-        if (!SHA256.TryHashData(blobSpan, hashSpan, out int bytesWritten) || bytesWritten != 32)
-        {
-            throw new InvalidOperationException("Destination too small");
-        }
-        // todo compression
-        return new BlobIdV1(blobSpan.Length, BlobCompAlgo.UnComp, 0, BlobHashAlgo.Sha256, hashSpan);
-#else
-        byte[] blobBytes = blob.ToArray();
-        byte[] hashBytes = sha256.ComputeHash(blobBytes);
-        Span<byte> hashSpan = hashBytes.AsSpan();
-        // todo compression
-        return new BlobIdV1(blobBytes.Length, BlobCompAlgo.UnComp, 0, BlobHashAlgo.Sha256, hashSpan);
-#endif
+        BlobIdV1 blobId = new BlobIdV1(blobSize, compAlgo, compSize, BlobHashAlgo.Sha256, hashSpan);
+        return new CompressResult(blobId, dataToReturn);
     }
 }

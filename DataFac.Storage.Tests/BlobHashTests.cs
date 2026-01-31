@@ -1,10 +1,6 @@
-﻿using DataFac.Memory;
-using Shouldly;
+﻿using Shouldly;
 using System;
 using System.Buffers;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using Xunit;
@@ -19,7 +15,6 @@ public class BlobHashTests
         ReadOnlySequence<byte> orig = default;
         var result = orig.TryCompressBlob();
         result.BlobId.IsEmbedded.ShouldBeTrue();
-        result.CompAlgo.ShouldBe(BlobCompAlgo.UnComp);
         result.BlobId.ToString().ShouldBe("U:0:");
     }
 
@@ -59,7 +54,12 @@ public class BlobHashTests
         result.BlobId.IsEmbedded.ShouldBeFalse();
         result.BlobId.BlobSize.ShouldBe(204);
         result.BlobId.CompAlgo.ShouldBe(BlobCompAlgo.Snappy);
+#if NET8_0_OR_GREATER
         result.BlobId.CompSize.ShouldBe(172);
-        result.BlobId.ToString().ShouldBe("V1.0:204:S:172:1:vtN9Ldd9yfuFHadwPtOYwwSpHRz1ruBoFlY4/pJY/hI=");
+        result.BlobId.ToString().ShouldBe("V1.0:204:S:172:1:LI2Km/eucgjojjOTHvLsafBn2oYGf8bYmrlE8j8+FSQ=");
+#else
+        result.BlobId.CompSize.ShouldBe(176);
+        result.BlobId.ToString().ShouldBe("V1.0:204:S:176:1:LI2Km/eucgjojjOTHvLsafBn2oYGf8bYmrlE8j8+FSQ=");
+#endif
     }
 }
