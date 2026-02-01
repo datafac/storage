@@ -110,14 +110,9 @@ public class SnappierRegressionTests
     public async Task SnappierRegression05MultiLineText_Net48()
 #endif
     {
-        var lines =
-            """
-            The rain in Spain falls mainly on the plain.
-            Please explain my pain and disdain or I will go insain [sic].
-            Plain Jain is a brain in a train in Spain.
-            Maine is the main domain to obtain the brain drain.
-            """;
-        var testSequence = new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(lines));
+        var text = "The rain in Spain falls mainly on the plain. Please explain my pain and disdain or I will go insain [sic]. Plain Jain is a brain in a train in Spain. Maine is the main domain to obtain the brain drain.";
+
+        var testSequence = new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(text));
         var compressionBuffers = new ByteBufferWriter();
         Snappy.Compress(testSequence, compressionBuffers);
         var compressed = compressionBuffers.GetWrittenSequence();
