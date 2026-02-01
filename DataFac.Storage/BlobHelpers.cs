@@ -42,7 +42,7 @@ public static class BlobHelpers
         }
 
         // try Snappier compression
-        var compressedBuffer = new CompressionBuffers();
+        var compressedBuffer = new ByteBufferWriter();
         Snappy.Compress(uncompressedData, compressedBuffer);
         var compressedData = compressedBuffer.GetWrittenSequence();
 

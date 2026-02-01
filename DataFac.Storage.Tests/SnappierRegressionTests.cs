@@ -39,11 +39,11 @@ public class SnappierRegressionTests
     public async Task SnappierRegression01Empty()
     {
         var testSequence = ReadOnlySequence<byte>.Empty;
-        var compressionBuffers = new CompressionBuffers();
+        var compressionBuffers = new ByteBufferWriter();
         Snappy.Compress(testSequence, compressionBuffers);
         var compressed = compressionBuffers.GetWrittenSequence();
         // check decompressed
-        var decompressionBuffers = new CompressionBuffers();
+        var decompressionBuffers = new ByteBufferWriter();
         Snappy.Decompress(compressed, decompressionBuffers);
         var decompressed = decompressionBuffers.GetWrittenSequence();
         decompressed.ToArray().ShouldBeEquivalentTo(testSequence.ToArray());
@@ -56,11 +56,11 @@ public class SnappierRegressionTests
     public async Task SnappierRegression02OneChar()
     {
         var testSequence = new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(new string('a', 1)));
-        var compressionBuffers = new CompressionBuffers();
+        var compressionBuffers = new ByteBufferWriter();
         Snappy.Compress(testSequence, compressionBuffers);
         var compressed = compressionBuffers.GetWrittenSequence();
         // check decompressed
-        var decompressionBuffers = new CompressionBuffers();
+        var decompressionBuffers = new ByteBufferWriter();
         Snappy.Decompress(compressed, decompressionBuffers);
         var decompressed = decompressionBuffers.GetWrittenSequence();
         decompressed.ToArray().ShouldBeEquivalentTo(testSequence.ToArray());
@@ -73,11 +73,11 @@ public class SnappierRegressionTests
     public async Task SnappierRegression03ShortString()
     {
         var testSequence = new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(new string('a', 10)));
-        var compressionBuffers = new CompressionBuffers();
+        var compressionBuffers = new ByteBufferWriter();
         Snappy.Compress(testSequence, compressionBuffers);
         var compressed = compressionBuffers.GetWrittenSequence();
         // check decompressed
-        var decompressionBuffers = new CompressionBuffers();
+        var decompressionBuffers = new ByteBufferWriter();
         Snappy.Decompress(compressed, decompressionBuffers);
         var decompressed = decompressionBuffers.GetWrittenSequence();
         decompressed.ToArray().ShouldBeEquivalentTo(testSequence.ToArray());
@@ -90,11 +90,11 @@ public class SnappierRegressionTests
     public async Task SnappierRegression04LongString()
     {
         var testSequence = new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(new string('a', 64)));
-        var compressionBuffers = new CompressionBuffers();
+        var compressionBuffers = new ByteBufferWriter();
         Snappy.Compress(testSequence, compressionBuffers);
         var compressed = compressionBuffers.GetWrittenSequence();
         // check decompressed
-        var decompressionBuffers = new CompressionBuffers();
+        var decompressionBuffers = new ByteBufferWriter();
         Snappy.Decompress(compressed, decompressionBuffers);
         var decompressed = decompressionBuffers.GetWrittenSequence();
         decompressed.ToArray().ShouldBeEquivalentTo(testSequence.ToArray());
@@ -118,11 +118,11 @@ public class SnappierRegressionTests
             Maine is the main domain to obtain the brain drain.
             """;
         var testSequence = new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(lines));
-        var compressionBuffers = new CompressionBuffers();
+        var compressionBuffers = new ByteBufferWriter();
         Snappy.Compress(testSequence, compressionBuffers);
         var compressed = compressionBuffers.GetWrittenSequence();
         // check decompressed
-        var decompressionBuffers = new CompressionBuffers();
+        var decompressionBuffers = new ByteBufferWriter();
         Snappy.Decompress(compressed, decompressionBuffers);
         var decompressed = decompressionBuffers.GetWrittenSequence();
         decompressed.ToArray().ShouldBeEquivalentTo(testSequence.ToArray());

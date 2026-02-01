@@ -55,11 +55,11 @@ public class CompressionTests
     [Fact]
     public void RoundtripViaSnappier()
     {
-        var compressionBuffers = new CompressionBuffers();
+        var compressionBuffers = new ByteBufferWriter();
         Snappy.Compress(originalData.Sequence, compressionBuffers);
         var compressed = compressionBuffers.GetWrittenSequence();
 
-        var decompressionBuffers = new CompressionBuffers();
+        var decompressionBuffers = new ByteBufferWriter();
         Snappy.Decompress(compressed, decompressionBuffers);
 
         var decompressed = Octets.UnsafeWrap(decompressionBuffers.GetWrittenSequence());

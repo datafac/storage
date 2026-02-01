@@ -23,14 +23,14 @@ public class BlobIdTests
         BlobIdV1 id = BlobIdV1.FromSpan(input);
         id.IsDefault.ShouldBeTrue();
         id.ToString().ShouldBe("");
-        id.Equals(default).ShouldBeFalse();
+        id.Equals(default).ShouldBeTrue();
     }
 
     [Fact]
     public void BlobId03CreateWithInvalidData()
     {
         ReadOnlyMemory<byte> input = Enumerable.Range(0, BlobIdV1.Size).Select(i => (byte)i).ToArray();
-        BlobIdV1 id = BlobIdV1.UnsafeWrap(input);
+        BlobIdV1 id = BlobIdV1.FromSpan(input.Span);
         id.IsDefault.ShouldBeFalse();
         id.ToString().ShouldBe("V2.3:185207048:U:252579084:5:ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8=");
     }
@@ -45,11 +45,11 @@ public class BlobIdTests
             "71-58-78-5F-BD-1D-A8-70-E7-11-02-66-BF-94-48-80";
 
         ReadOnlyMemory<byte> input = inputStr.Split('-').Select(s => (byte)int.Parse(s, System.Globalization.NumberStyles.HexNumber)).ToArray();
-        BlobIdV1 id = BlobIdV1.UnsafeWrap(input);
+        BlobIdV1 id = BlobIdV1.FromSpan(input.Span);
         id.IsDefault.ShouldBeFalse();
         id.ToString().ShouldBe("V1.0:256:U:0:1:QK/y6dLYki5Hr9RkjmlnSXFYeF+9Hahw5xECZr+USIA=");
 
-        string.Join("-", id.Memory.ToArray().Select(b => b.ToString("X2"))).ShouldBe(inputStr);
+        string.Join("-", id.ToByteArray().Select(b => b.ToString("X2"))).ShouldBe(inputStr);
     }
 
     [Fact]
@@ -59,8 +59,8 @@ public class BlobIdTests
         var result = data.TryCompressBlob();
         BlobIdV1 orig = result.BlobId;
         BlobIdV1 copy = orig;
-        copy.ShouldBe(orig);
         copy.Equals(orig).ShouldBeTrue();
+        copy.ShouldBe(orig);
         copy.GetHashCode().ShouldBe(orig.GetHashCode());
     }
 
