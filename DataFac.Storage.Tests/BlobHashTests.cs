@@ -42,24 +42,18 @@ public class BlobHashTests
     [Fact]
     public void BlobHash04LargeCompressedNotEmbedded()
     {
-        var text =
-            """
-            The rain in Spain falls mainly on the plain.
-            Please explain my pain and disdain or I will go insain [sic].
-            Plain Jain is a brain in a train in Spain.
-            Maine is the main domain to obtain the brain drain.
-            """;
+        var text = "The rain in Spain falls mainly on the plain. Please explain my pain and disdain or I will go insain [sic]. Plain Jain is a brain in a train in Spain. Maine is the main domain to obtain the brain drain.";
         var orig = new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(text));
         var result = orig.TryCompressBlob();
         result.BlobId.IsEmbedded.ShouldBeFalse();
-        result.BlobId.BlobSize.ShouldBe(204);
+        result.BlobId.BlobSize.ShouldBe(201);
         result.BlobId.CompAlgo.ShouldBe(BlobCompAlgo.Snappy);
 #if NET8_0_OR_GREATER
-        result.BlobId.CompSize.ShouldBe(172);
-        result.BlobId.ToString().ShouldBe("V1.0:204:S:172:1:LI2Km/eucgjojjOTHvLsafBn2oYGf8bYmrlE8j8+FSQ=");
-#else
         result.BlobId.CompSize.ShouldBe(176);
-        result.BlobId.ToString().ShouldBe("V1.0:204:S:176:1:LI2Km/eucgjojjOTHvLsafBn2oYGf8bYmrlE8j8+FSQ=");
+        result.BlobId.ToString().ShouldBe("V1.0:201:S:176:1:f+8O2Wm1is/9ut73eja0VCML3qUOWA9rgBZg4INPL34=");
+#else
+        result.BlobId.CompSize.ShouldBe(175);
+        result.BlobId.ToString().ShouldBe("V1.0:201:S:175:1:f+8O2Wm1is/9ut73eja0VCML3qUOWA9rgBZg4INPL34=");
 #endif
     }
 }
