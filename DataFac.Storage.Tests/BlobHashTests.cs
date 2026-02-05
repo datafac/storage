@@ -16,6 +16,8 @@ public class BlobHashTests
         var result = orig.TryCompressBlob();
         result.BlobId.IsEmbedded.ShouldBeTrue();
         result.BlobId.ToString().ShouldBe("U:0:");
+        result.BlobId.TryGetEmbeddedBlob(out var copy).ShouldBeTrue();
+        copy.ToArray().SequenceEqual(orig.ToArray()).ShouldBeTrue();
     }
 
     [Fact]
@@ -37,6 +39,8 @@ public class BlobHashTests
         var result = orig.TryCompressBlob();
         result.BlobId.IsEmbedded.ShouldBeTrue();
         result.BlobId.ToString().ShouldBe("S:16:gAIAAP4BAP4BAP4BAPoBAA==");
+        result.BlobId.TryGetEmbeddedBlob(out var copy).ShouldBeTrue();
+        copy.ToArray().SequenceEqual(orig.ToArray()).ShouldBeTrue();
     }
 
     [Fact]

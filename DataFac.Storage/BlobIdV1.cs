@@ -12,7 +12,6 @@ namespace DataFac.Storage
     public readonly struct BlobIdV1 : IEquatable<BlobIdV1>
     {
         public const int Size = 64;
-        //private readonly ReadOnlyMemory<byte> _memory;
         private readonly BlockB064 _block;
 
         // map
@@ -38,7 +37,6 @@ namespace DataFac.Storage
         public int CompSize => _block.A.A.B.B.Int32ValueLE; // Codec_Int32_LE.ReadFromSpan(_memory.Span.Slice(12, 4));
         public BlockB032 HashData => _block.B; // _memory.Slice(32, 32);
 
-        //public BlockB064 Block => _block;
         public bool IsDefault
         {
             get
@@ -52,14 +50,13 @@ namespace DataFac.Storage
                     && _block.B.B.A.Int64ValueLE == 0L
                     && _block.B.B.B.Int64ValueLE == 0L
                     ;
-                //old
-                //ReadOnlySpan<long> nums = MemoryMarshal.Cast<byte, long>(_memory.Span);
-                //for (int i = 0; i < nums.Length; i++)
-                //{
-                //    if (nums[i] != 0) return false;
-                //}
-                //return true;
             }
+        }
+
+        private BlobIdV1(ReadOnlySequence<byte> source)
+        {
+            if (source.Length != BlobIdV1.Size) throw new ArgumentException($"Length must be {BlobIdV1.Size}.", nameof(source));
+            _block.TryRead(source);
         }
 
         private BlobIdV1(ReadOnlySpan<byte> source)
@@ -68,16 +65,9 @@ namespace DataFac.Storage
             _block.TryRead(source);
         }
 
-        public static BlobIdV1 FromSequence(ReadOnlySequence<byte> source)
-        {
-            // todo stop allocations?
-            return new BlobIdV1(source.Compact().Span);
-        }
+        public static BlobIdV1 FromSequence(ReadOnlySequence<byte> source) => new BlobIdV1(source);
 
-        public static BlobIdV1 FromSpan(ReadOnlySpan<byte> source)
-        {
-            return new BlobIdV1(source);
-        }
+        public static BlobIdV1 FromSpan(ReadOnlySpan<byte> source) => new BlobIdV1(source);
 
         //public static BlobIdV1 UnsafeWrap(ReadOnlyMemory<byte> memory)
         //{
@@ -143,16 +133,15 @@ namespace DataFac.Storage
             switch(Marker00.ToCompAlgo())
             {
                 case BlobCompAlgo.UnComp:
-                    int dataSize = Marker01 - (byte)'A';
-                    byte[] embeddedData = new byte[dataSize];
-                    _block.WriteTo(2, dataSize, embeddedData);
-                    embedded = new ReadOnlySequence<byte>(embeddedData);
+                    int dataSize0 = Marker01 - (byte)'A';
+                    embedded = new ReadOnlySequence<byte>(_block.ToByteArray(2, dataSize0));
                     return true;
                 case BlobCompAlgo.Brotli:
                     throw new NotImplementedException("Brotli embedded blobs are not implemented yet.");
-                    return true;
                 case BlobCompAlgo.Snappy:
-                    throw new NotImplementedException("Snappy embedded blobs are not implemented yet.");
+                    int dataSize2 = Marker01 - (byte)'A';
+                    var compressedData = new ReadOnlySequence<byte>(_block.ToByteArray(2, dataSize2));
+                    embedded = SnappyCompressor.Decompress(compressedData);
                     return true;
                 default:
                     return false;

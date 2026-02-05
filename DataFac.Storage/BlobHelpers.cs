@@ -6,6 +6,31 @@ using System.Linq;
 using System.Security.Cryptography;
 
 namespace DataFac.Storage;
+
+public interface IBlobCompressor
+{
+#if NET7_0_OR_GREATER
+    static abstract ReadOnlySequence<byte> Compress(ReadOnlySequence<byte> data);
+    static abstract ReadOnlySequence<byte> Decompress(ReadOnlySequence<byte> data);
+#endif
+}
+public sealed class SnappyCompressor : IBlobCompressor
+{
+    public static ReadOnlySequence<byte> Compress(ReadOnlySequence<byte> uncompressedData)
+    {
+        var buffers = new ByteBufferWriter();
+        Snappy.Compress(uncompressedData, buffers);
+        var compressedData = buffers.GetWrittenSequence();
+        return compressedData;
+    }
+    public static ReadOnlySequence<byte> Decompress(ReadOnlySequence<byte> compressedData)
+    {
+        var buffers = new ByteBufferWriter();
+        Snappy.Decompress(compressedData, buffers);
+        var decompressedData = buffers.GetWrittenSequence();
+        return decompressedData;
+    }
+}
 public static class BlobHelpers
 {
     public static byte ToCharCode(this BlobCompAlgo algo)
@@ -41,10 +66,8 @@ public static class BlobHelpers
             return new CompressResult(new BlobIdV1(BlobCompAlgo.UnComp, uncompressedData), ReadOnlySequence<byte>.Empty);
         }
 
-        // try Snappier compression
-        var compressedBuffer = new ByteBufferWriter();
-        Snappy.Compress(uncompressedData, compressedBuffer);
-        var compressedData = compressedBuffer.GetWrittenSequence();
+        // Snappier compression
+        var compressedData = SnappyCompressor.Compress(uncompressedData);
 
         // embed compressed if small engough
         if (compressedData.Length <= (BlobIdV1.Size - 2))
@@ -74,9 +97,16 @@ public static class BlobHelpers
         Span<byte> hashSpan = stackalloc byte[32];
 #if NET8_0_OR_GREATER
         {
-            // todo how to avoid allocation here?
-            ReadOnlySpan<byte> blobSpan = uncompressedData.Compact().Span;
-            if (!SHA256.TryHashData(blobSpan, hashSpan, out int bytesWritten) || bytesWritten != 32)
+            // incremental hasher for SHA-256
+            using var hasher = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+            foreach (var segment in uncompressedData)
+            {
+                if (!segment.IsEmpty)
+                {
+                    hasher.AppendData(segment.Span);
+                }
+            }
+            if (!hasher.TryGetHashAndReset(hashSpan, out int bytesWritten))
             {
                 throw new InvalidOperationException("Destination too small");
             }
