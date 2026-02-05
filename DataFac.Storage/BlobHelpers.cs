@@ -84,10 +84,10 @@ public static class BlobHelpers
 
         // note: we always hash the original/uncompressed data
         Span<byte> hashSpan = stackalloc byte[32];
+        // incremental hasher for SHA-256
+        using var hasher = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
 #if NET8_0_OR_GREATER
         {
-            // incremental hasher for SHA-256
-            using var hasher = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
             foreach (var segment in uncompressedData)
             {
                 if (!segment.IsEmpty)
@@ -102,9 +102,14 @@ public static class BlobHelpers
         }
 #else
         {
-            using var sha256 = SHA256.Create();
-            byte[] blobBytes = uncompressedData.ToArray();
-            byte[] hashBytes = sha256.ComputeHash(blobBytes);
+            foreach (var segment in uncompressedData)
+            {
+                if (!segment.IsEmpty)
+                {
+                    hasher.AppendData(segment.ToArray());
+                }
+            }
+            byte[] hashBytes = hasher.GetHashAndReset();
             hashBytes.CopyTo(hashSpan);
         }
 #endif
