@@ -27,8 +27,7 @@ public class BlobHashTests
         result.BlobId.IsEmbedded.ShouldBeFalse();
         result.BlobId.BlobSize.ShouldBe(256);
         result.BlobId.CompAlgo.ShouldBe(BlobCompAlgo.UnComp);
-        result.BlobId.CompSize.ShouldBe(0);
-        result.BlobId.ToString().ShouldBe("V1.0:256:U:0:1:QK/y6dLYki5Hr9RkjmlnSXFYeF+9Hahw5xECZr+USIA=");
+        result.BlobId.ToString().ShouldBe("V1.0:256:U:1:QK/y6dLYki5Hr9RkjmlnSXFYeF+9Hahw5xECZr+USIA=");
     }
 
     [Fact]
@@ -57,12 +56,6 @@ public class BlobHashTests
         result.BlobId.IsEmbedded.ShouldBeFalse();
         result.BlobId.BlobSize.ShouldBe(204);
         result.BlobId.CompAlgo.ShouldBe(BlobCompAlgo.Snappy);
-#if NET8_0_OR_GREATER
-        result.BlobId.CompSize.ShouldBe(174);
-        result.BlobId.ToString().ShouldBe("V1.0:204:S:174:1:EyeaRBxgUfEVcY3hwdzjgC0ZFHSFjEbKUl4ddeP64JY=");
-#else
-        result.BlobId.CompSize.ShouldBe(179);
-        result.BlobId.ToString().ShouldBe("V1.0:204:S:179:1:sl1z8+d7yYgPIxcD4Kzgq4xFsrZ3jyEMXd3hFedK7LY=");
-#endif
+        result.BlobId.ToString().ShouldBe("V1.0:204:S:1:zvnrkv/TwC40uhpghpCfhUIOTe6tnOzyrmUuBT5rrfA=");
     }
 }

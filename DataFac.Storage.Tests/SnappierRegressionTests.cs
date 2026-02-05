@@ -67,6 +67,14 @@ public class SnappierRegressionTests
         await Verifier.Verify(display);
     }
 
+    private static readonly string originalText =
+            """
+            The rain in Spain falls mainly on the plain.
+            Please explain my pain and disdain or I will go insain [sic].
+            Plain Jain is a brain in a train in Spain.
+            Maine is the main domain to obtain the brain drain.";
+            """;
+
     [Fact]
 #if NET8_0_OR_GREATER
     public async Task SnappierRegression05MultiLineText_Net80()
@@ -74,14 +82,7 @@ public class SnappierRegressionTests
     public async Task SnappierRegression05MultiLineText_Net48()
 #endif
     {
-        var text =
-            """
-            The rain in Spain falls mainly on the plain.
-            Please explain my pain and disdain or I will go insain [sic].
-            Plain Jain is a brain in a train in Spain.
-            Maine is the main domain to obtain the brain drain.";
-            """;
-        var orig = text.ToByteSequence();
+        var orig = originalText.ToByteSequence();
         var compressed = SnappyCompressor.Compress(orig);
         // check decompressed
         var copy = SnappyCompressor.Decompress(compressed);
@@ -94,14 +95,7 @@ public class SnappierRegressionTests
     [Fact]
     public async Task SnappierRegression06DecompressNet48AndNet80ShouldBeSame()
     {
-        var text =
-            """
-            The rain in Spain falls mainly on the plain.
-            Please explain my pain and disdain or I will go insain [sic].
-            Plain Jain is a brain in a train in Spain.
-            Maine is the main domain to obtain the brain drain.";
-            """;
-        var orig = text.ToByteSequence();
+        var orig = originalText.ToByteSequence();
 
         var net48Compressed =
             """

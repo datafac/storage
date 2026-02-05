@@ -22,7 +22,7 @@ namespace DataFac.Storage
         //  05      A.A.A.B.A.B 1   HashAlgo
         //  06-07   A.A.A.B.B   2   -unused-
         //  08-0B   A.A.B.A     4   BlobSize
-        //  0C-0F   A.A.B.B     4   CompSize
+        //  0C-0F   A.A.B.B     4   -unused-
         //  10-1F   A.B         16  -unused-
         //  20-3F   B           32  HashData
         public byte Marker00 => _block.A.A.A.A.A.A.ByteValue; // _memory.Span[0];
@@ -32,7 +32,6 @@ namespace DataFac.Storage
         public BlobCompAlgo CompAlgo => (BlobCompAlgo)_block.A.A.A.B.A.A.ByteValue; // _memory.Span[4];
         public BlobHashAlgo HashAlgo => (BlobHashAlgo)_block.A.A.A.B.A.B.ByteValue; // _memory.Span[5];
         public int BlobSize => _block.A.A.B.A.Int32ValueLE; // Codec_Int32_LE.ReadFromSpan(_memory.Span.Slice(8, 4));
-        public int CompSize => _block.A.A.B.B.Int32ValueLE; // Codec_Int32_LE.ReadFromSpan(_memory.Span.Slice(12, 4));
         public BlockB032 HashData => _block.B; // _memory.Slice(32, 32);
 
         public bool IsDefault
@@ -101,7 +100,7 @@ namespace DataFac.Storage
             data.CopyTo(BlockHelper.AsWritableSpan(ref _block).Slice(2));
         }
 
-        private BlobIdV1(byte majorVer, byte minorVer, int blobSize, BlobCompAlgo compAlgo, int compSize, BlobHashAlgo hashAlgo, ReadOnlySpan<byte> hashData)
+        private BlobIdV1(byte majorVer, byte minorVer, int blobSize, BlobCompAlgo compAlgo, BlobHashAlgo hashAlgo, ReadOnlySpan<byte> hashData)
         {
             if (hashData.Length != 32) throw new ArgumentException("Length must be == 32", nameof(hashData));
             _block.A.A.A.A.A.A.ByteValue = (byte)'|';   // Marker00
@@ -111,12 +110,11 @@ namespace DataFac.Storage
             _block.A.A.A.B.A.A.ByteValue = (byte)compAlgo;
             _block.A.A.A.B.A.B.ByteValue = (byte)hashAlgo;
             _block.A.A.B.A.Int32ValueLE = blobSize;
-            _block.A.A.B.B.Int32ValueLE = compSize;
             hashData.CopyTo(BlockHelper.AsWritableSpan(ref _block).Slice(32, 32));
         }
 
-        public BlobIdV1(int blobSize, BlobCompAlgo compAlgo, int compSize, BlobHashAlgo hashAlgo, ReadOnlySpan<byte> hashData)
-            : this(1, 0, blobSize, compAlgo, compSize, hashAlgo, hashData) { }
+        public BlobIdV1(int blobSize, BlobCompAlgo compAlgo, BlobHashAlgo hashAlgo, ReadOnlySpan<byte> hashData)
+            : this(1, 0, blobSize, compAlgo, hashAlgo, hashData) { }
 
         public void WriteTo(Span<byte> target) => _block.TryWrite(target);
 
@@ -171,8 +169,6 @@ namespace DataFac.Storage
             result.Append(':');
             result.Append((char)CompAlgo.ToCharCode());
             result.Append(':');
-            result.Append(CompSize);
-            result.Append(':');
             result.Append((int)HashAlgo);
             result.Append(':');
             if (HashAlgo != BlobHashAlgo.Undefined)
@@ -196,7 +192,6 @@ namespace DataFac.Storage
             int blobSize = default;
             int compAlgoInt = default;
             var compAlgo = BlobCompAlgo.UnComp;
-            int compSize = default;
             int hashAlgoInt = default;
             var hashAlgo = BlobHashAlgo.Undefined;
             Span<byte> hashSpan = stackalloc byte[32];
@@ -218,13 +213,10 @@ namespace DataFac.Storage
                         compAlgo = (BlobCompAlgo)compAlgoInt;
                         break;
                     case 3:
-                        if (!int.TryParse(part, out compSize)) throw new InvalidDataException($"Invalid compSize: '{part}'.");
-                        break;
-                    case 4:
                         if (!int.TryParse(part, out hashAlgoInt)) throw new InvalidDataException($"Invalid hashAlgo: '{part}'.");
                         hashAlgo = (BlobHashAlgo)hashAlgoInt;
                         break;
-                    case 5:
+                    case 4:
 #if NET8_0_OR_GREATER
                         if (!Convert.TryFromBase64Chars(partSpan, hashSpan, out int bytesDecoded) || bytesDecoded != 32) throw new InvalidDataException($"Invalid hashData: '{part}'.");
 #else
@@ -239,7 +231,7 @@ namespace DataFac.Storage
                 partId++;
                 sourceSpan = sourceIndex >= 0 ? sourceSpan.Slice(sourceIndex + 1) : default;
             }
-            return new BlobIdV1(blobSize, compAlgo, compSize, hashAlgo, hashSpan);
+            return new BlobIdV1(blobSize, compAlgo, hashAlgo, hashSpan);
         }
 
         public bool Equals(BlobIdV1 that) => _block.Equals(that._block);

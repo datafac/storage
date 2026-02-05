@@ -42,21 +42,21 @@ public static class BlobHelpers
         }
     }
 
-    public static CompressResult TryCompressBlob(this ReadOnlySequence<byte> uncompressedDataqqq)
+    public static CompressResult TryCompressBlob(this ReadOnlySequence<byte> uncompressedData)
     {
         const long maxBlobSize = 64 * 1024; // 64K todo const
-        if (uncompressedDataqqq.Length > maxBlobSize) throw new ArgumentOutOfRangeException(nameof(uncompressedDataqqq), uncompressedDataqqq.Length, "Must not exceed 64K");
+        if (uncompressedData.Length > maxBlobSize) throw new ArgumentOutOfRangeException(nameof(uncompressedData), uncompressedData.Length, "Must not exceed 64K");
 
-        int blobSize = (int)uncompressedDataqqq.Length;
+        int blobSize = (int)uncompressedData.Length;
 
         // embed small blobs directly into id
-        if (uncompressedDataqqq.Length <= (BlobIdV1.Size - 2))
+        if (uncompressedData.Length <= (BlobIdV1.Size - 2))
         {
-            return new CompressResult(new BlobIdV1(BlobCompAlgo.UnComp, uncompressedDataqqq), ReadOnlySequence<byte>.Empty);
+            return new CompressResult(new BlobIdV1(BlobCompAlgo.UnComp, uncompressedData), ReadOnlySequence<byte>.Empty);
         }
 
         // Snappier compression
-        var compressedData = SnappyCompressor.Compress(uncompressedDataqqq);
+        var compressedData = SnappyCompressor.Compress(uncompressedData);
 
         // embed compressed if small engough
         if (compressedData.Length <= (BlobIdV1.Size - 2))
@@ -64,27 +64,24 @@ public static class BlobHelpers
             return new CompressResult(new BlobIdV1(BlobCompAlgo.Snappy, compressedData), ReadOnlySequence<byte>.Empty);
         }
 
-        ReadOnlySequence<byte> dataToReturn;
-        int compSize;
+        ReadOnlySequence<byte> dataToReturnqqq;
         BlobCompAlgo compAlgo;
-        if (compressedData.Length < uncompressedDataqqq.Length)
+        if (compressedData.Length < uncompressedData.Length)
         {
             // compressed is smaller - use compressed data
-            dataToReturn = compressedData;
+            dataToReturnqqq = compressedData;
             compAlgo = BlobCompAlgo.Snappy;
-            compSize = (int)compressedData.Length;
         }
         else
         {
             // compressed is larger - use uncompressed data
-            dataToReturn = uncompressedDataqqq;
+            dataToReturnqqq = uncompressedData;
             compAlgo = BlobCompAlgo.UnComp;
-            compSize = 0;
         }
 
         Span<byte> hashSpan = stackalloc byte[32];
-        SHA256Hasher.ComputeHash(dataToReturn, hashSpan);
-        BlobIdV1 blobId = new BlobIdV1(blobSize, compAlgo, compSize, BlobHashAlgo.Sha256, hashSpan);
-        return new CompressResult(blobId, dataToReturn);
+        SHA256Hasher.ComputeHash(uncompressedData, hashSpan);
+        BlobIdV1 blobId = new BlobIdV1(blobSize, compAlgo, BlobHashAlgo.Sha256, hashSpan);
+        return new CompressResult(blobId, dataToReturnqqq);
     }
 }
