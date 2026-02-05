@@ -4,7 +4,6 @@ using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -195,7 +194,7 @@ public sealed class RocksDbDataStore : IDataStore
         if (_blobCache.TryGetValue(id, out var cachedBlob))
         {
             Interlocked.Increment(ref _counters.BlobGetCache);
-            return cachedBlob;
+            return BlobHelpers.TryDecompressBlob(id, cachedBlob);
         }
         else
         {

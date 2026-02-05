@@ -109,18 +109,52 @@ public class BlobStoreTests
 #if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
 #endif
-    public async Task Store08Get(StoreKind storeKind)
+    public async Task Store08GetCompressed(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        var data = new ReadOnlySequence<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobIdV1 id = data.TryCompressBlob().BlobId;
-        await dataStore.PutBlob(data, true);
+        var text =
+            """
+            The rain in Spain falls mainly on the plain.
+            Please explain my pain and disdain or I will go insain [sic].
+            Plain Jain is a brain in a train in Spain.
+            Maine is the main domain to obtain the brain drain.";
+            """;
+        var orig = text.ToByteSequence();
+        BlobIdV1 id = await dataStore.PutBlob(orig, true);
+        id.CompAlgo.ShouldBe(BlobCompAlgo.Snappy);
 
-        var data2 = await dataStore.GetBlob(id);
-        data2.ShouldNotBeNull();
-        data2.Value.ShouldBe(data);
+        var copy = await dataStore.GetBlob(id);
+        copy.ShouldNotBeNull();
+        copy.Value.ToArray().SequenceEqual(orig.ToArray()).ShouldBeTrue();
+
+        var counters = dataStore.GetCounters();
+        counters.BlobPutCount.ShouldBe(1);
+        counters.BlobPutWrits.ShouldBe(1);
+        counters.BlobPutSkips.ShouldBe(0);
+        counters.BlobGetCount.ShouldBe(1);
+        counters.BlobGetCache.ShouldBe(1);
+        counters.BlobGetReads.ShouldBe(0);
+    }
+
+    [Theory]
+    [InlineData(StoreKind.Testing)]
+#if NET8_0_OR_GREATER
+    [InlineData(StoreKind.RocksDb)]
+#endif
+    public async Task Store08GetUncompressed(StoreKind storeKind)
+    {
+        string testpath = $"{testroot}{Guid.NewGuid():N}";
+        using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
+
+        var orig = new ReadOnlySequence<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+        BlobIdV1 id = await dataStore.PutBlob(orig, true);
+        id.CompAlgo.ShouldBe(BlobCompAlgo.UnComp);
+
+        var copy = await dataStore.GetBlob(id);
+        copy.ShouldNotBeNull();
+        copy.Value.ToArray().SequenceEqual(orig.ToArray()).ShouldBeTrue();
 
         var counters = dataStore.GetCounters();
         counters.BlobPutCount.ShouldBe(1);

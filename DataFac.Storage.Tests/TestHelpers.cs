@@ -1,8 +1,12 @@
-﻿using DataFac.Storage.RocksDbStore;
+﻿using DataFac.Memory;
+using DataFac.Storage.RocksDbStore;
 using DataFac.Storage.Testing;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 
 #pragma warning disable CA1707 // Identifiers should not contain underscores
 
@@ -10,6 +14,26 @@ namespace DataFac.Storage.Tests;
 
 internal static class TestHelpers
 {
+    /// <summary>
+    /// Converts the specified string to a UTF-8 encoded <see cref="System.Buffers.ReadOnlySequence{T}"/> of bytes, with
+    /// each line separated by a null byte.
+    /// </summary>
+    /// <remarks>Each line in the input string is encoded as UTF-8 and terminated with a null byte in the
+    /// resulting sequence. This is done to avoid the variation in line endings on different platforms.</remarks>
+    /// <returns>A <see cref="System.Buffers.ReadOnlySequence{T}"/> of bytes containing the UTF-8 encoding of each line.</returns>
+    public static ReadOnlySequence<byte> ToByteSequence(this string text)
+    {
+        var builder = new ReadOnlySequenceBuilder<byte>();
+        using var sr = new StringReader(text);
+        string? line;
+        while ((line = sr.ReadLine()) is not null)
+        {
+            builder = builder.Append(Encoding.UTF8.GetBytes(line));
+            builder = builder.Append(new byte[] { 0 });
+        }
+        return builder.Build();
+    }
+
     public static IDataStore CreateDataStore(StoreKind storeKind, string rocksDbRoot = "")
     {
         if (storeKind != StoreKind.Testing && string.IsNullOrEmpty(rocksDbRoot)) throw new System.ArgumentException($"'{nameof(rocksDbRoot)}' cannot be null or empty.", nameof(rocksDbRoot));

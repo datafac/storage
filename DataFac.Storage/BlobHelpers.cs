@@ -1,36 +1,9 @@
-﻿using DataFac.Memory;
-using Snappier;
-using System;
+﻿using System;
 using System.Buffers;
-using System.Linq;
 using System.Security.Cryptography;
 
 namespace DataFac.Storage;
 
-public interface IBlobCompressor
-{
-#if NET7_0_OR_GREATER
-    static abstract ReadOnlySequence<byte> Compress(ReadOnlySequence<byte> data);
-    static abstract ReadOnlySequence<byte> Decompress(ReadOnlySequence<byte> data);
-#endif
-}
-public sealed class SnappyCompressor : IBlobCompressor
-{
-    public static ReadOnlySequence<byte> Compress(ReadOnlySequence<byte> uncompressedData)
-    {
-        var buffers = new ByteBufferWriter();
-        Snappy.Compress(uncompressedData, buffers);
-        var compressedData = buffers.GetWrittenSequence();
-        return compressedData;
-    }
-    public static ReadOnlySequence<byte> Decompress(ReadOnlySequence<byte> compressedData)
-    {
-        var buffers = new ByteBufferWriter();
-        Snappy.Decompress(compressedData, buffers);
-        var decompressedData = buffers.GetWrittenSequence();
-        return decompressedData;
-    }
-}
 public static class BlobHelpers
 {
     public static byte ToCharCode(this BlobCompAlgo algo)
@@ -51,6 +24,22 @@ public static class BlobHelpers
             (byte)'S' => BlobCompAlgo.Snappy,
             _ => BlobCompAlgo.UnComp,
         };
+    }
+
+    public static ReadOnlySequence<byte> TryDecompressBlob(BlobIdV1 id, ReadOnlySequence<byte> blobData)
+    {
+        switch (id.CompAlgo)
+        {
+            case BlobCompAlgo.UnComp:
+                return blobData;
+            case BlobCompAlgo.Brotli:
+                throw new NotImplementedException("Brotli embedded blobs are not implemented yet.");
+            case BlobCompAlgo.Snappy:
+                var decompressedData = SnappyCompressor.Decompress(blobData);
+                return decompressedData;
+            default:
+                throw new NotSupportedException($"Compression algorithm {id.CompAlgo} not supported.");
+        }
     }
 
     public static CompressResult TryCompressBlob(this ReadOnlySequence<byte> uncompressedData)

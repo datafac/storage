@@ -88,7 +88,7 @@ public sealed class TestDataStore : IDataStore
         if (_blobStore.TryGetValue(id, out var data))
         {
             Interlocked.Increment(ref _counters.BlobGetCache);
-            return new ValueTask<ReadOnlySequence<byte>?>(data);
+            return new ValueTask<ReadOnlySequence<byte>?>(BlobHelpers.TryDecompressBlob(id, data));
         }
         else
         {
