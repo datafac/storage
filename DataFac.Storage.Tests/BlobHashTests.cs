@@ -59,10 +59,10 @@ public class BlobHashTests
         result.BlobId.CompAlgo.ShouldBe(BlobCompAlgo.Snappy);
 #if NET8_0_OR_GREATER
         result.BlobId.CompSize.ShouldBe(174);
-        result.BlobId.ToString().ShouldBe("V1.0:204:S:174:1:zvnrkv/TwC40uhpghpCfhUIOTe6tnOzyrmUuBT5rrfA=");
+        result.BlobId.ToString().ShouldBe("V1.0:204:S:174:1:EyeaRBxgUfEVcY3hwdzjgC0ZFHSFjEbKUl4ddeP64JY=");
 #else
         result.BlobId.CompSize.ShouldBe(179);
-        result.BlobId.ToString().ShouldBe("V1.0:204:S:179:1:zvnrkv/TwC40uhpghpCfhUIOTe6tnOzyrmUuBT5rrfA=");
+        result.BlobId.ToString().ShouldBe("V1.0:204:S:179:1:sl1z8+d7yYgPIxcD4Kzgq4xFsrZ3jyEMXd3hFedK7LY=");
 #endif
     }
 }

@@ -4,6 +4,7 @@ using DataFac.Storage.Testing;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,42 @@ namespace DataFac.Storage.Tests;
 
 internal static class TestHelpers
 {
+    public static string ToDisplayString(this ReadOnlySequence<byte> sequence)
+    {
+        StringBuilder result = new StringBuilder();
+        int index = 0;
+        foreach (var segment in sequence)
+        {
+            foreach (var b in segment.Span)
+            {
+                if (index != 0)
+                {
+                    result.Append('-');
+                }
+                result.Append(b.ToString("X2"));
+                index = (index + 1) % 32;
+                if (index == 0)
+                {
+                    result.AppendLine();
+                }
+            }
+        }
+        return result.ToString();
+    }
+
+    public static ReadOnlySequence<byte> FromDisplayString(this string display)
+    {
+        var builder = new ReadOnlySequenceBuilder<byte>();
+        using var sr = new StringReader(display);
+        string? line;
+        while ((line = sr.ReadLine()) is not null)
+        {
+            byte[] bytes = line.Split('-').Select(s => byte.Parse(s, NumberStyles.HexNumber)).ToArray();
+            builder = builder.Append(bytes);
+        }
+        return builder.Build();
+    }
+
     /// <summary>
     /// Converts the specified string to a UTF-8 encoded <see cref="System.Buffers.ReadOnlySequence{T}"/> of bytes, with
     /// each line separated by a null byte.
