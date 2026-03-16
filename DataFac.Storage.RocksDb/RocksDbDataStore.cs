@@ -257,15 +257,16 @@ public sealed class RocksDbDataStore : IDataStore
         }
     }
 
-    public async ValueTask<BlobIdV1> PutBlob(ReadOnlySequence<byte> data, bool withSync)
+    public async ValueTask<BlobIdV1> PutBlob(ReadOnlySequence<byte> blob, bool withSync)
     {
         ThrowIfDisposed();
-        var compressResult = data.TryCompressBlob();
+        var compressResult = blob.TryCompressBlob();
         var id = compressResult.BlobId;
         if (id.IsEmbedded) return id;
 
         Interlocked.Increment(ref _counters.BlobPutCount);
-        if (!_blobCache.TryAdd(id, compressResult.CompressedData))
+        var data = compressResult.CompressedData;
+        if (!_blobCache.TryAdd(id, data))
         {
             Interlocked.Increment(ref _counters.BlobPutSkips);
             return id;
@@ -277,13 +278,41 @@ public sealed class RocksDbDataStore : IDataStore
             var complete = new TaskCompletionSource<ReadOnlySequence<byte>?>();
             _writer.TryWrite(AsyncOp.Put(id, data, complete));
             await complete.Task.ConfigureAwait(false);
-            return id;
         }
         else
         {
             _writer.TryWrite(AsyncOp.Put(id, data, null));
+        }
+        return id;
+    }
+
+    public async ValueTask<BlobIdV1> PutBlob(string text, bool withSync = false)
+    {
+        ThrowIfDisposed();
+        var compressResult = text.TryCompressText();
+        var id = compressResult.BlobId;
+        if (id.IsEmbedded) return id;
+
+        Interlocked.Increment(ref _counters.BlobPutCount);
+        var data = compressResult.CompressedData;
+        if (!_blobCache.TryAdd(id, data))
+        {
+            Interlocked.Increment(ref _counters.BlobPutSkips);
             return id;
         }
+
+        // added to cache - enqueue put
+        if (withSync)
+        {
+            var complete = new TaskCompletionSource<ReadOnlySequence<byte>?>();
+            _writer.TryWrite(AsyncOp.Put(id, data, complete));
+            await complete.Task.ConfigureAwait(false);
+        }
+        else
+        {
+            _writer.TryWrite(AsyncOp.Put(id, data, null));
+        }
+        return id;
     }
 
     public ValueTask Sync()

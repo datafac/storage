@@ -143,6 +143,28 @@ public sealed class TestDataStore : IDataStore
         return new ValueTask<BlobIdV1>(id);
     }
 
+    public ValueTask<BlobIdV1> PutBlob(string text, bool withSync = false)
+    {
+        var compressResult = text.TryCompressText();
+        var id = compressResult.BlobId;
+        if (id.IsEmbedded)
+            return new ValueTask<BlobIdV1>(id);
+
+        Interlocked.Increment(ref _counters.BlobPutCount);
+        var data = compressResult.CompressedData;
+        if (_blobStore.TryAdd(id, data))
+        {
+            Interlocked.Increment(ref _counters.BlobPutWrits);
+            Interlocked.Add(ref _counters.ByteDelta, data.Length);
+        }
+        else
+        {
+            Interlocked.Increment(ref _counters.BlobPutSkips);
+        }
+
+        return new ValueTask<BlobIdV1>(id);
+    }
+
     public ValueTask Sync() => default;
 
     public int ClearCache() => 0;

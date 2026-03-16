@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace DataFac.Storage;
 
@@ -84,4 +85,25 @@ public static class BlobHelpers
         BlobIdV1 blobId = new BlobIdV1(blobSize, compAlgo, BlobHashAlgo.Sha256, hashSpan);
         return new CompressResult(blobId, dataToReturnqqq);
     }
+
+    public static CompressResult TryCompressText(this string uncompressedText)
+    {
+        // embed small blobs directly into id
+#if NET8_0_OR_GREATER
+        Span<byte> smallBuffer = stackalloc byte[BlobIdV1.Size - 2];
+        if (Encoding.UTF8.TryGetBytes(uncompressedText, smallBuffer, out int bytesWritten))
+        {
+            return new CompressResult(new BlobIdV1(BlobCompAlgo.UnComp, smallBuffer.Slice(bytesWritten)), ReadOnlySequence<byte>.Empty);
+        }
+        return TryCompressBlob(new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(uncompressedText)));
+#else
+        var encodedText = Encoding.UTF8.GetBytes(uncompressedText);
+        if (encodedText.Length <= (BlobIdV1.Size - 2))
+        {
+            return new CompressResult(new BlobIdV1(BlobCompAlgo.UnComp, encodedText), ReadOnlySequence<byte>.Empty);
+        }
+        return TryCompressBlob(new ReadOnlySequence<byte>(encodedText));
+#endif
+    }
+
 }

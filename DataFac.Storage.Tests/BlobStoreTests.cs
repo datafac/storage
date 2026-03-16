@@ -2,6 +2,7 @@
 using System;
 using System.Buffers;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -70,13 +71,13 @@ public class BlobStoreTests
 #if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
 #endif
-    public async Task Store05PutEmpty(StoreKind storeKind)
+    public async Task Store05PutEmptyBlob(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        ReadOnlySequence<byte> data = default;
-        var id = await dataStore.PutBlob(data, true);
+        ReadOnlySequence<byte> blob = default;
+        var id = await dataStore.PutBlob(blob, true);
         id.IsEmbedded.ShouldBeTrue();
 
         var counters = dataStore.GetCounters();
@@ -90,13 +91,52 @@ public class BlobStoreTests
 #if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
 #endif
-    public async Task Store06PutNonEmpty(StoreKind storeKind)
+    public async Task Store05PutEmptyText(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        var data = new ReadOnlySequence<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        await dataStore.PutBlob(data, true);
+        string text = string.Empty;
+        var id = await dataStore.PutBlob(text, true);
+        id.IsEmbedded.ShouldBeTrue();
+
+        var counters = dataStore.GetCounters();
+        counters.BlobPutCount.ShouldBe(0);
+        counters.BlobPutWrits.ShouldBe(0);
+        counters.BlobPutSkips.ShouldBe(0);
+    }
+
+    [Theory]
+    [InlineData(StoreKind.Testing)]
+#if NET8_0_OR_GREATER
+    [InlineData(StoreKind.RocksDb)]
+#endif
+    public async Task Store06PutNonEmptyBlob(StoreKind storeKind)
+    {
+        string testpath = $"{testroot}{Guid.NewGuid():N}";
+        using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
+
+        var blob = new ReadOnlySequence<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+        await dataStore.PutBlob(blob, true);
+
+        var counters = dataStore.GetCounters();
+        counters.BlobPutCount.ShouldBe(1);
+        counters.BlobPutWrits.ShouldBe(1);
+        counters.BlobPutSkips.ShouldBe(0);
+    }
+
+    [Theory]
+    [InlineData(StoreKind.Testing)]
+#if NET8_0_OR_GREATER
+    [InlineData(StoreKind.RocksDb)]
+#endif
+    public async Task Store06PutNonEmptyText(StoreKind storeKind)
+    {
+        string testpath = $"{testroot}{Guid.NewGuid():N}";
+        using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
+
+        string text = string.Join("-", Enumerable.Range(0, 64).Select(i => $"{i:X2}"));
+        await dataStore.PutBlob(text, true);
 
         var counters = dataStore.GetCounters();
         counters.BlobPutCount.ShouldBe(1);
@@ -121,13 +161,13 @@ public class BlobStoreTests
             Plain Jain is a brain in a train in Spain.
             Maine is the main domain to obtain the brain drain.";
             """;
-        var orig = text.ToByteSequence();
-        BlobIdV1 id = await dataStore.PutBlob(orig, true);
+        BlobIdV1 id = await dataStore.PutBlob(text, true);
         id.CompAlgo.ShouldBe(BlobCompAlgo.Snappy);
 
         var copy = await dataStore.GetBlob(id);
         copy.ShouldNotBeNull();
-        copy.Value.ToArray().SequenceEqual(orig.ToArray()).ShouldBeTrue();
+        string text2 = Encoding.UTF8.GetString(copy.Value.ToArray());
+        text2.ShouldBe(text);
 
         var counters = dataStore.GetCounters();
         counters.BlobPutCount.ShouldBe(1);

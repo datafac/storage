@@ -43,8 +43,23 @@ public interface IDataStore : IDisposable
     /// <returns></returns>
     void RemoveNames(IEnumerable<string> keys);
 
+    /// <summary>
+    /// Returns the blob for the given id if it exists, null otherwise.
+    /// </summary>
     ValueTask<ReadOnlySequence<byte>?> GetBlob(BlobIdV1 id);
+
+    /// <summary>
+    /// Saves the given buffers into the underlying store, return its id, and
+    /// optionally waiting for the operation to complete.
+    /// </summary>
     ValueTask<BlobIdV1> PutBlob(ReadOnlySequence<byte> data, bool withSync = false);
+
+    /// <summary>
+    /// Converts the given string to a byte buffer using UTF8 encoding.
+    /// Saves the given buffers into the underlying store, return its id, and
+    /// optionally waiting for the operation to complete.
+    /// </summary>
+    ValueTask<BlobIdV1> PutBlob(string text, bool withSync = false);
 
     KeyValuePair<BlobIdV1, ReadOnlySequence<byte>>[] GetCachedBlobs();
     KeyValuePair<BlobIdV1, ReadOnlySequence<byte>>[] GetStoredBlobs();
