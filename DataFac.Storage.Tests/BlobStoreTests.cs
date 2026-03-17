@@ -1,4 +1,5 @@
-﻿using Shouldly;
+﻿using DataFac.Memory;
+using Shouldly;
 using System;
 using System.Buffers;
 using System.Linq;
@@ -76,14 +77,24 @@ public class BlobStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        ReadOnlySequence<byte> blob = default;
-        var id = await dataStore.PutBlob(blob, true);
+        ReadOnlySequence<byte> orig = default;
+        var id = await dataStore.PutBlob(orig, true);
         id.IsEmbedded.ShouldBeTrue();
+
+        id.ToString().ShouldBe("U:0:");
 
         var counters = dataStore.GetCounters();
         counters.BlobPutCount.ShouldBe(0);
         counters.BlobPutWrits.ShouldBe(0);
         counters.BlobPutSkips.ShouldBe(0);
+
+        var copy = await dataStore.GetBlob(id);
+        copy.HasValue.ShouldBeTrue();
+        copy.Value.Length.ShouldBe(0);
+        copy.Value.IsSingleSegment.ShouldBeTrue();
+        var origSpan = orig.Compact().Span;
+        var copySpan = copy.Value.Compact().Span;
+        copySpan.SequenceEqual(origSpan).ShouldBeTrue();
     }
 
     [Theory]
@@ -96,14 +107,32 @@ public class BlobStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        string text = string.Empty;
-        var id = await dataStore.PutBlob(text, true);
+        string orig = string.Empty;
+        var id = await dataStore.PutBlob(orig, true);
         id.IsEmbedded.ShouldBeTrue();
+
+        id.ToString().ShouldBe("U:0:");
 
         var counters = dataStore.GetCounters();
         counters.BlobPutCount.ShouldBe(0);
         counters.BlobPutWrits.ShouldBe(0);
         counters.BlobPutSkips.ShouldBe(0);
+
+        var recd = await dataStore.GetBlob(id);
+        recd.ShouldNotBeNull();
+        recd.Value.Length.ShouldBe(0);
+        recd.Value.IsSingleSegment.ShouldBeTrue();
+        ReadOnlySpan<char> origSpan = orig;
+#if NET8_0_OR_GREATER
+        Span<char> copySpan = stackalloc char[62];
+        bool decoded = Encoding.UTF8.TryGetChars(recd.Value.FirstSpan, copySpan, out int charsWritten);
+        decoded.ShouldBeTrue();
+        copySpan = copySpan.Slice(0, charsWritten);
+#else
+        string copy = Encoding.UTF8.GetString(recd.Value.ToArray());
+        ReadOnlySpan<char> copySpan = copy;
+#endif
+        copySpan.SequenceEqual(origSpan).ShouldBeTrue();
     }
 
     [Theory]

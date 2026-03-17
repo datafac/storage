@@ -93,7 +93,7 @@ public static class BlobHelpers
         Span<byte> smallBuffer = stackalloc byte[BlobIdV1.Size - 2];
         if (Encoding.UTF8.TryGetBytes(uncompressedText, smallBuffer, out int bytesWritten))
         {
-            return new CompressResult(new BlobIdV1(BlobCompAlgo.UnComp, smallBuffer.Slice(bytesWritten)), ReadOnlySequence<byte>.Empty);
+            return new CompressResult(new BlobIdV1(BlobCompAlgo.UnComp, smallBuffer.Slice(0, bytesWritten)), ReadOnlySequence<byte>.Empty);
         }
         return TryCompressBlob(new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(uncompressedText)));
 #else
