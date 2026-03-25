@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DataFac.Memory;
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -47,6 +48,12 @@ public interface IDataStore : IDisposable
     /// Returns the blob for the given id if it exists, null otherwise.
     /// </summary>
     ValueTask<ReadOnlySequence<byte>?> GetBlob(BlobIdV1 id);
+
+    /// <summary>
+    /// Saves the given buffers into the underlying store, return its id, and
+    /// optionally waiting for the operation to complete.
+    /// </summary>
+    ValueTask<BlobIdV1> PutBlob(Octets data, bool withSync = false);
 
     /// <summary>
     /// Saves the given buffers into the underlying store, return its id, and

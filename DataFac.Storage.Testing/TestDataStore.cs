@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DataFac.Memory;
+using System;
 using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -119,6 +120,28 @@ public sealed class TestDataStore : IDataStore
         }
 
         return default;
+    }
+
+    public ValueTask<BlobIdV1> PutBlob(Octets dataqqq, bool withSync = false)
+    {
+        var compressResult = dataqqq.Sequence.TryCompressBlob();
+        var id = compressResult.BlobId;
+        if (id.IsEmbedded)
+            return new ValueTask<BlobIdV1>(id);
+
+        Interlocked.Increment(ref _counters.BlobPutCount);
+        var compressed = compressResult.CompressedData;
+        if (_blobStore.TryAdd(id, compressed))
+        {
+            Interlocked.Increment(ref _counters.BlobPutWrits);
+            Interlocked.Add(ref _counters.ByteDelta, compressed.Length);
+        }
+        else
+        {
+            Interlocked.Increment(ref _counters.BlobPutSkips);
+        }
+
+        return new ValueTask<BlobIdV1>(id);
     }
 
     public ValueTask<BlobIdV1> PutBlob(ReadOnlySequence<byte> uncompressed, bool withSync)

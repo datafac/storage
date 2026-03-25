@@ -1,4 +1,5 @@
-﻿using RocksDbSharp;
+﻿using DataFac.Memory;
+using RocksDbSharp;
 using System;
 using System.Buffers;
 using System.Collections.Concurrent;
@@ -257,6 +258,35 @@ public sealed class RocksDbDataStore : IDataStore
         }
     }
 
+    public async ValueTask<BlobIdV1> PutBlob(Octets input, bool withSync = false)
+    {
+        ThrowIfDisposed();
+        var compressResult = input.Sequence.TryCompressBlob();
+        var id = compressResult.BlobId;
+        if (id.IsEmbedded) return id;
+
+        Interlocked.Increment(ref _counters.BlobPutCount);
+        var data = compressResult.CompressedData;
+        if (!_blobCache.TryAdd(id, data))
+        {
+            Interlocked.Increment(ref _counters.BlobPutSkips);
+            return id;
+        }
+
+        // added to cache - enqueue put
+        if (withSync)
+        {
+            var complete = new TaskCompletionSource<ReadOnlySequence<byte>?>();
+            _writer.TryWrite(AsyncOp.Put(id, data, complete));
+            await complete.Task.ConfigureAwait(false);
+        }
+        else
+        {
+            _writer.TryWrite(AsyncOp.Put(id, data, null));
+        }
+        return id;
+    }
+
     public async ValueTask<BlobIdV1> PutBlob(ReadOnlySequence<byte> blob, bool withSync)
     {
         ThrowIfDisposed();
@@ -392,12 +422,21 @@ public sealed class RocksDbDataStore : IDataStore
 
     private ValueTask InternalPutBlob(in BlobIdV1 id, in ReadOnlySequence<byte> data)
     {
+#if NET8_0_OR_GREATER
+        Span<byte> key = stackalloc byte[BlobIdV1.Size];
+        id.WriteTo(key);
+#else
         var key = id.ToByteArray();
+#endif
         byte[] currentBytes = _rocksBlobDb.Get(key);
         if (currentBytes is null)
         {
-            // adding blob
-            _rocksBlobDb.Put(key, data.ToArray());
+#if NET8_0_OR_GREATER
+            var dataBytes = data.Compact().Span;
+#else
+            var dataBytes = data.ToArray();
+#endif
+            _rocksBlobDb.Put(key, dataBytes);
             Interlocked.Increment(ref _counters.BlobPutWrits);
             Interlocked.Add(ref _counters.ByteDelta, data.Length);
         }
