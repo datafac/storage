@@ -35,21 +35,7 @@ namespace DataFac.Storage
         public int BlobSize => _block.A.A.B.A.Int32ValueLE; // Codec_Int32_LE.ReadFromSpan(_memory.Span.Slice(8, 4));
         public BlockB032 HashData => _block.B; // _memory.Slice(32, 32);
 
-        public bool IsDefault
-        {
-            get
-            {
-                return _block.A.A.A.Int64ValueLE == 0L
-                    && _block.A.A.B.Int64ValueLE == 0L
-                    && _block.A.B.A.Int64ValueLE == 0L
-                    && _block.A.B.B.Int64ValueLE == 0L
-                    && _block.B.A.A.Int64ValueLE == 0L
-                    && _block.B.A.B.Int64ValueLE == 0L
-                    && _block.B.B.A.Int64ValueLE == 0L
-                    && _block.B.B.B.Int64ValueLE == 0L
-                    ;
-            }
-        }
+        public bool IsDefault => _block.IsEmpty;
 
         private BlobIdV1(ReadOnlySequence<byte> source)
         {
@@ -63,9 +49,16 @@ namespace DataFac.Storage
             _block.TryRead(source);
         }
 
+        private BlobIdV1(BlockB064 source)
+        {
+            _block = source;
+        }
+
         public static BlobIdV1 FromSequence(ReadOnlySequence<byte> source) => new BlobIdV1(source);
 
         public static BlobIdV1 FromSpan(ReadOnlySpan<byte> source) => new BlobIdV1(source);
+
+        public static BlobIdV1 FromBlock(BlockB064 source) => new BlobIdV1(source);
 
         //public static BlobIdV1 UnsafeWrap(ReadOnlyMemory<byte> memory)
         //{
