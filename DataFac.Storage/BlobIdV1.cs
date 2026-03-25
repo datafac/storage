@@ -11,6 +11,7 @@ namespace DataFac.Storage
     {
         public const int Size = 64;
         private readonly BlockB064 _block;
+        public BlockB064 Block => _block;
 
         // map
         //  offset  path        len fieldname
