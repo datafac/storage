@@ -50,6 +50,11 @@ public interface IDataStore : IDisposable
     ValueTask<ReadOnlySequence<byte>?> GetBlob(BlobIdV1 id);
 
     /// <summary>
+    /// Returns the blob for the given id if it exists, null otherwise.
+    /// </summary>
+    ValueTask<Octets?> GetBlob2(BlobIdV1 id);
+
+    /// <summary>
     /// Saves the given buffers into the underlying store, return its id, and
     /// optionally waiting for the operation to complete.
     /// </summary>
@@ -68,8 +73,8 @@ public interface IDataStore : IDisposable
     /// </summary>
     ValueTask<BlobIdV1> PutBlob(string text, bool withSync = false);
 
-    KeyValuePair<BlobIdV1, ReadOnlySequence<byte>>[] GetCachedBlobs();
-    KeyValuePair<BlobIdV1, ReadOnlySequence<byte>>[] GetStoredBlobs();
+    KeyValuePair<BlobIdV1, Octets>[] GetCachedBlobs();
+    KeyValuePair<BlobIdV1, Octets>[] GetStoredBlobs();
 
     /// <summary>
     /// Removes the blob if it exists.

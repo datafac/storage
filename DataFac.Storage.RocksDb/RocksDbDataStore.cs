@@ -20,7 +20,7 @@ public sealed class RocksDbDataStore : IDataStore
     private readonly RocksDb _rocksNameDb;
 #pragma warning restore CA2213 // Disposable fields should be disposed
 
-    private readonly ConcurrentDictionary<BlobIdV1, ReadOnlySequence<byte>> _blobCache = new ConcurrentDictionary<BlobIdV1, ReadOnlySequence<byte>>();
+    private readonly ConcurrentDictionary<BlobIdV1, Octets> _blobCache = new ConcurrentDictionary<BlobIdV1, Octets>();
     private readonly ChannelWriter<AsyncOp> _writer;
     private readonly ChannelReader<AsyncOp> _reader;
 
@@ -164,18 +164,17 @@ public sealed class RocksDbDataStore : IDataStore
         return added;
     }
 
-    public KeyValuePair<BlobIdV1, ReadOnlySequence<byte>>[] GetCachedBlobs() => _blobCache.ToArray();
+    public KeyValuePair<BlobIdV1, Octets>[] GetCachedBlobs() => _blobCache.ToArray();
 
-    public KeyValuePair<BlobIdV1, ReadOnlySequence<byte>>[] GetStoredBlobs()
+    public KeyValuePair<BlobIdV1, Octets>[] GetStoredBlobs()
     {
-        var list = new List<KeyValuePair<BlobIdV1, ReadOnlySequence<byte>>>();
+        var list = new List<KeyValuePair<BlobIdV1, Octets>>();
         using var iter = _rocksBlobDb.NewIterator();
         var iter2 = iter.SeekToFirst();
         while (iter2.Valid())
         {
             BlobIdV1 key = BlobIdV1.FromSpan(iter2.Key());
-            ReadOnlySequence<byte> value = new ReadOnlySequence<byte>(iter2.Value());
-            list.Add(new KeyValuePair<BlobIdV1, ReadOnlySequence<byte>>(key, value));
+            list.Add(new KeyValuePair<BlobIdV1, Octets>(key, Octets.UnsafeWrap(iter2.Value())));
             iter2 = iter2.Next();
         }
         return list.ToArray();
@@ -195,7 +194,7 @@ public sealed class RocksDbDataStore : IDataStore
         if (_blobCache.TryGetValue(id, out var cachedBlob))
         {
             Interlocked.Increment(ref _counters.BlobGetCache);
-            return BlobHelpers.TryDecompressBlob(id, cachedBlob);
+            return BlobHelpers.TryDecompressBlob(id, cachedBlob.Sequence);
         }
         else
         {
@@ -203,12 +202,44 @@ public sealed class RocksDbDataStore : IDataStore
         }
 
         // enqueue get
-        var complete = new TaskCompletionSource<ReadOnlySequence<byte>?>();
+        var complete = new TaskCompletionSource<Octets?>();
         _writer.TryWrite(AsyncOp.Get(id, complete));
         var data = await complete.Task.ConfigureAwait(false);
         if (data is not null)
         {
-            _blobCache.TryAdd(id, data.Value);
+            _blobCache.TryAdd(id, data);
+        }
+        return data?.Sequence;
+    }
+
+    public async ValueTask<Octets?> GetBlob2(BlobIdV1 id)
+    {
+        ThrowIfDisposed();
+        if (id.IsDefault) return null;
+        if (id.TryGetEmbeddedBlob(out var embeddedBlob))
+        {
+            return Octets.UnsafeWrap(embeddedBlob);
+        }
+
+        Interlocked.Increment(ref _counters.BlobGetCount);
+
+        if (_blobCache.TryGetValue(id, out var cachedBlob))
+        {
+            Interlocked.Increment(ref _counters.BlobGetCache);
+            return Octets.UnsafeWrap(BlobHelpers.TryDecompressBlob(id, cachedBlob.Sequence));
+        }
+        else
+        {
+            Interlocked.Increment(ref _counters.BlobGetReads);
+        }
+
+        // enqueue get
+        var complete = new TaskCompletionSource<Octets?>();
+        _writer.TryWrite(AsyncOp.Get(id, complete));
+        var data = await complete.Task.ConfigureAwait(false);
+        if (data is not null)
+        {
+            _blobCache.TryAdd(id, data);
         }
         return data;
     }
@@ -222,10 +253,10 @@ public sealed class RocksDbDataStore : IDataStore
         // enqueue remove
         if (withSync)
         {
-            var complete = new TaskCompletionSource<ReadOnlySequence<byte>?>();
+            var complete = new TaskCompletionSource<Octets?>();
             _writer.TryWrite(AsyncOp.Del(id, complete));
             var data = await complete.Task.ConfigureAwait(false);
-            return data;
+            return data?.Sequence;
         }
         else
         {
@@ -248,7 +279,7 @@ public sealed class RocksDbDataStore : IDataStore
 
         if (withSync)
         {
-            var complete = new TaskCompletionSource<ReadOnlySequence<byte>?>();
+            var complete = new TaskCompletionSource<Octets?>();
             _writer.TryWrite(AsyncOp.Sync(complete));
             return new ValueTask(complete.Task);
         }
@@ -267,7 +298,7 @@ public sealed class RocksDbDataStore : IDataStore
 
         Interlocked.Increment(ref _counters.BlobPutCount);
         var data = compressResult.CompressedData;
-        if (!_blobCache.TryAdd(id, data))
+        if (!_blobCache.TryAdd(id, Octets.UnsafeWrap(data)))
         {
             Interlocked.Increment(ref _counters.BlobPutSkips);
             return id;
@@ -276,13 +307,13 @@ public sealed class RocksDbDataStore : IDataStore
         // added to cache - enqueue put
         if (withSync)
         {
-            var complete = new TaskCompletionSource<ReadOnlySequence<byte>?>();
-            _writer.TryWrite(AsyncOp.Put(id, data, complete));
+            var complete = new TaskCompletionSource<Octets?>();
+            _writer.TryWrite(AsyncOp.Put(id, Octets.UnsafeWrap(data), complete));
             await complete.Task.ConfigureAwait(false);
         }
         else
         {
-            _writer.TryWrite(AsyncOp.Put(id, data, null));
+            _writer.TryWrite(AsyncOp.Put(id, Octets.UnsafeWrap(data), null));
         }
         return id;
     }
@@ -296,7 +327,7 @@ public sealed class RocksDbDataStore : IDataStore
 
         Interlocked.Increment(ref _counters.BlobPutCount);
         var data = compressResult.CompressedData;
-        if (!_blobCache.TryAdd(id, data))
+        if (!_blobCache.TryAdd(id, Octets.UnsafeWrap(data)))
         {
             Interlocked.Increment(ref _counters.BlobPutSkips);
             return id;
@@ -305,13 +336,13 @@ public sealed class RocksDbDataStore : IDataStore
         // added to cache - enqueue put
         if (withSync)
         {
-            var complete = new TaskCompletionSource<ReadOnlySequence<byte>?>();
-            _writer.TryWrite(AsyncOp.Put(id, data, complete));
+            var complete = new TaskCompletionSource<Octets?>();
+            _writer.TryWrite(AsyncOp.Put(id, Octets.UnsafeWrap(data), complete));
             await complete.Task.ConfigureAwait(false);
         }
         else
         {
-            _writer.TryWrite(AsyncOp.Put(id, data, null));
+            _writer.TryWrite(AsyncOp.Put(id, Octets.UnsafeWrap(data), null));
         }
         return id;
     }
@@ -325,7 +356,7 @@ public sealed class RocksDbDataStore : IDataStore
 
         Interlocked.Increment(ref _counters.BlobPutCount);
         var data = compressResult.CompressedData;
-        if (!_blobCache.TryAdd(id, data))
+        if (!_blobCache.TryAdd(id, Octets.UnsafeWrap(data)))
         {
             Interlocked.Increment(ref _counters.BlobPutSkips);
             return id;
@@ -334,13 +365,13 @@ public sealed class RocksDbDataStore : IDataStore
         // added to cache - enqueue put
         if (withSync)
         {
-            var complete = new TaskCompletionSource<ReadOnlySequence<byte>?>();
-            _writer.TryWrite(AsyncOp.Put(id, data, complete));
+            var complete = new TaskCompletionSource<Octets?>();
+            _writer.TryWrite(AsyncOp.Put(id, Octets.UnsafeWrap(data), complete));
             await complete.Task.ConfigureAwait(false);
         }
         else
         {
-            _writer.TryWrite(AsyncOp.Put(id, data, null));
+            _writer.TryWrite(AsyncOp.Put(id, Octets.UnsafeWrap(data), null));
         }
         return id;
     }
@@ -349,7 +380,7 @@ public sealed class RocksDbDataStore : IDataStore
     {
         ThrowIfDisposed();
         // enqueue sync
-        var complete = new TaskCompletionSource<ReadOnlySequence<byte>?>();
+        var complete = new TaskCompletionSource<Octets?>();
         _writer.TryWrite(AsyncOp.Sync(complete));
         return new ValueTask(complete.Task);
     }
@@ -374,13 +405,14 @@ public sealed class RocksDbDataStore : IDataStore
                         {
                             // async get
                             var data = await InternalGetBlob(item.Id).ConfigureAwait(false);
-                            item.Completion?.SetResult(data);
+                            item.Completion?.SetResult(data.HasValue ? Octets.UnsafeWrap(data.Value) : null);
                             break;
                         }
                     case AsyncOpKind.Put:
                         {
                             // async put
-                            await InternalPutBlob(item.Id, item.Data).ConfigureAwait(false);
+                            if (item.Data is not null)
+                            await InternalPutBlob(item.Id, item.Data.Sequence).ConfigureAwait(false);
                             item.Completion?.TrySetResult(null);
                             break;
                         }
@@ -388,7 +420,7 @@ public sealed class RocksDbDataStore : IDataStore
                         {
                             // async del
                             var data = await InternalDelBlob(item.Id).ConfigureAwait(false);
-                            item.Completion?.TrySetResult(data);
+                            item.Completion?.TrySetResult(data.HasValue ? Octets.UnsafeWrap(data.Value) : null);
                             break;
                         }
                     default:
