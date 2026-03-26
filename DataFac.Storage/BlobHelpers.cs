@@ -27,6 +27,14 @@ public static class BlobHelpers
         };
     }
 
+    /// <summary>
+    /// todo convert to rom buffers
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="blobData"></param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    /// <exception cref="NotSupportedException"></exception>
     public static ReadOnlySequence<byte> TryDecompressBlob(BlobIdV1 id, ReadOnlySequence<byte> blobData)
     {
         switch (id.CompAlgo)

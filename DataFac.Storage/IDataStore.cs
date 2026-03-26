@@ -73,8 +73,8 @@ public interface IDataStore : IDisposable
     /// </summary>
     ValueTask<BlobIdV1> PutBlob(string text, bool withSync = false);
 
-    KeyValuePair<BlobIdV1, Octets>[] GetCachedBlobs();
-    KeyValuePair<BlobIdV1, Octets>[] GetStoredBlobs();
+    KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetCachedBlobs();
+    KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetStoredBlobs();
 
     /// <summary>
     /// Removes the blob if it exists.
