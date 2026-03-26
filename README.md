@@ -8,9 +8,7 @@
 
 Named blob storage abstractions and implementations.
 
-*Note: V2.0 has breaking changes. The use of ReadOnlyMemory\<byte\> parameters in public APIs has been
-replaced with ReadOnlySequence\<byte\>. This change is primarily for performance reasons - part of the ongoing
-effort to remove unnecessary memory allocations.*
+*Note: V3.0 has breaking changes.*
 
 ## How to sponsor
 If you find this package useful, please consider sponsoring my work on GitHub 
