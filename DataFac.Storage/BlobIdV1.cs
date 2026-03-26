@@ -60,12 +60,6 @@ namespace DataFac.Storage
 
         public static BlobIdV1 FromBlock(BlockB064 source) => new BlobIdV1(source);
 
-        //public static BlobIdV1 UnsafeWrap(ReadOnlyMemory<byte> memory)
-        //{
-        //    if (memory.Length != BlobIdV1.Size) throw new ArgumentException($"Length must be {BlobIdV1.Size}.", nameof(memory));
-        //    return new BlobIdV1(memory);
-        //}
-
         /// <summary>
         /// Used to directly embed blob data which is small enough into the id.
         /// </summary>
