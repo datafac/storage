@@ -77,58 +77,30 @@ public sealed class TestDataStore : IDataStore
 
     public KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetStoredBlobs() => _blobStore.ToArray();
 
-    public ValueTask<ReadOnlySequence<byte>?> GetBlob(BlobIdV1 id)
+    public async ValueTask<ReadOnlyMemory<byte>> GetBlob(BlobIdV1 id)
     {
         if (id.IsDefault)
-            return new ValueTask<ReadOnlySequence<byte>?>((ReadOnlySequence<byte>?)null);
+            return ReadOnlyMemory<byte>.Empty;
 
         if (id.TryGetEmbeddedBlob(out var embeddedBlob))
-            return new ValueTask<ReadOnlySequence<byte>?>(embeddedBlob);
+            return embeddedBlob;
 
         Interlocked.Increment(ref _counters.BlobGetCount);
         if (_blobStore.TryGetValue(id, out var data))
         {
             Interlocked.Increment(ref _counters.BlobGetCache);
-            return new ValueTask<ReadOnlySequence<byte>?>(BlobHelpers.TryDecompressBlob(id, new ReadOnlySequence<byte>(data)));
+            return BlobHelpers.TryDecompressBlob(id, data);
         }
         else
         {
             Interlocked.Increment(ref _counters.BlobGetReads);
-            return new ValueTask<ReadOnlySequence<byte>?>((ReadOnlySequence<byte>?)null);
+            return ReadOnlyMemory<byte>.Empty;
         }
     }
 
-    public ValueTask<Octets?> GetBlob2(BlobIdV1 id)
+    public async ValueTask<ReadOnlyMemory<byte>> RemoveBlob(BlobIdV1 id, bool withSync)
     {
-        if (id.IsDefault)
-            return new ValueTask<Octets?>((Octets?)null);
-
-        if (id.TryGetEmbeddedBlob(out var embeddedBlob))
-            return new ValueTask<Octets?>(Octets.Wrap(embeddedBlob));
-
-        Interlocked.Increment(ref _counters.BlobGetCount);
-        if (_blobStore.TryGetValue(id, out var data))
-        {
-            Interlocked.Increment(ref _counters.BlobGetCache);
-            return new ValueTask<Octets?>(Octets.Wrap(BlobHelpers.TryDecompressBlob(id, Octets.Wrap(data).ToSequence())));
-        }
-        else
-        {
-            Interlocked.Increment(ref _counters.BlobGetReads);
-            return new ValueTask<Octets?>((Octets?)null);
-        }
-    }
-
-    public ValueTask<ReadOnlySequence<byte>?> RemoveBlob(BlobIdV1 id, bool withSync)
-    {
-        if (_blobStore.TryRemove(id, out var data))
-        {
-            return new ValueTask<ReadOnlySequence<byte>?>(new ReadOnlySequence<byte>(data));
-        }
-        else
-        {
-            return new ValueTask<ReadOnlySequence<byte>?>((ReadOnlySequence<byte>?)null);
-        }
+        return _blobStore.TryRemove(id, out var data) ? data : ReadOnlyMemory<byte>.Empty;
     }
 
     public ValueTask RemoveBlobs(IEnumerable<BlobIdV1> ids, bool withSync)
@@ -143,29 +115,7 @@ public sealed class TestDataStore : IDataStore
         return default;
     }
 
-    public ValueTask<BlobIdV1> PutBlob(Octets dataqqq, bool withSync = false)
-    {
-        var compressResult = dataqqq.ToSequence().TryCompressBlob();
-        var id = compressResult.BlobId;
-        if (id.IsEmbedded)
-            return new ValueTask<BlobIdV1>(id);
-
-        Interlocked.Increment(ref _counters.BlobPutCount);
-        var compressed = compressResult.CompressedData;
-        if (_blobStore.TryAdd(id, Octets.Wrap(compressed).Compact().AsMemory()))
-        {
-            Interlocked.Increment(ref _counters.BlobPutWrits);
-            Interlocked.Add(ref _counters.ByteDelta, compressed.Length);
-        }
-        else
-        {
-            Interlocked.Increment(ref _counters.BlobPutSkips);
-        }
-
-        return new ValueTask<BlobIdV1>(id);
-    }
-
-    public ValueTask<BlobIdV1> PutBlob(ReadOnlySequence<byte> uncompressed, bool withSync)
+    public ValueTask<BlobIdV1> PutBlob(ReadOnlyMemory<byte> uncompressed, bool withSync)
     {
         var compressResult = uncompressed.TryCompressBlob();
         var id = compressResult.BlobId;
@@ -174,7 +124,7 @@ public sealed class TestDataStore : IDataStore
 
         Interlocked.Increment(ref _counters.BlobPutCount);
         var data = compressResult.CompressedData;
-        if (_blobStore.TryAdd(id, Octets.Wrap(data).Compact().AsMemory()))
+        if (_blobStore.TryAdd(id, data))
         {
             Interlocked.Increment(ref _counters.BlobPutWrits);
             Interlocked.Add(ref _counters.ByteDelta, data.Length);
@@ -196,7 +146,7 @@ public sealed class TestDataStore : IDataStore
 
         Interlocked.Increment(ref _counters.BlobPutCount);
         var data = compressResult.CompressedData;
-        if (_blobStore.TryAdd(id, Octets.Wrap(data).Compact().AsMemory()))
+        if (_blobStore.TryAdd(id, data))
         {
             Interlocked.Increment(ref _counters.BlobPutWrits);
             Interlocked.Add(ref _counters.ByteDelta, data.Length);

@@ -23,7 +23,7 @@ public class NameStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        ReadOnlySequence<byte> data = default;
+        ReadOnlyMemory<byte> data = default;
         BlobIdV1 id = data.TryCompressBlob().BlobId;
         bool missing = dataStore.PutName("name1", id);
         missing.ShouldBeTrue();
@@ -42,7 +42,7 @@ public class NameStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        ReadOnlySequence<byte> data = default;
+        ReadOnlyMemory<byte> data = default;
         BlobIdV1 id = data.TryCompressBlob().BlobId;
         bool missing = dataStore.PutName("name1", id);
         missing.ShouldBeTrue();
@@ -70,7 +70,7 @@ public class NameStoreTests
         var names0 = dataStore.GetNames();
         names0.Length.ShouldBe(0);
 
-        ReadOnlySequence<byte> data = default;
+        ReadOnlyMemory<byte> data = default;
         BlobIdV1 id = data.TryCompressBlob().BlobId;
         dataStore.PutName("name1", id);
         dataStore.PutName("name2", id);

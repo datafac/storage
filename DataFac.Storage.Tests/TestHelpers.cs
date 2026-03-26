@@ -15,30 +15,27 @@ namespace DataFac.Storage.Tests;
 
 internal static class TestHelpers
 {
-    public static string ToDisplayString(this ReadOnlySequence<byte> sequence)
+    public static string ToDisplayString(this ReadOnlyMemory<byte> buffer)
     {
         StringBuilder result = new StringBuilder();
         int index = 0;
-        foreach (var segment in sequence)
+        foreach (var b in buffer.Span)
         {
-            foreach (var b in segment.Span)
+            if (index != 0)
             {
-                if (index != 0)
-                {
-                    result.Append('-');
-                }
-                result.Append(b.ToString("X2"));
-                index = (index + 1) % 32;
-                if (index == 0)
-                {
-                    result.AppendLine();
-                }
+                result.Append('-');
+            }
+            result.Append(b.ToString("X2"));
+            index = (index + 1) % 32;
+            if (index == 0)
+            {
+                result.AppendLine();
             }
         }
         return result.ToString();
     }
 
-    public static ReadOnlySequence<byte> FromDisplayString(this string display)
+    public static ReadOnlyMemory<byte> FromDisplayString(this string display)
     {
         var builder = new ReadOnlySequenceBuilder<byte>();
         using var sr = new StringReader(display);
@@ -48,17 +45,17 @@ internal static class TestHelpers
             byte[] bytes = line.Split('-').Select(s => byte.Parse(s, NumberStyles.HexNumber)).ToArray();
             builder = builder.Append(bytes);
         }
-        return builder.Build();
+        return builder.Build().Compact();
     }
 
     /// <summary>
-    /// Converts the specified string to a UTF-8 encoded <see cref="System.Buffers.ReadOnlySequence{T}"/> of bytes, with
+    /// Converts the specified string to a UTF-8 encoded <see cref="System.ReadOnlyMemory{T}"/> of bytes, with
     /// each line separated by a null byte.
     /// </summary>
     /// <remarks>Each line in the input string is encoded as UTF-8 and terminated with a null byte in the
     /// resulting sequence. This is done to avoid the variation in line endings on different platforms.</remarks>
-    /// <returns>A <see cref="System.Buffers.ReadOnlySequence{T}"/> of bytes containing the UTF-8 encoding of each line.</returns>
-    public static ReadOnlySequence<byte> ToByteSequence(this string text)
+    /// <returns>A <see cref="System.ReadOnlyMemory{T}"/> of bytes containing the UTF-8 encoding of each line.</returns>
+    public static ReadOnlyMemory<byte> ToMemory(this string text)
     {
         var builder = new ReadOnlySequenceBuilder<byte>();
         using var sr = new StringReader(text);
@@ -68,7 +65,7 @@ internal static class TestHelpers
             builder = builder.Append(Encoding.UTF8.GetBytes(line));
             builder = builder.Append(new byte[] { 0 });
         }
-        return builder.Build();
+        return builder.Build().Compact();
     }
 
     public static IDataStore CreateDataStore(StoreKind storeKind, string rocksDbRoot = "")

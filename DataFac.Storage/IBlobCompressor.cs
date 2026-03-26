@@ -1,11 +1,12 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 
 namespace DataFac.Storage;
 
 public interface IBlobCompressor
 {
 #if NET7_0_OR_GREATER
-    static abstract ReadOnlySequence<byte> Compress(ReadOnlySequence<byte> data);
-    static abstract ReadOnlySequence<byte> Decompress(ReadOnlySequence<byte> data);
+    static abstract ReadOnlyMemory<byte> Compress(ReadOnlyMemory<byte> data);
+    static abstract ReadOnlyMemory<byte> Decompress(ReadOnlyMemory<byte> data);
 #endif
 }

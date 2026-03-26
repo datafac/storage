@@ -180,7 +180,7 @@ public sealed class RocksDbDataStore : IDataStore
         return list.ToArray();
     }
 
-    public async ValueTask<ReadOnlySequence<byte>?> GetBlob(BlobIdV1 id)
+    public async ValueTask<ReadOnlyMemory<byte>> GetBlob(BlobIdV1 id)
     {
         ThrowIfDisposed();
         if (id.IsDefault) return null;
@@ -194,7 +194,7 @@ public sealed class RocksDbDataStore : IDataStore
         if (_blobCache.TryGetValue(id, out var cachedBlob))
         {
             Interlocked.Increment(ref _counters.BlobGetCache);
-            return BlobHelpers.TryDecompressBlob(id, new ReadOnlySequence<byte>(cachedBlob));
+            return BlobHelpers.TryDecompressBlob(id, cachedBlob);
         }
         else
         {
@@ -202,45 +202,16 @@ public sealed class RocksDbDataStore : IDataStore
         }
 
         // enqueue get
-        var complete = new TaskCompletionSource<ReadOnlyMemory<byte>?>();
+        var complete = new TaskCompletionSource<ReadOnlyMemory<byte>>();
         _writer.TryWrite(AsyncOp.Get(id, complete));
         var data = await complete.Task.ConfigureAwait(false);
-        if (data is null) return null;
-        _blobCache.TryAdd(id, data.Value);
-        return new ReadOnlySequence<byte>(data.Value);
+        if (data.IsEmpty) return ReadOnlyMemory<byte>.Empty;
+        _blobCache.TryAdd(id, data);
+        // todo do we need to decompress here?
+        return data;
     }
 
-    public async ValueTask<Octets?> GetBlob2(BlobIdV1 id)
-    {
-        ThrowIfDisposed();
-        if (id.IsDefault) return null;
-        if (id.TryGetEmbeddedBlob(out var embeddedBlob))
-        {
-            return Octets.Wrap(embeddedBlob);
-        }
-
-        Interlocked.Increment(ref _counters.BlobGetCount);
-
-        if (_blobCache.TryGetValue(id, out var cachedBlob))
-        {
-            Interlocked.Increment(ref _counters.BlobGetCache);
-            return Octets.Wrap(BlobHelpers.TryDecompressBlob(id, new ReadOnlySequence<byte>(cachedBlob)));
-        }
-        else
-        {
-            Interlocked.Increment(ref _counters.BlobGetReads);
-        }
-
-        // enqueue get
-        var complete = new TaskCompletionSource<ReadOnlyMemory<byte>?>();
-        _writer.TryWrite(AsyncOp.Get(id, complete));
-        var data = await complete.Task.ConfigureAwait(false);
-        if (data is null) return null;
-        _blobCache.TryAdd(id, data.Value);
-        return Octets.Wrap(data.Value);
-    }
-
-    public async ValueTask<ReadOnlySequence<byte>?> RemoveBlob(BlobIdV1 id, bool withSync)
+    public async ValueTask<ReadOnlyMemory<byte>> RemoveBlob(BlobIdV1 id, bool withSync)
     {
         ThrowIfDisposed();
 
@@ -249,16 +220,16 @@ public sealed class RocksDbDataStore : IDataStore
         // enqueue remove
         if (withSync)
         {
-            var complete = new TaskCompletionSource<ReadOnlyMemory<byte>?>();
+            var complete = new TaskCompletionSource<ReadOnlyMemory<byte>>();
             _writer.TryWrite(AsyncOp.Del(id, complete));
             var data = await complete.Task.ConfigureAwait(false);
-            if (data is null) return null;
-            return new ReadOnlySequence<byte>(data.Value);
+            if (data.IsEmpty) return ReadOnlyMemory<byte>.Empty;
+            return data;
         }
         else
         {
             _writer.TryWrite(AsyncOp.Del(id, null));
-            return null;
+            return ReadOnlyMemory<byte>.Empty;
         }
     }
 
@@ -276,7 +247,7 @@ public sealed class RocksDbDataStore : IDataStore
 
         if (withSync)
         {
-            var complete = new TaskCompletionSource<ReadOnlyMemory<byte>?>();
+            var complete = new TaskCompletionSource<ReadOnlyMemory<byte>>();
             _writer.TryWrite(AsyncOp.Sync(complete));
             return new ValueTask(complete.Task);
         }
@@ -286,37 +257,7 @@ public sealed class RocksDbDataStore : IDataStore
         }
     }
 
-    public async ValueTask<BlobIdV1> PutBlob(Octets input, bool withSync = false)
-    {
-        ThrowIfDisposed();
-        var compressResult = input.ToSequence().TryCompressBlob();
-        var id = compressResult.BlobId;
-        if (id.IsEmbedded) return id;
-
-        Interlocked.Increment(ref _counters.BlobPutCount);
-        var data = compressResult.CompressedData;
-        var rom = Octets.Wrap(data).Compact().AsMemory();
-        if (!_blobCache.TryAdd(id, rom))
-        {
-            Interlocked.Increment(ref _counters.BlobPutSkips);
-            return id;
-        }
-
-        // added to cache - enqueue put
-        if (withSync)
-        {
-            var complete = new TaskCompletionSource<ReadOnlyMemory<byte>?>();
-            _writer.TryWrite(AsyncOp.Put(id, rom, complete));
-            await complete.Task.ConfigureAwait(false);
-        }
-        else
-        {
-            _writer.TryWrite(AsyncOp.Put(id, rom, null));
-        }
-        return id;
-    }
-
-    public async ValueTask<BlobIdV1> PutBlob(ReadOnlySequence<byte> blob, bool withSync)
+    public async ValueTask<BlobIdV1> PutBlob(ReadOnlyMemory<byte> blob, bool withSync)
     {
         ThrowIfDisposed();
         var compressResult = blob.TryCompressBlob();
@@ -325,8 +266,7 @@ public sealed class RocksDbDataStore : IDataStore
 
         Interlocked.Increment(ref _counters.BlobPutCount);
         var data = compressResult.CompressedData;
-        var rom = Octets.Wrap(data).Compact().AsMemory();
-        if (!_blobCache.TryAdd(id, rom))
+        if (!_blobCache.TryAdd(id, data))
         {
             Interlocked.Increment(ref _counters.BlobPutSkips);
             return id;
@@ -335,13 +275,13 @@ public sealed class RocksDbDataStore : IDataStore
         // added to cache - enqueue put
         if (withSync)
         {
-            var complete = new TaskCompletionSource<ReadOnlyMemory<byte>?>();
-            _writer.TryWrite(AsyncOp.Put(id, rom, complete));
+            var complete = new TaskCompletionSource<ReadOnlyMemory<byte>>();
+            _writer.TryWrite(AsyncOp.Put(id, data, complete));
             await complete.Task.ConfigureAwait(false);
         }
         else
         {
-            _writer.TryWrite(AsyncOp.Put(id, rom, null));
+            _writer.TryWrite(AsyncOp.Put(id, data, null));
         }
         return id;
     }
@@ -355,8 +295,7 @@ public sealed class RocksDbDataStore : IDataStore
 
         Interlocked.Increment(ref _counters.BlobPutCount);
         var data = compressResult.CompressedData;
-        var rom = Octets.Wrap(data).Compact().AsMemory();
-        if (!_blobCache.TryAdd(id, rom))
+        if (!_blobCache.TryAdd(id, data))
         {
             Interlocked.Increment(ref _counters.BlobPutSkips);
             return id;
@@ -365,13 +304,13 @@ public sealed class RocksDbDataStore : IDataStore
         // added to cache - enqueue put
         if (withSync)
         {
-            var complete = new TaskCompletionSource<ReadOnlyMemory<byte>?>();
-            _writer.TryWrite(AsyncOp.Put(id, rom, complete));
+            var complete = new TaskCompletionSource<ReadOnlyMemory<byte>>();
+            _writer.TryWrite(AsyncOp.Put(id, data, complete));
             await complete.Task.ConfigureAwait(false);
         }
         else
         {
-            _writer.TryWrite(AsyncOp.Put(id, rom, null));
+            _writer.TryWrite(AsyncOp.Put(id, data, null));
         }
         return id;
     }
@@ -380,7 +319,7 @@ public sealed class RocksDbDataStore : IDataStore
     {
         ThrowIfDisposed();
         // enqueue sync
-        var complete = new TaskCompletionSource<ReadOnlyMemory<byte>?>();
+        var complete = new TaskCompletionSource<ReadOnlyMemory<byte>>();
         _writer.TryWrite(AsyncOp.Sync(complete));
         return new ValueTask(complete.Task);
     }
@@ -405,17 +344,14 @@ public sealed class RocksDbDataStore : IDataStore
                         {
                             // async get
                             var data = InternalGetBlob(item.Id);
-                            item.Completion?.SetResult(data);
+                            item.Completion?.TrySetResult(data);
                             break;
                         }
                     case AsyncOpKind.Put:
                         {
                             // async put
-                            if (item.Data.HasValue)
-                            {
-                                InternalPutBlob(item.Id, item.Data.Value);
-                            }
-                            item.Completion?.TrySetResult(null);
+                            InternalPutBlob(item.Id, item.Data);
+                            item.Completion?.TrySetResult(item.Data);
                             break;
                         }
                     case AsyncOpKind.Del:
@@ -428,7 +364,7 @@ public sealed class RocksDbDataStore : IDataStore
                     default:
                         {
                             // assume sync
-                            item.Completion?.SetResult(null);
+                            item.Completion?.TrySetResult(ReadOnlyMemory<byte>.Empty);
                             break;
                         }
                 }
@@ -446,7 +382,7 @@ public sealed class RocksDbDataStore : IDataStore
         _rocksBlobDb.Dispose();
     }
 
-    private ReadOnlyMemory<byte>? InternalGetBlob(in BlobIdV1 id)
+    private ReadOnlyMemory<byte> InternalGetBlob(in BlobIdV1 id)
     {
 #if NET8_0_OR_GREATER
         Span<byte> key = stackalloc byte[BlobIdV1.Size];
@@ -485,7 +421,7 @@ public sealed class RocksDbDataStore : IDataStore
         }
     }
 
-    private ReadOnlyMemory<byte>? InternalDelBlob(in BlobIdV1 id)
+    private ReadOnlyMemory<byte> InternalDelBlob(in BlobIdV1 id)
     {
 #if NET8_0_OR_GREATER
         Span<byte> key = stackalloc byte[BlobIdV1.Size];

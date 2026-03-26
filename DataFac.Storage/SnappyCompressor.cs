@@ -1,23 +1,26 @@
 ﻿using DataFac.Memory;
 using Snappier;
+using System;
 using System.Buffers;
 
 namespace DataFac.Storage;
 
 public sealed class SnappyCompressor : IBlobCompressor
 {
-    public static ReadOnlySequence<byte> Compress(ReadOnlySequence<byte> uncompressedData)
+    public static ReadOnlyMemory<byte> Compress(ReadOnlyMemory<byte> uncompressedData)
     {
+        ReadOnlySequence<byte> inputSequence = new ReadOnlySequence<byte>(uncompressedData);
         var buffers = new ByteBufferWriter();
-        Snappy.Compress(uncompressedData, buffers);
+        Snappy.Compress(inputSequence, buffers);
         var compressedData = buffers.GetWrittenSequence();
-        return compressedData;
+        return compressedData.Compact();
     }
-    public static ReadOnlySequence<byte> Decompress(ReadOnlySequence<byte> compressedData)
+    public static ReadOnlyMemory<byte> Decompress(ReadOnlyMemory<byte> compressedData)
     {
+        ReadOnlySequence<byte> inputSequence = new ReadOnlySequence<byte>(compressedData);
         var buffers = new ByteBufferWriter();
-        Snappy.Decompress(compressedData, buffers);
+        Snappy.Decompress(inputSequence, buffers);
         var decompressedData = buffers.GetWrittenSequence();
-        return decompressedData;
+        return decompressedData.Compact();
     }
 }

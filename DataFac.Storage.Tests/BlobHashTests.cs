@@ -1,4 +1,5 @@
-﻿using Shouldly;
+﻿using DataFac.Memory;
+using Shouldly;
 using System;
 using System.Buffers;
 using System.Linq;
@@ -11,7 +12,7 @@ public class BlobHashTests
     [Fact]
     public void BlobHash01Empty()
     {
-        ReadOnlySequence<byte> orig = default;
+        ReadOnlyMemory<byte> orig = default;
         var result = orig.TryCompressBlob();
         result.BlobId.IsEmbedded.ShouldBeTrue();
         result.BlobId.ToString().ShouldBe("U:0:");
@@ -22,7 +23,7 @@ public class BlobHashTests
     [Fact]
     public void BlobHash02LargeUncompressed()
     {
-        var orig = new ReadOnlySequence<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+        var orig = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
         var result = orig.TryCompressBlob();
         result.BlobId.IsEmbedded.ShouldBeFalse();
         result.BlobId.BlobSize.ShouldBe(256);
@@ -33,7 +34,7 @@ public class BlobHashTests
     [Fact]
     public void BlobHash03LargeCompressedEmbedded()
     {
-        var orig = new ReadOnlySequence<byte>(Enumerable.Range(0, 256).Select(i => (byte)0).ToArray());
+        var orig = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)0).ToArray());
         var result = orig.TryCompressBlob();
         result.BlobId.IsEmbedded.ShouldBeTrue();
         result.BlobId.ToString().ShouldBe("S:16:gAIAAP4BAP4BAP4BAPoBAA==");
@@ -51,7 +52,7 @@ public class BlobHashTests
             Plain Jain is a brain in a train in Spain.
             Maine is the main domain to obtain the brain drain.";
             """;
-        var orig = text.ToByteSequence();
+        var orig = text.ToMemory();
         var result = orig.TryCompressBlob();
         result.BlobId.IsEmbedded.ShouldBeFalse();
         result.BlobId.BlobSize.ShouldBe(204);

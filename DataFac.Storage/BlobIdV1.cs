@@ -37,12 +37,6 @@ namespace DataFac.Storage
 
         public bool IsDefault => _block.IsEmpty;
 
-        private BlobIdV1(ReadOnlySequence<byte> source)
-        {
-            if (source.Length != BlobIdV1.Size) throw new ArgumentException($"Length must be {BlobIdV1.Size}.", nameof(source));
-            _block.TryRead(source);
-        }
-
         private BlobIdV1(ReadOnlySpan<byte> source)
         {
             if (source.Length != BlobIdV1.Size) throw new ArgumentException($"Length must be {BlobIdV1.Size}.", nameof(source));
@@ -54,8 +48,6 @@ namespace DataFac.Storage
             _block = source;
         }
 
-        public static BlobIdV1 FromSequence(ReadOnlySequence<byte> source) => new BlobIdV1(source);
-
         public static BlobIdV1 FromSpan(ReadOnlySpan<byte> source) => new BlobIdV1(source);
 
         public static BlobIdV1 FromBlock(BlockB064 source) => new BlobIdV1(source);
@@ -66,12 +58,12 @@ namespace DataFac.Storage
         /// <param name="compAlgo"></param>
         /// <param name="data"></param>
         /// <exception cref="ArgumentException"></exception>
-        public BlobIdV1(BlobCompAlgo compAlgo, ReadOnlySequence<byte> data)
+        public BlobIdV1(BlobCompAlgo compAlgo, ReadOnlyMemory<byte> data)
         {
             if (data.Length > (BlobIdV1.Size - 2)) throw new ArgumentException("Length must be <= 62", nameof(data));
             _block.A.A.A.A.A.A.ByteValue = compAlgo.ToCharCode();
             _block.A.A.A.A.A.B.ByteValue = (byte)(data.Length+(byte)'A');
-            data.CopyTo(BlockHelper.AsWritableSpan(ref _block).Slice(2));
+            data.Span.CopyTo(BlockHelper.AsWritableSpan(ref _block).Slice(2));
         }
 
         /// <summary>
@@ -110,21 +102,21 @@ namespace DataFac.Storage
 
         public bool IsEmbedded => (Marker00 != 0) && Marker00 != (byte)'|';
 
-        public bool TryGetEmbeddedBlob(out ReadOnlySequence<byte> embedded)
+        public bool TryGetEmbeddedBlob(out ReadOnlyMemory<byte> embedded)
         {
-            embedded = ReadOnlySequence<byte>.Empty;
+            embedded = ReadOnlyMemory<byte>.Empty;
             if (!IsEmbedded) return false;
             switch(Marker00.ToCompAlgo())
             {
                 case BlobCompAlgo.UnComp:
                     int dataSize0 = Marker01 - (byte)'A';
-                    embedded = new ReadOnlySequence<byte>(_block.ToByteArray(2, dataSize0));
+                    embedded = new ReadOnlyMemory<byte>(_block.ToByteArray(2, dataSize0));
                     return true;
                 case BlobCompAlgo.Brotli:
                     throw new NotImplementedException("Brotli embedded blobs are not implemented yet.");
                 case BlobCompAlgo.Snappy:
                     int dataSize2 = Marker01 - (byte)'A';
-                    var compressedData = new ReadOnlySequence<byte>(_block.ToByteArray(2, dataSize2));
+                    var compressedData = new ReadOnlyMemory<byte>(_block.ToByteArray(2, dataSize2));
                     embedded = SnappyCompressor.Decompress(compressedData);
                     return true;
                 default:

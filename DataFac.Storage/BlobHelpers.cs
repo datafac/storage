@@ -35,7 +35,7 @@ public static class BlobHelpers
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
     /// <exception cref="NotSupportedException"></exception>
-    public static ReadOnlySequence<byte> TryDecompressBlob(BlobIdV1 id, ReadOnlySequence<byte> blobData)
+    public static ReadOnlyMemory<byte> TryDecompressBlob(BlobIdV1 id, ReadOnlyMemory<byte> blobData)
     {
         switch (id.CompAlgo)
         {
@@ -51,7 +51,7 @@ public static class BlobHelpers
         }
     }
 
-    public static CompressResult TryCompressBlob(this ReadOnlySequence<byte> uncompressedData)
+    public static CompressResult TryCompressBlob(this ReadOnlyMemory<byte> uncompressedData)
     {
         const long maxBlobSize = 64 * 1024; // 64K todo const
         if (uncompressedData.Length > maxBlobSize) throw new ArgumentOutOfRangeException(nameof(uncompressedData), uncompressedData.Length, "Must not exceed 64K");
@@ -61,7 +61,7 @@ public static class BlobHelpers
         // embed small blobs directly into id
         if (uncompressedData.Length <= (BlobIdV1.Size - 2))
         {
-            return new CompressResult(new BlobIdV1(BlobCompAlgo.UnComp, uncompressedData), ReadOnlySequence<byte>.Empty);
+            return new CompressResult(new BlobIdV1(BlobCompAlgo.UnComp, uncompressedData), ReadOnlyMemory<byte>.Empty);
         }
 
         // Snappier compression
@@ -70,28 +70,28 @@ public static class BlobHelpers
         // embed compressed if small engough
         if (compressedData.Length <= (BlobIdV1.Size - 2))
         {
-            return new CompressResult(new BlobIdV1(BlobCompAlgo.Snappy, compressedData), ReadOnlySequence<byte>.Empty);
+            return new CompressResult(new BlobIdV1(BlobCompAlgo.Snappy, compressedData), ReadOnlyMemory<byte>.Empty);
         }
 
-        ReadOnlySequence<byte> dataToReturnqqq;
+        ReadOnlyMemory<byte> dataToReturn;
         BlobCompAlgo compAlgo;
         if (compressedData.Length < uncompressedData.Length)
         {
             // compressed is smaller - use compressed data
-            dataToReturnqqq = compressedData;
+            dataToReturn = compressedData;
             compAlgo = BlobCompAlgo.Snappy;
         }
         else
         {
             // compressed is larger - use uncompressed data
-            dataToReturnqqq = uncompressedData;
+            dataToReturn = uncompressedData;
             compAlgo = BlobCompAlgo.UnComp;
         }
 
         Span<byte> hashSpan = stackalloc byte[32];
-        SHA256Hasher.ComputeHash(uncompressedData, hashSpan);
+        SHA256Hasher.ComputeHash(uncompressedData.Span, hashSpan);
         BlobIdV1 blobId = new BlobIdV1(blobSize, compAlgo, BlobHashAlgo.Sha256, hashSpan);
-        return new CompressResult(blobId, dataToReturnqqq);
+        return new CompressResult(blobId, dataToReturn);
     }
 
     public static CompressResult TryCompressText(this string uncompressedText)
@@ -101,16 +101,16 @@ public static class BlobHelpers
         Span<byte> smallBuffer = stackalloc byte[BlobIdV1.Size - 2];
         if (Encoding.UTF8.TryGetBytes(uncompressedText, smallBuffer, out int bytesWritten))
         {
-            return new CompressResult(new BlobIdV1(BlobCompAlgo.UnComp, smallBuffer.Slice(0, bytesWritten)), ReadOnlySequence<byte>.Empty);
+            return new CompressResult(new BlobIdV1(BlobCompAlgo.UnComp, smallBuffer.Slice(0, bytesWritten)), ReadOnlyMemory<byte>.Empty);
         }
-        return TryCompressBlob(new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(uncompressedText)));
+        return TryCompressBlob(Encoding.UTF8.GetBytes(uncompressedText));
 #else
-        var encodedText = Encoding.UTF8.GetBytes(uncompressedText);
+        byte[] encodedText = Encoding.UTF8.GetBytes(uncompressedText);
         if (encodedText.Length <= (BlobIdV1.Size - 2))
         {
-            return new CompressResult(new BlobIdV1(BlobCompAlgo.UnComp, encodedText), ReadOnlySequence<byte>.Empty);
+            return new CompressResult(new BlobIdV1(BlobCompAlgo.UnComp, encodedText), ReadOnlyMemory<byte>.Empty);
         }
-        return TryCompressBlob(new ReadOnlySequence<byte>(encodedText));
+        return TryCompressBlob(new ReadOnlyMemory<byte>(encodedText));
 #endif
     }
 

@@ -18,7 +18,7 @@ public class SnappierRegressionTests
     [Fact]
     public async Task SnappierRegression01Empty()
     {
-        var orig = ReadOnlySequence<byte>.Empty;
+        var orig = ReadOnlyMemory<byte>.Empty;
         var compressed = SnappyCompressor.Compress(orig);
         // check decompressed
         var copy = SnappyCompressor.Decompress(compressed);
@@ -31,7 +31,7 @@ public class SnappierRegressionTests
     [Fact]
     public async Task SnappierRegression02OneChar()
     {
-        var orig = new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(new string('a', 1)));
+        var orig = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(new string('a', 1)));
         var compressed = SnappyCompressor.Compress(orig);
         // check decompressed
         var copy = SnappyCompressor.Decompress(compressed);
@@ -44,7 +44,7 @@ public class SnappierRegressionTests
     [Fact]
     public async Task SnappierRegression03ShortString()
     {
-        var orig = new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(new string('a', 10)));
+        var orig = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(new string('a', 10)));
         var compressed = SnappyCompressor.Compress(orig);
         // check decompressed
         var copy = SnappyCompressor.Decompress(compressed);
@@ -57,7 +57,7 @@ public class SnappierRegressionTests
     [Fact]
     public async Task SnappierRegression04LongString()
     {
-        var orig = new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(new string('a', 64)));
+        var orig = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(new string('a', 64)));
         var compressed = SnappyCompressor.Compress(orig);
         // check decompressed
         var copy = SnappyCompressor.Decompress(compressed);
@@ -82,7 +82,7 @@ public class SnappierRegressionTests
     public async Task SnappierRegression05MultiLineText_Net48()
 #endif
     {
-        var orig = originalText.ToByteSequence();
+        var orig = originalText.ToMemory();
         var compressed = SnappyCompressor.Compress(orig);
         // check decompressed
         var copy = SnappyCompressor.Decompress(compressed);
@@ -95,7 +95,7 @@ public class SnappierRegressionTests
     [Fact]
     public async Task SnappierRegression06DecompressNet48AndNet80ShouldBeSame()
     {
-        var orig = originalText.ToByteSequence();
+        var orig = originalText.ToMemory();
 
         var net48Compressed =
             """
