@@ -44,7 +44,7 @@ public class BlobStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         var result = await dataStore.GetBlob(default);
-        result.IsEmpty.ShouldBeTrue();
+        result.HasData.ShouldBeFalse();
     }
 
     [Theory]
@@ -60,7 +60,7 @@ public class BlobStoreTests
         var data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
         BlobIdV1 id = data.TryCompressBlob().BlobId;
         var result = await dataStore.GetBlob(id);
-        result.IsEmpty.ShouldBeTrue();
+        result.HasData.ShouldBeFalse();
         var counters = dataStore.GetCounters();
         counters.BlobGetCount.ShouldBe(1);
         counters.BlobGetReads.ShouldBe(1);
@@ -89,10 +89,10 @@ public class BlobStoreTests
         counters.BlobPutSkips.ShouldBe(0);
 
         var copy = await dataStore.GetBlob(id);
-        copy.IsEmpty.ShouldBeTrue();
-        copy.Length.ShouldBe(0);
+        copy.HasData.ShouldBeTrue();
+        copy.Data.Length.ShouldBe(0);
         var origSpan = orig.Span;
-        var copySpan = copy.Span;
+        var copySpan = copy.Data.Span;
         copySpan.SequenceEqual(origSpan).ShouldBeTrue();
     }
 
@@ -118,16 +118,16 @@ public class BlobStoreTests
         counters.BlobPutSkips.ShouldBe(0);
 
         var recd = await dataStore.GetBlob(id);
-        recd.IsEmpty.ShouldBeTrue();
-        recd.Length.ShouldBe(0);
+        recd.HasData.ShouldBeTrue();
+        recd.Data.Length.ShouldBe(0);
         ReadOnlySpan<char> origSpan = orig;
 #if NET8_0_OR_GREATER
         Span<char> copySpan = stackalloc char[62];
-        bool decoded = Encoding.UTF8.TryGetChars(recd.Span, copySpan, out int charsWritten);
+        bool decoded = Encoding.UTF8.TryGetChars(recd.Data.Span, copySpan, out int charsWritten);
         decoded.ShouldBeTrue();
         copySpan = copySpan.Slice(0, charsWritten);
 #else
-        string copy = Encoding.UTF8.GetString(recd.ToArray());
+        string copy = Encoding.UTF8.GetString(recd.Data.ToArray());
         ReadOnlySpan<char> copySpan = copy;
 #endif
         copySpan.SequenceEqual(origSpan).ShouldBeTrue();
@@ -192,8 +192,8 @@ public class BlobStoreTests
         id.CompAlgo.ShouldBe(BlobCompAlgo.Snappy);
 
         var copy = await dataStore.GetBlob(id);
-        copy.IsEmpty.ShouldBeFalse();
-        string text2 = Encoding.UTF8.GetString(copy.ToArray());
+        copy.HasData.ShouldBeTrue();
+        string text2 = Encoding.UTF8.GetString(copy.Data.ToArray());
         text2.ShouldBe(text);
 
         var counters = dataStore.GetCounters();
@@ -220,8 +220,8 @@ public class BlobStoreTests
         id.CompAlgo.ShouldBe(BlobCompAlgo.UnComp);
 
         var copy = await dataStore.GetBlob(id);
-        copy.IsEmpty.ShouldBeFalse();
-        copy.ToArray().SequenceEqual(orig.ToArray()).ShouldBeTrue();
+        copy.HasData.ShouldBeTrue();
+        copy.Data.ToArray().SequenceEqual(orig.ToArray()).ShouldBeTrue();
 
         var counters = dataStore.GetCounters();
         counters.BlobPutCount.ShouldBe(1);

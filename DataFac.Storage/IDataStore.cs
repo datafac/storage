@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -46,7 +45,7 @@ public interface IDataStore : IDisposable
     /// <summary>
     /// Returns the blob for the given id if it exists, null otherwise.
     /// </summary>
-    ValueTask<ReadOnlyMemory<byte>> GetBlob(BlobIdV1 id);
+    ValueTask<BlobResult> GetBlob(BlobIdV1 id);
 
     /// <summary>
     /// Saves the given buffers into the underlying store, return its id, and
@@ -68,7 +67,7 @@ public interface IDataStore : IDisposable
     /// Removes the blob if it exists.
     /// </summary>
     /// <param name="id"></param>
-    ValueTask<ReadOnlyMemory<byte>> RemoveBlob(BlobIdV1 id, bool withSync);
+    ValueTask<BlobResult> RemoveBlob(BlobIdV1 id, bool withSync);
 
     /// <summary>
     /// Removes the blob if it exists.

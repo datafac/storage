@@ -77,30 +77,32 @@ public sealed class TestDataStore : IDataStore
 
     public KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetStoredBlobs() => _blobStore.ToArray();
 
-    public async ValueTask<ReadOnlyMemory<byte>> GetBlob(BlobIdV1 id)
+    public async ValueTask<BlobResult> GetBlob(BlobIdV1 id)
     {
         if (id.IsDefault)
-            return ReadOnlyMemory<byte>.Empty;
+            return BlobResult.NotFound();
 
         if (id.TryGetEmbeddedBlob(out var embeddedBlob))
-            return embeddedBlob;
+            return BlobResult.WithData(embeddedBlob);
 
         Interlocked.Increment(ref _counters.BlobGetCount);
         if (_blobStore.TryGetValue(id, out var data))
         {
             Interlocked.Increment(ref _counters.BlobGetCache);
-            return BlobHelpers.TryDecompressBlob(id, data);
+            return BlobResult.WithData(BlobHelpers.TryDecompressBlob(id, data));
         }
         else
         {
             Interlocked.Increment(ref _counters.BlobGetReads);
-            return ReadOnlyMemory<byte>.Empty;
+            return BlobResult.NotFound();
         }
     }
 
-    public async ValueTask<ReadOnlyMemory<byte>> RemoveBlob(BlobIdV1 id, bool withSync)
+    public async ValueTask<BlobResult> RemoveBlob(BlobIdV1 id, bool withSync)
     {
-        return _blobStore.TryRemove(id, out var data) ? data : ReadOnlyMemory<byte>.Empty;
+        return _blobStore.TryRemove(id, out var data)
+            ? BlobResult.WithData(data)
+            : BlobResult.NotFound();
     }
 
     public ValueTask RemoveBlobs(IEnumerable<BlobIdV1> ids, bool withSync)
