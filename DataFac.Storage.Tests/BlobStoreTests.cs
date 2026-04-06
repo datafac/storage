@@ -190,17 +190,16 @@ public class BlobStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         var text =
-            """
-            The rain in Spain falls mainly on the plain.
-            Please explain my pain and disdain or I will go insain [sic].
-            Plain Jain is a brain in a train in Spain.
-            Maine is the main domain to obtain the brain drain.";
-            """;
+            "The rain in Spain falls mainly on the plain. " +
+            "Please explain my pain and disdain or I will go insain [sic]. " +
+            "Plain Jain is a brain in a train in Spain. " +
+            "Maine is the main domain to obtain the brain drain.";
+
         BlobIdV1 id = await dataStore.PutBlob(text, true);
         id.IsEmbedded.ShouldBeFalse();
         id.HashAlgo.ShouldBe(BlobHashAlgo.Sha256);
         id.CompAlgo.ShouldBe(BlobCompAlgo.Snappy);
-        id.ToString().ShouldBe("V1.0:206:S:1:V417/pRJVtbOJ2RXfR7Kma9tFqNQLsQkIfW5dcB+ZpY=");
+        id.ToString().ShouldBe("V1.0:201:S:1:f+8O2Wm1is/9ut73eja0VCML3qUOWA9rgBZg4INPL34=");
 
         var copy = await dataStore.GetBlob(id);
         copy.HasData.ShouldBeTrue();
