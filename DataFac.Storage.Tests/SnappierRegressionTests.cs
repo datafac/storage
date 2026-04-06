@@ -19,12 +19,13 @@ public class SnappierRegressionTests
     public async Task SnappierRegression01Empty()
     {
         var orig = ReadOnlyMemory<byte>.Empty;
-        var compressed = SnappyCompressor.Compress(orig);
-        // check decompressed
-        var copy = SnappyCompressor.Decompress(compressed);
-        copy.ToArray().ShouldBeEquivalentTo(orig.ToArray());
+        var compressResult = SnappyCompressor.CompressData(orig);
+        // check compressed
+        compressResult.CompAlgo.ShouldBe(BlobCompAlgo.UnComp);
+        compressResult.HashAlgo.ShouldBe(BlobHashAlgo.Undefined);
+        compressResult.Output.ToArray().ShouldBeEquivalentTo(orig.ToArray());
         // check regression
-        string display = compressed.ToDisplayString();
+        string display = compressResult.Output.ToDisplayString();
         await Verifier.Verify(display);
     }
 
@@ -32,38 +33,48 @@ public class SnappierRegressionTests
     public async Task SnappierRegression02OneChar()
     {
         var orig = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(new string('a', 1)));
-        var compressed = SnappyCompressor.Compress(orig);
-        // check decompressed
-        var copy = SnappyCompressor.Decompress(compressed);
-        copy.ToArray().ShouldBeEquivalentTo(orig.ToArray());
+        var compressResult = SnappyCompressor.CompressData(orig);
+        // check compressed
+        compressResult.CompAlgo.ShouldBe(BlobCompAlgo.UnComp);
+        compressResult.HashAlgo.ShouldBe(BlobHashAlgo.Undefined);
+        compressResult.Output.ToArray().ShouldBeEquivalentTo(orig.ToArray());
+        var compressed = compressResult.Output;
         // check regression
-        string display = compressed.ToDisplayString();
+        string display = compressResult.Output.ToDisplayString();
         await Verifier.Verify(display);
     }
 
     [Fact]
     public async Task SnappierRegression03ShortString()
     {
-        var orig = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(new string('a', 10)));
-        var compressed = SnappyCompressor.Compress(orig);
-        // check decompressed
-        var copy = SnappyCompressor.Decompress(compressed);
-        copy.ToArray().ShouldBeEquivalentTo(orig.ToArray());
+        var origqqq = new string('a', 10);
+        var origBytes = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(origqqq));
+        Span<byte> hashSpan = stackalloc byte[32];
+        var compressResult = SnappyCompressor.CompressText(origqqq, hashSpan);
+        // check compressed
+        compressResult.CompAlgo.ShouldBe(BlobCompAlgo.UnComp);
+        compressResult.HashAlgo.ShouldBe(BlobHashAlgo.Undefined);
+        compressResult.Output.ToArray().ShouldBeEquivalentTo(origBytes.ToArray());
         // check regression
-        string display = compressed.ToDisplayString();
+        string display = compressResult.Output.ToDisplayString();
         await Verifier.Verify(display);
     }
 
     [Fact]
     public async Task SnappierRegression04LongString()
     {
-        var orig = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(new string('a', 64)));
-        var compressed = SnappyCompressor.Compress(orig);
+        var origqqq = new string('a', 64);
+        var origBytes = new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(origqqq));
+        Span<byte> hashSpan = stackalloc byte[32];
+        var compressResult = SnappyCompressor.CompressText(origqqq, hashSpan);
+        // check compressed
+        compressResult.CompAlgo.ShouldBe(BlobCompAlgo.Snappy);
+        compressResult.HashAlgo.ShouldBe(BlobHashAlgo.Sha256);
         // check decompressed
-        var copy = SnappyCompressor.Decompress(compressed);
-        copy.ToArray().ShouldBeEquivalentTo(orig.ToArray());
+        var copy = SnappyCompressor.Decompress(compressResult.Output);
+        copy.ToArray().ShouldBeEquivalentTo(origBytes.ToArray());
         // check regression
-        string display = compressed.ToDisplayString();
+        string display = compressResult.Output.ToDisplayString();
         await Verifier.Verify(display);
     }
 
@@ -82,13 +93,18 @@ public class SnappierRegressionTests
     public async Task SnappierRegression05MultiLineText_Net48()
 #endif
     {
+        // note: we convert multi-line text to bytes, normalizing line endings.
         var orig = originalText.ToMemory();
-        var compressed = SnappyCompressor.Compress(orig);
+        Span<byte> hashSpan = stackalloc byte[32];
+        var compressResult = SnappyCompressor.CompressData(orig);
+        // check compressed
+        compressResult.CompAlgo.ShouldBe(BlobCompAlgo.Snappy);
+        compressResult.HashAlgo.ShouldBe(BlobHashAlgo.Undefined);
         // check decompressed
-        var copy = SnappyCompressor.Decompress(compressed);
+        var copy = SnappyCompressor.Decompress(compressResult.Output);
         copy.ToArray().ShouldBeEquivalentTo(orig.ToArray());
         // check regression
-        string display = compressed.ToDisplayString();
+        string display = compressResult.Output.ToDisplayString();
         await Verifier.Verify(display);
     }
 

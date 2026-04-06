@@ -10,6 +10,8 @@ namespace DataFac.Storage
     public readonly struct BlobIdV1 : IEquatable<BlobIdV1>
     {
         public const int Size = 64;
+        public const int MaxEmbeddedSize = Size - 2; // 62 bytes for embedded data, 2 bytes for marker and length
+
         private readonly BlockB064 _block;
         public BlockB064 Block => _block;
 
@@ -60,7 +62,7 @@ namespace DataFac.Storage
         /// <exception cref="ArgumentException"></exception>
         public BlobIdV1(BlobCompAlgo compAlgo, ReadOnlyMemory<byte> data)
         {
-            if (data.Length > (BlobIdV1.Size - 2)) throw new ArgumentException("Length must be <= 62", nameof(data));
+            if (data.Length > MaxEmbeddedSize) throw new ArgumentException("Length must be <= 62", nameof(data));
             _block.A.A.A.A.A.A.ByteValue = compAlgo.ToCharCode();
             _block.A.A.A.A.A.B.ByteValue = (byte)(data.Length+(byte)'A');
             data.Span.CopyTo(BlockHelper.AsWritableSpan(ref _block).Slice(2));
@@ -74,7 +76,7 @@ namespace DataFac.Storage
         /// <exception cref="ArgumentException"></exception>
         public BlobIdV1(BlobCompAlgo compAlgo, ReadOnlySpan<byte> data)
         {
-            if (data.Length > (BlobIdV1.Size - 2)) throw new ArgumentException("Length must be <= 62", nameof(data));
+            if (data.Length > MaxEmbeddedSize) throw new ArgumentException("Length must be <= 62", nameof(data));
             _block.A.A.A.A.A.A.ByteValue = compAlgo.ToCharCode();
             _block.A.A.A.A.A.B.ByteValue = (byte)(data.Length + (byte)'A');
             data.CopyTo(BlockHelper.AsWritableSpan(ref _block).Slice(2));
