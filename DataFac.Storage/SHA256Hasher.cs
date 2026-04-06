@@ -14,7 +14,7 @@ public sealed class SHA256Hasher : IBlobHasher
         hasher.AppendData(data);
         if (!hasher.TryGetHashAndReset(hashOutput, out int bytesWritten))
         {
-            throw new InvalidOperationException("Destination too small");
+            throw new InvalidOperationException("Hash output buffer too small");
         }
 #else
         hasher.AppendData(data.ToArray());

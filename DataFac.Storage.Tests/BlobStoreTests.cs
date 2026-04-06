@@ -80,7 +80,8 @@ public class BlobStoreTests
         ReadOnlyMemory<byte> orig = default;
         var id = await dataStore.PutBlob(orig, true);
         id.IsEmbedded.ShouldBeTrue();
-
+        id.HashAlgo.ShouldBe(BlobHashAlgo.None);
+        id.CompAlgo.ShouldBe(BlobCompAlgo.UnComp);
         id.ToString().ShouldBe("U:0:");
 
         var counters = dataStore.GetCounters();
@@ -109,7 +110,8 @@ public class BlobStoreTests
         string orig = string.Empty;
         var id = await dataStore.PutBlob(orig, true);
         id.IsEmbedded.ShouldBeTrue();
-
+        id.HashAlgo.ShouldBe(BlobHashAlgo.None);
+        id.CompAlgo.ShouldBe(BlobCompAlgo.UnComp);
         id.ToString().ShouldBe("U:0:");
 
         var counters = dataStore.GetCounters();
@@ -144,7 +146,11 @@ public class BlobStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         var blob = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        await dataStore.PutBlob(blob, true);
+        var id = await dataStore.PutBlob(blob, true);
+        id.IsEmbedded.ShouldBeFalse();
+        id.HashAlgo.ShouldBe(BlobHashAlgo.Sha256);
+        id.CompAlgo.ShouldBe(BlobCompAlgo.UnComp); // not compressible
+        id.ToString().ShouldBe("V1.0:256:U:1:QK/y6dLYki5Hr9RkjmlnSXFYeF+9Hahw5xECZr+USIA=");
 
         var counters = dataStore.GetCounters();
         counters.BlobPutCount.ShouldBe(1);
@@ -162,12 +168,14 @@ public class BlobStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        string text = string.Join("-", Enumerable.Range(0, 64).Select(i => $"{i:X2}"));
-        await dataStore.PutBlob(text, true);
+        string text = new string('Z', 100);
+        var id = await dataStore.PutBlob(text, true);
+        id.IsEmbedded.ShouldBeTrue();
+        id.ToString().ShouldBe("S:9:ZABa/gEAigEA");
 
         var counters = dataStore.GetCounters();
-        counters.BlobPutCount.ShouldBe(1);
-        counters.BlobPutWrits.ShouldBe(1);
+        counters.BlobPutCount.ShouldBe(0);
+        counters.BlobPutWrits.ShouldBe(0);
         counters.BlobPutSkips.ShouldBe(0);
     }
 
@@ -189,7 +197,10 @@ public class BlobStoreTests
             Maine is the main domain to obtain the brain drain.";
             """;
         BlobIdV1 id = await dataStore.PutBlob(text, true);
+        id.IsEmbedded.ShouldBeFalse();
+        id.HashAlgo.ShouldBe(BlobHashAlgo.Sha256);
         id.CompAlgo.ShouldBe(BlobCompAlgo.Snappy);
+        id.ToString().ShouldBe("V1.0:206:S:1:V417/pRJVtbOJ2RXfR7Kma9tFqNQLsQkIfW5dcB+ZpY=");
 
         var copy = await dataStore.GetBlob(id);
         copy.HasData.ShouldBeTrue();

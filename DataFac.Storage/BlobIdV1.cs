@@ -153,7 +153,7 @@ namespace DataFac.Storage
             result.Append(':');
             result.Append((int)HashAlgo);
             result.Append(':');
-            if (HashAlgo != BlobHashAlgo.Undefined)
+            if (HashAlgo != BlobHashAlgo.None)
             {
                 result.Append(_block.ToBase64String(32, 32));
             }
@@ -175,7 +175,7 @@ namespace DataFac.Storage
             int compAlgoInt = default;
             var compAlgo = BlobCompAlgo.UnComp;
             int hashAlgoInt = default;
-            var hashAlgo = BlobHashAlgo.Undefined;
+            var hashAlgo = BlobHashAlgo.None;
             Span<byte> hashSpan = stackalloc byte[32];
             while (sourceSpan.Length > 0)
             {
