@@ -1,9 +1,34 @@
 ﻿using DataFac.Compression;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace DataFac.Storage;
+
+public readonly struct BlobKey : IEquatable<BlobKey>
+{
+    public readonly ReadOnlyMemory<byte> Key;
+
+    public BlobKey(ReadOnlyMemory<byte> key) => Key = key;
+
+    public bool Equals(BlobKey other) => Key.Span.SequenceEqual(other.Key.Span);
+    public override bool Equals(object? obj) => obj is BlobKey other && Equals(other);
+    public override int GetHashCode()
+    {
+        var hasher = new HashCode();
+        var span = Key.Span;
+        hasher.Add(span.Length);
+#if NET8_0_OR_GREATER
+        hasher.AddBytes(span);
+#else
+        for (int i = 0; i < span.Length; i++) { hasher.Add(span[i]); }
+#endif
+        return hasher.ToHashCode();
+    }
+    public static bool operator ==(BlobKey left, BlobKey right) => left.Equals(right);
+    public static bool operator !=(BlobKey left, BlobKey right) => !left.Equals(right);
+}
 
 public interface IDataStore : IDisposable
 {
@@ -14,7 +39,7 @@ public interface IDataStore : IDisposable
     /// </summary>
     /// <param name="key"></param>
     /// <returns></returns>
-    BlobIdV1? GetName(string key);
+    BlobKey? GetName(string key);
 
     /// <summary>
     /// Writes the named id to the store. Returns true if the name was added, 

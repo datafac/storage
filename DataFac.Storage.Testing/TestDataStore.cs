@@ -17,6 +17,7 @@ namespace DataFac.Storage.Testing;
 /// </summary>
 public sealed class TestDataStore : IDataStore
 {
+    // todo decouple BlobIdV1 and use BlobKey instead. This will allow V2 and other formats to be used without needing to change the store.
     private readonly ConcurrentDictionary<string, BlobIdV1> _nameStore = new ConcurrentDictionary<string, BlobIdV1>();
     private readonly ConcurrentDictionary<BlobIdV1, ReadOnlyMemory<byte>> _blobStore = new ConcurrentDictionary<BlobIdV1, ReadOnlyMemory<byte>>();
 
@@ -40,11 +41,18 @@ public sealed class TestDataStore : IDataStore
 
     public KeyValuePair<string, BlobIdV1>[] GetNames() => _nameStore.ToArray();
 
-    public BlobIdV1? GetName(string key)
+    public BlobKey? GetName(string key)
     {
         if (string.IsNullOrEmpty(key)) ThrowMustNotBeEmpty(nameof(key));
 
-        return _nameStore.TryGetValue(key, out var id) ? id : null;
+        if (_nameStore.TryGetValue(key, out var id))
+        {
+            return new BlobKey(id.ToByteArray()); // todo alloc!
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public void RemoveName(string key)

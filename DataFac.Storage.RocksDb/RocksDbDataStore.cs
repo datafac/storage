@@ -97,17 +97,27 @@ public sealed class RocksDbDataStore : IDataStore
         return list.ToArray();
     }
 
-    public BlobIdV1? GetName(string key)
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void ThrowArgumentIsTooLong(string paramName)
+    {
+        throw new ArgumentException("Parameter is too long. It must UTF8 encode to 128 bytes or less.", paramName);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public BlobKey? GetName(string key)
     {
         if (string.IsNullOrEmpty(key)) ThrowMustNotBeEmpty(nameof(key));
-        var keyBytes = Encoding.UTF8.GetBytes(key);
 #if NET8_0_OR_GREATER
-        ReadOnlySpan<byte> keySpan = keyBytes.AsSpan();
-        var currentBytes = _rocksNameDb.Get(keySpan);
+        Span<byte> keySpan = stackalloc byte[128];
+        if (!Encoding.UTF8.TryGetBytes(key, keySpan, out int bytesInKey)) ThrowArgumentIsTooLong(nameof(key));
+
+        var currentBytes = _rocksNameDb.Get(keySpan.Slice(0, bytesInKey));
+        return currentBytes is null ? null : new BlobKey(currentBytes);
 #else
+        var keyBytes = Encoding.UTF8.GetBytes(key);
         var currentBytes = _rocksNameDb.Get(keyBytes);
+        return currentBytes is null ? null : new BlobKey(currentBytes);
 #endif
-        return currentBytes is null ? null : BlobIdV1.FromSpan(currentBytes);
     }
 
     public void RemoveName(string key)
