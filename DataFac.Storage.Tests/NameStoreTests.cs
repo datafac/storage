@@ -2,6 +2,7 @@
 using System;
 using System.Buffers;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 #pragma warning disable CA1707 // Identifiers should not contain underscores
@@ -18,13 +19,15 @@ public class NameStoreTests
 #if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
 #endif
-    public void Name01_FirstPut_WritesNewName(StoreKind storeKind)
+    public async Task Name01_FirstPut_WritesNewName(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         ReadOnlyMemory<byte> data = default;
-        BlobIdV1 id = data.TryCompressBlob().BlobId;
+        Memory<byte> idMemory = new byte[64];
+        await dataStore.PutBlob(data, idMemory, true);
+        var id = BlobIdV1.FromSpan(idMemory.Span);
         bool missing = dataStore.PutName("name1", id);
         missing.ShouldBeTrue();
         var counters = dataStore.GetCounters();
@@ -37,13 +40,15 @@ public class NameStoreTests
 #if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
 #endif
-    public void Name02_PutAgain_Overwrites(StoreKind storeKind)
+    public async Task Name02_PutAgain_Overwrites(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         ReadOnlyMemory<byte> data = default;
-        BlobIdV1 id = data.TryCompressBlob().BlobId;
+        Memory<byte> idMemory = new byte[64];
+        await dataStore.PutBlob(data, idMemory, true);
+        var id = BlobIdV1.FromSpan(idMemory.Span);
         bool missing = dataStore.PutName("name1", id);
         missing.ShouldBeTrue();
         var counters1 = dataStore.GetCounters();
@@ -62,7 +67,7 @@ public class NameStoreTests
 #if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
 #endif
-    public void Name03_GetAndRemoveNames(StoreKind storeKind)
+    public async Task Name03_GetAndRemoveNames(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
@@ -71,7 +76,9 @@ public class NameStoreTests
         names0.Length.ShouldBe(0);
 
         ReadOnlyMemory<byte> data = default;
-        BlobIdV1 id = data.TryCompressBlob().BlobId;
+        Memory<byte> idMemory = new byte[64];
+        await dataStore.PutBlob(data, idMemory, true);
+        var id = BlobIdV1.FromSpan(idMemory.Span);
         dataStore.PutName("name1", id);
         dataStore.PutName("name2", id);
         dataStore.PutName("name2", id);

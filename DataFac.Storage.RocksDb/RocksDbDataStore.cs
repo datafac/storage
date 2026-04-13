@@ -254,19 +254,33 @@ public sealed class RocksDbDataStore : IDataStore
         }
     }
 
-    public async ValueTask<BlobIdV1> PutBlob(ReadOnlyMemory<byte> blob, bool withSync)
+    public async ValueTask PutBlob(ReadOnlyMemory<byte> uncompressed, Memory<byte> idMemory, bool withSync)
     {
         ThrowIfDisposed();
-        var compressResult = blob.TryCompressBlob();
-        var id = compressResult.BlobId;
-        if (id.IsEmbedded) return id;
+
+        if (idMemory.Length != BlobIdV1.Size) throw new ArgumentException($"Length must be {BlobIdV1.Size}.", nameof(idMemory));
+
+        // Snappier compression and hashing
+        // todo inline this and optimise
+        var compressResult1 = SnappyCompressor.CompressData(uncompressed, idMemory.Slice(32, 32).Span);
+
+        // embed compressed if small engough
+        if (compressResult1.Output.Length <= BlobIdV1.MaxEmbeddedSize)
+        {
+            BlobIdV1.WriteEmbedded(idMemory.Span, compressResult1.CompAlgo, compressResult1.Output);
+            return;
+        }
+
+        BlobIdV1.WriteSansHash(idMemory.Span, compressResult1.InputSize, compressResult1.CompAlgo, BlobHashAlgo.Sha256);
 
         Interlocked.Increment(ref _counters.BlobPutCount);
-        var data = compressResult.CompressedData;
+        var id = BlobIdV1.FromSpan(idMemory.Span);
+        var data = compressResult1.Output;
         if (!_blobCache.TryAdd(id, data))
         {
+            // already in cache - skip put
             Interlocked.Increment(ref _counters.BlobPutSkips);
-            return id;
+            return;
         }
 
         // added to cache - enqueue put
@@ -280,22 +294,34 @@ public sealed class RocksDbDataStore : IDataStore
         {
             _writer.TryWrite(AsyncOp.Put(id, data, null));
         }
-        return id;
     }
 
-    public async ValueTask<BlobIdV1> PutBlob(string text, bool withSync = false)
+    public async ValueTask PutBlob(string text, Memory<byte> idMemory, bool withSync = false)
     {
         ThrowIfDisposed();
-        var compressResult = text.TryCompressText();
-        var id = compressResult.BlobId;
-        if (id.IsEmbedded) return id;
+
+        if (idMemory.Length != BlobIdV1.Size) throw new ArgumentException($"Length must be {BlobIdV1.Size}.", nameof(idMemory));
+
+        // Snappier compression and hashing
+        // todo inline this and optimise
+        var compressResult1 = SnappyCompressor.CompressText(text, idMemory.Slice(32, 32).Span);
+
+        // embed compressed if small engough
+        if (compressResult1.Output.Length <= BlobIdV1.MaxEmbeddedSize)
+        {
+            BlobIdV1.WriteEmbedded(idMemory.Span, compressResult1.CompAlgo, compressResult1.Output);
+            return;
+        }
+
+        BlobIdV1.WriteSansHash(idMemory.Span, compressResult1.InputSize, compressResult1.CompAlgo, BlobHashAlgo.Sha256);
 
         Interlocked.Increment(ref _counters.BlobPutCount);
-        var data = compressResult.CompressedData;
+        var id = BlobIdV1.FromSpan(idMemory.Span);
+        var data = compressResult1.Output;
         if (!_blobCache.TryAdd(id, data))
         {
             Interlocked.Increment(ref _counters.BlobPutSkips);
-            return id;
+            return;
         }
 
         // added to cache - enqueue put
@@ -309,7 +335,6 @@ public sealed class RocksDbDataStore : IDataStore
         {
             _writer.TryWrite(AsyncOp.Put(id, data, null));
         }
-        return id;
     }
 
     public ValueTask Sync()

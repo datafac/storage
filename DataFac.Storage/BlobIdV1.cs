@@ -2,6 +2,7 @@
 using DataFac.UnsafeHelpers;
 using System;
 using System.Buffers;
+using System.Buffers.Binary;
 using System.IO;
 using System.Text;
 
@@ -68,6 +69,16 @@ namespace DataFac.Storage
             data.Span.CopyTo(BlockHelper.AsWritableSpan(ref _block).Slice(2));
         }
 
+        public static void WriteEmbedded(Span<byte> target, BlobCompAlgo compAlgo, ReadOnlyMemory<byte> data)
+        {
+            if (target.Length != Size) throw new ArgumentException($"Length must be {Size}.", nameof(target));
+            if (data.Length > MaxEmbeddedSize) throw new ArgumentException("Length must be <= 62", nameof(data));
+            target.Clear();
+            target[0] = compAlgo.ToCharCode();
+            target[1] = (byte)(data.Length + (byte)'A');
+            data.Span.CopyTo(target.Slice(2));
+        }
+
         /// <summary>
         /// Used to directly embed blob data which is small enough into the id.
         /// </summary>
@@ -98,6 +109,31 @@ namespace DataFac.Storage
         public BlobIdV1(int blobSize, BlobCompAlgo compAlgo, BlobHashAlgo hashAlgo, ReadOnlySpan<byte> hashData)
             : this(1, 0, blobSize, compAlgo, hashAlgo, hashData) { }
 
+        private static void WriteHeadPart(Span<byte> target, int blobSize, BlobCompAlgo compAlgo, BlobHashAlgo hashAlgo)
+        {
+            target[0] = (byte)'|';   // Marker00
+            target[1] = (byte)'_';   // Marker01
+            target[2] = (byte)1;
+            target[3] = (byte)0;
+            target[4] = (byte)compAlgo;
+            target[5] = (byte)hashAlgo;
+            BinaryPrimitives.WriteInt32LittleEndian(target.Slice(8, 4), blobSize);
+        }
+        public static void Write(Span<byte> target, int blobSize, BlobCompAlgo compAlgo, BlobHashAlgo hashAlgo, ReadOnlySpan<byte> hashData)
+        {
+            if (target.Length != Size) throw new ArgumentException($"Length must be {Size}.", nameof(target));
+            if (hashData.Length != 32) throw new ArgumentException("Length must be == 32", nameof(hashData));
+            target.Clear();
+            WriteHeadPart(target, blobSize, compAlgo, hashAlgo);
+            hashData.CopyTo(target.Slice(32, 32));
+        }
+        public static void WriteSansHash(Span<byte> target, int blobSize, BlobCompAlgo compAlgo, BlobHashAlgo hashAlgo)
+        {
+            if (target.Length != Size) throw new ArgumentException($"Length must be {Size}.", nameof(target));
+            var header = target.Slice(0, 32); // header is the first 32 bytes, hash data is the last 32 bytes
+            header.Clear();
+            WriteHeadPart(header, blobSize, compAlgo, hashAlgo);
+        }
         public void WriteTo(Span<byte> target) => _block.TryWrite(target);
 
         public byte[] ToByteArray() => _block.ToByteArray();

@@ -3,9 +3,11 @@ using System;
 using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace DataFac.Storage.Testing;
 
@@ -117,48 +119,70 @@ public sealed class TestDataStore : IDataStore
         return default;
     }
 
-    public ValueTask<BlobIdV1> PutBlob(ReadOnlyMemory<byte> uncompressed, bool withSync)
+    public ValueTask PutBlob(ReadOnlyMemory<byte> uncompressed, Memory<byte> idMemory, bool withSync)
     {
-        var compressResult = uncompressed.TryCompressBlob();
-        var id = compressResult.BlobId;
-        if (id.IsEmbedded)
-            return new ValueTask<BlobIdV1>(id);
+        if (idMemory.Length != BlobIdV1.Size) throw new ArgumentException($"Length must be {BlobIdV1.Size}.", nameof(idMemory));
+
+        // Snappier compression and hashing
+        // todo inline this and optimise
+        var compressResult1 = SnappyCompressor.CompressData(uncompressed, idMemory.Slice(32, 32).Span);
+
+        // embed compressed if small engough
+        if (compressResult1.Output.Length <= BlobIdV1.MaxEmbeddedSize)
+        {
+            BlobIdV1.WriteEmbedded(idMemory.Span, compressResult1.CompAlgo, compressResult1.Output);
+            return new ValueTask();
+        }
+
+        BlobIdV1.WriteSansHash(idMemory.Span, compressResult1.InputSize, compressResult1.CompAlgo, BlobHashAlgo.Sha256);
 
         Interlocked.Increment(ref _counters.BlobPutCount);
-        var data = compressResult.CompressedData;
-        if (_blobStore.TryAdd(id, data))
+        // todo skip this conversion
+        var blobId = BlobIdV1.FromSpan(idMemory.Span);
+        if (_blobStore.TryAdd(blobId, compressResult1.Output))
         {
             Interlocked.Increment(ref _counters.BlobPutWrits);
-            Interlocked.Add(ref _counters.ByteDelta, data.Length);
+            Interlocked.Add(ref _counters.ByteDelta, compressResult1.Output.Length);
         }
         else
         {
             Interlocked.Increment(ref _counters.BlobPutSkips);
         }
 
-        return new ValueTask<BlobIdV1>(id);
+        return new ValueTask();
     }
 
-    public ValueTask<BlobIdV1> PutBlob(string text, bool withSync = false)
+    public ValueTask PutBlob(string text, Memory<byte> idMemory, bool withSync = false)
     {
-        var compressResult = text.TryCompressText();
-        var id = compressResult.BlobId;
-        if (id.IsEmbedded)
-            return new ValueTask<BlobIdV1>(id);
+        if (idMemory.Length != BlobIdV1.Size) throw new ArgumentException($"Length must be {BlobIdV1.Size}.", nameof(idMemory));
+
+        // Snappier compression and hashing
+        // todo inline this and optimise
+        var compressResult1 = SnappyCompressor.CompressText(text, idMemory.Slice(32, 32).Span);
+
+        // embed compressed if small engough
+        if (compressResult1.Output.Length <= BlobIdV1.MaxEmbeddedSize)
+        {
+            BlobIdV1.WriteEmbedded(idMemory.Span, compressResult1.CompAlgo, compressResult1.Output);
+            return new ValueTask();
+        }
+
+        BlobIdV1.WriteSansHash(idMemory.Span, compressResult1.InputSize, compressResult1.CompAlgo, BlobHashAlgo.Sha256);
 
         Interlocked.Increment(ref _counters.BlobPutCount);
-        var data = compressResult.CompressedData;
-        if (_blobStore.TryAdd(id, data))
+        // todo skip this conversion
+        var blobId = BlobIdV1.FromSpan(idMemory.Span);
+        if (_blobStore.TryAdd(blobId, compressResult1.Output))
         {
             Interlocked.Increment(ref _counters.BlobPutWrits);
-            Interlocked.Add(ref _counters.ByteDelta, data.Length);
+            Interlocked.Add(ref _counters.ByteDelta, compressResult1.Output.Length);
         }
         else
         {
             Interlocked.Increment(ref _counters.BlobPutSkips);
         }
 
-        return new ValueTask<BlobIdV1>(id);
+        return new ValueTask();
     }
 
     public ValueTask Sync() => default;

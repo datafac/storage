@@ -6,6 +6,8 @@ namespace DataFac.Storage;
 
 public interface IDataStore : IDisposable
 {
+    // todo decouple BlobIdV1 formatting from the store. This will allow V2 and other formats to be used without needing to change the store.
+
     /// <summary>
     /// Returns the named id, or null if not found.
     /// </summary>
@@ -48,17 +50,17 @@ public interface IDataStore : IDisposable
     ValueTask<BlobResult> GetBlob(BlobIdV1 id);
 
     /// <summary>
-    /// Saves the given buffers into the underlying store, return its id, and
-    /// optionally waiting for the operation to complete.
+    /// Saves the given data into the underlying store, writes its id to the
+    /// given memory, and optionally waits for any store operation to complete.
     /// </summary>
-    ValueTask<BlobIdV1> PutBlob(ReadOnlyMemory<byte> data, bool withSync = false);
+    ValueTask PutBlob(ReadOnlyMemory<byte> data, Memory<byte> idMemory, bool withSync = false);
 
     /// <summary>
-    /// Converts the given string to a byte buffer using UTF8 encoding.
-    /// Saves the given buffers into the underlying store, return its id, and
-    /// optionally waiting for the operation to complete.
+    /// Converts the given text to a buffer using UTF8 encoding.
+    /// Saves the buffer into the underlying store, writes its id to the
+    /// given memory, and optionally waits for any store operation to complete.
     /// </summary>
-    ValueTask<BlobIdV1> PutBlob(string text, bool withSync = false);
+    ValueTask PutBlob(string text, Memory<byte> idMemory, bool withSync = false);
 
     KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetCachedBlobs();
     KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetStoredBlobs();

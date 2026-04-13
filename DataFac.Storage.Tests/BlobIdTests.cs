@@ -52,17 +52,18 @@ public class BlobIdTests
         string.Join("-", id.ToByteArray().Select(b => b.ToString("X2"))).ShouldBe(inputStr);
     }
 
-    [Fact]
-    public void BlobId06CreateFromCopy()
-    {
-        var data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        var result = data.TryCompressBlob();
-        BlobIdV1 orig = result.BlobId;
-        BlobIdV1 copy = orig;
-        copy.Equals(orig).ShouldBeTrue();
-        copy.ShouldBe(orig);
-        copy.GetHashCode().ShouldBe(orig.GetHashCode());
-    }
+    //todo
+    //[Fact]
+    //public void BlobId06CreateFromCopy()
+    //{
+    //    var data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+    //    var result = data.TryCompressBlob();
+    //    BlobIdV1 orig = result.BlobId;
+    //    BlobIdV1 copy = orig;
+    //    copy.Equals(orig).ShouldBeTrue();
+    //    copy.ShouldBe(orig);
+    //    copy.GetHashCode().ShouldBe(orig.GetHashCode());
+    //}
 
     [Fact]
     public void BlobId07CreateFails()

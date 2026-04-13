@@ -51,34 +51,36 @@ public static class BlobHelpers
         }
     }
 
-    public static CompressResult TryCompressBlob(this ReadOnlyMemory<byte> uncompressedData)
-    {
-        // Snappier compression and hashing
-        var compressResult = SnappyCompressor.CompressData(uncompressedData);
+    //[Obsolete("Follow TestDataStore method instead.", true)]
+    //public static CompressResult TryCompressBlob(this ReadOnlyMemory<byte> uncompressedData)
+    //{
+    //    // Snappier compression and hashing
+    //    var compressResult = SnappyCompressor.CompressData(uncompressedData);
 
-        // embed compressed if small engough
-        if (compressResult.Output.Length <= BlobIdV1.MaxEmbeddedSize)
-        {
-            return new CompressResult(new BlobIdV1(compressResult.CompAlgo, compressResult.Output), ReadOnlyMemory<byte>.Empty);
-        }
+    //    // embed compressed if small engough
+    //    if (compressResult.Output.Length <= BlobIdV1.MaxEmbeddedSize)
+    //    {
+    //        return new CompressResult(new BlobIdV1(compressResult.CompAlgo, compressResult.Output), ReadOnlyMemory<byte>.Empty);
+    //    }
 
-        BlobIdV1 blobId = new BlobIdV1(compressResult.InputSize, compressResult.CompAlgo, BlobHashAlgo.Sha256, compressResult.InputHash.Span);
-        return new CompressResult(blobId, compressResult.Output);
-    }
+    //    BlobIdV1 blobId = new BlobIdV1(compressResult.InputSize, compressResult.CompAlgo, BlobHashAlgo.Sha256, compressResult.InputHash.Span);
+    //    return new CompressResult(blobId, compressResult.Output);
+    //}
 
-    public static CompressResult TryCompressText(this string uncompressedText)
-    {
-        // Snappier compression and hashing
-        var compressResult = SnappyCompressor.CompressText(uncompressedText);
+    //[Obsolete("Follow TestDataStore method instead.", true)]
+    //public static CompressResult TryCompressText(this string uncompressedText)
+    //{
+    //    // Snappier compression and hashing
+    //    var compressResult = SnappyCompressor.CompressText(uncompressedText);
 
-        // embed compressed if small engough
-        if (compressResult.Output.Length <= BlobIdV1.MaxEmbeddedSize)
-        {
-            return new CompressResult(new BlobIdV1(compressResult.CompAlgo, compressResult.Output), ReadOnlyMemory<byte>.Empty);
-        }
+    //    // embed compressed if small engough
+    //    if (compressResult.Output.Length <= BlobIdV1.MaxEmbeddedSize)
+    //    {
+    //        return new CompressResult(new BlobIdV1(compressResult.CompAlgo, compressResult.Output), ReadOnlyMemory<byte>.Empty);
+    //    }
 
-        BlobIdV1 blobId = new BlobIdV1(compressResult.InputSize, compressResult.CompAlgo, BlobHashAlgo.Sha256, compressResult.InputHash.Span);
-        return new CompressResult(blobId, compressResult.Output);
-    }
+    //    BlobIdV1 blobId = new BlobIdV1(compressResult.InputSize, compressResult.CompAlgo, BlobHashAlgo.Sha256, compressResult.InputHash.Span);
+    //    return new CompressResult(blobId, compressResult.Output);
+    //}
 
 }
