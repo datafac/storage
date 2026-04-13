@@ -14,6 +14,58 @@ using Xunit;
 
 namespace DataFac.Storage.Tests;
 
+public class EmbeddedIdTests
+{
+    [Fact]
+    public void Embedded01_IdFromEmptyBlob()
+    {
+        BlobData data = BlobData.From(Array.Empty<byte>());
+        BlobKey key = TestHelpers.GetBlobKeyFromData(data);
+        var id = BlobIdV1.FromSpan(key.Bytes.Span);
+        id.IsEmbedded.ShouldBeTrue();
+        id.HashAlgo.ShouldBe(BlobHashAlgo.None);
+        id.CompAlgo.ShouldBe(BlobCompAlgo.UnComp);
+        id.ToString().ShouldBe("U:0:");
+    }
+
+    [Fact]
+    public async Task Embedded02_IdFromEmptyText()
+    {
+        BlobData data = BlobData.From(Encoding.UTF8.GetBytes(string.Empty));
+        BlobKey key = TestHelpers.GetBlobKeyFromData(data);
+        var id = BlobIdV1.FromSpan(key.Bytes.Span);
+        id.IsEmbedded.ShouldBeTrue();
+        id.CompAlgo.ShouldBe(BlobCompAlgo.UnComp);
+        id.HashAlgo.ShouldBe(BlobHashAlgo.None);
+        id.ToString().ShouldBe("U:0:");
+    }
+
+    [Fact]
+    public async Task Embedded03_IdFromNonEmptyBlob()
+    {
+        BlobData data = BlobData.From(Enumerable.Range(0, 62).Select(i => (byte)i).ToArray());
+        BlobKey key = TestHelpers.GetBlobKeyFromData(data);
+        var id = BlobIdV1.FromSpan(key.Bytes.Span);
+        id.IsEmbedded.ShouldBeTrue();
+        id.CompAlgo.ShouldBe(BlobCompAlgo.UnComp);
+        id.HashAlgo.ShouldBe(BlobHashAlgo.None);
+        id.ToString().ShouldBe("U:62:AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0=");
+    }
+
+    [Fact]
+    public async Task Embedded04_IdFromNonEmptyText()
+    {
+        BlobData data = BlobData.From(Encoding.UTF8.GetBytes(new string('Z', 100)));
+        BlobKey key = TestHelpers.GetBlobKeyFromData(data);
+        var id = BlobIdV1.FromSpan(key.Bytes.Span);
+        id.IsEmbedded.ShouldBeTrue();
+        id.CompAlgo.ShouldBe(BlobCompAlgo.Snappy);
+        id.HashAlgo.ShouldBe(BlobHashAlgo.None);
+        id.ToString().ShouldBe("S:9:ZABa/gEAigEA");
+    }
+
+}
+
 public class BlobStoreTests
 {
     private const string testroot = @"C:\temp\unittest\RocksDB\";
@@ -46,7 +98,7 @@ public class BlobStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         var result = await dataStore.GetBlob(default);
-        result.HasData.ShouldBeFalse();
+        result.HasValue.ShouldBeFalse();
     }
 
     [Theory]
@@ -59,86 +111,14 @@ public class BlobStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        var data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 64).Select(i => (byte)i).ToArray());
-        BlobIdV1 id = BlobIdV1.FromSpan(data.Span);
-        var result = await dataStore.GetBlob(id);
-        result.HasData.ShouldBeFalse();
+        var data = BlobData.From(Enumerable.Range(0, 64).Select(i => (byte)i).ToArray());
+        BlobKey key = TestHelpers.GetBlobKeyFromData(data);
+        var result = await dataStore.GetBlob(key);
+        result.HasValue.ShouldBeFalse();
         var counters = dataStore.GetCounters();
         counters.BlobGetCount.ShouldBe(1);
         counters.BlobGetReads.ShouldBe(1);
         counters.BlobGetCache.ShouldBe(0);
-    }
-
-    [Theory]
-    [InlineData(StoreKind.Testing)]
-#if NET8_0_OR_GREATER
-    [InlineData(StoreKind.RocksDb)]
-#endif
-    public async Task Store05PutEmptyBlob(StoreKind storeKind)
-    {
-        string testpath = $"{testroot}{Guid.NewGuid():N}";
-        using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
-
-        ReadOnlyMemory<byte> orig = default;
-        Memory<byte> idMemory = new byte[64];
-        await dataStore.PutBlob(orig, idMemory, true);
-        var id = BlobIdV1.FromSpan(idMemory.Span);
-        id.IsEmbedded.ShouldBeTrue();
-        id.HashAlgo.ShouldBe(BlobHashAlgo.None);
-        id.CompAlgo.ShouldBe(BlobCompAlgo.UnComp);
-        id.ToString().ShouldBe("U:0:");
-
-        var counters = dataStore.GetCounters();
-        counters.BlobPutCount.ShouldBe(0);
-        counters.BlobPutWrits.ShouldBe(0);
-        counters.BlobPutSkips.ShouldBe(0);
-
-        var copy = await dataStore.GetBlob(id);
-        copy.HasData.ShouldBeTrue();
-        copy.Data.Length.ShouldBe(0);
-        var origSpan = orig.Span;
-        var copySpan = copy.Data.Span;
-        copySpan.SequenceEqual(origSpan).ShouldBeTrue();
-    }
-
-    [Theory]
-    [InlineData(StoreKind.Testing)]
-#if NET8_0_OR_GREATER
-    [InlineData(StoreKind.RocksDb)]
-#endif
-    public async Task Store05PutEmptyText(StoreKind storeKind)
-    {
-        string testpath = $"{testroot}{Guid.NewGuid():N}";
-        using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
-
-        string orig = string.Empty;
-        Memory<byte> idMemory = new byte[64];
-        await dataStore.PutBlob(orig, idMemory, true);
-        var id = BlobIdV1.FromSpan(idMemory.Span);
-        id.IsEmbedded.ShouldBeTrue();
-        id.HashAlgo.ShouldBe(BlobHashAlgo.None);
-        id.CompAlgo.ShouldBe(BlobCompAlgo.UnComp);
-        id.ToString().ShouldBe("U:0:");
-
-        var counters = dataStore.GetCounters();
-        counters.BlobPutCount.ShouldBe(0);
-        counters.BlobPutWrits.ShouldBe(0);
-        counters.BlobPutSkips.ShouldBe(0);
-
-        var recd = await dataStore.GetBlob(id);
-        recd.HasData.ShouldBeTrue();
-        recd.Data.Length.ShouldBe(0);
-        ReadOnlySpan<char> origSpan = orig;
-#if NET8_0_OR_GREATER
-        Span<char> copySpan = stackalloc char[62];
-        bool decoded = Encoding.UTF8.TryGetChars(recd.Data.Span, copySpan, out int charsWritten);
-        decoded.ShouldBeTrue();
-        copySpan = copySpan.Slice(0, charsWritten);
-#else
-        string copy = Encoding.UTF8.GetString(recd.Data.ToArray());
-        ReadOnlySpan<char> copySpan = copy;
-#endif
-        copySpan.SequenceEqual(origSpan).ShouldBeTrue();
     }
 
     [Theory]
@@ -151,10 +131,10 @@ public class BlobStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        var data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        Memory<byte> idMemory = new byte[64];
-        await dataStore.PutBlob(data, idMemory, true);
-        var id = BlobIdV1.FromSpan(idMemory.Span);
+        BlobData data = BlobData.From(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+        BlobKey key = TestHelpers.GetBlobKeyFromData(data);
+        await dataStore.PutBlob(key, data, true);
+        var id = BlobIdV1.FromSpan(key.Bytes.Span);
         id.IsEmbedded.ShouldBeFalse();
         id.HashAlgo.ShouldBe(BlobHashAlgo.Sha256);
         id.CompAlgo.ShouldBe(BlobCompAlgo.UnComp); // not compressible
@@ -163,29 +143,6 @@ public class BlobStoreTests
         var counters = dataStore.GetCounters();
         counters.BlobPutCount.ShouldBe(1);
         counters.BlobPutWrits.ShouldBe(1);
-        counters.BlobPutSkips.ShouldBe(0);
-    }
-
-    [Theory]
-    [InlineData(StoreKind.Testing)]
-#if NET8_0_OR_GREATER
-    [InlineData(StoreKind.RocksDb)]
-#endif
-    public async Task Store06PutNonEmptyText(StoreKind storeKind)
-    {
-        string testpath = $"{testroot}{Guid.NewGuid():N}";
-        using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
-
-        string text = new string('Z', 100);
-        Memory<byte> idMemory = new byte[64];
-        await dataStore.PutBlob(text, idMemory, true);
-        var id = BlobIdV1.FromSpan(idMemory.Span);
-        id.IsEmbedded.ShouldBeTrue();
-        id.ToString().ShouldBe("S:9:ZABa/gEAigEA");
-
-        var counters = dataStore.GetCounters();
-        counters.BlobPutCount.ShouldBe(0);
-        counters.BlobPutWrits.ShouldBe(0);
         counters.BlobPutSkips.ShouldBe(0);
     }
 
@@ -205,17 +162,18 @@ public class BlobStoreTests
             "Plain Jain is a brain in a train in Spain. " +
             "Maine is the main domain to obtain the brain drain.";
 
-        Memory<byte> idMemory = new byte[64];
-        await dataStore.PutBlob(text, idMemory, true);
-        var id = BlobIdV1.FromSpan(idMemory.Span);
+        BlobData data = BlobData.From(Encoding.UTF8.GetBytes(text));
+        BlobKey key = TestHelpers.GetBlobKeyFromData(data);
+        await dataStore.PutBlob(key, data, true);
+        var id = BlobIdV1.FromSpan(key.Bytes.Span);
         id.IsEmbedded.ShouldBeFalse();
         id.HashAlgo.ShouldBe(BlobHashAlgo.Sha256);
         id.CompAlgo.ShouldBe(BlobCompAlgo.Snappy);
         id.ToString().ShouldBe("V1.0:201:S:1:f+8O2Wm1is/9ut73eja0VCML3qUOWA9rgBZg4INPL34=");
 
-        var copy = await dataStore.GetBlob(id);
-        copy.HasData.ShouldBeTrue();
-        string text2 = Encoding.UTF8.GetString(copy.Data.ToArray());
+        var copy = await dataStore.GetBlob(key);
+        copy.HasValue.ShouldBeTrue();
+        string text2 = Encoding.UTF8.GetString(copy.Bytes.ToArray());
         text2.ShouldBe(text);
 
         var counters = dataStore.GetCounters();
@@ -237,15 +195,15 @@ public class BlobStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        var orig = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        Memory<byte> idMemory = new byte[64];
-        await dataStore.PutBlob(orig, idMemory, true);
-        var id = BlobIdV1.FromSpan(idMemory.Span);
+        BlobData orig = BlobData.From(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+        BlobKey key = TestHelpers.GetBlobKeyFromData(orig);
+        await dataStore.PutBlob(key, orig, true);
+        var id = BlobIdV1.FromSpan(key.Bytes.Span);
         id.CompAlgo.ShouldBe(BlobCompAlgo.UnComp);
 
-        var copy = await dataStore.GetBlob(id);
-        copy.HasData.ShouldBeTrue();
-        copy.Data.ToArray().SequenceEqual(orig.ToArray()).ShouldBeTrue();
+        var copy = await dataStore.GetBlob(key);
+        copy.HasValue.ShouldBeTrue();
+        copy.Bytes.Span.SequenceEqual(orig.Bytes.Span).ShouldBeTrue();
 
         var counters = dataStore.GetCounters();
         counters.BlobPutCount.ShouldBe(1);
@@ -266,12 +224,12 @@ public class BlobStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        var data = new ReadOnlyMemory<byte>(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
+        BlobData data = BlobData.From(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
 
         // put first
-        Memory<byte> id1Memory = new byte[64];
-        await dataStore.PutBlob(data, id1Memory, true);
-        var id1 = BlobIdV1.FromSpan(id1Memory.Span);
+        BlobKey key1 = TestHelpers.GetBlobKeyFromData(data);
+        await dataStore.PutBlob(key1, data, true);
+        var id1 = BlobIdV1.FromSpan(key1.Bytes.Span);
         var counters1 = dataStore.GetCounters();
         counters1.BlobPutCount.ShouldBe(1);
         counters1.BlobPutWrits.ShouldBe(1);
@@ -279,9 +237,9 @@ public class BlobStoreTests
         counters1.ByteDelta.ShouldBe(256);
 
         // put again
-        Memory<byte> id2Memory = new byte[64];
-        await dataStore.PutBlob(data, id2Memory, true);
-        var id2 = BlobIdV1.FromSpan(id2Memory.Span);
+        BlobKey key2 = TestHelpers.GetBlobKeyFromData(data);
+        await dataStore.PutBlob(key2, data, true);
+        var id2 = BlobIdV1.FromSpan(key2.Bytes.Span);
         id2.Equals(id1).ShouldBeTrue();
 
         var counters2 = dataStore.GetCounters();

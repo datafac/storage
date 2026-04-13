@@ -17,9 +17,8 @@ namespace DataFac.Storage.Testing;
 /// </summary>
 public sealed class TestDataStore : IDataStore
 {
-    // todo decouple BlobIdV1 and use BlobKey instead. This will allow V2 and other formats to be used without needing to change the store.
-    private readonly ConcurrentDictionary<string, BlobIdV1> _nameStore = new ConcurrentDictionary<string, BlobIdV1>();
-    private readonly ConcurrentDictionary<BlobIdV1, ReadOnlyMemory<byte>> _blobStore = new ConcurrentDictionary<BlobIdV1, ReadOnlyMemory<byte>>();
+    private readonly ConcurrentDictionary<string, BlobKey> _nameStore = new ConcurrentDictionary<string, BlobKey>();
+    private readonly ConcurrentDictionary<BlobKey, BlobData> _blobStore = new ConcurrentDictionary<BlobKey, BlobData>();
 
     public TestDataStore()
     {
@@ -39,42 +38,35 @@ public sealed class TestDataStore : IDataStore
         throw new ArgumentException("Must not be empty", name);
     }
 
-    public KeyValuePair<string, BlobIdV1>[] GetNames() => _nameStore.ToArray();
+    public IEnumerable<KeyValuePair<string, BlobKey>> GetNames() => _nameStore;
 
-    public BlobKey? GetName(string key)
+    public BlobKey GetName(string name)
     {
-        if (string.IsNullOrEmpty(key)) ThrowMustNotBeEmpty(nameof(key));
+        if (string.IsNullOrEmpty(name)) ThrowMustNotBeEmpty(nameof(name));
 
-        if (_nameStore.TryGetValue(key, out var id))
-        {
-            return new BlobKey(id.ToByteArray()); // todo alloc!
-        }
-        else
-        {
-            return null;
-        }
+        return _nameStore.TryGetValue(name, out var id) ? id : BlobKey.NotFound();
     }
 
-    public void RemoveName(string key)
+    public void RemoveName(string name)
     {
-        _nameStore.TryRemove(key, out var _);
+        _nameStore.TryRemove(name, out var _);
     }
 
-    public void RemoveNames(IEnumerable<string> keys)
+    public void RemoveNames(IEnumerable<string> names)
     {
-        if (keys is null) throw new ArgumentNullException(nameof(keys));
+        if (names is null) throw new ArgumentNullException(nameof(names));
 
-        foreach (var key in keys)
+        foreach (var name in names)
         {
-            _nameStore.TryRemove(key, out var _);
+            _nameStore.TryRemove(name, out var _);
         }
     }
 
-    public bool PutName(string key, in BlobIdV1 id)
+    public bool PutName(string name, in BlobKey key)
     {
-        if (string.IsNullOrEmpty(key)) ThrowMustNotBeEmpty(nameof(key));
+        if (string.IsNullOrEmpty(name)) ThrowMustNotBeEmpty(nameof(name));
 
-        bool added = _nameStore.TryAdd(key, id);
+        bool added = _nameStore.TryAdd(name, key);
 
         if (added)
         {
@@ -84,74 +76,71 @@ public sealed class TestDataStore : IDataStore
         return added;
     }
 
-    public KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetCachedBlobs() => _blobStore.ToArray();
+    public IEnumerable<KeyValuePair<BlobKey, BlobData>> GetCachedBlobs() => _blobStore;
 
-    public KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetStoredBlobs() => _blobStore.ToArray();
+    public IEnumerable<KeyValuePair<BlobKey, BlobData>> GetStoredBlobs() => _blobStore;
 
-    public async ValueTask<BlobResult> GetBlob(BlobIdV1 id)
+    public async ValueTask<BlobData> GetBlob(BlobKey key)
     {
-        if (id.IsDefault)
-            return BlobResult.NotFound();
+        if (!key.HasValue) return BlobData.NotFound();
 
-        if (id.TryGetEmbeddedBlob(out var embeddedBlob))
-            return BlobResult.WithData(embeddedBlob);
+        //if (id.TryGetEmbeddedBlob(out var embeddedBlob))
+        //    return BlobData.WithData(embeddedBlob);
 
         Interlocked.Increment(ref _counters.BlobGetCount);
-        if (_blobStore.TryGetValue(id, out var data))
+        if (_blobStore.TryGetValue(key, out var data))
         {
             Interlocked.Increment(ref _counters.BlobGetCache);
-            return BlobResult.WithData(BlobHelpers.TryDecompressBlob(id, data));
+            return data;
         }
         else
         {
             Interlocked.Increment(ref _counters.BlobGetReads);
-            return BlobResult.NotFound();
+            return BlobData.NotFound();
         }
     }
 
-    public async ValueTask<BlobResult> RemoveBlob(BlobIdV1 id, bool withSync)
+    public async ValueTask<BlobData> RemoveBlob(BlobKey key, bool withSync)
     {
-        return _blobStore.TryRemove(id, out var data)
-            ? BlobResult.WithData(data)
-            : BlobResult.NotFound();
+        return _blobStore.TryRemove(key, out var data) ? data : BlobData.NotFound();
     }
 
-    public ValueTask RemoveBlobs(IEnumerable<BlobIdV1> ids, bool withSync)
+    public ValueTask RemoveBlobs(IEnumerable<BlobKey> keys, bool withSync)
     {
-        if (ids is null) throw new ArgumentNullException(nameof(ids));
+        if (keys is null) throw new ArgumentNullException(nameof(keys));
 
-        foreach (var id in ids)
+        foreach (var key in keys)
         {
-            _blobStore.TryRemove(id, out var _);
+            _blobStore.TryRemove(key, out var _);
         }
 
         return default;
     }
 
-    public ValueTask PutBlob(ReadOnlyMemory<byte> uncompressed, Memory<byte> idMemory, bool withSync)
+    public ValueTask PutBlob(BlobKey key, BlobData data, bool withSync)
     {
-        if (idMemory.Length != BlobIdV1.Size) throw new ArgumentException($"Length must be {BlobIdV1.Size}.", nameof(idMemory));
+        //if (idMemory.Length != BlobKey.Size) throw new ArgumentException($"Length must be {BlobKey.Size}.", nameof(idMemory));
 
-        // Snappier compression and hashing
-        // todo inline this and optimise
-        var compressResult1 = SnappyCompressor.CompressData(uncompressed, idMemory.Slice(32, 32).Span);
+        //// Snappier compression and hashing
+        //// todo inline this and optimise
+        //var compressResult1 = SnappyCompressor.CompressData(uncompressed, idMemory.Slice(32, 32).Span);
 
-        // embed compressed if small engough
-        if (compressResult1.Output.Length <= BlobIdV1.MaxEmbeddedSize)
-        {
-            BlobIdV1.WriteEmbedded(idMemory.Span, compressResult1.CompAlgo, compressResult1.Output);
-            return new ValueTask();
-        }
+        //// embed compressed if small engough
+        //if (compressResult1.Output.Length <= BlobKey.MaxEmbeddedSize)
+        //{
+        //    BlobKey.WriteEmbedded(idMemory.Span, compressResult1.CompAlgo, compressResult1.Output);
+        //    return new ValueTask();
+        //}
 
-        BlobIdV1.WriteSansHash(idMemory.Span, compressResult1.InputSize, compressResult1.CompAlgo, BlobHashAlgo.Sha256);
+        //BlobKey.WriteSansHash(idMemory.Span, compressResult1.InputSize, compressResult1.CompAlgo, BlobHashAlgo.Sha256);
 
         Interlocked.Increment(ref _counters.BlobPutCount);
         // todo skip this conversion
-        var blobId = BlobIdV1.FromSpan(idMemory.Span);
-        if (_blobStore.TryAdd(blobId, compressResult1.Output))
+        //var blobId = BlobKey.FromSpan(idMemory.Span);
+        if (_blobStore.TryAdd(key, data))
         {
             Interlocked.Increment(ref _counters.BlobPutWrits);
-            Interlocked.Add(ref _counters.ByteDelta, compressResult1.Output.Length);
+            Interlocked.Add(ref _counters.ByteDelta, data.Bytes.Length);
         }
         else
         {
@@ -161,38 +150,38 @@ public sealed class TestDataStore : IDataStore
         return new ValueTask();
     }
 
-    public ValueTask PutBlob(string text, Memory<byte> idMemory, bool withSync = false)
-    {
-        if (idMemory.Length != BlobIdV1.Size) throw new ArgumentException($"Length must be {BlobIdV1.Size}.", nameof(idMemory));
+    //public ValueTask PutBlob(string text, Memory<byte> idMemory, bool withSync = false)
+    //{
+    //    if (idMemory.Length != BlobKey.Size) throw new ArgumentException($"Length must be {BlobKey.Size}.", nameof(idMemory));
 
-        // Snappier compression and hashing
-        // todo inline this and optimise
-        var compressResult1 = SnappyCompressor.CompressText(text, idMemory.Slice(32, 32).Span);
+    //    // Snappier compression and hashing
+    //    // todo inline this and optimise
+    //    var compressResult1 = SnappyCompressor.CompressText(text, idMemory.Slice(32, 32).Span);
 
-        // embed compressed if small engough
-        if (compressResult1.Output.Length <= BlobIdV1.MaxEmbeddedSize)
-        {
-            BlobIdV1.WriteEmbedded(idMemory.Span, compressResult1.CompAlgo, compressResult1.Output);
-            return new ValueTask();
-        }
+    //    // embed compressed if small engough
+    //    if (compressResult1.Output.Length <= BlobKey.MaxEmbeddedSize)
+    //    {
+    //        BlobKey.WriteEmbedded(idMemory.Span, compressResult1.CompAlgo, compressResult1.Output);
+    //        return new ValueTask();
+    //    }
 
-        BlobIdV1.WriteSansHash(idMemory.Span, compressResult1.InputSize, compressResult1.CompAlgo, BlobHashAlgo.Sha256);
+    //    BlobKey.WriteSansHash(idMemory.Span, compressResult1.InputSize, compressResult1.CompAlgo, BlobHashAlgo.Sha256);
 
-        Interlocked.Increment(ref _counters.BlobPutCount);
-        // todo skip this conversion
-        var blobId = BlobIdV1.FromSpan(idMemory.Span);
-        if (_blobStore.TryAdd(blobId, compressResult1.Output))
-        {
-            Interlocked.Increment(ref _counters.BlobPutWrits);
-            Interlocked.Add(ref _counters.ByteDelta, compressResult1.Output.Length);
-        }
-        else
-        {
-            Interlocked.Increment(ref _counters.BlobPutSkips);
-        }
+    //    Interlocked.Increment(ref _counters.BlobPutCount);
+    //    // todo skip this conversion
+    //    var blobId = BlobKey.FromSpan(idMemory.Span);
+    //    if (_blobStore.TryAdd(blobId, compressResult1.Output))
+    //    {
+    //        Interlocked.Increment(ref _counters.BlobPutWrits);
+    //        Interlocked.Add(ref _counters.ByteDelta, compressResult1.Output.Length);
+    //    }
+    //    else
+    //    {
+    //        Interlocked.Increment(ref _counters.BlobPutSkips);
+    //    }
 
-        return new ValueTask();
-    }
+    //    return new ValueTask();
+    //}
 
     public ValueTask Sync() => default;
 

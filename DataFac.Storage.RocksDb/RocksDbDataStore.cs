@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace DataFac.Storage.RocksDbStore;
 
@@ -21,9 +22,11 @@ public sealed class RocksDbDataStore : IDataStore
     private readonly RocksDb _rocksNameDb;
 #pragma warning restore CA2213 // Disposable fields should be disposed
 
-    private readonly ConcurrentDictionary<BlobIdV1, ReadOnlyMemory<byte>> _blobCache = new ConcurrentDictionary<BlobIdV1, ReadOnlyMemory<byte>>();
+    private readonly ConcurrentDictionary<BlobKey, BlobData> _blobCache = new ConcurrentDictionary<BlobKey, BlobData>();
     private readonly ChannelWriter<AsyncOp> _writer;
     private readonly ChannelReader<AsyncOp> _reader;
+
+    private const int MaxStackallocKeySize = 128; // todo tune size
 
     public RocksDbDataStore(string rootpath)
     {
@@ -72,140 +75,169 @@ public sealed class RocksDbDataStore : IDataStore
     public void ResetCounters() => _counters = default;
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void ThrowMustNotBeEmpty(string name)
+    private static void ThrowMustNotBeEmpty(string paramName)
     {
-        throw new ArgumentException("Must not be empty", name);
+        throw new ArgumentException("Must not be empty", paramName);
     }
 
-    public KeyValuePair<string, BlobIdV1>[] GetNames()
+#if NET8_0_OR_GREATER
+    public IEnumerable<KeyValuePair<string, BlobKey>> GetNames()
     {
-        var list = new List<KeyValuePair<string, BlobIdV1>>();
         using var iter = _rocksNameDb.NewIterator();
         var iter2 = iter.SeekToFirst();
         while (iter2.Valid())
         {
-#if NET8_0_OR_GREATER
-            string key = Encoding.UTF8.GetString(iter2.GetKeySpan());
-            BlobIdV1 value = BlobIdV1.FromSpan(iter2.Value());
-#else
-            string key = Encoding.UTF8.GetString(iter2.Key());
-            BlobIdV1 value = BlobIdV1.FromSpan(iter2.Value());
-#endif
-            list.Add(new KeyValuePair<string, BlobIdV1>(key, value));
+            string name = Encoding.UTF8.GetString(iter2.GetKeySpan());
+            BlobKey key = BlobKey.From(iter2.Value());
+            yield return new KeyValuePair<string, BlobKey>(name, key);
             iter2 = iter2.Next();
         }
-        return list.ToArray();
     }
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void ThrowArgumentIsTooLong(string paramName)
-    {
-        throw new ArgumentException("Parameter is too long. It must UTF8 encode to 128 bytes or less.", paramName);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public BlobKey? GetName(string key)
-    {
-        if (string.IsNullOrEmpty(key)) ThrowMustNotBeEmpty(nameof(key));
-#if NET8_0_OR_GREATER
-        Span<byte> keySpan = stackalloc byte[128];
-        if (!Encoding.UTF8.TryGetBytes(key, keySpan, out int bytesInKey)) ThrowArgumentIsTooLong(nameof(key));
-
-        var currentBytes = _rocksNameDb.Get(keySpan.Slice(0, bytesInKey));
-        return currentBytes is null ? null : new BlobKey(currentBytes);
 #else
-        var keyBytes = Encoding.UTF8.GetBytes(key);
-        var currentBytes = _rocksNameDb.Get(keyBytes);
-        return currentBytes is null ? null : new BlobKey(currentBytes);
-#endif
-    }
-
-    public void RemoveName(string key)
+    public IEnumerable<KeyValuePair<string, BlobKey>> GetNames()
     {
-        var keyBytes = Encoding.UTF8.GetBytes(key);
-#if NET8_0_OR_GREATER
-        ReadOnlySpan<byte> keySpan = keyBytes.AsSpan();
-        _rocksNameDb.Remove(keySpan);
-#else
-        _rocksNameDb.Remove(keyBytes);
-#endif
-    }
-
-    public void RemoveNames(IEnumerable<string> keys)
-    {
-        if (keys is null) throw new ArgumentNullException(nameof(keys));
-
-        foreach (var key in keys)
+        using var iter = _rocksNameDb.NewIterator();
+        var iter2 = iter.SeekToFirst();
+        while (iter2.Valid())
         {
-            var keyBytes = Encoding.UTF8.GetBytes(key);
-#if NET8_0_OR_GREATER
-            ReadOnlySpan<byte> keySpan = keyBytes.AsSpan();
-            _rocksNameDb.Remove(keySpan);
-#else
-            _rocksNameDb.Remove(keyBytes);
-#endif
+            string name = Encoding.UTF8.GetString(iter2.Key());
+            BlobKey key = BlobKey.From(iter2.Value());
+            yield return new KeyValuePair<string, BlobKey>(name, key);
+            iter2 = iter2.Next();
         }
     }
+#endif
 
-    public bool PutName(string key, in BlobIdV1 id)
+#if NET8_0_OR_GREATER
+    public BlobKey GetName(string name)
     {
-        if (string.IsNullOrEmpty(key)) ThrowMustNotBeEmpty(nameof(key));
+        if (string.IsNullOrEmpty(name)) ThrowMustNotBeEmpty(nameof(name));
+        Span<byte> buffer = stackalloc byte[MaxStackallocKeySize];
+        if (Encoding.UTF8.TryGetBytes(name, buffer, out int bytesInKey))
+        {
+            var keySpan = buffer.Slice(0, bytesInKey);
+            var bytes1 = _rocksNameDb.Get(keySpan);
+            return bytes1 is null ? BlobKey.NotFound() : BlobKey.From(bytes1);
+        }
+        // fallback if key too large for stackalloc
+        var keyBytes = Encoding.UTF8.GetBytes(name);
+        var bytes2 = _rocksNameDb.Get(keyBytes);
+        return bytes2 is null ? BlobKey.NotFound() : BlobKey.From(bytes2);
+    }
+#else
+    public BlobKey GetName(string name)
+    {
+        var keyBytes = Encoding.UTF8.GetBytes(name);
+        var bytes2 = _rocksNameDb.Get(keyBytes);
+        return bytes2 is null ? BlobKey.NotFound() : BlobKey.From(bytes2);
+    }
+#endif
+
+#if NET8_0_OR_GREATER
+    public void RemoveName(string name)
+    {
+        if (string.IsNullOrEmpty(name)) ThrowMustNotBeEmpty(nameof(name));
+        Span<byte> buffer = stackalloc byte[MaxStackallocKeySize];
+        if (Encoding.UTF8.TryGetBytes(name, buffer, out int bytesInKey))
+        {
+            var keySpan = buffer.Slice(0, bytesInKey);
+            _rocksNameDb.Remove(keySpan);
+        }
+        // fallback if key too large for stackalloc
+        var keyBytes = Encoding.UTF8.GetBytes(name);
+        _rocksNameDb.Remove(keyBytes);
+    }
+#else
+    public void RemoveName(string name)
+    {
+        var keyBytes = Encoding.UTF8.GetBytes(name);
+        _rocksNameDb.Remove(keyBytes);
+    }
+#endif
+
+#if NET8_0_OR_GREATER
+    public bool PutName(string name, in BlobKey key)
+    {
+        if (string.IsNullOrEmpty(name)) ThrowMustNotBeEmpty(nameof(name));
+        if (!key.HasValue) ThrowMustNotBeEmpty(nameof(key));
         // todo? optimistic locking revision check
         // todo? lock on key to ensure below is atomic
-#if NET8_0_OR_GREATER
-        var keyBytes = Encoding.UTF8.GetBytes(key);
-        ReadOnlySpan<byte> keySpan = keyBytes.AsSpan();
-        bool added = _rocksNameDb.Get(keySpan) is null;
-        if (added)
+        Span<byte> buffer = stackalloc byte[MaxStackallocKeySize];
+        if (Encoding.UTF8.TryGetBytes(name, buffer, out int bytesInKey))
         {
-            _rocksNameDb.Put(keySpan, id.ToByteArray());
+            var keySpan = buffer.Slice(0, bytesInKey);
+            bool added = _rocksNameDb.Get(keySpan) is null;
+            if (added)
+            {
+                _rocksNameDb.Put(keySpan, key.Bytes.Span);
+                Interlocked.Increment(ref _counters.NameDelta);
+            }
+            return added;
         }
-#else
-        var keyBytes = Encoding.UTF8.GetBytes(key);
-        bool added = _rocksNameDb.Get(keyBytes) is null;
-        if (added)
         {
-            _rocksNameDb.Put(keyBytes, id.ToByteArray());
+            var keyBytes = Encoding.UTF8.GetBytes(name);
+            bool added = _rocksNameDb.Get(keyBytes) is null;
+            if (added)
+            {
+                _rocksNameDb.Put(keyBytes, key.Bytes.ToArray());
+                Interlocked.Increment(ref _counters.NameDelta);
+            }
+            return added;
         }
-#endif
-        if (added)
-        {
-            Interlocked.Increment(ref _counters.NameDelta);
-        }
-        return added;
     }
-
-    public KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetCachedBlobs() => _blobCache.ToArray();
-
-    public KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetStoredBlobs()
+#else
+    public bool PutName(string name, in BlobKey key)
     {
-        var list = new List<KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>>();
+        if (string.IsNullOrEmpty(name)) ThrowMustNotBeEmpty(nameof(name));
+        if (!key.HasValue) ThrowMustNotBeEmpty(nameof(key));
+        // todo? optimistic locking revision check
+        // todo? lock on key to ensure below is atomic
+        {
+            var keyBytes = Encoding.UTF8.GetBytes(name);
+            bool added = _rocksNameDb.Get(keyBytes) is null;
+            if (added)
+            {
+                _rocksNameDb.Put(keyBytes, key.Bytes.ToArray());
+                Interlocked.Increment(ref _counters.NameDelta);
+            }
+            return added;
+        }
+    }
+#endif
+
+    public IEnumerable<KeyValuePair<BlobKey, BlobData>> GetCachedBlobs() => _blobCache;
+
+    public IEnumerable<KeyValuePair<BlobKey, BlobData>> GetStoredBlobs()
+    {
         using var iter = _rocksBlobDb.NewIterator();
         var iter2 = iter.SeekToFirst();
         while (iter2.Valid())
         {
-            BlobIdV1 key = BlobIdV1.FromSpan(iter2.Key());
-            list.Add(new KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>(key, iter2.Value()));
+            BlobKey key = BlobKey.From(iter2.Key());
+            BlobData data = BlobData.From(iter2.Value());
+            yield return new KeyValuePair<BlobKey, BlobData>(key, data);
             iter2 = iter2.Next();
         }
-        return list.ToArray();
     }
 
-    public async ValueTask<BlobResult> GetBlob(BlobIdV1 id)
+    public async ValueTask<BlobData> GetBlob(BlobKey key)
     {
         ThrowIfDisposed();
-        if (id.IsDefault) return BlobResult.NotFound();
-        if (id.TryGetEmbeddedBlob(out var embeddedBlob))
-        {
-            return BlobResult.WithData(embeddedBlob);
-        }
+
+        if (!key.HasValue) return BlobData.NotFound();
+
+        //if (id.IsDefault) return BlobData.NotFound();
+        //if (id.TryGetEmbeddedBlob(out var embeddedBlob))
+        //{
+        //    return BlobData.WithData(embeddedBlob);
+        //}
 
         Interlocked.Increment(ref _counters.BlobGetCount);
 
-        if (_blobCache.TryGetValue(id, out var cachedBlob))
+        if (_blobCache.TryGetValue(key, out var data))
         {
             Interlocked.Increment(ref _counters.BlobGetCache);
-            return BlobResult.WithData(BlobHelpers.TryDecompressBlob(id, cachedBlob));
+            return data;
         }
         else
         {
@@ -213,81 +245,61 @@ public sealed class RocksDbDataStore : IDataStore
         }
 
         // enqueue get
-        var complete = new TaskCompletionSource<BlobResult>();
-        _writer.TryWrite(AsyncOp.Get(id, complete));
+        var complete = new TaskCompletionSource<BlobData>();
+        _writer.TryWrite(AsyncOp.Get(key, complete));
         var result = await complete.Task.ConfigureAwait(false);
-        if (result.HasData) _blobCache.TryAdd(id, result.Data);
-        // todo do we need to decompress here?
+        _blobCache.TryAdd(key, result);
         return result;
     }
 
-    public async ValueTask<BlobResult> RemoveBlob(BlobIdV1 id, bool withSync)
+    public async ValueTask<BlobData> RemoveBlob(BlobKey key, bool withSync)
     {
         ThrowIfDisposed();
 
-        _blobCache.TryRemove(id, out var _);
+        if (!key.HasValue) ThrowMustNotBeEmpty(nameof(key));
+
+        _blobCache.TryRemove(key, out var _);
 
         // enqueue remove
         if (withSync)
         {
-            var complete = new TaskCompletionSource<BlobResult>();
-            _writer.TryWrite(AsyncOp.Del(id, complete));
+            var complete = new TaskCompletionSource<BlobData>();
+            _writer.TryWrite(AsyncOp.Del(key, complete));
             return await complete.Task.ConfigureAwait(false);
         }
         else
         {
-            _writer.TryWrite(AsyncOp.Del(id, null));
-            return BlobResult.Pending();
+            _writer.TryWrite(AsyncOp.Del(key, null));
+            return BlobData.NotFound();
         }
     }
 
-    public ValueTask RemoveBlobs(IEnumerable<BlobIdV1> ids, bool withSync)
-    {
-        if (ids is null) throw new ArgumentNullException(nameof(ids));
-
-        ThrowIfDisposed();
-
-        foreach (var id in ids)
-        {
-            _blobCache.TryRemove(id, out var _);
-            _writer.TryWrite(AsyncOp.Del(id, null));
-        }
-
-        if (withSync)
-        {
-            var complete = new TaskCompletionSource<BlobResult>();
-            _writer.TryWrite(AsyncOp.Sync(complete));
-            return new ValueTask(complete.Task);
-        }
-        else
-        {
-            return default;
-        }
-    }
-
-    public async ValueTask PutBlob(ReadOnlyMemory<byte> uncompressed, Memory<byte> idMemory, bool withSync)
+    public async ValueTask PutBlob(BlobKey key, BlobData data, bool withSync)
     {
         ThrowIfDisposed();
 
-        if (idMemory.Length != BlobIdV1.Size) throw new ArgumentException($"Length must be {BlobIdV1.Size}.", nameof(idMemory));
+        if (!key.HasValue) ThrowMustNotBeEmpty(nameof(key));
+        if (!data.HasValue) ThrowMustNotBeEmpty(nameof(data));
 
-        // Snappier compression and hashing
-        // todo inline this and optimise
-        var compressResult1 = SnappyCompressor.CompressData(uncompressed, idMemory.Slice(32, 32).Span);
+        //if (idMemory.Length != BlobKey.Size) throw new ArgumentException($"Length must be {BlobKey.Size}.", nameof(idMemory));
 
-        // embed compressed if small engough
-        if (compressResult1.Output.Length <= BlobIdV1.MaxEmbeddedSize)
-        {
-            BlobIdV1.WriteEmbedded(idMemory.Span, compressResult1.CompAlgo, compressResult1.Output);
-            return;
-        }
+        //// Snappier compression and hashing
+        //// todo inline this and optimise
+        //var compressResult1 = SnappyCompressor.CompressData(uncompressed, idMemory.Slice(32, 32).Span);
 
-        BlobIdV1.WriteSansHash(idMemory.Span, compressResult1.InputSize, compressResult1.CompAlgo, BlobHashAlgo.Sha256);
+        //// embed compressed if small engough
+        //if (compressResult1.Output.Length <= BlobKey.MaxEmbeddedSize)
+        //{
+        //    BlobKey.WriteEmbedded(idMemory.Span, compressResult1.CompAlgo, compressResult1.Output);
+        //    return;
+        //}
+
+        //BlobKey.WriteSansHash(idMemory.Span, compressResult1.InputSize, compressResult1.CompAlgo, BlobHashAlgo.Sha256);
 
         Interlocked.Increment(ref _counters.BlobPutCount);
-        var id = BlobIdV1.FromSpan(idMemory.Span);
-        var data = compressResult1.Output;
-        if (!_blobCache.TryAdd(id, data))
+        //var id = BlobKey.FromSpan(idMemory.Span);
+        //var data = compressResult1.Output;
+        if (!_blobCache.TryAdd(key, data))
         {
             // already in cache - skip put
             Interlocked.Increment(ref _counters.BlobPutSkips);
@@ -297,62 +309,62 @@ public sealed class RocksDbDataStore : IDataStore
         // added to cache - enqueue put
         if (withSync)
         {
-            var complete = new TaskCompletionSource<BlobResult>();
-            _writer.TryWrite(AsyncOp.Put(id, data, complete));
+            var complete = new TaskCompletionSource<BlobData>();
+            _writer.TryWrite(AsyncOp.Put(key, data, complete));
             await complete.Task.ConfigureAwait(false);
         }
         else
         {
-            _writer.TryWrite(AsyncOp.Put(id, data, null));
+            _writer.TryWrite(AsyncOp.Put(key, data, null));
         }
     }
 
-    public async ValueTask PutBlob(string text, Memory<byte> idMemory, bool withSync = false)
-    {
-        ThrowIfDisposed();
+    //public async ValueTask PutBlob(string text, Memory<byte> idMemory, bool withSync = false)
+    //{
+    //    ThrowIfDisposed();
 
-        if (idMemory.Length != BlobIdV1.Size) throw new ArgumentException($"Length must be {BlobIdV1.Size}.", nameof(idMemory));
+    //    if (idMemory.Length != BlobKey.Size) throw new ArgumentException($"Length must be {BlobKey.Size}.", nameof(idMemory));
 
-        // Snappier compression and hashing
-        // todo inline this and optimise
-        var compressResult1 = SnappyCompressor.CompressText(text, idMemory.Slice(32, 32).Span);
+    //    // Snappier compression and hashing
+    //    // todo inline this and optimise
+    //    var compressResult1 = SnappyCompressor.CompressText(text, idMemory.Slice(32, 32).Span);
 
-        // embed compressed if small engough
-        if (compressResult1.Output.Length <= BlobIdV1.MaxEmbeddedSize)
-        {
-            BlobIdV1.WriteEmbedded(idMemory.Span, compressResult1.CompAlgo, compressResult1.Output);
-            return;
-        }
+    //    // embed compressed if small engough
+    //    if (compressResult1.Output.Length <= BlobKey.MaxEmbeddedSize)
+    //    {
+    //        BlobKey.WriteEmbedded(idMemory.Span, compressResult1.CompAlgo, compressResult1.Output);
+    //        return;
+    //    }
 
-        BlobIdV1.WriteSansHash(idMemory.Span, compressResult1.InputSize, compressResult1.CompAlgo, BlobHashAlgo.Sha256);
+    //    BlobKey.WriteSansHash(idMemory.Span, compressResult1.InputSize, compressResult1.CompAlgo, BlobHashAlgo.Sha256);
 
-        Interlocked.Increment(ref _counters.BlobPutCount);
-        var id = BlobIdV1.FromSpan(idMemory.Span);
-        var data = compressResult1.Output;
-        if (!_blobCache.TryAdd(id, data))
-        {
-            Interlocked.Increment(ref _counters.BlobPutSkips);
-            return;
-        }
+    //    Interlocked.Increment(ref _counters.BlobPutCount);
+    //    var id = BlobKey.FromSpan(idMemory.Span);
+    //    var data = compressResult1.Output;
+    //    if (!_blobCache.TryAdd(id, data))
+    //    {
+    //        Interlocked.Increment(ref _counters.BlobPutSkips);
+    //        return;
+    //    }
 
-        // added to cache - enqueue put
-        if (withSync)
-        {
-            var complete = new TaskCompletionSource<BlobResult>();
-            _writer.TryWrite(AsyncOp.Put(id, data, complete));
-            await complete.Task.ConfigureAwait(false);
-        }
-        else
-        {
-            _writer.TryWrite(AsyncOp.Put(id, data, null));
-        }
-    }
+    //    // added to cache - enqueue put
+    //    if (withSync)
+    //    {
+    //        var complete = new TaskCompletionSource<BlobData>();
+    //        _writer.TryWrite(AsyncOp.Put(id, data, complete));
+    //        await complete.Task.ConfigureAwait(false);
+    //    }
+    //    else
+    //    {
+    //        _writer.TryWrite(AsyncOp.Put(id, data, null));
+    //    }
+    //}
 
     public ValueTask Sync()
     {
         ThrowIfDisposed();
         // enqueue sync
-        var complete = new TaskCompletionSource<BlobResult>();
+        var complete = new TaskCompletionSource<BlobData>();
         _writer.TryWrite(AsyncOp.Sync(complete));
         return new ValueTask(complete.Task);
     }
@@ -376,28 +388,28 @@ public sealed class RocksDbDataStore : IDataStore
                     case AsyncOpKind.Get:
                         {
                             // async get
-                            var result = InternalGetBlob(item.Id);
+                            var result = InternalGetBlob(item.Key);
                             item.Completion?.TrySetResult(result);
                             break;
                         }
                     case AsyncOpKind.Put:
                         {
                             // async put
-                            InternalPutBlob(item.Id, item.Data);
-                            item.Completion?.TrySetResult(BlobResult.WithData(item.Data));
+                            InternalPutBlob(item.Key, item.Data);
+                            item.Completion?.TrySetResult(item.Data);
                             break;
                         }
                     case AsyncOpKind.Del:
                         {
                             // async del
-                            var data = InternalDelBlob(item.Id);
-                            item.Completion?.TrySetResult(BlobResult.WithData(data));
+                            var data = InternalDelBlob(item.Key);
+                            item.Completion?.TrySetResult(data);
                             break;
                         }
                     default:
                         {
                             // assume sync
-                            item.Completion?.TrySetResult(BlobResult.NotFound());
+                            item.Completion?.TrySetResult(BlobData.NotFound());
                             break;
                         }
                 }
@@ -415,56 +427,54 @@ public sealed class RocksDbDataStore : IDataStore
         _rocksBlobDb.Dispose();
     }
 
-    private BlobResult InternalGetBlob(in BlobIdV1 id)
-    {
 #if NET8_0_OR_GREATER
-        Span<byte> key = stackalloc byte[BlobIdV1.Size];
-        id.WriteTo(key);
-#else
-        var key = id.ToByteArray();
-#endif
-        byte[] currentBytes = _rocksBlobDb.Get(key);
-        if (currentBytes is null) return BlobResult.NotFound();
-        return BlobResult.WithData(currentBytes);
+    private BlobData InternalGetBlob(in BlobKey key)
+    {
+        byte[] data = _rocksBlobDb.Get(key.Bytes.Span);
+        return data is null ? BlobData.NotFound() : BlobData.From(data);
     }
+#else
+    private BlobData InternalGetBlob(in BlobKey key)
+    {
+        var keyBytes = key.Bytes.ToArray();
+        byte[] data = _rocksBlobDb.Get(keyBytes);
+        return data is null ? BlobData.NotFound() : BlobData.From(data);
+    }
+#endif
 
-    private void InternalPutBlob(in BlobIdV1 id, in ReadOnlyMemory<byte> data)
+#if NET8_0_OR_GREATER
+    private void InternalPutBlob(in BlobKey key, in BlobData data)
     {
-#if NET8_0_OR_GREATER
-        Span<byte> key = stackalloc byte[BlobIdV1.Size];
-        id.WriteTo(key);
-#else
-        var key = id.ToByteArray();
-#endif
-        byte[] currentBytes = _rocksBlobDb.Get(key);
-        if (currentBytes is null)
-        {
-#if NET8_0_OR_GREATER
-            var dataBytes = data.Span;
-#else
-            var dataBytes = data.ToArray();
-#endif
-            _rocksBlobDb.Put(key, dataBytes);
-            Interlocked.Increment(ref _counters.BlobPutWrits);
-            Interlocked.Add(ref _counters.ByteDelta, data.Length);
-        }
-        else
-        {
-            Interlocked.Increment(ref _counters.BlobPutSkips);
-        }
+        _rocksBlobDb.Put(key.Bytes.Span, data.Bytes.Span);
+        Interlocked.Increment(ref _counters.BlobPutWrits);
+        Interlocked.Add(ref _counters.ByteDelta, data.Bytes.Length);
     }
+#else
+    private void InternalPutBlob(in BlobKey key, in BlobData data)
+    {
+        _rocksBlobDb.Put(key.Bytes.ToArray(), data.Bytes.ToArray());
+        Interlocked.Increment(ref _counters.BlobPutWrits);
+        Interlocked.Add(ref _counters.ByteDelta, data.Bytes.Length);
+    }
+#endif
 
-    private ReadOnlyMemory<byte> InternalDelBlob(in BlobIdV1 id)
-    {
 #if NET8_0_OR_GREATER
-        Span<byte> key = stackalloc byte[BlobIdV1.Size];
-        id.WriteTo(key);
-#else
-        var key = id.ToByteArray();
-#endif
-        byte[] currentBytes = _rocksBlobDb.Get(key);
-        if (currentBytes is null) return null;
-        _rocksBlobDb.Remove(key);
-        return currentBytes;
+    private BlobData InternalDelBlob(in BlobKey key)
+    {
+        var keySpan = key.Bytes.Span;
+        byte[] data = _rocksBlobDb.Get(keySpan);
+        BlobData result = data is null ? BlobData.NotFound() : BlobData.From(data);
+        _rocksBlobDb.Remove(keySpan);
+        return result;
     }
+#else
+    private BlobData InternalDelBlob(in BlobKey key)
+    {
+        var keyBytes = key.Bytes.ToArray();
+        byte[] data = _rocksBlobDb.Get(keyBytes);
+        BlobData result = data is null ? BlobData.NotFound() : BlobData.From(data);
+        _rocksBlobDb.Remove(keyBytes);
+        return result;
+    }
+#endif
 }

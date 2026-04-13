@@ -6,102 +6,49 @@ using System.Threading.Tasks;
 
 namespace DataFac.Storage;
 
-public readonly struct BlobKey : IEquatable<BlobKey>
-{
-    public readonly ReadOnlyMemory<byte> Key;
-
-    public BlobKey(ReadOnlyMemory<byte> key) => Key = key;
-
-    public bool Equals(BlobKey other) => Key.Span.SequenceEqual(other.Key.Span);
-    public override bool Equals(object? obj) => obj is BlobKey other && Equals(other);
-    public override int GetHashCode()
-    {
-        var hasher = new HashCode();
-        var span = Key.Span;
-        hasher.Add(span.Length);
-#if NET8_0_OR_GREATER
-        hasher.AddBytes(span);
-#else
-        for (int i = 0; i < span.Length; i++) { hasher.Add(span[i]); }
-#endif
-        return hasher.ToHashCode();
-    }
-    public static bool operator ==(BlobKey left, BlobKey right) => left.Equals(right);
-    public static bool operator !=(BlobKey left, BlobKey right) => !left.Equals(right);
-}
-
 public interface IDataStore : IDisposable
 {
     // todo decouple BlobIdV1 formatting from the store. This will allow V2 and other formats to be used without needing to change the store.
 
     /// <summary>
-    /// Returns the named id, or null if not found.
+    /// Returns the named key.
     /// </summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
-    BlobKey? GetName(string key);
+    BlobKey GetName(string name);
 
     /// <summary>
-    /// Writes the named id to the store. Returns true if the name was added, 
+    /// Writes the named key to the store. Returns true if the name was added, 
     /// or false if the name was overwritten.
     /// </summary>
-    /// <param name="key"></param>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    bool PutName(string key, in BlobIdV1 id);
+    bool PutName(string name, in BlobKey key);
 
     /// <summary>
     /// Enumerates all the names in the store.
     /// </summary>
-    /// <returns></returns>
-    KeyValuePair<string, BlobIdV1>[] GetNames();
+    IEnumerable<KeyValuePair<string, BlobKey>> GetNames();
 
     /// <summary>
     /// Removes the named id if it exists.
     /// </summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
-    void RemoveName(string key);
-
-    /// <summary>
-    /// Removes the named ids if they exist.
-    /// </summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
-    void RemoveNames(IEnumerable<string> keys);
+    void RemoveName(string name);
 
     /// <summary>
     /// Returns the blob for the given id if it exists, null otherwise.
     /// </summary>
-    ValueTask<BlobResult> GetBlob(BlobIdV1 id);
+    ValueTask<BlobData> GetBlob(BlobKey key);
 
     /// <summary>
     /// Saves the given data into the underlying store, writes its id to the
     /// given memory, and optionally waits for any store operation to complete.
     /// </summary>
-    ValueTask PutBlob(ReadOnlyMemory<byte> data, Memory<byte> idMemory, bool withSync = false);
+    ValueTask PutBlob(BlobKey key, BlobData data, bool withSync = false);
 
-    /// <summary>
-    /// Converts the given text to a buffer using UTF8 encoding.
-    /// Saves the buffer into the underlying store, writes its id to the
-    /// given memory, and optionally waits for any store operation to complete.
-    /// </summary>
-    ValueTask PutBlob(string text, Memory<byte> idMemory, bool withSync = false);
-
-    KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetCachedBlobs();
-    KeyValuePair<BlobIdV1, ReadOnlyMemory<byte>>[] GetStoredBlobs();
+    IEnumerable<KeyValuePair<BlobKey, BlobData>> GetCachedBlobs();
+    IEnumerable<KeyValuePair<BlobKey, BlobData>> GetStoredBlobs();
 
     /// <summary>
     /// Removes the blob if it exists.
     /// </summary>
-    /// <param name="id"></param>
-    ValueTask<BlobResult> RemoveBlob(BlobIdV1 id, bool withSync);
-
-    /// <summary>
-    /// Removes the blob if it exists.
-    /// </summary>
-    /// <param name="id"></param>
-    ValueTask RemoveBlobs(IEnumerable<BlobIdV1> ids, bool withSync);
+    ValueTask<BlobData> RemoveBlob(BlobKey key, bool withSync);
 
     /// <summary>
     /// Ensures all writes are complete.

@@ -7,20 +7,20 @@ namespace DataFac.Storage.RocksDbStore;
 internal readonly struct AsyncOp
 {
     public readonly AsyncOpKind Kind;
-    public readonly BlobIdV1 Id;
-    public readonly ReadOnlyMemory<byte> Data;
-    public readonly TaskCompletionSource<BlobResult>? Completion;
+    public readonly BlobKey Key;
+    public readonly BlobData Data;
+    public readonly TaskCompletionSource<BlobData>? Completion;
 
-    private AsyncOp(AsyncOpKind kind, BlobIdV1 id, ReadOnlyMemory<byte> data, TaskCompletionSource<BlobResult>? completion)
+    private AsyncOp(AsyncOpKind kind, BlobKey key, BlobData data, TaskCompletionSource<BlobData>? completion)
     {
         Kind = kind;
-        Id = id;
+        Key = key;
         Data = data;
         Completion = completion;
     }
 
-    public static AsyncOp Sync(TaskCompletionSource<BlobResult> completion) => new AsyncOp(AsyncOpKind.Sync, default, default, completion);
-    public static AsyncOp Del(BlobIdV1 id, TaskCompletionSource<BlobResult>? completion) => new AsyncOp(AsyncOpKind.Del, id, default, completion);
-    public static AsyncOp Put(BlobIdV1 id, ReadOnlyMemory<byte> data, TaskCompletionSource<BlobResult>? completion) => new AsyncOp(AsyncOpKind.Put, id, data, completion);
-    public static AsyncOp Get(BlobIdV1 id, TaskCompletionSource<BlobResult> completion) => new AsyncOp(AsyncOpKind.Get, id, default, completion);
+    public static AsyncOp Sync(TaskCompletionSource<BlobData> completion) => new AsyncOp(AsyncOpKind.Sync, default, default, completion);
+    public static AsyncOp Del(BlobKey key, TaskCompletionSource<BlobData>? completion) => new AsyncOp(AsyncOpKind.Del, key, default, completion);
+    public static AsyncOp Put(BlobKey key, BlobData data, TaskCompletionSource<BlobData>? completion) => new AsyncOp(AsyncOpKind.Put, key, data, completion);
+    public static AsyncOp Get(BlobKey key, TaskCompletionSource<BlobData> completion) => new AsyncOp(AsyncOpKind.Get, key, default, completion);
 }

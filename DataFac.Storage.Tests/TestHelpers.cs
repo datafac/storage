@@ -1,4 +1,5 @@
-﻿using DataFac.Memory;
+﻿using DataFac.Compression;
+using DataFac.Memory;
 using DataFac.Storage.RocksDbStore;
 using DataFac.Storage.Testing;
 using System;
@@ -15,6 +16,25 @@ namespace DataFac.Storage.Tests;
 
 internal static class TestHelpers
 {
+    public static BlobKey GetBlobKeyFromData(BlobData uncompressed)
+    {
+        Memory<byte> idMemory = new byte[64];
+        // Snappier compression and hashing
+        // todo inline this and optimise
+        var compressResult1 = SnappyCompressor.CompressData(uncompressed.Bytes, idMemory.Slice(32, 32).Span);
+
+        // embed compressed if small engough
+        if (compressResult1.Output.Length <= BlobIdV1.MaxEmbeddedSize)
+        {
+            BlobIdV1.WriteEmbedded(idMemory.Span, compressResult1.CompAlgo, compressResult1.Output);
+        }
+        else
+        {
+            BlobIdV1.WriteSansHash(idMemory.Span, compressResult1.InputSize, compressResult1.CompAlgo, BlobHashAlgo.Sha256);
+        }
+        return BlobKey.From(idMemory);
+    }
+
     public static IDataStore CreateDataStore(StoreKind storeKind, string rocksDbRoot = "")
     {
         if (storeKind != StoreKind.Testing && string.IsNullOrEmpty(rocksDbRoot)) throw new System.ArgumentException($"'{nameof(rocksDbRoot)}' cannot be null or empty.", nameof(rocksDbRoot));

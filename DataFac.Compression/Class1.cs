@@ -73,8 +73,26 @@ public readonly struct BlobIdV1 : IEquatable<BlobIdV1>
     public byte Marker01 => _block.A.A.A.A.A.B.ByteValue; // _memory.Span[1];
     public byte MajorVer => _block.A.A.A.A.B.A.ByteValue; // _memory.Span[2];
     public byte MinorVer => _block.A.A.A.A.B.B.ByteValue; // _memory.Span[3];
-    public BlobCompAlgo CompAlgo => (BlobCompAlgo)_block.A.A.A.B.A.A.ByteValue; // _memory.Span[4];
-    public BlobHashAlgo HashAlgo => (BlobHashAlgo)_block.A.A.A.B.A.B.ByteValue; // _memory.Span[5];
+    public BlobCompAlgo CompAlgo
+    {
+        get
+        {
+            return IsEmbedded
+                ? _block.A.A.A.A.A.A.ByteValue.ToCompAlgo()     // _memory.Span[0];
+                : (BlobCompAlgo)_block.A.A.A.B.A.A.ByteValue;   // _memory.Span[4];
+        }
+    }
+
+    public BlobHashAlgo HashAlgo
+    {
+        get
+        {
+            return IsEmbedded
+                ? BlobHashAlgo.None // embedded blobs do not have hash algo, as they are small enough to be stored directly
+                : (BlobHashAlgo)_block.A.A.A.B.A.B.ByteValue;   // _memory.Span[5];
+        }
+    }
+
     public int BlobSize => _block.A.A.B.A.Int32ValueLE; // Codec_Int32_LE.ReadFromSpan(_memory.Span.Slice(8, 4));
     public BlockB032 HashData => _block.B; // _memory.Slice(32, 32);
 
