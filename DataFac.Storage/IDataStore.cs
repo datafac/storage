@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DataFac.Compression;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

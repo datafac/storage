@@ -1,8 +1,7 @@
-﻿using DataFac.Memory;
+using DataFac.Memory;
 using Shouldly;
 using Snappier;
 using System;
-using System.Buffers;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -11,7 +10,121 @@ using System.Threading.Tasks;
 using VerifyXunit;
 using Xunit;
 
-namespace DataFac.Storage.Tests;
+namespace DataFac.Compression.Tests;
+
+internal static class TestHelpers
+{
+    public static string ToDisplayString(this ReadOnlyMemory<byte> buffer)
+    {
+        StringBuilder result = new StringBuilder();
+        int index = 0;
+        foreach (var b in buffer.Span)
+        {
+            if (index != 0)
+            {
+                result.Append('-');
+            }
+            result.Append(b.ToString("X2"));
+            index = (index + 1) % 32;
+            if (index == 0)
+            {
+                result.AppendLine();
+            }
+        }
+        return result.ToString();
+    }
+
+    public static ReadOnlyMemory<byte> FromDisplayString(this string display)
+    {
+        var builder = new ReadOnlySequenceBuilder<byte>();
+        using var sr = new StringReader(display);
+        string? line;
+        while ((line = sr.ReadLine()) is not null)
+        {
+            byte[] bytes = line.Split('-').Select(s => byte.Parse(s, NumberStyles.HexNumber)).ToArray();
+            builder = builder.Append(bytes);
+        }
+        return builder.Build().Compact();
+    }
+
+    /// <summary>
+    /// Converts the specified string to a UTF-8 encoded <see cref="System.ReadOnlyMemory{T}"/> of bytes, with
+    /// each line separated by a null byte.
+    /// </summary>
+    /// <remarks>Each line in the input string is encoded as UTF-8 and terminated with a null byte in the
+    /// resulting sequence. This is done to avoid the variation in line endings on different platforms.</remarks>
+    /// <returns>A <see cref="System.ReadOnlyMemory{T}"/> of bytes containing the UTF-8 encoding of each line.</returns>
+    public static ReadOnlyMemory<byte> ToMemory(this string text)
+    {
+        var builder = new ReadOnlySequenceBuilder<byte>();
+        using var sr = new StringReader(text);
+        string? line;
+        while ((line = sr.ReadLine()) is not null)
+        {
+            builder = builder.Append(Encoding.UTF8.GetBytes(line));
+            builder = builder.Append(new byte[] { 0 });
+        }
+        return builder.Build().Compact();
+    }
+
+}
+
+public class CompressionTests
+{
+    private static readonly string sourcePara1 =
+        """
+        Twas bryllyg, and þe slythy toves
+        Did gyre and gymble in þe wabe:
+        All mimsy were þe borogoves;
+        And þe mome raths outgrabe.
+        """;
+    private static Octets octetsPara1 = new Octets(Encoding.UTF8.GetBytes(sourcePara1));
+
+    private static readonly string sourcePara2 =
+        """
+        Don't think me unkind
+        Words are hard to find
+        They're only cheques I've left unsigned
+        From the banks of chaos in my mind
+        And when their eloquence escapes me
+        Their logic ties me up and rapes me
+        Do-do-do-do, do-da-da-da
+        Is all I want to say to you
+        Do-do-do-do, do-da-da-da
+        Their innocence will pull me through
+        """;
+    private static Octets octetsPara2 = new Octets(Encoding.UTF8.GetBytes(sourcePara2));
+
+    private static Octets originalData = Octets.Combine(octetsPara1, octetsPara2);
+
+    [Theory]
+    [InlineData(BlobCompAlgo.UnComp, 0, (byte)'U')]
+    [InlineData(BlobCompAlgo.Brotli, 1, (byte)'B')]
+    [InlineData(BlobCompAlgo.Snappy, 2, (byte)'S')]
+    public void RoundtripBlobCompAlgos(BlobCompAlgo algo, byte expectedByteValue, byte expectedCharCode)
+    {
+        byte byteValue = (byte)algo;
+        byteValue.ShouldBe(expectedByteValue);
+
+        byte charCode = algo.ToCharCode();
+        charCode.ShouldBe(expectedCharCode);
+        charCode.ToCompAlgo().ShouldBe(algo);
+    }
+
+    [Fact]
+    public void RoundtripViaSnappier()
+    {
+        var compressionBuffers = new ByteBufferWriter();
+        Snappy.Compress(originalData.ToSequence(), compressionBuffers);
+        var compressed = compressionBuffers.GetWrittenSequence();
+
+        var decompressionBuffers = new ByteBufferWriter();
+        Snappy.Decompress(compressed, decompressionBuffers);
+
+        var decompressed = Octets.Wrap(decompressionBuffers.GetWrittenSequence());
+        decompressed.Equals(originalData).ShouldBeTrue();
+    }
+}
 
 public class SnappierRegressionTests
 {

@@ -12,8 +12,8 @@
 		<Company>DataFac</Company>
 		<Product>DTOMaker</Product>
 		<Authors>DataFac Contributors</Authors>
-		<Title>DataFac Storage</Title>
-		<Description>Storage interfaces, types and helpers.</Description>
+		<Title>DataFac Compression</Title>
+		<Description>Compression interfaces, types and helpers.</Description>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<IncludeSymbols>true</IncludeSymbols>
@@ -37,12 +37,9 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Snappier" Version="1.3.0" />
 		<PackageReference Include="System.Memory" Version="4.6.3" />
 		<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\DataFac.Compression\DataFac.Compression.csproj" />
 	</ItemGroup>
 
 </Project>

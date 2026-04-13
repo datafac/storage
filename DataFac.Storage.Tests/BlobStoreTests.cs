@@ -1,4 +1,5 @@
-﻿using DataFac.Memory;
+﻿using DataFac.Compression;
+using DataFac.Memory;
 using Microsoft.Testing.Platform.Extensions.Messages;
 using Shouldly;
 using System;
