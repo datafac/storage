@@ -1,5 +1,4 @@
-﻿using DataFac.Compression;
-using DataFac.Memory;
+﻿using DataFac.Memory;
 using RocksDbSharp;
 using System;
 using System.Buffers;

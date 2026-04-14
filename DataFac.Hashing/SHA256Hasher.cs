@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
-namespace DataFac.Compression;
+namespace DataFac.Hashing;
 
 public sealed class SHA256Hasher : IBlobHasher
 {
@@ -17,7 +16,7 @@ public sealed class SHA256Hasher : IBlobHasher
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void ComputeHash(ReadOnlySpan<byte> data, Span<byte> hashOutput)
     {
-        if(!SHA256.TryHashData(data, hashOutput, out int bytesWritten))
+        if (!SHA256.TryHashData(data, hashOutput, out int bytesWritten))
         {
             ThrowBufferTooSmall();
         }

@@ -12,8 +12,8 @@
 		<Company>DataFac</Company>
 		<Product>DTOMaker</Product>
 		<Authors>DataFac Contributors</Authors>
-		<Title>DataFac Storage</Title>
-		<Description>Storage interfaces, types and helpers.</Description>
+		<Title>DataFac Compression</Title>
+		<Description>Compression interfaces, types and helpers.</Description>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<IncludeSymbols>true</IncludeSymbols>
@@ -31,8 +31,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DataFac.Memory" Version="1.0.4" />
-		<PackageReference Include="Microsoft.Bcl.HashCode" Version="6.0.0" />
 		<PackageReference Include="Nerdbank.GitVersioning" Version="3.9.50">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

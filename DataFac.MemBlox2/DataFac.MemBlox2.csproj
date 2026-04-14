@@ -12,8 +12,8 @@
 		<Company>DataFac</Company>
 		<Product>DTOMaker</Product>
 		<Authors>DataFac Contributors</Authors>
-		<Title>DataFac Storage</Title>
-		<Description>Storage interfaces, types and helpers.</Description>
+		<Title>DataFac MemBlox2</Title>
+		<Description>MemBlocks V2 protocol helpers.</Description>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<IncludeSymbols>true</IncludeSymbols>
@@ -39,6 +39,11 @@
 		</PackageReference>
 		<PackageReference Include="System.Memory" Version="4.6.3" />
 		<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\DataFac.Compression\DataFac.Compression.csproj" />
+		<ProjectReference Include="..\DataFac.Hashing\DataFac.Hashing.csproj" />
 	</ItemGroup>
 
 </Project>

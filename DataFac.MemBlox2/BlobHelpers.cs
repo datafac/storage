@@ -1,13 +1,30 @@
 ﻿using DataFac.Compression;
+using DataFac.Hashing;
 using System;
-using System.Buffers;
-using System.Security.Cryptography;
-using System.Text;
 
-namespace DataFac.Storage;
+namespace DataFac.MemBlox2;
 
 public static class BlobHelpers
 {
+    public static ReadOnlyMemory<byte> ToContentId(this ReadOnlyMemory<byte> uncompressed)
+    {
+        Memory<byte> idMemory = new byte[BlobIdV1.Size];
+        // Snappier compression and hashing
+        // todo inline this and optimise
+        var compressResult1 = SnappyCompressor.CompressData(uncompressed, idMemory.Slice(32, 32).Span, BlobIdV1.MaxEmbeddedSize);
+
+        // embed compressed if small engough
+        if (compressResult1.Output.Length <= BlobIdV1.MaxEmbeddedSize)
+        {
+            BlobIdV1.WriteEmbedded(idMemory.Span, compressResult1.CompAlgo, compressResult1.Output);
+        }
+        else
+        {
+            BlobIdV1.WriteSansHash(idMemory.Span, compressResult1.InputSize, compressResult1.CompAlgo, BlobHashAlgo.Sha256);
+        }
+        return idMemory;
+    }
+
     /// <summary>
     /// todo convert to rom buffers
     /// </summary>

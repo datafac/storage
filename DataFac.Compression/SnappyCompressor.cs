@@ -1,4 +1,5 @@
-﻿using DataFac.Memory;
+﻿using DataFac.Hashing;
+using DataFac.Memory;
 using DataFac.UnsafeHelpers;
 using Snappier;
 using System;
@@ -21,7 +22,7 @@ public sealed class SnappyCompressor : IBlobCompressor
         return decompressedData.Compact();
     }
 
-    public static CompressResult2 CompressData(ReadOnlyMemory<byte> data, Span<byte> hashSpan, int maxEmbeddedSize = BlobIdV1.MaxEmbeddedSize)
+    public static CompressResult2 CompressData(ReadOnlyMemory<byte> data, Span<byte> hashSpan, int maxEmbeddedSize)
     {
         if (hashSpan.Length != 32) throw new ArgumentException("Length must be 32 bytes for SHA256", nameof(hashSpan));
         // compress using stack allocation only for small buffers, otherwise use heap allocation
@@ -52,7 +53,7 @@ public sealed class SnappyCompressor : IBlobCompressor
             : new CompressResult2(data.Length, BlobHashAlgo.Sha256, BlobCompAlgo.UnComp, data);
     }
 
-    public static CompressResult2 CompressText(string text, Span<byte> hashSpan, int maxEmbeddedSize = BlobIdV1.MaxEmbeddedSize)
+    public static CompressResult2 CompressText(string text, Span<byte> hashSpan, int maxEmbeddedSize)
     {
 
         if (hashSpan.Length != 32) throw new ArgumentException("Length must be 32 bytes for SHA256", nameof(hashSpan));

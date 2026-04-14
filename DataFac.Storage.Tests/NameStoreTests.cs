@@ -1,4 +1,4 @@
-﻿using DataFac.Compression;
+﻿using DataFac.MemBlox2;
 using Shouldly;
 using System;
 using System.Buffers;
@@ -25,11 +25,9 @@ public class NameStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        ReadOnlyMemory<byte> data = default;
-        BlobData orig = BlobData.From(data);
-        BlobKey key = TestHelpers.GetBlobKeyFromData(orig);
+        BlobData orig = BlobData.From(ReadOnlyMemory<byte>.Empty);
+        BlobKey key = BlobKey.From(orig.Bytes.ToContentId());
         await dataStore.PutBlob(key, orig, true);
-        var id = BlobIdV1.FromSpan(key.Bytes.Span);
         bool missing = dataStore.PutName("name1", key);
         missing.ShouldBeTrue();
         var counters = dataStore.GetCounters();
@@ -47,9 +45,8 @@ public class NameStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        ReadOnlyMemory<byte> data = default;
-        BlobData orig = BlobData.From(data);
-        BlobKey key = TestHelpers.GetBlobKeyFromData(orig);
+        BlobData orig = BlobData.From(ReadOnlyMemory<byte>.Empty);
+        BlobKey key = BlobKey.From(orig.Bytes.ToContentId());
         await dataStore.PutBlob(key, orig, true);
         var id = BlobIdV1.FromSpan(key.Bytes.Span);
         bool missing = dataStore.PutName("name1", key);
@@ -78,9 +75,8 @@ public class NameStoreTests
         var names0 = dataStore.GetNames();
         names0.Count().ShouldBe(0);
 
-        ReadOnlyMemory<byte> data = default;
-        BlobData orig = BlobData.From(data);
-        BlobKey key = TestHelpers.GetBlobKeyFromData(orig);
+        BlobData orig = BlobData.From(ReadOnlyMemory<byte>.Empty);
+        BlobKey key = BlobKey.From(orig.Bytes.ToContentId());
         await dataStore.PutBlob(key, orig, true);
         var id = BlobIdV1.FromSpan(key.Bytes.Span);
         dataStore.PutName("name1", key);
