@@ -61,7 +61,7 @@ public class BlobStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         BlobData data = BlobData.From(Enumerable.Range(0, 64).Select(i => (byte)i).ToArray());
-        BlobKey key = BlobKey.From(data.Bytes.ToContentId());
+        BlobKey key = BlobKey.From(data.Bytes.ToBlobId());
         var result = await dataStore.GetBlob(key);
         result.HasValue.ShouldBeFalse();
         var counters = dataStore.GetCounters();
@@ -81,7 +81,7 @@ public class BlobStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         BlobData data = BlobData.From(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobKey key = BlobKey.From(data.Bytes.ToContentId());
+        BlobKey key = BlobKey.From(data.Bytes.ToBlobId());
         await dataStore.PutBlob(key, data, true);
         var id = BlobIdV1.FromSpan(key.Bytes.Span);
         id.IsEmbedded.ShouldBeFalse();
@@ -112,7 +112,7 @@ public class BlobStoreTests
             "Maine is the main domain to obtain the brain drain.";
 
         BlobData data = BlobData.From(Encoding.UTF8.GetBytes(text));
-        BlobKey key = BlobKey.From(data.Bytes.ToContentId());
+        BlobKey key = BlobKey.From(data.Bytes.ToBlobId());
         await dataStore.PutBlob(key, data, true);
         var id = BlobIdV1.FromSpan(key.Bytes.Span);
         id.IsEmbedded.ShouldBeFalse();
@@ -145,7 +145,7 @@ public class BlobStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         BlobData data = BlobData.From(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobKey key = BlobKey.From(data.Bytes.ToContentId());
+        BlobKey key = BlobKey.From(data.Bytes.ToBlobId());
         await dataStore.PutBlob(key, data, true);
         var id = BlobIdV1.FromSpan(key.Bytes.Span);
         id.CompAlgo.ShouldBe(BlobCompAlgo.UnComp);
@@ -174,7 +174,7 @@ public class BlobStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         BlobData data = BlobData.From(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobKey key = BlobKey.From(data.Bytes.ToContentId());
+        BlobKey key = BlobKey.From(data.Bytes.ToBlobId());
 
         // put first
         await dataStore.PutBlob(key, data, true);

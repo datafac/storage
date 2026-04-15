@@ -15,6 +15,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="DataFac.MemBlox2" Version="1.0.2-dev" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
 		<PackageReference Include="RocksDB" Version="10.4.2.64152" />
 		<PackageReference Include="Shouldly" Version="4.3.0" />
@@ -27,7 +28,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\DataFac.MemBlox2\DataFac.MemBlox2.csproj" />
 		<ProjectReference Include="..\DataFac.Storage.RocksDb\DataFac.Storage.RocksDb.csproj" />
 		<ProjectReference Include="..\DataFac.Storage.Testing\DataFac.Storage.Testing.csproj" />
 		<ProjectReference Include="..\DataFac.Storage\DataFac.Storage.csproj" />

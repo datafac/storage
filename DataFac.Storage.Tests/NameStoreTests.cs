@@ -26,7 +26,7 @@ public class NameStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         BlobData orig = BlobData.From(ReadOnlyMemory<byte>.Empty);
-        BlobKey key = BlobKey.From(orig.Bytes.ToContentId());
+        BlobKey key = BlobKey.From(orig.Bytes.ToBlobId());
         await dataStore.PutBlob(key, orig, true);
         bool missing = dataStore.PutName("name1", key);
         missing.ShouldBeTrue();
@@ -46,7 +46,7 @@ public class NameStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         BlobData orig = BlobData.From(ReadOnlyMemory<byte>.Empty);
-        BlobKey key = BlobKey.From(orig.Bytes.ToContentId());
+        BlobKey key = BlobKey.From(orig.Bytes.ToBlobId());
         await dataStore.PutBlob(key, orig, true);
         var id = BlobIdV1.FromSpan(key.Bytes.Span);
         bool missing = dataStore.PutName("name1", key);
@@ -76,7 +76,7 @@ public class NameStoreTests
         names0.Count().ShouldBe(0);
 
         BlobData orig = BlobData.From(ReadOnlyMemory<byte>.Empty);
-        BlobKey key = BlobKey.From(orig.Bytes.ToContentId());
+        BlobKey key = BlobKey.From(orig.Bytes.ToBlobId());
         await dataStore.PutBlob(key, orig, true);
         var id = BlobIdV1.FromSpan(key.Bytes.Span);
         dataStore.PutName("name1", key);
