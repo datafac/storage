@@ -61,7 +61,9 @@ public class BlobStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         BlobData data = BlobData.From(Enumerable.Range(0, 64).Select(i => (byte)i).ToArray());
-        BlobKey key = BlobKey.From(data.Bytes.ToBlobId());
+        Memory<byte> idMemory = new byte[BlobIdV1.Size];
+        BlobHelpers.CompressData(data.Bytes, idMemory.Span);
+        BlobKey key = BlobKey.From(idMemory);
         var result = await dataStore.GetBlob(key);
         result.HasValue.ShouldBeFalse();
         var counters = dataStore.GetCounters();
@@ -81,7 +83,10 @@ public class BlobStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         BlobData data = BlobData.From(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobKey key = BlobKey.From(data.Bytes.ToBlobId());
+        Memory<byte> idMemory = new byte[BlobIdV1.Size];
+        BlobHelpers.CompressData(data.Bytes, idMemory.Span);
+        BlobKey key = BlobKey.From(idMemory);
+
         await dataStore.PutBlob(key, data, true);
         var id = BlobIdV1.FromSpan(key.Bytes.Span);
         id.IsEmbedded.ShouldBeFalse();
@@ -111,8 +116,11 @@ public class BlobStoreTests
             "Plain Jain is a brain in a train in Spain. " +
             "Maine is the main domain to obtain the brain drain.";
 
-        BlobData data = BlobData.From(Encoding.UTF8.GetBytes(text));
-        BlobKey key = BlobKey.From(data.Bytes.ToBlobId());
+        Memory<byte> idMemory = new byte[BlobIdV1.Size];
+        (var _, var compressed) = BlobHelpers.CompressText(text, idMemory.Span);
+        BlobKey key = BlobKey.From(idMemory);
+        BlobData data = BlobData.From(compressed);
+
         await dataStore.PutBlob(key, data, true);
         var id = BlobIdV1.FromSpan(key.Bytes.Span);
         id.IsEmbedded.ShouldBeFalse();
@@ -120,9 +128,10 @@ public class BlobStoreTests
         id.CompAlgo.ShouldBe(BlobCompAlgo.Snappy);
         id.ToString().ShouldBe("V1.0:201:S:1:f+8O2Wm1is/9ut73eja0VCML3qUOWA9rgBZg4INPL34=");
 
-        var copy = await dataStore.GetBlob(key);
-        copy.HasValue.ShouldBeTrue();
-        string text2 = Encoding.UTF8.GetString(copy.Bytes.ToArray());
+        var recd = await dataStore.GetBlob(key);
+        recd.HasValue.ShouldBeTrue();
+        var copy = BlobHelpers.TryDecompressBlob(id, recd.Bytes);
+        string text2 = Encoding.UTF8.GetString(copy.ToArray());
         text2.ShouldBe(text);
 
         var counters = dataStore.GetCounters();
@@ -145,7 +154,10 @@ public class BlobStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         BlobData data = BlobData.From(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobKey key = BlobKey.From(data.Bytes.ToBlobId());
+        Memory<byte> idMemory = new byte[BlobIdV1.Size];
+        BlobHelpers.CompressData(data.Bytes, idMemory.Span);
+        BlobKey key = BlobKey.From(idMemory);
+
         await dataStore.PutBlob(key, data, true);
         var id = BlobIdV1.FromSpan(key.Bytes.Span);
         id.CompAlgo.ShouldBe(BlobCompAlgo.UnComp);
@@ -174,7 +186,9 @@ public class BlobStoreTests
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
         BlobData data = BlobData.From(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
-        BlobKey key = BlobKey.From(data.Bytes.ToBlobId());
+        Memory<byte> idMemory = new byte[BlobIdV1.Size];
+        BlobHelpers.CompressData(data.Bytes, idMemory.Span);
+        BlobKey key = BlobKey.From(idMemory);
 
         // put first
         await dataStore.PutBlob(key, data, true);

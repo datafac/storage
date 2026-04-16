@@ -25,9 +25,12 @@ public class NameStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        BlobData orig = BlobData.From(ReadOnlyMemory<byte>.Empty);
-        BlobKey key = BlobKey.From(orig.Bytes.ToBlobId());
-        await dataStore.PutBlob(key, orig, true);
+        BlobData data = BlobData.From(ReadOnlyMemory<byte>.Empty);
+        Memory<byte> idMemory = new byte[BlobIdV1.Size];
+        BlobHelpers.CompressData(data.Bytes, idMemory.Span);
+        BlobKey key = BlobKey.From(idMemory);
+
+        await dataStore.PutBlob(key, data, true);
         bool missing = dataStore.PutName("name1", key);
         missing.ShouldBeTrue();
         var counters = dataStore.GetCounters();
@@ -45,9 +48,12 @@ public class NameStoreTests
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
-        BlobData orig = BlobData.From(ReadOnlyMemory<byte>.Empty);
-        BlobKey key = BlobKey.From(orig.Bytes.ToBlobId());
-        await dataStore.PutBlob(key, orig, true);
+        BlobData data = BlobData.From(ReadOnlyMemory<byte>.Empty);
+        Memory<byte> idMemory = new byte[BlobIdV1.Size];
+        BlobHelpers.CompressData(data.Bytes, idMemory.Span);
+        BlobKey key = BlobKey.From(idMemory);
+
+        await dataStore.PutBlob(key, data, true);
         var id = BlobIdV1.FromSpan(key.Bytes.Span);
         bool missing = dataStore.PutName("name1", key);
         missing.ShouldBeTrue();
@@ -75,9 +81,12 @@ public class NameStoreTests
         var names0 = dataStore.GetNames();
         names0.Count().ShouldBe(0);
 
-        BlobData orig = BlobData.From(ReadOnlyMemory<byte>.Empty);
-        BlobKey key = BlobKey.From(orig.Bytes.ToBlobId());
-        await dataStore.PutBlob(key, orig, true);
+        BlobData data = BlobData.From(ReadOnlyMemory<byte>.Empty);
+        Memory<byte> idMemory = new byte[BlobIdV1.Size];
+        BlobHelpers.CompressData(data.Bytes, idMemory.Span);
+        BlobKey key = BlobKey.From(idMemory);
+
+        await dataStore.PutBlob(key, data, true);
         var id = BlobIdV1.FromSpan(key.Bytes.Span);
         dataStore.PutName("name1", key);
         dataStore.PutName("name2", key);
