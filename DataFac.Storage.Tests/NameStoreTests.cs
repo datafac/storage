@@ -54,7 +54,6 @@ public class NameStoreTests
         BlobKey key = BlobKey.From(idMemory);
 
         await dataStore.PutBlob(key, data, true);
-        var id = BlobIdV1.FromSpan(key.Bytes.Span);
         bool missing = dataStore.PutName("name1", key);
         missing.ShouldBeTrue();
         var counters1 = dataStore.GetCounters();
@@ -87,7 +86,6 @@ public class NameStoreTests
         BlobKey key = BlobKey.From(idMemory);
 
         await dataStore.PutBlob(key, data, true);
-        var id = BlobIdV1.FromSpan(key.Bytes.Span);
         dataStore.PutName("name1", key);
         dataStore.PutName("name2", key);
         dataStore.PutName("name2", key);
