@@ -1,6 +1,5 @@
 ﻿using DataFac.Compression;
 using DataFac.Hashing;
-using DataFac.MemBlox2;
 using DataFac.Memory;
 using DataFac.Storage.RocksDbStore;
 using DataFac.Storage.Testing;

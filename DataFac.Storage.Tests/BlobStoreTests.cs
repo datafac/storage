@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-using DataFac.MemBlox2;
 using DataFac.Hashing;
 using DataFac.Compression;
+using DataFac.MemBlox2;
 
 #pragma warning disable CA1707 // Identifiers should not contain underscores
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
