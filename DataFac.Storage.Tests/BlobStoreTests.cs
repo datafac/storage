@@ -1,14 +1,15 @@
-﻿using Shouldly;
+﻿using DataFac.Compression;
+using DataFac.Hashing;
+using Shouldly;
 using System;
 using System.Buffers;
+using System.Buffers.Binary;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-
-using DataFac.Hashing;
-using DataFac.Compression;
-using DataFac.MemBlox2;
 
 #pragma warning disable CA1707 // Identifiers should not contain underscores
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task

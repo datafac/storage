@@ -15,9 +15,8 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="DataFac.Compression" Version="1.0.7-dev" />
-		<PackageReference Include="DataFac.Hashing" Version="1.0.7-dev" />
-		<PackageReference Include="DataFac.MemBlox2" Version="1.0.7-dev" />
+		<PackageReference Include="DataFac.Compression" Version="1.0.11" />
+		<PackageReference Include="DataFac.Hashing" Version="1.0.11" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
 		<PackageReference Include="RocksDB" Version="10.10.1.458" />
 		<PackageReference Include="Shouldly" Version="4.3.0" />
