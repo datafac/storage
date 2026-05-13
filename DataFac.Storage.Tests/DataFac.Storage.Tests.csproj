@@ -15,12 +15,12 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="DataFac.Compression" Version="1.0.12" />
-		<PackageReference Include="DataFac.Hashing" Version="1.0.12" />
+		<PackageReference Include="DataFac.Compression" Version="1.0.13" />
+		<PackageReference Include="DataFac.Hashing" Version="1.0.13" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.5.1" />
 		<PackageReference Include="RocksDB" Version="10.10.1.649" />
 		<PackageReference Include="Shouldly" Version="4.3.0" />
-		<PackageReference Include="Verify.XunitV3" Version="31.16.2" />
+		<PackageReference Include="Verify.XunitV3" Version="31.16.3" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

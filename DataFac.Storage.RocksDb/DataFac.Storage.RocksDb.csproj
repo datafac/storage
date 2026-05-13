@@ -38,7 +38,7 @@
 		</PackageReference>
 		<PackageReference Include="RocksDB" Version="10.10.1.649" />
 		<PackageReference Include="System.Memory" Version="4.6.3" />
-		<PackageReference Include="System.Threading.Channels" Version="10.0.7" />
+		<PackageReference Include="System.Threading.Channels" Version="10.0.8" />
 		<PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
 	</ItemGroup>
 
