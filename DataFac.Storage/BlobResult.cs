@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace DataFac.Storage;
+﻿namespace DataFac.Storage;
 
 //public readonly struct BlobResult
 //{

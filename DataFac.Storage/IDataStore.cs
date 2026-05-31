@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Threading.Tasks;
 
 namespace DataFac.Storage;
 
 public interface IDataStore : IDisposable
 {
-    // todo decouple BlobIdV1 formatting from the store. This will allow V2 and other formats to be used without needing to change the store.
-
     /// <summary>
     /// Returns the named key.
     /// </summary>

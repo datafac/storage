@@ -1,13 +1,9 @@
-﻿using DataFac.Memory;
-using System;
-using System.Buffers;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace DataFac.Storage.Testing;
 
@@ -118,24 +114,7 @@ public sealed class TestDataStore : IDataStore
 
     public ValueTask PutBlob(BlobKey key, BlobData data, bool withSync)
     {
-        //if (idMemory.Length != BlobKey.Size) throw new ArgumentException($"Length must be {BlobKey.Size}.", nameof(idMemory));
-
-        //// Snappier compression and hashing
-        //// todo inline this and optimise
-        //var compressResult1 = SnappyCompressor.CompressData(uncompressed, idMemory.Slice(32, 32).Span);
-
-        //// embed compressed if small engough
-        //if (compressResult1.Output.Length <= BlobKey.MaxEmbeddedSize)
-        //{
-        //    BlobKey.WriteEmbedded(idMemory.Span, compressResult1.CompAlgo, compressResult1.Output);
-        //    return new ValueTask();
-        //}
-
-        //BlobKey.WriteSansHash(idMemory.Span, compressResult1.InputSize, compressResult1.CompAlgo, BlobHashAlgo.Sha256);
-
         Interlocked.Increment(ref _counters.BlobPutCount);
-        // todo skip this conversion
-        //var blobId = BlobKey.FromSpan(idMemory.Span);
         if (_blobStore.TryAdd(key, data))
         {
             Interlocked.Increment(ref _counters.BlobPutWrits);
@@ -148,39 +127,6 @@ public sealed class TestDataStore : IDataStore
 
         return new ValueTask();
     }
-
-    //public ValueTask PutBlob(string text, Memory<byte> idMemory, bool withSync = false)
-    //{
-    //    if (idMemory.Length != BlobKey.Size) throw new ArgumentException($"Length must be {BlobKey.Size}.", nameof(idMemory));
-
-    //    // Snappier compression and hashing
-    //    // todo inline this and optimise
-    //    var compressResult1 = SnappyCompressor.CompressText(text, idMemory.Slice(32, 32).Span);
-
-    //    // embed compressed if small engough
-    //    if (compressResult1.Output.Length <= BlobKey.MaxEmbeddedSize)
-    //    {
-    //        BlobKey.WriteEmbedded(idMemory.Span, compressResult1.CompAlgo, compressResult1.Output);
-    //        return new ValueTask();
-    //    }
-
-    //    BlobKey.WriteSansHash(idMemory.Span, compressResult1.InputSize, compressResult1.CompAlgo, BlobHashAlgo.Sha256);
-
-    //    Interlocked.Increment(ref _counters.BlobPutCount);
-    //    // todo skip this conversion
-    //    var blobId = BlobKey.FromSpan(idMemory.Span);
-    //    if (_blobStore.TryAdd(blobId, compressResult1.Output))
-    //    {
-    //        Interlocked.Increment(ref _counters.BlobPutWrits);
-    //        Interlocked.Add(ref _counters.ByteDelta, compressResult1.Output.Length);
-    //    }
-    //    else
-    //    {
-    //        Interlocked.Increment(ref _counters.BlobPutSkips);
-    //    }
-
-    //    return new ValueTask();
-    //}
 
     public ValueTask Sync() => default;
 
