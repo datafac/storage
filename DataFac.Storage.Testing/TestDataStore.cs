@@ -73,7 +73,16 @@ public sealed class TestDataStore : IDataStore
 
     public IEnumerable<KeyValuePair<BlobKey, BlobData>> GetCachedBlobs() => _blobStore;
 
-    public IEnumerable<KeyValuePair<BlobKey, BlobData>> GetStoredBlobs() => _blobStore;
+    public async IAsyncEnumerable<KeyValuePair<BlobKey, BlobData>> GetBlobs(CancellationToken cancellation)
+    {
+        foreach (var kvp in _blobStore)
+        {
+            if (cancellation.IsCancellationRequested)
+                yield break;
+
+            yield return kvp;
+        }
+    }
 
     public async ValueTask<BlobData> GetBlob(BlobKey key)
     {
@@ -95,7 +104,7 @@ public sealed class TestDataStore : IDataStore
         }
     }
 
-    public async ValueTask<BlobData> RemoveBlob(BlobKey key, bool withSync)
+    public async ValueTask<BlobData> RemoveBlob(BlobKey key)
     {
         return _blobStore.TryRemove(key, out var data) ? data : BlobData.NotFound();
     }
@@ -112,7 +121,7 @@ public sealed class TestDataStore : IDataStore
         return default;
     }
 
-    public ValueTask PutBlob(BlobKey key, BlobData data, bool withSync)
+    public ValueTask PutBlob(BlobKey key, BlobData data)
     {
         Interlocked.Increment(ref _counters.BlobPutCount);
         if (_blobStore.TryAdd(key, data))
@@ -127,8 +136,4 @@ public sealed class TestDataStore : IDataStore
 
         return new ValueTask();
     }
-
-    public ValueTask Sync() => default;
-
-    public int ClearCache() => 0;
 }

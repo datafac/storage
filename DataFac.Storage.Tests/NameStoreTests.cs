@@ -21,6 +21,7 @@ public class NameStoreTests
 #endif
     public async Task Name01_FirstPut_WritesNewName(StoreKind storeKind)
     {
+        var ct = TestContext.Current.CancellationToken;
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
@@ -29,11 +30,9 @@ public class NameStoreTests
         BlobHelpers.CompressData(data.Bytes, idMemory.Span);
         BlobKey key = BlobKey.From(idMemory);
 
-        await dataStore.PutBlob(key, data, true);
+        await dataStore.PutBlob(key, data);
         bool missing = dataStore.PutName("name1", key);
         missing.ShouldBeTrue();
-        var counters = dataStore.GetCounters();
-        counters.NameDelta.ShouldBe(1);
         dataStore.GetNames().Count().ShouldBe(1);
     }
 
@@ -44,6 +43,7 @@ public class NameStoreTests
 #endif
     public async Task Name02_PutAgain_Overwrites(StoreKind storeKind)
     {
+        var ct = TestContext.Current.CancellationToken;
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
@@ -52,17 +52,13 @@ public class NameStoreTests
         BlobHelpers.CompressData(data.Bytes, idMemory.Span);
         BlobKey key = BlobKey.From(idMemory);
 
-        await dataStore.PutBlob(key, data, true);
+        await dataStore.PutBlob(key, data);
         bool missing = dataStore.PutName("name1", key);
         missing.ShouldBeTrue();
-        var counters1 = dataStore.GetCounters();
-        counters1.NameDelta.ShouldBe(1);
         dataStore.GetNames().Count().ShouldBe(1);
 
         missing = dataStore.PutName("name1", key);
         missing.ShouldBeFalse();
-        var counters2 = dataStore.GetCounters();
-        counters2.NameDelta.ShouldBe(1);
         dataStore.GetNames().Count().ShouldBe(1);
     }
 
@@ -73,6 +69,7 @@ public class NameStoreTests
 #endif
     public async Task Name03_GetAndRemoveNames(StoreKind storeKind)
     {
+        var ct = TestContext.Current.CancellationToken;
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
 
@@ -84,7 +81,7 @@ public class NameStoreTests
         BlobHelpers.CompressData(data.Bytes, idMemory.Span);
         BlobKey key = BlobKey.From(idMemory);
 
-        await dataStore.PutBlob(key, data, true);
+        await dataStore.PutBlob(key, data);
         dataStore.PutName("name1", key);
         dataStore.PutName("name2", key);
         dataStore.PutName("name2", key);

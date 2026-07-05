@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DataFac.Storage;
 
-public interface IDataStore : IDisposable
+public interface INameStore : IDisposable
 {
     /// <summary>
     /// Returns the named key.
@@ -26,6 +27,14 @@ public interface IDataStore : IDisposable
     /// Removes the named id if it exists.
     /// </summary>
     void RemoveName(string name);
+}
+
+public interface IBlobCache : IDisposable
+{
+    /// <summary>
+    /// Clears any blobs cached in memory. Returns the count of blobs cleared.
+    /// </summary>
+    int Clear();
 
     /// <summary>
     /// Returns the blob for the given id if it exists, null otherwise.
@@ -38,9 +47,6 @@ public interface IDataStore : IDisposable
     /// </summary>
     ValueTask PutBlob(BlobKey key, BlobData data, bool withSync = false);
 
-    IEnumerable<KeyValuePair<BlobKey, BlobData>> GetCachedBlobs();
-    IEnumerable<KeyValuePair<BlobKey, BlobData>> GetStoredBlobs();
-
     /// <summary>
     /// Removes the blob if it exists.
     /// </summary>
@@ -51,21 +57,29 @@ public interface IDataStore : IDisposable
     /// </summary>
     /// <returns></returns>
     ValueTask Sync();
+}
+
+public interface IBlobStore : IDisposable
+{
+    /// <summary>
+    /// Returns the blob for the given id if it exists, null otherwise.
+    /// </summary>
+    ValueTask<BlobData> GetBlob(BlobKey key);
 
     /// <summary>
-    /// Clears any blobs cached in memory. Returns the count of blobs cleared.
+    /// Saves the given data into the underlying store, writes its id to the
+    /// given memory, and optionally waits for any store operation to complete.
     /// </summary>
-    int ClearCache();
+    ValueTask PutBlob(BlobKey key, BlobData data);
+
+    IAsyncEnumerable<KeyValuePair<BlobKey, BlobData>> GetBlobs(CancellationToken cancellation);
 
     /// <summary>
-    /// Returns a copy of the current counters.
+    /// Removes the blob if it exists.
     /// </summary>
-    /// <returns></returns>
-    Counters GetCounters();
+    ValueTask<BlobData> RemoveBlob(BlobKey key);
+}
 
-    /// <summary>
-    /// Resets the current counters, and returns the previous counters.
-    /// </summary>
-    /// <returns></returns>
-    void ResetCounters();
+public interface IDataStore : INameStore, IBlobStore, IDisposable
+{
 }
