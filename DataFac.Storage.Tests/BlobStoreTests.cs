@@ -25,7 +25,8 @@ public class BlobStoreTests
     public void Store01Create(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
-        using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
+        using INameStore nameStore = TestHelpers.CreateNameStore(storeKind, testpath);
+        using IBlobStore blobStore = TestHelpers.CreateBlobStore(storeKind, testpath);
     }
 
     [Theory]
@@ -33,12 +34,24 @@ public class BlobStoreTests
 #if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
 #endif
-    public async Task Store02GetEmptyIdReturnsNull(StoreKind storeKind)
+    public async Task Store02aGetInvalidKeyReturnsNotFound(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
-        using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
+        using INameStore nameStore = TestHelpers.CreateNameStore(storeKind, testpath);
+        var key = nameStore.GetName("missing");
+        key.HasValue.ShouldBeFalse();
+    }
 
-        var result = await dataStore.GetBlob(default);
+    [Theory]
+    [InlineData(StoreKind.Testing)]
+#if NET8_0_OR_GREATER
+    [InlineData(StoreKind.RocksDb)]
+#endif
+    public async Task Store02bGetEmptyIdReturnsNull(StoreKind storeKind)
+    {
+        string testpath = $"{testroot}{Guid.NewGuid():N}";
+        using IBlobStore blobStore = TestHelpers.CreateBlobStore(storeKind, testpath);
+        var result = await blobStore.GetBlob(default);
         result.HasValue.ShouldBeFalse();
     }
 
@@ -50,13 +63,12 @@ public class BlobStoreTests
     public async Task Store03GetInvalidId(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
-        using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
-
+        using IBlobStore blobStore = TestHelpers.CreateBlobStore(storeKind, testpath);
         BlobData data = BlobData.From(Enumerable.Range(0, 64).Select(i => (byte)i).ToArray());
         Memory<byte> idMemory = new byte[BlobIdV1.Size];
         BlobHelpers.CompressData(data.Bytes, idMemory.Span);
         BlobKey key = BlobKey.From(idMemory);
-        var result = await dataStore.GetBlob(key);
+        var result = await blobStore.GetBlob(key);
         result.HasValue.ShouldBeFalse();
     }
 
@@ -68,8 +80,7 @@ public class BlobStoreTests
     public async Task Store04PutNonEmptyBlob(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
-        using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
-
+        using IBlobStore blobStore = TestHelpers.CreateBlobStore(storeKind, testpath);
         BlobData data = BlobData.From(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
         Memory<byte> idMemory = new byte[BlobIdV1.Size];
         (bool embedded, var compressed) = BlobHelpers.CompressData(data.Bytes, idMemory.Span);
@@ -82,7 +93,7 @@ public class BlobStoreTests
         BlobIdV1.ToDisplayString(idSpan).ShouldBe("V1.0:256:U:S:QK/y6dLYki5Hr9RkjmlnSXFYeF+9Hahw5xECZr+USIA=");
 
         BlobKey key = BlobKey.From(idMemory);
-        await dataStore.PutBlob(key, data);
+        await blobStore.PutBlob(key, data);
     }
 
     [Theory]
@@ -93,7 +104,7 @@ public class BlobStoreTests
     public async Task Store05GetCompressed(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
-        using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
+        using IBlobStore blobStore = TestHelpers.CreateBlobStore(storeKind, testpath);
 
         var text =
             "The rain in Spain falls mainly on the plain. " +
@@ -115,12 +126,12 @@ public class BlobStoreTests
             compAlgo.ShouldBe(BlobCompAlgo.Snappy);
             BlobIdV1.ToDisplayString(idSpan).ShouldBe("V1.0:201:S:S:f+8O2Wm1is/9ut73eja0VCML3qUOWA9rgBZg4INPL34=");
 
-            await dataStore.PutBlob(key, data);
+            await blobStore.PutBlob(key, data);
         }
 
         {
             // recver
-            var recd = await dataStore.GetBlob(key);
+            var recd = await blobStore.GetBlob(key);
             recd.HasValue.ShouldBeTrue();
 
             //(bool embedded, var data) = BlobHelpers.TryGetEmbedded(key.Bytes);
@@ -141,7 +152,7 @@ public class BlobStoreTests
     public async Task Store06GetUncompressed(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
-        using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
+        using IBlobStore blobStore = TestHelpers.CreateBlobStore(storeKind, testpath);
 
         BlobData data = BlobData.From(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
         BlobKey key;
@@ -151,7 +162,7 @@ public class BlobStoreTests
             BlobHelpers.CompressData(data.Bytes, idMemory.Span);
             key = BlobKey.From(idMemory);
 
-            await dataStore.PutBlob(key, data);
+            await blobStore.PutBlob(key, data);
         }
 
         {
@@ -162,7 +173,7 @@ public class BlobStoreTests
             (_, _, var compAlgo, var hashAlgo, _) = BlobIdV1.ReadNonEmbedded(key.Bytes.Span);
             compAlgo.ShouldBe(BlobCompAlgo.UnComp);
 
-            var copy = await dataStore.GetBlob(key);
+            var copy = await blobStore.GetBlob(key);
             copy.HasValue.ShouldBeTrue();
             copy.Bytes.Span.SequenceEqual(data.Bytes.Span).ShouldBeTrue();
         }
@@ -176,7 +187,7 @@ public class BlobStoreTests
     public async Task Store07PutAgain(StoreKind storeKind)
     {
         string testpath = $"{testroot}{Guid.NewGuid():N}";
-        using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
+        using IBlobStore blobStore = TestHelpers.CreateBlobStore(storeKind, testpath);
 
         BlobData data = BlobData.From(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
         Memory<byte> idMemory = new byte[BlobIdV1.Size];
@@ -184,9 +195,9 @@ public class BlobStoreTests
         BlobKey key = BlobKey.From(idMemory);
 
         // put first
-        await dataStore.PutBlob(key, data);
+        await blobStore.PutBlob(key, data);
 
         // put again
-        await dataStore.PutBlob(key, data);
+        await blobStore.PutBlob(key, data);
     }
 }

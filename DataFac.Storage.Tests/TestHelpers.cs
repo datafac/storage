@@ -10,14 +10,27 @@ namespace DataFac.Storage.Tests;
 
 internal static class TestHelpers
 {
-    public static IDataStore CreateDataStore(StoreKind storeKind, string rocksDbRoot = "")
+    public static INameStore CreateNameStore(StoreKind storeKind, string rocksDbRoot = "")
     {
         if (storeKind != StoreKind.Testing && string.IsNullOrEmpty(rocksDbRoot)) throw new System.ArgumentException($"'{nameof(rocksDbRoot)}' cannot be null or empty.", nameof(rocksDbRoot));
 #pragma warning disable CA2000 // Dispose objects before losing scope
         return storeKind switch
         {
-            StoreKind.Testing => new TestDataStore(),
-            StoreKind.RocksDb => new RocksDbDataStore(rocksDbRoot),
+            StoreKind.Testing => new TestNameStore(),
+            StoreKind.RocksDb => new RocksDbNameStore(rocksDbRoot),
+            _ => throw new System.ArgumentOutOfRangeException(nameof(storeKind), storeKind, null),
+        };
+#pragma warning restore CA2000 // Dispose objects before losing scope
+    }
+
+    public static IBlobStore CreateBlobStore(StoreKind storeKind, string rocksDbRoot = "")
+    {
+        if (storeKind != StoreKind.Testing && string.IsNullOrEmpty(rocksDbRoot)) throw new System.ArgumentException($"'{nameof(rocksDbRoot)}' cannot be null or empty.", nameof(rocksDbRoot));
+#pragma warning disable CA2000 // Dispose objects before losing scope
+        return storeKind switch
+        {
+            StoreKind.Testing => new TestBlobStore(),
+            StoreKind.RocksDb => new RocksDbBlobStore(rocksDbRoot),
             _ => throw new System.ArgumentOutOfRangeException(nameof(storeKind), storeKind, null),
         };
 #pragma warning restore CA2000 // Dispose objects before losing scope

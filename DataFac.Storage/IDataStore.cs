@@ -79,7 +79,3 @@ public interface IBlobStore : IDisposable
     /// </summary>
     ValueTask<BlobData> RemoveBlob(BlobKey key);
 }
-
-public interface IDataStore : INameStore, IBlobStore, IDisposable
-{
-}

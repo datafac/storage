@@ -211,27 +211,21 @@ public sealed class BlobCache : IBlobCache
     }
 }
 
-public sealed class RocksDbDataStore : IDataStore
+public sealed class RocksDbNameStore : INameStore
 {
 #pragma warning disable CA2213 // Disposable fields should be disposed
-    private readonly RocksDb _rocksBlobDb;
     private readonly RocksDb _rocksNameDb;
 #pragma warning restore CA2213 // Disposable fields should be disposed
 
     private const int MaxStackallocKeySize = 128; // todo tune size
 
-    public RocksDbDataStore(string rootpath)
+    public RocksDbNameStore(string rootpath)
     {
         DbOptions dbOptions = new DbOptions().SetCreateIfMissing(true);
 
         string namePath = $"{rootpath}\\names";
         Directory.CreateDirectory(namePath);
         _rocksNameDb = RocksDb.Open(dbOptions, namePath);
-
-        string blobPath = $"{rootpath}\\blobs";
-        Directory.CreateDirectory(blobPath);
-        _rocksBlobDb = RocksDb.Open(dbOptions, blobPath);
-
     }
 
     private volatile bool _disposed;
@@ -240,18 +234,6 @@ public sealed class RocksDbDataStore : IDataStore
         if (_disposed) return;
         _disposed = true;
         _rocksNameDb.Dispose();
-    }
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void ThrowDisposedException(string? memberName)
-    {
-        throw new ObjectDisposedException(null, $"Cannot call '{memberName}' when disposed");
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ThrowIfDisposed([CallerMemberName] string? memberName = null)
-    {
-        if (_disposed) ThrowDisposedException(memberName);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -381,6 +363,52 @@ public sealed class RocksDbDataStore : IDataStore
         }
     }
 #endif
+
+}
+
+public sealed class RocksDbBlobStore : IBlobStore
+{
+#pragma warning disable CA2213 // Disposable fields should be disposed
+    private readonly RocksDb _rocksBlobDb;
+#pragma warning restore CA2213 // Disposable fields should be disposed
+
+    private const int MaxStackallocKeySize = 128; // todo tune size
+
+    public RocksDbBlobStore(string rootpath)
+    {
+        DbOptions dbOptions = new DbOptions().SetCreateIfMissing(true);
+
+        string blobPath = $"{rootpath}\\blobs";
+        Directory.CreateDirectory(blobPath);
+        _rocksBlobDb = RocksDb.Open(dbOptions, blobPath);
+
+    }
+
+    private volatile bool _disposed;
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+        _rocksBlobDb.Dispose();
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void ThrowDisposedException(string? memberName)
+    {
+        throw new ObjectDisposedException(null, $"Cannot call '{memberName}' when disposed");
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void ThrowIfDisposed([CallerMemberName] string? memberName = null)
+    {
+        if (_disposed) ThrowDisposedException(memberName);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void ThrowMustNotBeEmpty(string paramName)
+    {
+        throw new ArgumentException("Must not be empty", paramName);
+    }
 
     public async IAsyncEnumerable<KeyValuePair<BlobKey, BlobData>> GetBlobs(CancellationToken cancellation)
     {

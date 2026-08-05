@@ -8,24 +8,19 @@ using System.Threading.Tasks;
 namespace DataFac.Storage.Testing;
 
 /// <summary>
-/// Implements an in-memory data store. Useful for unit testing.
+/// Implements an in-memory name store. Useful for unit testing.
 /// </summary>
-public sealed class TestDataStore : IDataStore
+public sealed class TestNameStore : INameStore
 {
     private readonly ConcurrentDictionary<string, BlobKey> _nameStore = new ConcurrentDictionary<string, BlobKey>();
-    private readonly ConcurrentDictionary<BlobKey, BlobData> _blobStore = new ConcurrentDictionary<BlobKey, BlobData>();
 
-    public TestDataStore()
+    public TestNameStore()
     {
     }
 
     public void Dispose()
     {
     }
-
-    private Counters _counters;
-    public Counters GetCounters() => _counters;
-    public void ResetCounters() => _counters = default;
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void ThrowMustNotBeEmpty(string name)
@@ -60,15 +55,25 @@ public sealed class TestDataStore : IDataStore
     public bool PutName(string name, in BlobKey key)
     {
         if (string.IsNullOrEmpty(name)) ThrowMustNotBeEmpty(nameof(name));
-
         bool added = _nameStore.TryAdd(name, key);
-
-        if (added)
-        {
-            Interlocked.Increment(ref _counters.NameDelta);
-        }
-
         return added;
+    }
+
+}
+
+/// <summary>
+/// Implements an in-memory blob store. Useful for unit testing.
+/// </summary>
+public sealed class TestBlobStore : IBlobStore
+{
+    private readonly ConcurrentDictionary<BlobKey, BlobData> _blobStore = new ConcurrentDictionary<BlobKey, BlobData>();
+
+    public TestBlobStore()
+    {
+    }
+
+    public void Dispose()
+    {
     }
 
     public IEnumerable<KeyValuePair<BlobKey, BlobData>> GetCachedBlobs() => _blobStore;
@@ -88,18 +93,12 @@ public sealed class TestDataStore : IDataStore
     {
         if (!key.HasValue) return BlobData.NotFound();
 
-        //if (id.TryGetEmbeddedBlob(out var embeddedBlob))
-        //    return BlobData.WithData(embeddedBlob);
-
-        Interlocked.Increment(ref _counters.BlobGetCount);
         if (_blobStore.TryGetValue(key, out var data))
         {
-            Interlocked.Increment(ref _counters.BlobGetCache);
             return data;
         }
         else
         {
-            Interlocked.Increment(ref _counters.BlobGetReads);
             return BlobData.NotFound();
         }
     }
@@ -112,28 +111,16 @@ public sealed class TestDataStore : IDataStore
     public ValueTask RemoveBlobs(IEnumerable<BlobKey> keys, bool withSync)
     {
         if (keys is null) throw new ArgumentNullException(nameof(keys));
-
         foreach (var key in keys)
         {
             _blobStore.TryRemove(key, out var _);
         }
-
         return default;
     }
 
     public ValueTask PutBlob(BlobKey key, BlobData data)
     {
-        Interlocked.Increment(ref _counters.BlobPutCount);
-        if (_blobStore.TryAdd(key, data))
-        {
-            Interlocked.Increment(ref _counters.BlobPutWrits);
-            Interlocked.Add(ref _counters.ByteDelta, data.Bytes.Length);
-        }
-        else
-        {
-            Interlocked.Increment(ref _counters.BlobPutSkips);
-        }
-
+        _blobStore.TryAdd(key, data);
         return new ValueTask();
     }
 }

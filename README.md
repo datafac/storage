@@ -8,7 +8,7 @@
 
 Named blob storage abstractions and implementations.
 
-*Note: V3.0 has many breaking changes over V2.x.*
+*Note: This is the main development repo.*
 
 ## Implementations
 

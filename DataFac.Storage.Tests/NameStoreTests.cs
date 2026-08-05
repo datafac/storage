@@ -23,17 +23,18 @@ public class NameStoreTests
     {
         var ct = TestContext.Current.CancellationToken;
         string testpath = $"{testroot}{Guid.NewGuid():N}";
-        using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
+        using INameStore nameStore = TestHelpers.CreateNameStore(storeKind, testpath);
+        using IBlobStore blobStore = TestHelpers.CreateBlobStore(storeKind, testpath);
 
         BlobData data = BlobData.From(ReadOnlyMemory<byte>.Empty);
         Memory<byte> idMemory = new byte[BlobIdV1.Size];
         BlobHelpers.CompressData(data.Bytes, idMemory.Span);
         BlobKey key = BlobKey.From(idMemory);
 
-        await dataStore.PutBlob(key, data);
-        bool missing = dataStore.PutName("name1", key);
+        await blobStore.PutBlob(key, data);
+        bool missing = nameStore.PutName("name1", key);
         missing.ShouldBeTrue();
-        dataStore.GetNames().Count().ShouldBe(1);
+        nameStore.GetNames().Count().ShouldBe(1);
     }
 
     [Theory]
@@ -45,21 +46,22 @@ public class NameStoreTests
     {
         var ct = TestContext.Current.CancellationToken;
         string testpath = $"{testroot}{Guid.NewGuid():N}";
-        using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
+        using INameStore nameStore = TestHelpers.CreateNameStore(storeKind, testpath);
+        using IBlobStore blobStore = TestHelpers.CreateBlobStore(storeKind, testpath);
 
         BlobData data = BlobData.From(ReadOnlyMemory<byte>.Empty);
         Memory<byte> idMemory = new byte[BlobIdV1.Size];
         BlobHelpers.CompressData(data.Bytes, idMemory.Span);
         BlobKey key = BlobKey.From(idMemory);
 
-        await dataStore.PutBlob(key, data);
-        bool missing = dataStore.PutName("name1", key);
+        await blobStore.PutBlob(key, data);
+        bool missing = nameStore.PutName("name1", key);
         missing.ShouldBeTrue();
-        dataStore.GetNames().Count().ShouldBe(1);
+        nameStore.GetNames().Count().ShouldBe(1);
 
-        missing = dataStore.PutName("name1", key);
+        missing = nameStore.PutName("name1", key);
         missing.ShouldBeFalse();
-        dataStore.GetNames().Count().ShouldBe(1);
+        nameStore.GetNames().Count().ShouldBe(1);
     }
 
     [Theory]
@@ -71,9 +73,10 @@ public class NameStoreTests
     {
         var ct = TestContext.Current.CancellationToken;
         string testpath = $"{testroot}{Guid.NewGuid():N}";
-        using IDataStore dataStore = TestHelpers.CreateDataStore(storeKind, testpath);
+        using INameStore nameStore = TestHelpers.CreateNameStore(storeKind, testpath);
+        using IBlobStore blobStore = TestHelpers.CreateBlobStore(storeKind, testpath);
 
-        var names0 = dataStore.GetNames();
+        var names0 = nameStore.GetNames();
         names0.Count().ShouldBe(0);
 
         BlobData data = BlobData.From(ReadOnlyMemory<byte>.Empty);
@@ -81,20 +84,20 @@ public class NameStoreTests
         BlobHelpers.CompressData(data.Bytes, idMemory.Span);
         BlobKey key = BlobKey.From(idMemory);
 
-        await dataStore.PutBlob(key, data);
-        dataStore.PutName("name1", key);
-        dataStore.PutName("name2", key);
-        dataStore.PutName("name2", key);
+        await blobStore.PutBlob(key, data);
+        nameStore.PutName("name1", key);
+        nameStore.PutName("name2", key);
+        nameStore.PutName("name2", key);
 
-        var names1 = dataStore.GetNames().OrderBy(x => x.Key).Select(x => x.Key).ToArray();
+        var names1 = nameStore.GetNames().OrderBy(x => x.Key).Select(x => x.Key).ToArray();
         names1.Length.ShouldBe(2);
         names1[0].ShouldBe("name1");
         names1[1].ShouldBe("name2");
 
-        dataStore.RemoveName("name1");
-        dataStore.RemoveName("name2");
+        nameStore.RemoveName("name1");
+        nameStore.RemoveName("name2");
 
-        var names2 = dataStore.GetNames();
+        var names2 = nameStore.GetNames();
         names2.Count().ShouldBe(0);
 
     }
