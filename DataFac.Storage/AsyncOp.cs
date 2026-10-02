@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace DataFac.Storage.RocksDbStore;
+namespace DataFac.Storage;
 
-internal readonly struct AsyncOp
+public readonly struct AsyncOp
 {
     public readonly AsyncOpKind Kind;
     public readonly BlobKey Key;
