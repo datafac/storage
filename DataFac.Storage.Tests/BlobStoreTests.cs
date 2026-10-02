@@ -3,6 +3,7 @@ using DataFac.Hashing;
 using Shouldly;
 using System;
 using System.Buffers;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,11 @@ namespace DataFac.Storage.Tests;
 
 public class BlobStoreTests
 {
+#if NET8_0_OR_GREATER
+    private static string testroot = Directory.CreateTempSubdirectory().FullName + "\\";
+#else
     private const string testroot = @"C:\temp\unittest\RocksDB\";
+#endif
 
     [Theory]
     [InlineData(StoreKind.Testing)]

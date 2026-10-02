@@ -1,5 +1,6 @@
 ﻿using Shouldly;
 using System.Collections.Generic;
+using System.IO;
 using Xunit;
 
 #pragma warning disable CA1707 // Identifiers should not contain underscores
@@ -164,6 +165,10 @@ public class SnapshotTests
     }
 
     private const string databaseName = "InventoryData";
+#if NET8_0_OR_GREATER
+    private static string testroot = Directory.CreateTempSubdirectory().FullName + "\\";
+#else
     private const string testroot = @"C:\temp\unittest\RocksDB\";
+#endif
 
 }
