@@ -21,10 +21,11 @@ public class NameStoreTests
 
     [Theory]
     [InlineData(StoreKind.Testing)]
+    [InlineData(StoreKind.LocalFS)]
 #if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
 #endif
-    public async Task Name01_FirstPut_WritesNewName(StoreKind storeKind)
+    public async Task Name01_PutName(StoreKind storeKind)
     {
         var ct = TestContext.Current.CancellationToken;
         string testpath = $"{testroot}{Guid.NewGuid():N}";
@@ -36,41 +37,14 @@ public class NameStoreTests
         BlobHelpers.CompressData(data.Bytes, idMemory.Span);
         BlobKey key = BlobKey.From(idMemory);
 
-        await blobStore.PutBlob(key, data);
-        bool missing = nameStore.PutName("name1", key);
-        missing.ShouldBeTrue();
+        await blobStore.PutBlob(key, data, ct);
+        await nameStore.PutName("name1", key, ct);
         nameStore.GetNames().Count().ShouldBe(1);
     }
 
     [Theory]
     [InlineData(StoreKind.Testing)]
-#if NET8_0_OR_GREATER
-    [InlineData(StoreKind.RocksDb)]
-#endif
-    public async Task Name02_PutAgain_Overwrites(StoreKind storeKind)
-    {
-        var ct = TestContext.Current.CancellationToken;
-        string testpath = $"{testroot}{Guid.NewGuid():N}";
-        using INameStore nameStore = TestHelpers.CreateNameStore(storeKind, testpath);
-        using IBlobStore blobStore = TestHelpers.CreateBlobStore(storeKind, testpath);
-
-        BlobData data = BlobData.From(ReadOnlyMemory<byte>.Empty);
-        Memory<byte> idMemory = new byte[BlobIdV1.Size];
-        BlobHelpers.CompressData(data.Bytes, idMemory.Span);
-        BlobKey key = BlobKey.From(idMemory);
-
-        await blobStore.PutBlob(key, data);
-        bool missing = nameStore.PutName("name1", key);
-        missing.ShouldBeTrue();
-        nameStore.GetNames().Count().ShouldBe(1);
-
-        missing = nameStore.PutName("name1", key);
-        missing.ShouldBeFalse();
-        nameStore.GetNames().Count().ShouldBe(1);
-    }
-
-    [Theory]
-    [InlineData(StoreKind.Testing)]
+    [InlineData(StoreKind.LocalFS)]
 #if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
 #endif
@@ -89,12 +63,12 @@ public class NameStoreTests
         BlobHelpers.CompressData(data.Bytes, idMemory.Span);
         BlobKey key = BlobKey.From(idMemory);
 
-        await blobStore.PutBlob(key, data);
-        nameStore.PutName("name1", key);
-        nameStore.PutName("name2", key);
-        nameStore.PutName("name2", key);
+        await blobStore.PutBlob(key, data, ct);
+        await nameStore.PutName("name1", key, ct);
+        await nameStore.PutName("name2", key, ct);
+        await nameStore.PutName("name2", key, ct);
 
-        var names1 = nameStore.GetNames().OrderBy(x => x.Key).Select(x => x.Key).ToArray();
+        var names1 = nameStore.GetNames().OrderBy(x => x).ToArray();
         names1.Length.ShouldBe(2);
         names1[0].ShouldBe("name1");
         names1[1].ShouldBe("name2");

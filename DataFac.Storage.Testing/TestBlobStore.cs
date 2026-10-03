@@ -24,7 +24,7 @@ public sealed class TestBlobStore : IBlobStore
 
     public IEnumerable<KeyValuePair<BlobKey, BlobData>> GetCachedBlobs() => _blobStore;
 
-    public async IAsyncEnumerable<KeyValuePair<BlobKey, BlobData>> GetBlobs(CancellationToken cancellation)
+    public async IAsyncEnumerable<KeyValuePair<BlobKey, BlobData>> GetBlobs([EnumeratorCancellation] CancellationToken cancellation)
     {
         foreach (var kvp in _blobStore)
         {
@@ -35,7 +35,7 @@ public sealed class TestBlobStore : IBlobStore
         }
     }
 
-    public async ValueTask<BlobData> GetBlob(BlobKey key)
+    public async ValueTask<BlobData> GetBlob(BlobKey key, CancellationToken cancellation)
     {
         if (!key.HasValue) return BlobData.NotFound();
 
@@ -64,7 +64,7 @@ public sealed class TestBlobStore : IBlobStore
         return default;
     }
 
-    public ValueTask PutBlob(BlobKey key, BlobData data)
+    public ValueTask PutBlob(BlobKey key, BlobData data, CancellationToken cancellation)
     {
         _blobStore.TryAdd(key, data);
         return new ValueTask();

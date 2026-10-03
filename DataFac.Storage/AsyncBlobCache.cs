@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
@@ -162,14 +163,14 @@ public sealed class AsyncBlobCache : IBlobCache
                     case AsyncOpKind.Get:
                         {
                             // async get
-                            var result = await _blobStore.GetBlob(item.Key).ConfigureAwait(false);
+                            var result = await _blobStore.GetBlob(item.Key, CancellationToken.None).ConfigureAwait(false);
                             item.Completion?.TrySetResult(result);
                             break;
                         }
                     case AsyncOpKind.Put:
                         {
                             // async put
-                            await _blobStore.PutBlob(item.Key, item.Data).ConfigureAwait(false);
+                            await _blobStore.PutBlob(item.Key, item.Data, CancellationToken.None).ConfigureAwait(false);
                             item.Completion?.TrySetResult(item.Data);
                             break;
                         }

@@ -2,6 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DataFac.Storage.Testing;
 
@@ -26,9 +28,9 @@ public sealed class TestNameStore : INameStore
         throw new ArgumentException("Must not be empty", name);
     }
 
-    public IEnumerable<KeyValuePair<string, BlobKey>> GetNames() => _nameStore;
+    public IEnumerable<string> GetNames() => _nameStore.Keys;
 
-    public BlobKey GetName(string name)
+    public async ValueTask<BlobKey> GetName(string name, CancellationToken cancellation)
     {
         if (string.IsNullOrEmpty(name)) ThrowMustNotBeEmpty(nameof(name));
 
@@ -50,11 +52,11 @@ public sealed class TestNameStore : INameStore
         }
     }
 
-    public bool PutName(string name, in BlobKey key)
+    public ValueTask PutName(string name, BlobKey key, CancellationToken cancellation)
     {
         if (string.IsNullOrEmpty(name)) ThrowMustNotBeEmpty(nameof(name));
-        bool added = _nameStore.TryAdd(name, key);
-        return added;
+        _nameStore[name] = key;
+        return default;
     }
 
 }

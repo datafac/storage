@@ -12,8 +12,6 @@ public sealed class RocksDbBlobStore : IBlobStore
 {
     private readonly RocksDb _rocksBlobDb;
 
-    private const int MaxStackallocKeySize = 128; // todo tune size
-
     public RocksDbBlobStore(string rootpath)
     {
         DbOptions dbOptions = new DbOptions().SetCreateIfMissing(true);
@@ -50,7 +48,7 @@ public sealed class RocksDbBlobStore : IBlobStore
         throw new ArgumentException("Must not be empty", paramName);
     }
 
-    public async IAsyncEnumerable<KeyValuePair<BlobKey, BlobData>> GetBlobs(CancellationToken cancellation)
+    public async IAsyncEnumerable<KeyValuePair<BlobKey, BlobData>> GetBlobs([EnumeratorCancellation] CancellationToken cancellation)
     {
         ThrowIfDisposed();
         using var iter = _rocksBlobDb.NewIterator();
@@ -65,7 +63,7 @@ public sealed class RocksDbBlobStore : IBlobStore
         }
     }
 
-    public async ValueTask<BlobData> GetBlob(BlobKey key)
+    public async ValueTask<BlobData> GetBlob(BlobKey key, CancellationToken cancellation)
     {
         ThrowIfDisposed();
         if (!key.HasValue) return BlobData.NotFound();
@@ -92,7 +90,7 @@ public sealed class RocksDbBlobStore : IBlobStore
         return data is null ? BlobData.NotFound() : BlobData.From(data);
     }
 
-    public async ValueTask PutBlob(BlobKey key, BlobData data)
+    public async ValueTask PutBlob(BlobKey key, BlobData data, CancellationToken cancellation)
     {
         ThrowIfDisposed();
         if (!key.HasValue) ThrowMustNotBeEmpty(nameof(key));

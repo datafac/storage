@@ -1,4 +1,5 @@
-﻿using DataFac.Storage.RocksDbStore;
+﻿using DataFac.Storage.LocalFS;
+using DataFac.Storage.RocksDbStore;
 using DataFac.Storage.Testing;
 using System;
 using System.Collections.Generic;
@@ -10,27 +11,29 @@ namespace DataFac.Storage.Tests;
 
 internal static class TestHelpers
 {
-    public static INameStore CreateNameStore(StoreKind storeKind, string rocksDbRoot = "")
+    public static INameStore CreateNameStore(StoreKind storeKind, string fileSystemRoot = "")
     {
-        if (storeKind != StoreKind.Testing && string.IsNullOrEmpty(rocksDbRoot)) throw new System.ArgumentException($"'{nameof(rocksDbRoot)}' cannot be null or empty.", nameof(rocksDbRoot));
+        if (storeKind != StoreKind.Testing && string.IsNullOrEmpty(fileSystemRoot)) throw new System.ArgumentException($"'{nameof(fileSystemRoot)}' cannot be null or empty.", nameof(fileSystemRoot));
 #pragma warning disable CA2000 // Dispose objects before losing scope
         return storeKind switch
         {
             StoreKind.Testing => new TestNameStore(),
-            StoreKind.RocksDb => new RocksDbNameStore(rocksDbRoot),
+            StoreKind.LocalFS => new LocalFSNameStore(fileSystemRoot),
+            StoreKind.RocksDb => new RocksDbNameStore(fileSystemRoot),
             _ => throw new System.ArgumentOutOfRangeException(nameof(storeKind), storeKind, null),
         };
 #pragma warning restore CA2000 // Dispose objects before losing scope
     }
 
-    public static IBlobStore CreateBlobStore(StoreKind storeKind, string rocksDbRoot = "")
+    public static IBlobStore CreateBlobStore(StoreKind storeKind, string fileSystemRoot = "")
     {
-        if (storeKind != StoreKind.Testing && string.IsNullOrEmpty(rocksDbRoot)) throw new System.ArgumentException($"'{nameof(rocksDbRoot)}' cannot be null or empty.", nameof(rocksDbRoot));
+        if (storeKind != StoreKind.Testing && string.IsNullOrEmpty(fileSystemRoot)) throw new System.ArgumentException($"'{nameof(fileSystemRoot)}' cannot be null or empty.", nameof(fileSystemRoot));
 #pragma warning disable CA2000 // Dispose objects before losing scope
         return storeKind switch
         {
             StoreKind.Testing => new TestBlobStore(),
-            StoreKind.RocksDb => new RocksDbBlobStore(rocksDbRoot),
+            StoreKind.LocalFS => new LocalFSBlobStore(fileSystemRoot),
+            StoreKind.RocksDb => new RocksDbBlobStore(fileSystemRoot),
             _ => throw new System.ArgumentOutOfRangeException(nameof(storeKind), storeKind, null),
         };
 #pragma warning restore CA2000 // Dispose objects before losing scope

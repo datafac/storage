@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 
 namespace DataFac.Storage;
 
@@ -7,6 +8,23 @@ public readonly struct BlobData : IEquatable<BlobData>
     private readonly static BlobData _notFound = new BlobData(false, ReadOnlyMemory<byte>.Empty);
     public static BlobData NotFound() => _notFound;
     public static BlobData From(ReadOnlyMemory<byte> bytes) => new BlobData(true, bytes);
+    public static BlobData From(ReadOnlySequence<byte> sequence)
+    {
+        if (sequence.IsEmpty)
+        {
+            return new BlobData(true, ReadOnlyMemory<byte>.Empty);
+        }
+        else if (sequence.IsSingleSegment)
+        {
+            return new BlobData(true, sequence.First);
+        }
+        else
+        {
+            Memory<byte> buffer = new byte[sequence.Length];
+            sequence.CopyTo(buffer.Span);
+            return new BlobData(true, buffer);
+        }
+    }
 
     public readonly bool HasValue;
     public readonly ReadOnlyMemory<byte> Bytes;

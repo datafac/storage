@@ -10,18 +10,18 @@ public interface INameStore : IDisposable
     /// <summary>
     /// Returns the named key.
     /// </summary>
-    BlobKey GetName(string name);
+    ValueTask<BlobKey> GetName(string name, CancellationToken cancellation);
 
     /// <summary>
     /// Writes the named key to the store. Returns true if the name was added, 
     /// or false if the name was overwritten.
     /// </summary>
-    bool PutName(string name, in BlobKey key);
+    ValueTask PutName(string name, BlobKey key, CancellationToken cancellation);
 
     /// <summary>
     /// Enumerates all the names in the store.
     /// </summary>
-    IEnumerable<KeyValuePair<string, BlobKey>> GetNames();
+    IEnumerable<string> GetNames();
 
     /// <summary>
     /// Removes the named id if it exists.
@@ -64,13 +64,13 @@ public interface IBlobStore : IDisposable
     /// <summary>
     /// Returns the blob for the given id if it exists, null otherwise.
     /// </summary>
-    ValueTask<BlobData> GetBlob(BlobKey key);
+    ValueTask<BlobData> GetBlob(BlobKey key, CancellationToken cancellation);
 
     /// <summary>
     /// Saves the given data into the underlying store, writes its id to the
     /// given memory, and optionally waits for any store operation to complete.
     /// </summary>
-    ValueTask PutBlob(BlobKey key, BlobData data);
+    ValueTask PutBlob(BlobKey key, BlobData data, CancellationToken cancellation);
 
     IAsyncEnumerable<KeyValuePair<BlobKey, BlobData>> GetBlobs(CancellationToken cancellation);
 

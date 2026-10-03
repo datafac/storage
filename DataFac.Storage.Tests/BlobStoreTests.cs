@@ -6,6 +6,7 @@ using System.Buffers;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -24,6 +25,7 @@ public class BlobStoreTests
 
     [Theory]
     [InlineData(StoreKind.Testing)]
+    [InlineData(StoreKind.LocalFS)]
 #if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
 #endif
@@ -36,78 +38,88 @@ public class BlobStoreTests
 
     [Theory]
     [InlineData(StoreKind.Testing)]
+    [InlineData(StoreKind.LocalFS)]
 #if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
 #endif
     public async Task Store02aGetInvalidKeyReturnsNotFound(StoreKind storeKind)
     {
+        var ct = TestContext.Current.CancellationToken;
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using INameStore nameStore = TestHelpers.CreateNameStore(storeKind, testpath);
-        var key = nameStore.GetName("missing");
+        var key = await nameStore.GetName("missing", ct);
         key.HasValue.ShouldBeFalse();
     }
 
     [Theory]
     [InlineData(StoreKind.Testing)]
+    [InlineData(StoreKind.LocalFS)]
 #if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
 #endif
     public async Task Store02bGetEmptyIdReturnsNull(StoreKind storeKind)
     {
+        var ct = TestContext.Current.CancellationToken;
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IBlobStore blobStore = TestHelpers.CreateBlobStore(storeKind, testpath);
-        var result = await blobStore.GetBlob(default);
+        var result = await blobStore.GetBlob(default, ct);
         result.HasValue.ShouldBeFalse();
     }
 
     [Theory]
     [InlineData(StoreKind.Testing)]
+    [InlineData(StoreKind.LocalFS)]
 #if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
 #endif
     public async Task Store03GetInvalidId(StoreKind storeKind)
     {
+        var ct = TestContext.Current.CancellationToken;
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IBlobStore blobStore = TestHelpers.CreateBlobStore(storeKind, testpath);
         BlobData data = BlobData.From(Enumerable.Range(0, 64).Select(i => (byte)i).ToArray());
         Memory<byte> idMemory = new byte[BlobIdV1.Size];
         BlobHelpers.CompressData(data.Bytes, idMemory.Span);
         BlobKey key = BlobKey.From(idMemory);
-        var result = await blobStore.GetBlob(key);
+        var result = await blobStore.GetBlob(key, ct);
         result.HasValue.ShouldBeFalse();
     }
 
     [Theory]
     [InlineData(StoreKind.Testing)]
+    [InlineData(StoreKind.LocalFS)]
 #if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
 #endif
     public async Task Store04PutNonEmptyBlob(StoreKind storeKind)
     {
+        var ct = TestContext.Current.CancellationToken;
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IBlobStore blobStore = TestHelpers.CreateBlobStore(storeKind, testpath);
         BlobData data = BlobData.From(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
         Memory<byte> idMemory = new byte[BlobIdV1.Size];
         (bool embedded, var compressed) = BlobHelpers.CompressData(data.Bytes, idMemory.Span);
         embedded.ShouldBeFalse();
-        ReadOnlySpan<byte> idSpan= idMemory.Span;
+        ReadOnlySpan<byte> idSpan = idMemory.Span;
 
-        (_,_, var compAlgo, var hashAlgo, _) = BlobIdV1.ReadNonEmbedded(idSpan);
+        (_, _, var compAlgo, var hashAlgo, _) = BlobIdV1.ReadNonEmbedded(idSpan);
         hashAlgo.ShouldBe(BlobHashAlgo.Sha256);
         compAlgo.ShouldBe(BlobCompAlgo.UnComp);
         BlobIdV1.ToDisplayString(idSpan).ShouldBe("V1.0:256:U:S:QK/y6dLYki5Hr9RkjmlnSXFYeF+9Hahw5xECZr+USIA=");
 
         BlobKey key = BlobKey.From(idMemory);
-        await blobStore.PutBlob(key, data);
+        await blobStore.PutBlob(key, data, ct);
     }
 
     [Theory]
     [InlineData(StoreKind.Testing)]
+    [InlineData(StoreKind.LocalFS)]
 #if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
 #endif
     public async Task Store05GetCompressed(StoreKind storeKind)
     {
+        var ct = TestContext.Current.CancellationToken;
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IBlobStore blobStore = TestHelpers.CreateBlobStore(storeKind, testpath);
 
@@ -131,12 +143,12 @@ public class BlobStoreTests
             compAlgo.ShouldBe(BlobCompAlgo.Snappy);
             BlobIdV1.ToDisplayString(idSpan).ShouldBe("V1.0:201:S:S:f+8O2Wm1is/9ut73eja0VCML3qUOWA9rgBZg4INPL34=");
 
-            await blobStore.PutBlob(key, data);
+            await blobStore.PutBlob(key, data, ct);
         }
 
         {
             // recver
-            var recd = await blobStore.GetBlob(key);
+            var recd = await blobStore.GetBlob(key, ct);
             recd.HasValue.ShouldBeTrue();
 
             //(bool embedded, var data) = BlobHelpers.TryGetEmbedded(key.Bytes);
@@ -151,46 +163,48 @@ public class BlobStoreTests
 
     [Theory]
     [InlineData(StoreKind.Testing)]
+    [InlineData(StoreKind.LocalFS)]
 #if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
 #endif
     public async Task Store06GetUncompressed(StoreKind storeKind)
     {
+        var ct = TestContext.Current.CancellationToken;
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IBlobStore blobStore = TestHelpers.CreateBlobStore(storeKind, testpath);
 
         BlobData data = BlobData.From(Enumerable.Range(0, 256).Select(i => (byte)i).ToArray());
         BlobKey key;
         {
-            // sender
+            // writer
             Memory<byte> idMemory = new byte[BlobIdV1.Size];
             BlobHelpers.CompressData(data.Bytes, idMemory.Span);
             key = BlobKey.From(idMemory);
 
-            await blobStore.PutBlob(key, data);
+            await blobStore.PutBlob(key, data, ct);
         }
 
         {
-            // recver
-            //(bool embedded, _) = BlobHelpers.TryGetEmbedded(key.Bytes);
-            //embedded.ShouldBeFalse();
-
+            // reader
             (_, _, var compAlgo, var hashAlgo, _) = BlobIdV1.ReadNonEmbedded(key.Bytes.Span);
             compAlgo.ShouldBe(BlobCompAlgo.UnComp);
 
-            var copy = await blobStore.GetBlob(key);
+            var copy = await blobStore.GetBlob(key, ct);
             copy.HasValue.ShouldBeTrue();
+            copy.Bytes.Length.ShouldBe(data.Bytes.Length);
             copy.Bytes.Span.SequenceEqual(data.Bytes.Span).ShouldBeTrue();
         }
     }
 
     [Theory]
     [InlineData(StoreKind.Testing)]
+    [InlineData(StoreKind.LocalFS)]
 #if NET8_0_OR_GREATER
     [InlineData(StoreKind.RocksDb)]
 #endif
     public async Task Store07PutAgain(StoreKind storeKind)
     {
+        var ct = TestContext.Current.CancellationToken;
         string testpath = $"{testroot}{Guid.NewGuid():N}";
         using IBlobStore blobStore = TestHelpers.CreateBlobStore(storeKind, testpath);
 
@@ -200,9 +214,9 @@ public class BlobStoreTests
         BlobKey key = BlobKey.From(idMemory);
 
         // put first
-        await blobStore.PutBlob(key, data);
+        await blobStore.PutBlob(key, data, ct);
 
         // put again
-        await blobStore.PutBlob(key, data);
+        await blobStore.PutBlob(key, data, ct);
     }
 }

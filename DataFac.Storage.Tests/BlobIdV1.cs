@@ -63,16 +63,6 @@ public static class BlobIdV1
         BinaryPrimitives.WriteInt32LittleEndian(target.Slice(8, 4), blobSize);
     }
 
-    //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-    //public static void Write(Span<byte> target, int blobSize, BlobCompAlgo compAlgo, BlobHashAlgo hashAlgo, ReadOnlySpan<byte> hashData)
-    //{
-    //    if (target.Length != Size) ThrowBufferWrongSize(nameof(target), Size);
-    //    if (hashData.Length != 32) ThrowBufferWrongSize(nameof(hashData), 32); 
-    //    target.Clear();
-    //    WriteHeadPart(target, blobSize, compAlgo, hashAlgo);
-    //    hashData.CopyTo(target.Slice(32, 32));
-    //}
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void WriteSansHash(Span<byte> target, int blobSize, BlobCompAlgo compAlgo, BlobHashAlgo hashAlgo)
     {

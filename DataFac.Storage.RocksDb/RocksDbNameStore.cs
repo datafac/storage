@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DataFac.Storage.RocksDbStore;
 
@@ -39,35 +41,33 @@ public sealed class RocksDbNameStore : INameStore
     }
 
 #if NET8_0_OR_GREATER
-    public IEnumerable<KeyValuePair<string, BlobKey>> GetNames()
+    public IEnumerable<string> GetNames()
     {
         using var iter = _rocksNameDb.NewIterator();
         var iter2 = iter.SeekToFirst();
         while (iter2.Valid())
         {
             string name = Encoding.UTF8.GetString(iter2.GetKeySpan());
-            BlobKey key = BlobKey.From(iter2.Value());
-            yield return new KeyValuePair<string, BlobKey>(name, key);
+            yield return name;
             iter2 = iter2.Next();
         }
     }
 #else
-    public IEnumerable<KeyValuePair<string, BlobKey>> GetNames()
+    public IEnumerable<string> GetNames()
     {
         using var iter = _rocksNameDb.NewIterator();
         var iter2 = iter.SeekToFirst();
         while (iter2.Valid())
         {
             string name = Encoding.UTF8.GetString(iter2.Key());
-            BlobKey key = BlobKey.From(iter2.Value());
-            yield return new KeyValuePair<string, BlobKey>(name, key);
+            yield return name;
             iter2 = iter2.Next();
         }
     }
 #endif
 
 #if NET8_0_OR_GREATER
-    public BlobKey GetName(string name)
+    public async ValueTask<BlobKey> GetName(string name, CancellationToken cancellation)
     {
         if (string.IsNullOrEmpty(name)) ThrowMustNotBeEmpty(nameof(name));
         Span<byte> buffer = stackalloc byte[MaxStackallocKeySize];
@@ -83,7 +83,7 @@ public sealed class RocksDbNameStore : INameStore
         return bytes2 is null ? BlobKey.NotFound() : BlobKey.From(bytes2);
     }
 #else
-    public BlobKey GetName(string name)
+    public async ValueTask<BlobKey> GetName(string name, CancellationToken cancellation)
     {
         var keyBytes = Encoding.UTF8.GetBytes(name);
         var bytes2 = _rocksNameDb.Get(keyBytes);
@@ -114,49 +114,37 @@ public sealed class RocksDbNameStore : INameStore
 #endif
 
 #if NET8_0_OR_GREATER
-    public bool PutName(string name, in BlobKey key)
+    public ValueTask PutName(string name, BlobKey key, CancellationToken cancellation)
     {
         if (string.IsNullOrEmpty(name)) ThrowMustNotBeEmpty(nameof(name));
         if (!key.HasValue) ThrowMustNotBeEmpty(nameof(key));
         // todo? optimistic locking revision check
         // todo? lock on key to ensure below is atomic
-        Span<byte> buffer = stackalloc byte[MaxStackallocKeySize];
-        if (Encoding.UTF8.TryGetBytes(name, buffer, out int bytesInKey))
+        Span<byte> span = stackalloc byte[MaxStackallocKeySize];
+        if (Encoding.UTF8.TryGetBytes(name, span, out int bytesInKey))
         {
-            var keySpan = buffer.Slice(0, bytesInKey);
-            bool added = _rocksNameDb.Get(keySpan) is null;
-            if (added)
-            {
-                _rocksNameDb.Put(keySpan, key.Bytes.Span);
-            }
-            return added;
+            var nameSpan = span.Slice(0, bytesInKey);
+            _rocksNameDb.Put(nameSpan, key.Bytes.Span);
         }
+        else
         {
-            var keyBytes = Encoding.UTF8.GetBytes(name);
-            bool added = _rocksNameDb.Get(keyBytes) is null;
-            if (added)
-            {
-                _rocksNameDb.Put(keyBytes, key.Bytes.ToArray());
-            }
-            return added;
+            var nameBytes = Encoding.UTF8.GetBytes(name);
+            _rocksNameDb.Put(nameBytes, key.Bytes.ToArray());
         }
+        return default;
     }
 #else
-    public bool PutName(string name, in BlobKey key)
+    public ValueTask PutName(string name, BlobKey key, CancellationToken cancellation)
     {
         if (string.IsNullOrEmpty(name)) ThrowMustNotBeEmpty(nameof(name));
         if (!key.HasValue) ThrowMustNotBeEmpty(nameof(key));
         // todo? optimistic locking revision check
         // todo? lock on key to ensure below is atomic
         {
-            var keyBytes = Encoding.UTF8.GetBytes(name);
-            bool added = _rocksNameDb.Get(keyBytes) is null;
-            if (added)
-            {
-                _rocksNameDb.Put(keyBytes, key.Bytes.ToArray());
-            }
-            return added;
+            var nameBytes = Encoding.UTF8.GetBytes(name);
+            _rocksNameDb.Put(nameBytes, key.Bytes.ToArray());
         }
+        return default;
     }
 #endif
 
